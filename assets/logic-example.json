@@ -1,0 +1,117 @@
+{
+  "model_id": 1941303001,
+  "cards": [
+    {
+      "id": "M1",
+      "title": "precision 与 accuracy，各自在比较谁？",
+      "question": "precision 与 accuracy，各自在比较谁？",
+      "answer": "precision 比较重复读数彼此的接近程度；accuracy 比较测量结果与 true value 的接近程度。",
+      "context": "同一只标准砝码被重复测量。我们想分别判断测量是否稳定，以及结果是否接近真实值。",
+      "source": "教学示例；正式制卡补入已核实的母件来源。",
+      "namespace": "ccpt-semantic-example",
+      "deck_id": 1941303099,
+      "deck": "CCPT · Concept example",
+      "target": "只能说明 precision 较高，不能保证 accuracy 较高。",
+      "kind": "concept",
+      "tree": [
+        {
+          "text": "两个参照",
+          "children": [
+            {
+              "text": "重复读数：对同一个量测量多次，得到一组结果。",
+              "children": []
+            },
+            {
+              "text": "true value：被测量的真实值；本例用已知标准砝码作为可靠基准。",
+              "children": []
+            }
+          ],
+          "relation": "解释",
+          "key": "branch-0"
+        },
+        {
+          "text": "precision",
+          "children": [
+            {
+              "text": "把各次读数互相比较：彼此越接近，重复测量的 precision 越高。",
+              "children": []
+            },
+            {
+              "text": "这个判断不要求知道 true value；不知道测得准不准，仍可以看出重复得稳不稳。",
+              "children": []
+            }
+          ],
+          "relation": "解释",
+          "key": "branch-1"
+        },
+        {
+          "text": "accuracy",
+          "children": [
+            {
+              "text": "把测量结果与 true value 比较：越接近，accuracy 越高。",
+              "children": []
+            },
+            {
+              "text": "所有读数可以彼此接近，却一起偏离基准；稳定不能单独证明测得准确。",
+              "children": []
+            }
+          ],
+          "relation": "解释",
+          "key": "branch-2"
+        },
+        {
+          "text": "同一个例子",
+          "children": [
+            {
+              "text": "标准砝码为 100 g，天平反复读出约 106 g。",
+              "children": []
+            },
+            {
+              "text": "重复读数挤在一起 → 较高 precision；整体偏离标准 → 较低 accuracy。",
+              "children": []
+            }
+          ],
+          "relation": "解释",
+          "key": "branch-3"
+        }
+      ],
+      "figure": null,
+      "color_roles": [
+        {
+          "key": "blue",
+          "color": "#075ac8",
+          "meaning": "重复结果彼此的接近程度",
+          "terms": [
+            "precision"
+          ]
+        },
+        {
+          "key": "purple",
+          "color": "#793ab0",
+          "meaning": "结果接近基准的程度",
+          "terms": [
+            "accuracy"
+          ]
+        },
+        {
+          "key": "green",
+          "color": "#08705e",
+          "meaning": "作为比较基准的真实值",
+          "terms": [
+            "true value"
+          ]
+        }
+      ],
+      "layout": "logic-right",
+      "background_encoding": "depth",
+      "figure_svg": null,
+      "format": "semantic-v4",
+      "map_root": "测量质量",
+      "recall_branches": [
+        "precision",
+        "accuracy",
+        "同一测量中的两种判断"
+      ]
+    }
+  ]
+}

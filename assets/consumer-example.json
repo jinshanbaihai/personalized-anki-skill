@@ -1,0 +1,64 @@
+{
+  "title": "图像概念卡 · 设计示例",
+  "model_id": 1941394001,
+  "deck_id": 1941394002,
+  "model_name": "CCPT · Physics 易错概念",
+  "guid_namespace": "consumer-card-example-v2",
+  "source": "自拟示意，用于展示概念",
+  "cards": [
+    {
+      "id": "M1",
+      "label": "测量很稳定，就测对了吗？",
+      "kind": "concept",
+      "target": "只能说明 precision 较高，不能保证 accuracy 较高。",
+      "question": "甲组读数挤在一起，却整体偏离基准。这能说明测得准确吗？",
+      "answer": "只能说明 precision 较高，不能保证 accuracy 较高。",
+      "source": "自拟测量示意，用于解释 precision、accuracy 和 true value；不对应某道原题的具体数值。",
+      "front": [
+        {
+          "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 640 400\" role=\"img\"><path d=\"M300 75L300 315\" stroke=\"var(--good)\" stroke-width=\"2\" fill=\"none\" stroke-dasharray=\"6 6\"/><g data-say=\"true value · 真实基准\" role=\"button\" tabindex=\"0\" aria-label=\"朗读：true value · 真实基准\"><text x=\"300\" y=\"45\" text-anchor=\"middle\" style=\"font-size:22px;fill:var(--good)\">true value · 真实基准</text><text x=\"300\" y=\"59\" text-anchor=\"middle\" style=\"font-size:9px;fill:var(--muted)\">◖))</text></g><path d=\"M110 155L570 155\" stroke=\"var(--muted)\" stroke-width=\"3\" fill=\"none\"/><g data-say=\"甲\" role=\"button\" tabindex=\"0\" aria-label=\"朗读：甲\"><text x=\"42\" y=\"160\" text-anchor=\"start\" style=\"font-size:24px;fill:var(--ink)\">甲</text><text x=\"29\" y=\"144\" text-anchor=\"start\" style=\"font-size:9px;fill:var(--muted)\">◖))</text></g><circle cx=\"408\" cy=\"147\" r=\"7\" fill=\"var(--blue)\"/><circle cx=\"414\" cy=\"132\" r=\"7\" fill=\"var(--blue)\"/><circle cx=\"426\" cy=\"147\" r=\"7\" fill=\"var(--blue)\"/><circle cx=\"420\" cy=\"132\" r=\"7\" fill=\"var(--blue)\"/><circle cx=\"431\" cy=\"147\" r=\"7\" fill=\"var(--blue)\"/><path d=\"M110 270L570 270\" stroke=\"var(--muted)\" stroke-width=\"3\" fill=\"none\"/><g data-say=\"乙\" role=\"button\" tabindex=\"0\" aria-label=\"朗读：乙\"><text x=\"42\" y=\"275\" text-anchor=\"start\" style=\"font-size:24px;fill:var(--ink)\">乙</text><text x=\"29\" y=\"259\" text-anchor=\"start\" style=\"font-size:9px;fill:var(--muted)\">◖))</text></g><circle cx=\"215\" cy=\"262\" r=\"7\" fill=\"var(--orange)\"/><circle cx=\"270\" cy=\"247\" r=\"7\" fill=\"var(--orange)\"/><circle cx=\"305\" cy=\"262\" r=\"7\" fill=\"var(--orange)\"/><circle cx=\"338\" cy=\"247\" r=\"7\" fill=\"var(--orange)\"/><circle cx=\"370\" cy=\"262\" r=\"7\" fill=\"var(--orange)\"/></svg>",
+          "narration": "同一个物体测了多次。每个圆点是一条读数；竖虚线是真实的基准值 true value。 甲组读数挤在一起，却整体偏离基准。这能说明测得准确吗？",
+          "heading": "看清场景",
+          "caption": "同一个物体测了多次。每个圆点是一条读数；竖虚线是真实的基准值 true value。"
+        }
+      ],
+      "back": [
+        {
+          "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 640 400\" role=\"img\"><path d=\"M300 75L300 315\" stroke=\"var(--good)\" stroke-width=\"2\" fill=\"none\" stroke-dasharray=\"6 6\"/><g data-say=\"true value · 真实基准\" role=\"button\" tabindex=\"0\" aria-label=\"朗读：true value · 真实基准\"><text x=\"300\" y=\"45\" text-anchor=\"middle\" style=\"font-size:22px;fill:var(--good)\">true value · 真实基准</text><text x=\"300\" y=\"59\" text-anchor=\"middle\" style=\"font-size:9px;fill:var(--muted)\">◖))</text></g><path d=\"M110 155L570 155\" stroke=\"var(--muted)\" stroke-width=\"3\" fill=\"none\"/><g data-say=\"甲\" role=\"button\" tabindex=\"0\" aria-label=\"朗读：甲\"><text x=\"42\" y=\"160\" text-anchor=\"start\" style=\"font-size:24px;fill:var(--ink)\">甲</text><text x=\"29\" y=\"144\" text-anchor=\"start\" style=\"font-size:9px;fill:var(--muted)\">◖))</text></g><circle cx=\"408\" cy=\"147\" r=\"7\" fill=\"var(--blue)\"/><circle cx=\"414\" cy=\"132\" r=\"7\" fill=\"var(--blue)\"/><circle cx=\"426\" cy=\"147\" r=\"7\" fill=\"var(--blue)\"/><circle cx=\"420\" cy=\"132\" r=\"7\" fill=\"var(--blue)\"/><circle cx=\"431\" cy=\"147\" r=\"7\" fill=\"var(--blue)\"/><path d=\"M110 270L570 270\" stroke=\"var(--muted)\" stroke-width=\"3\" fill=\"none\"/><g data-say=\"乙\" role=\"button\" tabindex=\"0\" aria-label=\"朗读：乙\"><text x=\"42\" y=\"275\" text-anchor=\"start\" style=\"font-size:24px;fill:var(--ink)\">乙</text><text x=\"29\" y=\"259\" text-anchor=\"start\" style=\"font-size:9px;fill:var(--muted)\">◖))</text></g><circle cx=\"215\" cy=\"262\" r=\"7\" fill=\"var(--orange)\"/><circle cx=\"270\" cy=\"247\" r=\"7\" fill=\"var(--orange)\"/><circle cx=\"305\" cy=\"262\" r=\"7\" fill=\"var(--orange)\"/><circle cx=\"338\" cy=\"247\" r=\"7\" fill=\"var(--orange)\"/><circle cx=\"370\" cy=\"262\" r=\"7\" fill=\"var(--orange)\"/></svg>",
+          "narration": "同一个物体测了多次。每个圆点是一条读数；竖虚线是真实的基准值 true value。",
+          "heading": "认清对象",
+          "caption": "同一个物体测了多次。每个圆点是一条读数；竖虚线是真实的基准值 true value。"
+        },
+        {
+          "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 640 400\" role=\"img\"><path d=\"M300 75L300 315\" stroke=\"var(--good)\" stroke-width=\"2\" fill=\"none\" stroke-dasharray=\"6 6\"/><g data-say=\"true value · 真实基准\" role=\"button\" tabindex=\"0\" aria-label=\"朗读：true value · 真实基准\"><text x=\"300\" y=\"45\" text-anchor=\"middle\" style=\"font-size:22px;fill:var(--good)\">true value · 真实基准</text><text x=\"300\" y=\"59\" text-anchor=\"middle\" style=\"font-size:9px;fill:var(--muted)\">◖))</text></g><path d=\"M110 155L570 155\" stroke=\"var(--muted)\" stroke-width=\"3\" fill=\"none\"/><g data-say=\"甲\" role=\"button\" tabindex=\"0\" aria-label=\"朗读：甲\"><text x=\"42\" y=\"160\" text-anchor=\"start\" style=\"font-size:24px;fill:var(--ink)\">甲</text><text x=\"29\" y=\"144\" text-anchor=\"start\" style=\"font-size:9px;fill:var(--muted)\">◖))</text></g><circle cx=\"408\" cy=\"147\" r=\"7\" fill=\"var(--blue)\"/><circle cx=\"414\" cy=\"132\" r=\"7\" fill=\"var(--blue)\"/><circle cx=\"426\" cy=\"147\" r=\"7\" fill=\"var(--blue)\"/><circle cx=\"420\" cy=\"132\" r=\"7\" fill=\"var(--blue)\"/><circle cx=\"431\" cy=\"147\" r=\"7\" fill=\"var(--blue)\"/><path d=\"M110 270L570 270\" stroke=\"var(--muted)\" stroke-width=\"3\" fill=\"none\"/><g data-say=\"乙\" role=\"button\" tabindex=\"0\" aria-label=\"朗读：乙\"><text x=\"42\" y=\"275\" text-anchor=\"start\" style=\"font-size:24px;fill:var(--ink)\">乙</text><text x=\"29\" y=\"259\" text-anchor=\"start\" style=\"font-size:9px;fill:var(--muted)\">◖))</text></g><circle cx=\"215\" cy=\"262\" r=\"7\" fill=\"var(--orange)\"/><circle cx=\"270\" cy=\"247\" r=\"7\" fill=\"var(--orange)\"/><circle cx=\"305\" cy=\"262\" r=\"7\" fill=\"var(--orange)\"/><circle cx=\"338\" cy=\"247\" r=\"7\" fill=\"var(--orange)\"/><circle cx=\"370\" cy=\"262\" r=\"7\" fill=\"var(--orange)\"/><rect x=\"392\" y=\"115\" width=\"60\" height=\"56\" rx=\"10\" fill=\"var(--blue)\" opacity=\"0.12\"/><g data-say=\"读数彼此很近\" role=\"button\" tabindex=\"0\" aria-label=\"朗读：读数彼此很近\"><text x=\"435\" y=\"205\" text-anchor=\"middle\" style=\"font-size:22px;fill:var(--blue)\">读数彼此很近</text><text x=\"435\" y=\"219\" text-anchor=\"middle\" style=\"font-size:9px;fill:var(--muted)\">◖))</text></g></svg>",
+          "narration": "先看圆点彼此的间隔：间隔小，说明重复测量的结果相近，这叫 precision 高。",
+          "heading": "看懂原因",
+          "caption": "先看圆点彼此的间隔：间隔小，说明重复测量的结果相近，这叫 precision 高。"
+        },
+        {
+          "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 640 400\" role=\"img\"><path d=\"M300 75L300 315\" stroke=\"var(--good)\" stroke-width=\"2\" fill=\"none\" stroke-dasharray=\"6 6\"/><g data-say=\"true value · 真实基准\" role=\"button\" tabindex=\"0\" aria-label=\"朗读：true value · 真实基准\"><text x=\"300\" y=\"45\" text-anchor=\"middle\" style=\"font-size:22px;fill:var(--good)\">true value · 真实基准</text><text x=\"300\" y=\"59\" text-anchor=\"middle\" style=\"font-size:9px;fill:var(--muted)\">◖))</text></g><path d=\"M110 155L570 155\" stroke=\"var(--muted)\" stroke-width=\"3\" fill=\"none\"/><g data-say=\"甲\" role=\"button\" tabindex=\"0\" aria-label=\"朗读：甲\"><text x=\"42\" y=\"160\" text-anchor=\"start\" style=\"font-size:24px;fill:var(--ink)\">甲</text><text x=\"29\" y=\"144\" text-anchor=\"start\" style=\"font-size:9px;fill:var(--muted)\">◖))</text></g><circle cx=\"408\" cy=\"147\" r=\"7\" fill=\"var(--blue)\"/><circle cx=\"414\" cy=\"132\" r=\"7\" fill=\"var(--blue)\"/><circle cx=\"426\" cy=\"147\" r=\"7\" fill=\"var(--blue)\"/><circle cx=\"420\" cy=\"132\" r=\"7\" fill=\"var(--blue)\"/><circle cx=\"431\" cy=\"147\" r=\"7\" fill=\"var(--blue)\"/><path d=\"M110 270L570 270\" stroke=\"var(--muted)\" stroke-width=\"3\" fill=\"none\"/><g data-say=\"乙\" role=\"button\" tabindex=\"0\" aria-label=\"朗读：乙\"><text x=\"42\" y=\"275\" text-anchor=\"start\" style=\"font-size:24px;fill:var(--ink)\">乙</text><text x=\"29\" y=\"259\" text-anchor=\"start\" style=\"font-size:9px;fill:var(--muted)\">◖))</text></g><circle cx=\"215\" cy=\"262\" r=\"7\" fill=\"var(--orange)\"/><circle cx=\"270\" cy=\"247\" r=\"7\" fill=\"var(--orange)\"/><circle cx=\"305\" cy=\"262\" r=\"7\" fill=\"var(--orange)\"/><circle cx=\"338\" cy=\"247\" r=\"7\" fill=\"var(--orange)\"/><circle cx=\"370\" cy=\"262\" r=\"7\" fill=\"var(--orange)\"/><path d=\"M305 102L413 102\" stroke=\"var(--orange)\" stroke-width=\"3\" fill=\"none\"/><path d=\"M413 102 L403.0950818741206 106.78462087522354 L403.0950818741206 97.21537912477646Z\" fill=\"var(--orange)\"/><g data-say=\"整组偏离真实基准\" role=\"button\" tabindex=\"0\" aria-label=\"朗读：整组偏离真实基准\"><text x=\"385\" y=\"345\" text-anchor=\"middle\" style=\"font-size:22px;fill:var(--orange)\">整组偏离真实基准</text><text x=\"385\" y=\"359\" text-anchor=\"middle\" style=\"font-size:9px;fill:var(--muted)\">◖))</text></g></svg>",
+          "narration": "再看整组圆点离 true value 多远：整体偏离基准，accuracy 就可能较低。考试里分别说明“分散程度”和“与基准的距离”。",
+          "heading": "用回题目",
+          "caption": "再看整组圆点离 true value 多远：整体偏离基准，accuracy 就可能较低。考试里分别说明“分散程度”和“与基准的距离”。"
+        }
+      ],
+      "title": "测量很稳定，就测对了吗？",
+      "context": "同一个物体测了多次。每个圆点是一条读数；竖虚线是真实的基准值 true value。",
+      "glossary": [
+        [
+          "precision",
+          "重复测量的读数彼此有多接近"
+        ],
+        [
+          "accuracy",
+          "测量结果与真实基准有多接近"
+        ],
+        [
+          "true value",
+          "被测量的真实基准值"
+        ]
+      ]
+    }
+  ],
+  "design_version": "consumer-2"
+}
