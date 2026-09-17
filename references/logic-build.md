@@ -2,13 +2,13 @@
 
 运行 `python scripts/build_logic_deck.py input.json output_dir`。依赖沿用 requirements.txt，以及 ffmpeg/ffprobe。示例见 assets/logic-example.json。
 
-输入 cards 可保存 question、context、answer、tree、figure_svg、source、namespace、deck、deck_id 等。tree 节点的 text 和 children 保存讲解关系。当前 kind 使用 concept 或 diagram；map_root 为根概念，recall_branches 可指定正面待回顾的分支。
+输入 cards 可保存 question、context、answer、tree、figure_svg、source、namespace、deck、deck_id 等。tree 节点的 text 和 children 保存讲解关系。当前 kind 只接受 concept 或 diagram，旧 check 输入会明确报错，不再生成选择题；map_root 为根概念，recall_branches 可指定正面待回顾的分支。
 
-`color_roles` 只是这一示例渲染器支持的可选强调映射，可以省略；不是制作必须填写的分类表。同色、多色或其他排版都可以改 renderer 实现。现有例子把完整导图适配在一页画布中，可按需放大细节。不在窄屏自动退回长页。需要中心分支或循环时可用 figure_svg 或扩展布局。
+`color_roles` 只是这一示例渲染器支持的可选强调映射，可以省略；不是制作必须填写的分类表。同色、多色或其他排版都可以改 renderer 实现。现有例子把完整导图适配在一页画布中，可按需放大细节。不在窄屏自动退回长页。深层解释节点也绘制父子连接；当前布局仍是一个向右展开的起点。需要中心分支或循环时可用 figure_svg 或扩展布局。
 
 脚本不自动把教材切成树，也不保证输入内容教学合格。先组织概念与解释，再使用或修改渲染器。例子没有自足性或考纲正确性的自动保证，需要实际审核。
 
-音频按内容缓存并离线打包；生成原速后 atempo=1.75，播放率为1。正面不内嵌答案。当前不生成选择题。共享模型包含旧模板兼容分支；正式迁移时依照目标牌库现状验证。旧卡 identity 用原 namespace、id、model_id。
+音频按内容缓存并离线打包；生成原速后 atempo=1.75，播放率为1。`figure_on_front` 决定图是否出现在正面，不按某张示例卡的编号特判。正面图和 `front_diagram_narration` 不应泄露隐藏答案；其内容由作者核对。当前不生成选择题。共享模型包含旧模板兼容分支；正式迁移时依照目标牌库现状验证。旧卡 identity 用原 namespace、id、model_id，已有模型名称通过顶层 model_name 沿用。通用默认名称不限定学科。
 
 
 ## 整页朗读

@@ -6,7 +6,10 @@ parser.add_argument('input',type=Path);parser.add_argument('output',type=Path);p
 ASSETS=Path(__file__).resolve().parent.parent/'assets'
 OUT=args.output;OUT.mkdir(parents=True,exist_ok=True);media=OUT/'media';media.mkdir(exist_ok=True)
 data=json.loads(args.input.read_text());esc=old.esc
-VOICE='zh-CN-XiaoxiaoNeural'
+VOICE=data.get('voice','zh-CN-XiaoxiaoNeural')
+for card in data['cards']:
+ if card.get('kind') not in ('concept','diagram'):
+  raise ValueError('This generator creates concept/diagram cards only; quizzes require a separately requested workflow.')
 def speech(text):return old.audio(text,VOICE)
 def button(text):return '<button class="speak" data-audio="'+speech(text)+'" aria-label="朗读或暂停" aria-pressed="false" title="朗读或暂停">▶</button>'
 def rich(text,c):
@@ -22,7 +25,7 @@ def unit(text,c):return '<div class="unit"><div class="words">'+rich(text,c)+'</
 def leaf(node,c):return '<li class="leaf">'+unit(node['text'],c)+('<ul class="leaves">'+''.join(leaf(x,c) for x in node.get('children',[]))+'</ul>' if node.get('children') else '')+'</li>'
 def narration(c,back):
  parts=[c['question']]
- has_figure=c.get('figure_svg') and (back or c['id'] not in ['M2','P2'])
+ has_figure=c.get('figure_svg') and (back or c.get('figure_on_front',True))
  if not back:parts.append(c['context'])
  if has_figure:
   if not c.get('diagram_narration'):raise ValueError(c['id']+': diagram_narration must explain the actual diagram')
@@ -41,31 +44,21 @@ def body(c,back):
  if not back:out+='<div class="context">'+unit(c['context'],c)+'</div>'
  if back:out+='<div class="answer">'+unit(c['answer'],c)+'</div>'
  out+='<div class="canvas-fit"><div class="board-content '+('has-figure' if c.get('figure_svg') and back else '')+'">'
- if c.get('figure_svg') and (back or c['id'] not in ['M2','P2']):
+ if c.get('figure_svg') and (back or c.get('figure_on_front',True)):
   old.check_svg(c['figure_svg']);svg=re.sub(r' data-say="[^"]*"','',c['figure_svg']);out+='<figure>'+svg+'</figure>'
- if c['kind']=='check':
-  if not back:
-   out+='<div class="choices" role="radiogroup" aria-label="选择一项">'
-   for i,x in enumerate(c['choices']):out+='<div class="option"><button class="pick" role="radio" aria-checked="false" data-choice="'+str(i)+'"><span class="badge">'+chr(65+i)+'</span><span class="words">'+rich(x,c)+'</span><span class="mark"></span></button>'+button(chr(65+i)+'。'+x)+'</div>'
-   out+='</div><div class="selection" aria-live="polite"></div>'
-  else:
-   for i,x in enumerate(c['choices']):
-    valid=i==c['correct'];label=('✓ 正确' if valid else '不成立')+' · '+chr(65+i)
-    out+='<section class="feedback '+('correct' if valid else '')+'" data-feedback="'+str(i)+'"><div class="result-label">'+label+'</div>'+unit(x,c)+'<div class="why">'+unit(c['reasons'][i],c)+'</div></section>'
- else:
 
-  if back or c['kind']=='concept':
-   out+='<div class="mindmap '+('map-outline' if not back else '')+'"><svg class="map-lines" aria-hidden="true"></svg><div class="map-root">'+unit(c.get('map_root',c['question']),c)+'</div><ol class="map">'
-   nodes=c['tree'] if back else [{'text':x,'children':[]} for x in c.get('recall_branches',[x['text'] for x in c['tree']])]
-   for n in nodes:out+='<li class="branch"><div class="branch-head">'+unit(n['text'],c)+'</div><ul class="leaves">'+''.join(leaf(x,c) for x in n.get('children',[]))+'</ul></li>'
-   out+='</ol></div>'
+ if back or c['kind']=='concept':
+  out+='<div class="mindmap '+('map-outline' if not back else '')+'"><svg class="map-lines" aria-hidden="true"></svg><div class="map-root">'+unit(c.get('map_root',c['question']),c)+'</div><ol class="map">'
+  nodes=c['tree'] if back else [{'text':x,'children':[]} for x in c.get('recall_branches',[x['text'] for x in c['tree']])]
+  for n in nodes:out+='<li class="branch"><div class="branch-head">'+unit(n['text'],c)+'</div><ul class="leaves">'+''.join(leaf(x,c) for x in n.get('children',[]))+'</ul></li>'
+  out+='</ol></div>'
  out+='</div></div>'
  out+='<div class="audio-controls"><span class="audio-status" aria-live="polite"></span><button class="view-button" data-view="fit">全图</button><button class="view-button" data-view="zoom">放大细节</button></div>'
  if back:out+='<details><summary>材料出处</summary><div class="source">'+unit(c['source'],c)+'</div></details>'
  names=set(re.findall('data-audio="([^"]+)"',out));out+='<div class="media-index" aria-hidden="true">'+''.join('<audio preload="none" src="'+n+'"></audio>' for n in sorted(names))+'</div></main>';return out
 css=(ASSETS/'teaching-card.css').read_text()+'\n'+(ASSETS/'logic-card.css').read_text()
 legacy=(ASSETS/'teaching-card.js').read_text();newjs=(ASSETS/'logic-card.js').read_text();js="if(document.querySelector('.ccptv4')){"+newjs+'}else{'+legacy+'}'
-model=genanki.Model(data['model_id'],'CCPT · Physics 易错概念',fields=[{'name':x} for x in ['StableID','Label','Prompt','Answer','FrontHTML','BackHTML','Source','Target']],templates=[{'name':'理解与回忆','qfmt':'{{FrontHTML}}<script>'+js+'</script>','afmt':'{{BackHTML}}<script>'+js+'</script>','bqfmt':'{{Prompt}}','bafmt':'{{Answer}}'}],css=css,sort_field_index=1)
+model=genanki.Model(data['model_id'],data.get('model_name','CCPT · 概念关系与讲图'),fields=[{'name':x} for x in ['StableID','Label','Prompt','Answer','FrontHTML','BackHTML','Source','Target']],templates=[{'name':'理解与回忆','qfmt':'{{FrontHTML}}<script>'+js+'</script>','afmt':'{{BackHTML}}<script>'+js+'</script>','bqfmt':'{{Prompt}}','bafmt':'{{Answer}}'}],css=css,sort_field_index=1)
 decks={};rendered={}
 for i,c in enumerate(data['cards']):
  fh,bh=body(c,False),body(c,True);rendered[c['id']]={'front':fh,'back':bh};did=c['deck_id'];deck=decks.setdefault(did,genanki.Deck(did,c['deck']))
