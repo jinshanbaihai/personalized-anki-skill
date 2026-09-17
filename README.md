@@ -4,7 +4,11 @@
 
 这是供 GPT／AI 制卡使用的 **anki-ccpt-skill**。用户只在 Anki 学习，AI 承担研究、概念组织、准确绘图、讲解、语音与导入验证。
 
-入口是 [SKILL.md](SKILL.md)。制卡直接使用内置的 Xmind 式导图规则，不反复读取用户样例库；每次设计任务读取并应用一次 `emilkowalski-skills`，整批卡片复用，具体流程见 [Xmind + Emil 设计说明](references/xmind-emil-design.md)。以概念导图卡呈现定义与关系，以讲图卡解释空间、变化与原理；足够完整的中文解释配合 English 学科概念（包括 price 等常见词在学科中的用法，覆盖标题、分支、图标签与语音），让当前概念的完整关系尽可能在一页看清。它提供设计方向，不把所有学科锁进一种模板；不默认生成四选一。
+入口是 [SKILL.md](SKILL.md)。先识别学习用途，实际核对官方 syllabus 与 assessment objectives；具体考试用法必要时查官方题目和评分资料。卡片说明知识是什么、为什么，以及它如何帮助完成已核实的考试任务，不把关键词清单当成完整 analysis / evaluation。
+
+每张卡以内置 Xmind 式思维导图组织完整关系，节点表达开放。先研究可靠教材的学科图示，再按范围与理解需要采用、简化或创造更合适的表达；具体情境、文字、图、表格与交互互相补足，不设固定组件配方。每次版式设计应用一次 `emilkowalski-skills`，不反复读取用户 Xmind 风格库。术语用 English，常规解释用中文，公式规范排版；内容优先级与解释篇幅服务学习目标。
+
+制作后逐卡检验理解、用途、表达与实际运行；图形和技术检查通过不等于教学完成。具体视觉实施见 [Xmind + Emil 设计说明](references/xmind-emil-design.md)。
 
 ## 听讲与操作
 
@@ -28,6 +32,6 @@
 
 将本仓库完整放入 AI 工具的技能目录，文件夹命名为 `anki-ccpt-skill`，保留 assets、scripts、references 的相对路径。提供教材或真题、考纲范围和现有卡片去重要求，由 AI 读取 SKILL.md 执行。此仓库不是需要导入 Anki 的牌组，也不是 Anki 插件。
 
-当前推荐生成入口是 [scripts/build_logic_deck.py](scripts/build_logic_deck.py)，示例在 [assets/logic-example.json](assets/logic-example.json)，用法见 [logic-build.md](references/logic-build.md)。Python 依赖列在 scripts/requirements.txt；语音处理另需 FFmpeg。旧生成器仅用于维护旧卡，新卡优先按当前 SKILL.md 的设计目的制作。
+现有可调整的生成起点是 [scripts/build_logic_deck.py](scripts/build_logic_deck.py)，示例在 [assets/logic-example.json](assets/logic-example.json)，用法见 [logic-build.md](references/logic-build.md)。Python 依赖列在 scripts/requirements.txt；语音处理另需 FFmpeg。旧生成器仅用于维护旧卡，新卡优先按当前 SKILL.md 的设计目的制作。
 
 仓库只包含规则、通用模板、示例和制作脚本，不包含个人 Anki 数据库、学习记录、原始试卷或音频库。现有 LICENSE 保留。
