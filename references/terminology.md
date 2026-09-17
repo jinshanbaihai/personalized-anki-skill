@@ -12,7 +12,7 @@
 
 - 标题：怎样判断一种商品的 optimal quantity？
 - 根节点：marginal decision-making。
-- 分支：下一单位的 willingness to pay > price／= price／< price。
+- 分支：先说明 WTP 表示额外一单位的 willingness to pay、P 表示 price，再用渲染后的数学式 `\(\mathrm{WTP}>P\)`、`\(\mathrm{WTP}=P\)`、`\(\mathrm{WTP}<P\)` 表达三种关系。
 - 解释示例：下一单位的 willingness to pay 高于 price，说明买这一单位获得的 benefit 高于要付的 cost，因此可以增加 net benefit。
 - 完整短句仍用中文组织，不写成中英文词语随机拼接的英文句法。
 
@@ -23,3 +23,14 @@
 ## 整页一致性
 
 依次看标题、主干、分支、图像标签、图例、公式说明和音频稿，检查承担概念的中文词是否漏换、同一概念是否混用名称、缩写是否已交代。图上写 price，音频也应讲 price 并用中文解释，而不是换成另一个中文概念名。已有图或图片不易编辑时重新生成所需标签，不能用图片形式逃过术语检查。无需为每个任务重新读取用户历史库；已确认的本批术语直接复用。
+
+
+## 术语名称与数学符号分工
+
+解释概念时写 marginal utility、price；进入公式时使用通行符号 MU、P，并清楚排出下标与分数：
+
+- 对应 good X：`\(\frac{MU_x}{P_x}\)`，不写 `MUx/Px` 或 `MU/price`。
+- 比较两种 goods：`\(\frac{MU_x}{P_x}>\frac{MU_y}{P_y}\)`。
+- Equi-marginal 条件：`\(\frac{MU_x}{P_x}=\frac{MU_y}{P_y}\)`，另外解释适用条件与 budget constraint。
+
+以上是制作输入示例，成品显示排版后的数学式。中文负责说明为什么比较、各符号表示什么、条件是什么；语音稿把公式自然讲出来。数学式、图中符号和语音必须表达同一个关系。这条视觉规范不要求将普通叙述全部符号化。
