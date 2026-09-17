@@ -6,7 +6,7 @@ window.ccptInit=function(){
  if(play){play.title='J：播音 / 暂停 / 继续';play.setAttribute('aria-keyshortcuts','J');}
  on(document,'keydown',e=>{
   const t=e.target;
-  if(e.repeat||e.isComposing||e.ctrlKey||e.metaKey||e.altKey||e.shiftKey||t?.isContentEditable||/^(INPUT|TEXTAREA|SELECT)$/.test(t?.tagName||''))return;
+  if(root.closest('[data-ccpt-single]')||e.repeat||e.isComposing||e.ctrlKey||e.metaKey||e.altKey||e.shiftKey||t?.isContentEditable||/^(INPUT|TEXTAREA|SELECT)$/.test(t?.tagName||''))return;
   if(e.code==='KeyJ'||e.key.toLowerCase()==='j'){e.preventDefault();e.stopPropagation();play?.click();}
  });
 

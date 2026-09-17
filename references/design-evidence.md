@@ -28,6 +28,6 @@
 ## 技术依据
 
 - [Anki 模板样式](https://docs.ankiweb.net/templates/styling.html)：实际显示由客户端与模板共同决定，检查真实窗口。
-- [Anki 卡片模板](https://docs.ankiweb.net/templates/intro.html)：字段、正反面与卡片类型分工。
+- [Anki 卡片模板](https://docs.ankiweb.net/templates/intro.html)：字段、单页内容与卡片类型分工。
 - [Anki 插件 hooks](https://addon-docs.ankiweb.net/hooks-and-filters.html)：原生界面操作可以使用匹配版本的应用接口。
 - [edge-tts](https://github.com/rany2/edge-tts)：制作阶段使用在线语音服务，离线播放靠预生成并打包的媒体；不等于获得 Azure 的稳定性承诺。

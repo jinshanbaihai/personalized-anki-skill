@@ -1,3 +1,5 @@
+> 当前只制作单面阅读卡，完整内容首次可见；Space 播音，Enter Good，1 次日再看。下文两面字段、J 和翻面描述仅是旧卡存储格式，不是当前交互要求。迁移见 `single-face.md`。
+
 # 旧 teaching 格式的维护说明
 
 新卡使用当前 SKILL.md 的概念导图／讲图工作流，可从 `logic-build.md` 与 `scripts/build_logic_deck.py` 起步。本页及 `build_teaching_deck.py`、`teaching_renderer.py` 只用于维护已有 teaching 格式，不是新任务的默认制作流程。consumer 与最早的 build_deck 也属于兼容实现。

@@ -7,3 +7,6 @@ body.card:has(.ccptv4){height:100vh;overflow:hidden!important}.ccptv4{max-width:
 
 /* Deep branches remain visibly nested; edges connect the actual text nodes. */
 .ccptv4 .mindmap .leaf > .leaves{margin:8px 0 0 22px!important;padding-left:12px!important}.ccptv4 .mindmap .leaf:has(> .leaves){background:transparent}
+
+/* Single reading surface: context and conclusion are visible together. */
+.ccptv4[data-ccpt-single] .answer{display:block;flex:none;font-size:14px;padding:5px 9px;margin:0}

@@ -23,47 +23,39 @@ def rich(text,c):
  out.append(esc(text[end:]));return ''.join(out)
 def unit(text,c):return '<div class="unit"><div class="words">'+rich(text,c)+'</div></div>'
 def leaf(node,c):return '<li class="leaf">'+unit(node['text'],c)+('<ul class="leaves">'+''.join(leaf(x,c) for x in node.get('children',[]))+'</ul>' if node.get('children') else '')+'</li>'
-def narration(c,back):
- parts=[c['question']]
- has_figure=c.get('figure_svg') and (back or c.get('figure_on_front',True))
- if not back:parts.append(c['context'])
- if has_figure:
+def narration(c):
+ parts=[c['question'],c.get('context',''),c['answer']]
+ if c.get('figure_svg'):
   if not c.get('diagram_narration'):raise ValueError(c['id']+': diagram_narration must explain the actual diagram')
-  parts.append(c.get('front_diagram_narration',c['diagram_narration']) if not back else c['diagram_narration'])
- if back or c['kind']=='concept':
-  parts.append('接下来按分支顺序阅读。'+c.get('map_root',c['question']))
-  nodes=c['tree'] if back else [{'text':x} for x in c.get('recall_branches',[x['text'] for x in c['tree']])]
-  def walk(n):
-   parts.append(n['text'])
-   for child in n.get('children',[]):walk(child)
-  for n in nodes:walk(n)
+  parts.append(c['diagram_narration'])
+ parts.append(c.get('map_root',c['question']))
+ def walk(n):
+  parts.append(n['text'])
+  for child in n.get('children',[]):walk(child)
+ for n in c['tree']:walk(n)
  return '。'.join(t.rstrip('。') for t in parts if t)
-def body(c,back):
- side='back' if back else 'front';out='<main class="ccptv4" data-note="'+esc(c['id'])+'" data-side="'+side+'">'
- out+='<header class="unit"><h1 class="words">'+rich(c['question'],c)+'</h1>'+button(narration(c,back))+'</header>'
- if not back:out+='<div class="context">'+unit(c['context'],c)+'</div>'
- if back:out+='<div class="answer">'+unit(c['answer'],c)+'</div>'
- out+='<div class="canvas-fit"><div class="board-content '+('has-figure' if c.get('figure_svg') and back else '')+'">'
- if c.get('figure_svg') and (back or c.get('figure_on_front',True)):
+def body(c):
+ out='<main class="ccptv4" data-note="'+esc(c['id'])+'" data-side="read" data-ccpt-single="1">'
+ out+='<header class="unit"><h1 class="words">'+rich(c['question'],c)+'</h1>'+button(narration(c))+'</header>'
+ if c.get('context'):out+='<div class="context">'+unit(c['context'],c)+'</div>'
+ out+='<div class="answer">'+unit(c['answer'],c)+'</div>'
+ out+='<div class="canvas-fit"><div class="board-content '+('has-figure' if c.get('figure_svg') else '')+'">'
+ if c.get('figure_svg'):
   old.check_svg(c['figure_svg']);svg=re.sub(r' data-say="[^"]*"','',c['figure_svg']);out+='<figure>'+svg+'</figure>'
-
- if back or c['kind']=='concept':
-  out+='<div class="mindmap '+('map-outline' if not back else '')+'"><svg class="map-lines" aria-hidden="true"></svg><div class="map-root">'+unit(c.get('map_root',c['question']),c)+'</div><ol class="map">'
-  nodes=c['tree'] if back else [{'text':x,'children':[]} for x in c.get('recall_branches',[x['text'] for x in c['tree']])]
-  for n in nodes:out+='<li class="branch"><div class="branch-head">'+unit(n['text'],c)+'</div><ul class="leaves">'+''.join(leaf(x,c) for x in n.get('children',[]))+'</ul></li>'
-  out+='</ol></div>'
- out+='</div></div>'
- out+='<div class="audio-controls"><span class="audio-status" aria-live="polite"></span><button class="view-button" data-view="fit">全图</button><button class="view-button" data-view="zoom">放大细节</button></div>'
- if back:out+='<details><summary>材料出处</summary><div class="source">'+unit(c['source'],c)+'</div></details>'
+ out+='<div class="mindmap"><svg class="map-lines" aria-hidden="true"></svg><div class="map-root">'+unit(c.get('map_root',c['question']),c)+'</div><ol class="map">'
+ for n in c['tree']:out+='<li class="branch"><div class="branch-head">'+unit(n['text'],c)+'</div><ul class="leaves">'+''.join(leaf(x,c) for x in n.get('children',[]))+'</ul></li>'
+ out+='</ol></div></div></div>'
+ out+='<div class="audio-controls"><span class="audio-status" aria-live="polite"></span><span>Space 播音 · Enter 继续 · 1 明天再看</span><button class="view-button" data-view="fit">全图</button><button class="view-button" data-view="zoom">放大细节</button></div>'
+ out+='<details><summary>材料出处</summary><div class="source">'+unit(c['source'],c)+'</div></details>'
  names=set(re.findall('data-audio="([^"]+)"',out));out+='<div class="media-index" aria-hidden="true">'+''.join('<audio preload="none" src="'+n+'"></audio>' for n in sorted(names))+'</div></main>';return out
 css=(ASSETS/'teaching-card.css').read_text()+'\n'+(ASSETS/'logic-card.css').read_text()
-legacy=(ASSETS/'teaching-card.js').read_text();newjs=(ASSETS/'logic-card.js').read_text();js="if(document.querySelector('.ccptv4')){"+newjs+'}else{'+legacy+'}'
-model=genanki.Model(data['model_id'],data.get('model_name','CCPT · 概念关系与讲图'),fields=[{'name':x} for x in ['StableID','Label','Prompt','Answer','FrontHTML','BackHTML','Source','Target']],templates=[{'name':'理解与回忆','qfmt':'{{FrontHTML}}<script>'+js+'</script>','afmt':'{{BackHTML}}<script>'+js+'</script>','bqfmt':'{{Prompt}}','bafmt':'{{Answer}}'}],css=css,sort_field_index=1)
+legacy=(ASSETS/'teaching-card.js').read_text();newjs=(ASSETS/'logic-card.js').read_text();js="if(document.querySelector('.ccptv4')){"+newjs+'}else{'+legacy+'}'+(ASSETS/'single-face.js').read_text()
+model=genanki.Model(data['model_id'],data.get('model_name','CCPT · 概念关系与讲图'),fields=[{'name':x} for x in ['StableID','Label','Prompt','Answer','FrontHTML','BackHTML','Source','Target']],templates=[{'name':'单面阅读','qfmt':'<div data-ccpt-single="1">{{BackHTML}}</div><script>'+js+'</script>','afmt':'<div data-ccpt-single="1">{{BackHTML}}</div><script>'+js+'</script>','bqfmt':'{{Prompt}}','bafmt':'{{Answer}}'}],css=css,sort_field_index=1)
 decks={};rendered={}
 for i,c in enumerate(data['cards']):
- fh,bh=body(c,False),body(c,True);rendered[c['id']]={'front':fh,'back':bh};did=c['deck_id'];deck=decks.setdefault(did,genanki.Deck(did,c['deck']))
- deck.add_note(genanki.Note(model=model,fields=[c['id'],c['id'],c['question'],c['answer'],fh,bh,esc(c['source']),esc(c['target'])],guid=genanki.guid_for(c['namespace'],c['id']),tags=['ccpt','semantic-v4',c['kind']],due=i+1))
- for side,b in [('front',fh),('back',bh)]:
+ fh=bh=body(c);rendered[c['id']]={'page':bh};did=c['deck_id'];deck=decks.setdefault(did,genanki.Deck(did,c['deck']))
+ deck.add_note(genanki.Note(model=model,fields=[c['id'],c['id'],c['question'],c['answer'],fh,bh,esc(c['source']),esc(c['target'])],guid=genanki.guid_for(c['namespace'],c['id']),tags=['ccpt','semantic-v4','ccpt-single',c['kind']],due=i+1))
+ for side,b in [('read',bh)]:
   b=b.replace('data-audio="ccpt_','data-audio="media/ccpt_').replace('src="ccpt_','src="media/ccpt_')
   (OUT/(c['id']+'-'+side+'.html')).write_text('<!doctype html><html lang="zh-CN"><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+esc(c['question'])+'</title><style>'+css+'</style><body class="card">'+b+'<script>'+js+'</script></body></html>')
 (OUT/'cards.json').write_text(json.dumps(data,ensure_ascii=False,indent=2));(OUT/'rendered.json').write_text(json.dumps(rendered,ensure_ascii=False));(OUT/'model.json').write_text(json.dumps({'css':css,'js':js},ensure_ascii=False))

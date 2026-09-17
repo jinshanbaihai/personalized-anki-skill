@@ -1,21 +1,13 @@
-# 可编辑语义卡生成器（一个可用起点）
+# 单面语义阅读卡生成器
 
-运行 `python scripts/build_logic_deck.py input.json output_dir`。依赖沿用 requirements.txt，以及 ffmpeg/ffprobe。示例见 assets/logic-example.json。
+运行 `python scripts/build_logic_deck.py input.json output_dir`。依赖见 requirements.txt，并需要 FFmpeg。示例为 assets/logic-example.json。生成器是可改的起点，不是固定排版规范。
 
-输入 cards 可保存 question、context、answer、tree、figure_svg、source、namespace、deck、deck_id 等。tree 节点的 text 和 children 保存讲解关系。当前 kind 只接受 concept 或 diagram，旧 check 输入会明确报错，不再生成选择题；map_root 为根概念，recall_branches 可指定正面待回顾的分支。
+每张卡生成一份完整页面、一份整页讲解，以及一个 Anki template。question、context、answer、tree、figure_svg、diagram_narration 共同组成当前阅读面；scene 的必要条件与结论首次可见，不生成回忆题面。`recall_branches`、`figure_on_front`、`front_diagram_narration` 属于旧双面输入，当前忽略；图像始终完整显示。kind 只接受 concept／diagram，不默认生成选择题。
 
-`color_roles` 只是这一示例渲染器支持的可选强调映射，可以省略；不是制作必须填写的分类表。同色、多色或其他排版都可以改 renderer 实现。现有例子把完整导图适配在一页画布中，可按需放大细节。不在窄屏自动退回长页。深层解释节点也绘制父子连接；当前布局仍是一个向右展开的起点。需要中心分支或循环时可用 figure_svg 或扩展布局。
+树的 children 表达解释关系；深层节点继续连线。可选 color_roles 只属于示例强调实现，不是固定色表。按材料选择布局，保证充分解释和完整关系一页可读。科学图必须另作内容核对。
 
-脚本不自动把教材切成树，也不保证输入内容教学合格。先组织概念与解释，再使用或修改渲染器。例子没有自足性或考纲正确性的自动保证，需要实际审核。
+整页语音按标题、场景、结论、讲图、主干与子分支顺序组织，覆盖全部学习文字。图像必须提供 diagram_narration，解释对象和关系，不机械念标签。微软语音原速合成后 atempo=1.75，播放率为 1，避免双重加速；离线随卡打包。
 
-音频按内容缓存并离线打包；生成原速后 atempo=1.75，播放率为1。`figure_on_front` 决定图是否出现在正面，不按某张示例卡的编号特判。正面图和 `front_diagram_narration` 不应泄露隐藏答案；其内容由作者核对。当前不生成选择题。共享模型包含旧模板兼容分支；正式迁移时依照目标牌库现状验证。旧卡 identity 用原 namespace、id、model_id，已有模型名称通过顶层 model_name 沿用。通用默认名称不限定学科。
+为保留已有 note identity，存储字段仍叫 FrontHTML／BackHTML，但两字段写入同一完整页面，qfmt／afmt 都使用 BackHTML，不要求用户翻面。namespace、id、model_id 与旧卡保持一致；model_name 沿用实际已有名称，避免重复牌组。输出预览为 `<id>-read.html`，rendered.json 只有 page 内容。
 
-
-## 整页朗读
-
-当前渲染器每面只有标题旁的一个播音按钮。同一按钮播放、暂停、继续与结束重播。概念树按深度优先的视觉顺序读取；全部可见学习节点应覆盖。`diagram_narration` 是带图卡必须提供的讲图稿；需要不同的正面引导时使用 `front_diagram_narration`。讲图稿描述真实的图形，不读隐藏答案，也不机械报标签。实际 1.75× 已编码在音频，播放器保持 1×，避免双重加速。
-
-
-## 键盘与复习节奏
-
-J 操作本页的唯一播放器，不接管 Space、Enter 和数字评分键。翻面清理旧监听器与音频，输入框或组合输入不触发。用户节奏为 J → Space → J → Enter；Again 使用单一 1d learning/relearning step，下一学习日 Good 后恢复 FSRS。这是牌组配置，不是往每张卡植入修改评分或到期日的代码。
+Space 唯一播放器；Enter Good；1 次日再看。实际 Anki 需要部署 `single_face_addon.py`，见 single-face.md；仅浏览器测试不能代替桌面键盘与调度检查。
