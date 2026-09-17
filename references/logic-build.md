@@ -1,6 +1,6 @@
 # 单面语义阅读卡生成器
 
-运行 `python scripts/build_logic_deck.py input.json output_dir`。依赖见 requirements.txt，并需要 FFmpeg。示例为 assets/logic-example.json。生成器是可改的起点，不是固定排版规范。
+运行 `python scripts/build_logic_deck.py input.json output_dir`。依赖见 requirements.txt，并需要 FFmpeg。示例为 assets/logic-example.json。生成器是可改的起点，不是固定排版规范。若现有字段或布局不能清楚表达表格、数据比较或图示，应扩展实现或换合适的渲染方式，不能为了复用 tree 把数值表硬塞进句子与分支。
 
 每张卡生成一份完整页面、一份整页讲解，以及一个 Anki template。question、context、answer、tree、figure_svg、diagram_narration 共同组成当前阅读面；scene 的必要条件与结论首次可见，不生成回忆题面。`recall_branches`、`figure_on_front`、`front_diagram_narration` 属于旧双面输入，当前忽略；图像始终完整显示。kind 只接受 concept／diagram，不默认生成选择题。
 
