@@ -2,7 +2,7 @@
 
 `python scripts/build_logic_deck.py input.json output_dir [--preview]` 调用 `build_map_deck.py`。依赖见 scripts/requirements.txt，语音还需 FFmpeg。当前模板不再继承旧 quiz 样式。先设计教学再排版；程序能力不限制 AI 使用更好的表达。
 
-批次：model_id、model_name、voice（省略即云逸）、academic、syllabus{url,edition}、cards，可加css。卡片：id、namespace、deck_id、deck、title、target、width、height、root、nodes、edges、reading_order、sources、audit；学科卡还需 scope 与 exam_use。考试证据存在不代表内容自动有据，必须人工核对页码与支持关系。
+批次：model_id、model_name、voice（省略即云希）、academic、syllabus{url,edition}、cards，可加css。卡片：id、namespace、deck_id、deck、title、target、width、height、root、nodes、edges、reading_order、sources、audit；学科卡还需 scope 与 exam_use。考试证据存在不代表内容自动有据，必须人工核对页码与支持关系。
 
 nodes 每项有 id、x、y、width、html、speech，可选 style（root/branch/leaf/case/conclusion）。html 可含正文、table、MathML、SVG；节点内部组合不限单一形式。当前安全渲染器接受被动本地内容，若需动画或交互，显式扩展并测试，不退回文字。数学由作者提供 MathML，或用可信转换器将 LaTeX 转成 MathML；没有学科专用字符串替换词典。SVG需viewBox，准确性另用计算/标准模型核对。
 

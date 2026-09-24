@@ -3,7 +3,7 @@ def install(b):
  readbutton,audio,render_svg=b.readbutton,b.audio,b.render_svg
  esc=lambda v:b.esc(v).replace("\n","&#10;")
  def side(card,data,back=False):
-  which='back' if back else 'front';voice=card.get('voice',data.get('voice','zh-CN-YunyiMultilingualNeural'));scenes=card[which]
+  which='back' if back else 'front';voice=card.get('voice',data.get('voice','zh-CN-YunxiNeural'));scenes=card[which]
   out=f'<main class="ccpt teaching" data-note="{esc(card["id"])}" data-side="{which}"><header class="title-row row"><h1 class="title">{esc(card["title"])}</h1>'+readbutton(card['title'],voice)+'</header>'
   if back:
    out+='<div class="learning-nav">'
@@ -13,7 +13,7 @@ def install(b):
    out+='<select class="chapter" aria-label="选择讲解或检查">'+''.join(f'<option value="{i}">{i+1}. {esc(s["heading"])}</option>' for i,s in enumerate(scenes))+'</select></div>'
   out+='<div class="canvas">'
   for i,s in enumerate(scenes):
-   voice=s.get('voice',card.get('voice',data.get('voice','zh-CN-YunyiMultilingualNeural')))
+   voice=s.get('voice',card.get('voice',data.get('voice','zh-CN-YunxiNeural')))
    out+=f'<section class="scene {"front" if not back else ""}{" active" if i==0 else ""}" data-section="{esc(s.get("section","概念讲解"))}" data-audio="{audio(s["narration"],voice)}" data-heading="{esc(s["heading"])}" data-narration="{esc(s["narration"])}">'
    out+='<div class="visual">'+render_svg(s['svg'],voice)
    lab_markup=''

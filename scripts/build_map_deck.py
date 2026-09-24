@@ -60,7 +60,7 @@ def main():
         nodes={n['id']:n for n in c['nodes']};text=c['title']+'。'+'。'.join(nodes[k]['speech'].rstrip('。') for k in c['reading_order'])
         name=audio(text,voice);body=render(c,name)
         if a.text_only_test:
-            body=body.replace('class="ccpt-map"','class="ccpt-map" data-audio-pending="1"').replace('class="speak"','class="speak" disabled title="目标 voice 不可用；当前为图文测试"').replace(f'data-audio="{name}"','data-audio=""').replace(f'<audio preload="none" src="{name}"></audio>','<audio preload="none"></audio>').replace('整页讲解 · 1.5×','图文测试 · 云逸语音待补')
+            body=body.replace('class="ccpt-map"','class="ccpt-map" data-audio-pending="1"').replace('class="speak"','class="speak" disabled title="目标 voice 不可用；当前为图文测试"').replace(f'data-audio="{name}"','data-audio=""').replace(f'<audio preload="none" src="{name}"></audio>','<audio preload="none"></audio>').replace('整页讲解 · 1.5×','图文测试 · 云希语音待补')
         rendered[c['id']]={'page':body,'narration':text}
         deck=decks.setdefault(c['deck_id'],genanki.Deck(c['deck_id'],c['deck']))
         source=json.dumps({'sources':c['sources'],'scope':c.get('scope'),'exam_use':c.get('exam_use')},ensure_ascii=False)

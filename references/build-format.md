@@ -14,4 +14,4 @@
 
 旧构建命令是 `python scripts/build_teaching_deck.py input.json output_dir`，依赖见 scripts/requirements.txt，另需 ffmpeg／ffprobe。`--preview-only` 只检查版式，不生成可交付音频。旧输出不能因为构建成功就当作符合新规范；若它又生成分散播音入口，先按本面阅读顺序合并为一个播放器再交付。图中标签保留含义，朗读融入整面讲图，不逐标签放按钮。
 
-笔记字段为 StableID、Label、Prompt、Answer、FrontHTML、BackHTML、Source、Target。自定义 data-audio 媒体引用还需登记为隐藏 audio src，使 Anki 识别并导入媒体。维护旧媒体时按其 manifest 核对既有倍率；新制音频默认云逸 1.5×，播放器不重复加速。维护后检查目标卡正反面、媒体、J 键、翻面清理、GUID 和原有复习历史；不要为验证旧选择题而制作新选择题。
+笔记字段为 StableID、Label、Prompt、Answer、FrontHTML、BackHTML、Source、Target。自定义 data-audio 媒体引用还需登记为隐藏 audio src，使 Anki 识别并导入媒体。维护旧媒体时按其 manifest 核对既有倍率；新制音频默认云希 1.5×，播放器不重复加速。维护后检查目标卡正反面、媒体、J 键、翻面清理、GUID 和原有复习历史；不要为验证旧选择题而制作新选择题。

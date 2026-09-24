@@ -1,9 +1,13 @@
 # 新制卡的语音默认值
 
-默认 voice 为微软云逸 `zh-CN-YunyiMultilingualNeural`，最终音频 1.5×；术语 English、解释中文，整页一个播放器，Space 控制开始／暂停／继续。用户明确指定的 voice 才覆盖默认。
+用户于2026-09-24明确将默认声音改为微软云希 `zh-CN-YunxiNeural`，最终音频 **1.5×**。这项选择替代此前云逸要求，不再为默认制卡等待 Azure 开通。术语 English、解释中文；整页一个播放器，Space 开始／暂停／继续／重播。
 
-微软官方 voice 列表列出云逸，但 Azure Speech 和免费 Edge read-aloud 服务的可用声音不相同。2026-09-24 实测当前 Edge 列表未提供 Yunyi；直接请求该 voice 返回 NoAudioReceived。不要据此把云逸改叫云希，也不要伪称音频验证通过。制卡前重新检查可用性；平台可能变化。[微软官方 voice 列表](https://learn.microsoft.com/en-us/azure/ai-services/speech-service/language-support)
+优先使用当前可用的免费 Edge read-aloud 服务。它与 Azure Speech 的声音目录不同，不能用 Azure 官方列表证明 Edge 可用。2026-09-24实测 Edge 普通话6个声音中包含云希，短样本合成成功；此前云逸请求返回 NoAudioReceived。每批先检测目标voice并合成短样本，不能仅见列表或 HTTP 成功就称播放通过。
 
-`scripts/speech_backend.py` 优先用当前可用的免费 Edge voice；目标 voice 不在列表时，允许使用已经配置并获授权的 Azure Speech：环境变量 `AZURE_SPEECH_KEY` 与 `AZURE_SPEECH_REGION`。不把凭据写进 skill、仓库或日志；现有接口授权不等于允许擅自购买额度。没有目标声音的可用授权接口时，明确报告缺失条件，仍可完成文字、预览与规则修订，但不交付假音频或静默换声。
+`scripts/speech_backend.py --check` 检查目录与配置；`--probe /本机临时目录/probe.mp3` 实际合成。报告区分网络失败、声音缺失、Azure缺配置和真实合成成功。免费路径失败时先诊断重试；已配置且获授权的 Azure Speech 可作为同一voice的备选，环境变量 `AZURE_SPEECH_KEY` 与 `AZURE_SPEECH_REGION`，凭据不进 skill、日志或仓库。不静默换声，也不擅自开通收费资源。
 
-合成原速音频，随后执行 `atempo=1.5`，页面 `playbackRate=1`；只在一处加速。manifest 与缓存哈希包含 voice、正文、速度，避免旧 1.75× 或旧声音误命中缓存。检查实际可解码、音频长度与倍率、中文和英文术语发音、公式的意义表达，以及一页一个入口和切卡停止。速度偏好不等于研究证明的最佳理解速度。此次只改新制卡默认，既有卡音频需另有改卡授权。
+合成原速音频，执行 `atempo=1.5` 后离线随卡携带，页面 `playbackRate=1`，仅加速一次。缓存与manifest包含真实voice、完整正文、速度、provider及实际时长。接口失败不保留空文件冒充缓存；已有缓存不能解码就重建。
+
+验收检查可解码、原速与成品时长比约1.5、中文与English术语发音、图像解说的阅读顺序、公式意义、一页一个播放器、Space暂停续播及切卡停止。声音能播放不能证明讲解容易理解；听感须另外检查。既有其他卡片不因默认值变化而自动全量改写，按本次授权范围更新。
+
+接口依据：[微软 REST 文档](https://learn.microsoft.com/en-us/azure/ai-services/speech-service/rest-text-to-speech)、[edge-tts 项目](https://github.com/rany2/edge-tts)。

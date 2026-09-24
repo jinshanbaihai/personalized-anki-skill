@@ -39,7 +39,7 @@ def side(card,data,back=False):
  correct=f' data-correct="{card["correct"]}"' if back and card.get('kind')=='mcq' else ''
  out=f'<main class="ccpt" data-note="{esc(card["id"])}" data-side="{which}"{correct}><div class="canvas">'
  for i,s in enumerate(scenes):
-  voice=s.get('voice',data.get('voice','zh-CN-YunyiMultilingualNeural'))
+  voice=s.get('voice',data.get('voice','zh-CN-YunxiNeural'))
   out+=f'<div class="scene{" active" if i==0 else ""}" data-audio="{audio(s["narration"],voice)}" data-narration="{esc(s["narration"])}">'
   wide=render_svg(s['svg'],voice)
   if s.get('portrait_svg'):
@@ -62,7 +62,11 @@ async def synthesize(media):
  async def one(e):
   async with limit:
    dest=media/e['file']
-   if not dest.exists():
+   cached_ok = False
+   if dest.exists() and dest.stat().st_size > 100:
+    try: cached_ok = duration(dest) > 0
+    except Exception: pass
+   if not cached_ok:
     with tempfile.TemporaryDirectory() as tmp:
      original=Path(tmp)/'original.mp3'
      for attempt in range(3):
@@ -72,7 +76,10 @@ async def synthesize(media):
        if attempt==2:raise
        await asyncio.sleep(attempt+1)
      e['original_duration']=duration(original)
-     subprocess.run(['ffmpeg','-v','error','-y','-i',str(original),'-af','atempo=1.5','-codec:a','libmp3lame','-q:a','3',str(dest)],check=True)
+     encoded=Path(tmp)/'final.mp3'
+     subprocess.run(['ffmpeg','-v','error','-y','-i',str(original),'-af','atempo=1.5','-codec:a','libmp3lame','-q:a','3',str(encoded)],check=True)
+     assert duration(encoded)>0, 'Encoded audio is empty'
+     dest.write_bytes(encoded.read_bytes())
    e['duration']=duration(dest)
  await asyncio.gather(*(one(e) for e in SPEECH.values()))
 

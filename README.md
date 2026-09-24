@@ -4,4 +4,4 @@
 
 使用从 SKILL.md 开始。当前生成入口 scripts/build_logic_deck.py，数据格式见 references/logic-build.md，研究审查见 references/research-audit.md，双重验收见 references/acceptance.md。历史生成器需 --legacy-maintenance，不应用于新制卡。
 
-Space 播音；Enter Good；1 下一学习日再看。云逸默认实际1.5×，不可用不得静默替换。桌面适配与调度偏好详见skill及对应reference。此仓库的发布不等于任何云端产品已安装。
+Space 播音；Enter Good；1 下一学习日再看。云希默认实际1.5×，不可用不得静默替换。桌面适配与调度偏好详见skill及对应reference。此仓库的发布不等于任何云端产品已安装。

@@ -42,7 +42,7 @@ def render_svg(svg,voice):
 def readbutton(text,voice):
  return '<button class="read" data-audio="'+audio(text,voice)+'" aria-label="朗读这段内容" title="朗读">◖))</button>'
 def side(card,data,back=False):
- which='back' if back else 'front';voice=data.get('voice','zh-CN-YunyiMultilingualNeural');scenes=card[which]
+ which='back' if back else 'front';voice=data.get('voice','zh-CN-YunxiNeural');scenes=card[which]
  out=f'<main class="ccpt" data-note="{esc(card["id"])}" data-side="{which}"><header class="{'back-title' if back else ''}"><div class="eyebrow">PHYSICS · 图像概念</div><div class="row title-row"><h1 class="title">{esc(card["title"])}</h1>'+readbutton(card['title'],voice)+'</div></header>'
  if back:
   out+='<div class="steps" role="tablist" aria-label="讲解的三个部分">'+''.join(f'<button data-stage="{i}" role="tab" aria-selected="false">{i+1} · {esc(x["heading"])}</button>' for i,x in enumerate(scenes))+'</div>'
