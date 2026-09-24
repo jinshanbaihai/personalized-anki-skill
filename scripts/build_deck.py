@@ -104,4 +104,7 @@ def main():
  package=genanki.Package(deck);package.media_files=[str(media/n) for n in SPEECH];package.write_to_file(str(out/'图像概念卡.apkg'))
  (out/'cards.json').write_text(json.dumps(data,ensure_ascii=False,indent=2))
  print(json.dumps({'cards':len(ids),'audio':len(SPEECH),'package':str(out/'图像概念卡.apkg')},ensure_ascii=False))
-if __name__=='__main__':main()
+if __name__=='__main__':
+ import sys
+ if '--legacy-maintenance' not in sys.argv: raise SystemExit('Legacy maintenance only. Use build_logic_deck.py for new cards.')
+ sys.argv.remove('--legacy-maintenance');main()

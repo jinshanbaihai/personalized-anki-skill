@@ -15,7 +15,7 @@ _voices_task = None
 
 async def edge_voice_names():
     global _voices_task
-    if _voices_task is None or _voices_task.get_loop() is not asyncio.get_running_loop():
+    if (_voices_task is None or _voices_task.get_loop() is not asyncio.get_running_loop() or _voices_task.cancelled() or (_voices_task.done() and _voices_task.exception() is not None)):
         _voices_task = asyncio.create_task(edge_tts.list_voices())
     return {v['ShortName'] for v in await _voices_task}
 

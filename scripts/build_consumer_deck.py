@@ -1,3 +1,8 @@
+
+import sys
+if __name__ == '__main__':
+ if '--legacy-maintenance' not in sys.argv: raise SystemExit('Legacy maintenance only. Use build_logic_deck.py for new cards.')
+ sys.argv.remove('--legacy-maintenance')
 from speech_backend import synthesize_original
 """Build an offline Anki deck from authored SVG scenes and spoken explanations.
 Usage: python build_deck.py input.json output_dir [--templates path]
