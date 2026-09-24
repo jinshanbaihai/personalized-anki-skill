@@ -12,7 +12,9 @@
 
 **图像与文字共同建立理解。** 多媒体学习研究讨论的是如何组织图像和文字以促进学习。它没有为“纯图像”“字数越少越好”或“动画越多越好”提供通用依据。此次文字提供充分的因果解释，图像承载对象、对应关系和变化；全文始终可读，正文不因版面紧凑而被截断。[Cambridge：Multimedia Learning 导论](https://assets.cambridge.org/052183/8738/excerpt/0521838738_excerpt.htm)
 
-**干眼相关设计需要减少持续凝视的要求。** AOA 的数字设备用眼指导建议定期休息等措施。当前因此保留由一个入口控制的整面音频，取消强迫追随连续动画的流程，让图停留、语音可暂停。动态图同样使用视觉，卡片设计不能视为干眼治疗。1.75 倍速来自你的偏好，没有研究依据支持它是你的最佳理解速度。[AOA：Computer vision syndrome](https://www.aoa.org/healthy-eyes/eye-and-vision-conditions/computer-vision-syndrome)
+**干眼相关设计需要减少持续凝视的要求。** AOA 的数字设备用眼指导建议定期休息等措施。当前因此保留由一个入口控制的整面音频，取消强迫追随连续动画的流程，让图停留、语音可暂停。动态图同样使用视觉，卡片设计不能视为干眼治疗。1.5 倍速来自你的偏好，没有研究依据支持它是你的最佳理解速度。[AOA：Computer vision syndrome](https://www.aoa.org/healthy-eyes/eye-and-vision-conditions/computer-vision-syndrome)
 
 
 实施效果需要结合实际使用反馈判断。研究支持的是可能有帮助的机制，不能据此保证个人学习效果。
+
+2026-09-24 增补：初学者文本连贯性、具体案例、flashcard 与单面阅读的区别，以及理解线索的研究边界见 [comprehension-and-memory.md](comprehension-and-memory.md)。当前首先验收读懂，再考虑记忆支持。

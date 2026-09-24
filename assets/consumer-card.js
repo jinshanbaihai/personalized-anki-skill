@@ -3,7 +3,7 @@ window.ccptInit=function(){
  const root=document.querySelector('.ccpt');if(!root)return;
  const scenes=[...root.querySelectorAll('.scene')],play=root.querySelector('[data-control=play]'),status=root.querySelector('.flash-status');const playLabel=root.dataset.side==='front'?'听题目':'听这一段';let at=0,current=null,file='',disposed=false;const a=new AbortController();
  const on=(e,t,f)=>{if(e)e.addEventListener(t,f,{signal:a.signal})};
- function stop(){if(current){const old=current;current=null;old.pause();old.removeAttribute('src');old.load();}file='';if(play){play.textContent='▶ '+playLabel+' · 1.75×';play.setAttribute('aria-pressed','false');}}
+ function stop(){if(current){const old=current;current=null;old.pause();old.removeAttribute('src');old.load();}file='';if(play){play.textContent='▶ '+playLabel+' · 1.5×';play.setAttribute('aria-pressed','false');}}
  function safePlay(node){node.play().catch(e=>{if(current===node&&!disposed&&e.name!=='AbortError')fail();});}
  function fail(){if(disposed)return;stop();if(status)status.textContent='语音暂时没有播放，请查看文字讲解。';}
  function speak(src){if(!src)return;if(current&&file===src){if(current.paused){safePlay(current);if(play)play.textContent='Ⅱ 暂停';}else{current.pause();if(play)play.textContent='▶ 继续听';}return;}stop();file=src;current=new Audio(src);current.playbackRate=1;const node=current;current.onended=()=>{if(current===node&&play)play.textContent='↻ 再听一次';};current.onerror=()=>{if(current===node&&!disposed)fail();};safePlay(current);if(play){play.textContent='Ⅱ 暂停';play.setAttribute('aria-pressed','true');}}

@@ -19,7 +19,7 @@
   if(!player){player=new Audio(button.dataset.audio);player.playbackRate=1;player.onended=()=>{label('↻');status.textContent='本页讲解结束 · 点击重播';};player.onerror=()=>{label('▶');status.textContent='音频暂时无法播放';};}
   if(player.ended)player.currentTime=0;
   if(!player.paused){player.pause();label('▶');status.textContent='已暂停 · 点击继续';return;}
-  player.play().then(()=>{if(!disposed){label('Ⅱ',true);status.textContent='整页讲解 · 1.75× · 点击暂停';}}).catch(()=>{if(!disposed){label('▶');status.textContent='音频暂时无法播放';}});
+  player.play().then(()=>{if(!disposed){label('Ⅱ',true);status.textContent='整页讲解 · 1.5× · 点击暂停';}}).catch(()=>{if(!disposed){label('▶');status.textContent='音频暂时无法播放';}});
  });
  document.addEventListener('visibilitychange',()=>{if(document.hidden&&player){player.pause();label('▶');status.textContent='已暂停 · 点击继续';}},{signal:keyboard.signal});
  const key='ccpt-v4-choice-'+root.dataset.note;

@@ -10,7 +10,7 @@ window.ccptInit=function(){
   if(e.code==='KeyJ'||e.key.toLowerCase()==='j'){e.preventDefault();e.stopPropagation();play?.click();}
  });
 
- function stop(){if(current){const old=current;current=null;old.pause();old.removeAttribute('src');old.load();}file='';if(play){play.textContent='▶ '+playLabel+' · 1.75×';play.setAttribute('aria-pressed','false');}}
+ function stop(){if(current){const old=current;current=null;old.pause();old.removeAttribute('src');old.load();}file='';if(play){play.textContent='▶ '+playLabel+' · 1.5×';play.setAttribute('aria-pressed','false');}}
  function safePlay(node){node.play().catch(e=>{if(current===node&&!disposed&&e.name!=='AbortError')fail();});}
  function fail(){if(disposed)return;stop();if(status)status.textContent='语音暂时没有播放，请查看文字讲解。';}
  const queue=JSON.parse(root.dataset.pagePlaylist||'[]');let clip=0;

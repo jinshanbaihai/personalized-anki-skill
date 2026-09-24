@@ -1,3 +1,4 @@
+from speech_backend import synthesize_original
 """Build an offline Anki deck from authored SVG scenes and spoken explanations.
 Usage: python build_deck.py input.json output_dir [--templates path]
 Dependencies: genanki==0.13.1 edge-tts==7.2.8, ffmpeg, ffprobe.
@@ -10,8 +11,8 @@ import edge_tts,genanki
 SPEECH={}
 def esc(v):return html.escape(str(v),quote=True)
 def audio(text,voice):
- name='ccpt_'+hashlib.sha256((voice+'\0'+text+'\0atempo=1.75').encode()).hexdigest()[:20]+'.mp3'
- SPEECH[name]={'file':name,'text':text,'voice':voice,'speed':1.75,'synthesis_rate':'+0%','tempo_filter':'atempo=1.75'}
+ name='ccpt_'+hashlib.sha256((voice+'\0'+text+'\0atempo=1.5').encode()).hexdigest()[:20]+'.mp3'
+ SPEECH[name]={'file':name,'text':text,'voice':voice,'speed':1.5,'synthesis_rate':'+0%','tempo_filter':'atempo=1.5'}
  return name
 
 def check_svg(svg):
@@ -38,7 +39,7 @@ def side(card,data,back=False):
  correct=f' data-correct="{card["correct"]}"' if back and card.get('kind')=='mcq' else ''
  out=f'<main class="ccpt" data-note="{esc(card["id"])}" data-side="{which}"{correct}><div class="canvas">'
  for i,s in enumerate(scenes):
-  voice=s.get('voice',data.get('voice','zh-CN-XiaoxiaoNeural'))
+  voice=s.get('voice',data.get('voice','zh-CN-YunyiMultilingualNeural'))
   out+=f'<div class="scene{" active" if i==0 else ""}" data-audio="{audio(s["narration"],voice)}" data-narration="{esc(s["narration"])}">'
   wide=render_svg(s['svg'],voice)
   if s.get('portrait_svg'):
@@ -49,7 +50,7 @@ def side(card,data,back=False):
  if card.get('kind')=='mcq':
   if back:out+='<div class="choice-result" aria-live="polite" hidden></div>'
   else:out+='<div class="choice-actions"><span class="choice-status" aria-live="polite">请选择一个选项</span><button data-control="confirm" disabled>确认并查看图解</button></div>'
- out+='<nav class="controls" aria-label="图像讲解控制"><button data-control="prev" aria-label="上一幅图" title="上一幅图">‹</button><button data-control="play" class="primary" aria-pressed="false">▶ 听讲 · 1.75×</button><button data-control="next" aria-label="下一幅图" title="下一幅图">›</button><span class="counter"></span><button data-control="text" aria-label="当前讲解与来源" aria-expanded="false">文字</button></nav>'
+ out+='<nav class="controls" aria-label="图像讲解控制"><button data-control="prev" aria-label="上一幅图" title="上一幅图">‹</button><button data-control="play" class="primary" aria-pressed="false">▶ 听讲 · 1.5×</button><button data-control="next" aria-label="下一幅图" title="下一幅图">›</button><span class="counter"></span><button data-control="text" aria-label="当前讲解与来源" aria-expanded="false">文字</button></nav>'
  out+='<aside class="transcript" hidden><p class="narration"></p><p class="source">'+esc(data['source'])+'</p></aside>'
  names=sorted(set(re.findall('data-audio="([^"]+)"',out)))
  out+='<div class="media-index" aria-hidden="true">'+''.join('<audio preload="none" src="'+name+'"></audio>' for name in names)+'</div></main>'
@@ -66,12 +67,12 @@ async def synthesize(media):
      original=Path(tmp)/'original.mp3'
      for attempt in range(3):
       try:
-       await edge_tts.Communicate(e['text'],e['voice'],rate='+0%').save(str(original));break
+       e['provider']=await synthesize_original(e['text'],e['voice'],original);break
       except Exception:
        if attempt==2:raise
        await asyncio.sleep(attempt+1)
      e['original_duration']=duration(original)
-     subprocess.run(['ffmpeg','-v','error','-y','-i',str(original),'-af','atempo=1.75','-codec:a','libmp3lame','-q:a','3',str(dest)],check=True)
+     subprocess.run(['ffmpeg','-v','error','-y','-i',str(original),'-af','atempo=1.5','-codec:a','libmp3lame','-q:a','3',str(dest)],check=True)
    e['duration']=duration(dest)
  await asyncio.gather(*(one(e) for e in SPEECH.values()))
 

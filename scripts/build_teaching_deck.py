@@ -1,3 +1,4 @@
+from speech_backend import synthesize_original
 """Build an offline Anki deck from authored SVG scenes and spoken explanations.
 Usage: python build_deck.py input.json output_dir [--templates path]
 Dependencies: genanki==0.13.1 edge-tts==7.2.8, ffmpeg, ffprobe.
@@ -10,8 +11,8 @@ import edge_tts,genanki
 SPEECH={}
 def esc(v):return html.escape(str(v),quote=True)
 def audio(text,voice):
- name='ccpt_'+hashlib.sha256((voice+'\0'+text+'\0atempo=1.75').encode()).hexdigest()[:20]+'.mp3'
- SPEECH[name]={'file':name,'text':text,'voice':voice,'speed':1.75,'synthesis_rate':'+0%','tempo_filter':'atempo=1.75'}
+ name='ccpt_'+hashlib.sha256((voice+'\0'+text+'\0atempo=1.5').encode()).hexdigest()[:20]+'.mp3'
+ SPEECH[name]={'file':name,'text':text,'voice':voice,'speed':1.5,'synthesis_rate':'+0%','tempo_filter':'atempo=1.5'}
  return name
 
 def check_svg(svg):
@@ -36,7 +37,7 @@ def render_svg(svg,voice):
 def readbutton(text,voice):
  return '<button class="read" data-audio="'+audio(text,voice)+'" aria-label="朗读这段内容" title="朗读">◖))</button>'
 def side(card,data,back=False):
- which='back' if back else 'front';voice=data.get('voice','zh-CN-XiaoxiaoNeural');scenes=card[which]
+ which='back' if back else 'front';voice=data.get('voice','zh-CN-YunyiMultilingualNeural');scenes=card[which]
  out=f'<main class="ccpt" data-note="{esc(card["id"])}" data-side="{which}"><header class="{'back-title' if back else ''}"><div class="eyebrow">PHYSICS · 图像概念</div><div class="row title-row"><h1 class="title">{esc(card["title"])}</h1>'+readbutton(card['title'],voice)+'</div></header>'
  if back:
   out+='<div class="steps" role="tablist" aria-label="讲解的三个部分">'+''.join(f'<button data-stage="{i}" role="tab" aria-selected="false">{i+1} · {esc(x["heading"])}</button>' for i,x in enumerate(scenes))+'</div>'
@@ -58,7 +59,7 @@ def side(card,data,back=False):
  out+='<nav class="controls" aria-label="讲解控制">'
  if not back:out+='<button data-control="reveal" class="primary">看图解</button><span class="helper">可以直接学习，也可以先回答。</span>'
  if back:out+='<button data-control="prev">返回上一段</button>'
- out+='<button data-control="play" class="audio-main" aria-pressed="false">▶ 听这一段 · 1.75×</button>'
+ out+='<button data-control="play" class="audio-main" aria-pressed="false">▶ 听这一段 · 1.5×</button>'
  if back:out+='<button data-control="next">继续看</button><span class="counter"></span>'
  out+='<span class="spacer"></span><button data-control="text" class="more">完整文字与出处</button></nav><div class="flash-status" aria-live="polite"></div>'
  out+='<aside class="modal" hidden><div class="sheet"><button data-control="close">返回图解</button><p class="narration"></p><div>'+''.join('<p><b>'+esc(k)+'</b>：'+esc(v)+'</p>' for k,v in card.get('glossary',[]))+'</div><p class="source">'+esc(card.get('source',data['source']))+'</p></div></aside>'
@@ -77,13 +78,13 @@ async def synthesize(media):
      original=Path(tmp)/'original.mp3'
      for attempt in range(3):
       try:
-       await edge_tts.Communicate(e['text'],e['voice'],rate='+0%').save(str(original));break
+       e['provider']=await synthesize_original(e['text'],e['voice'],original);break
       except Exception:
        if attempt==2:
         print('Failed speech:',repr(e['text']),flush=True);raise
        await asyncio.sleep(attempt+1)
      e['original_duration']=duration(original)
-     subprocess.run(['ffmpeg','-v','error','-y','-i',str(original),'-af','atempo=1.75','-codec:a','libmp3lame','-q:a','3',str(dest)],check=True)
+     subprocess.run(['ffmpeg','-v','error','-y','-i',str(original),'-af','atempo=1.5','-codec:a','libmp3lame','-q:a','3',str(dest)],check=True)
    if 'duration' not in e:e['duration']=duration(dest)
  await asyncio.gather(*(one(e) for e in SPEECH.values()))
 

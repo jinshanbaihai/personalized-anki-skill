@@ -3,7 +3,7 @@ def install(b):
  readbutton,audio,render_svg=b.readbutton,b.audio,b.render_svg
  esc=lambda v:b.esc(v).replace("\n","&#10;")
  def side(card,data,back=False):
-  which='back' if back else 'front';voice=card.get('voice',data.get('voice','zh-CN-XiaoxiaoNeural'));scenes=card[which]
+  which='back' if back else 'front';voice=card.get('voice',data.get('voice','zh-CN-YunyiMultilingualNeural'));scenes=card[which]
   out=f'<main class="ccpt teaching" data-note="{esc(card["id"])}" data-side="{which}"><header class="title-row row"><h1 class="title">{esc(card["title"])}</h1>'+readbutton(card['title'],voice)+'</header>'
   if back:
    out+='<div class="learning-nav">'
@@ -13,7 +13,7 @@ def install(b):
    out+='<select class="chapter" aria-label="选择讲解或检查">'+''.join(f'<option value="{i}">{i+1}. {esc(s["heading"])}</option>' for i,s in enumerate(scenes))+'</select></div>'
   out+='<div class="canvas">'
   for i,s in enumerate(scenes):
-   voice=s.get('voice',card.get('voice',data.get('voice','zh-CN-XiaoxiaoNeural')))
+   voice=s.get('voice',card.get('voice',data.get('voice','zh-CN-YunyiMultilingualNeural')))
    out+=f'<section class="scene {"front" if not back else ""}{" active" if i==0 else ""}" data-section="{esc(s.get("section","概念讲解"))}" data-audio="{audio(s["narration"],voice)}" data-heading="{esc(s["heading"])}" data-narration="{esc(s["narration"])}">'
    out+='<div class="visual">'+render_svg(s['svg'],voice)
    lab_markup=''
@@ -45,7 +45,7 @@ def install(b):
   if not back:
    out+='<button data-control="reveal" class="primary">先理解概念</button><button data-control="test">直接做判断</button>'
   else:out+='<button data-control="prev">上一段</button>'
-  out+='<button data-control="play" class="audio-main">▶ 听这一段 · 1.75×</button>'
+  out+='<button data-control="play" class="audio-main">▶ 听这一段 · 1.5×</button>'
   if back:out+='<button data-control="next">下一段</button><span class="counter"></span>'
   out+='<span class="spacer"></span><button data-control="text" class="more">全文与出处</button></nav><div class="flash-status" aria-live="polite"></div><aside class="modal" hidden><div class="sheet"><button data-control="close">返回图解</button><p class="narration"></p><p class="source">'+esc(card['source'])+'</p></div></aside></main>'
   names=sorted(set(re.findall('data-audio="([^"]+)"',out)))

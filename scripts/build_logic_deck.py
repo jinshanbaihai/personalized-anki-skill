@@ -6,7 +6,7 @@ parser.add_argument('input',type=Path);parser.add_argument('output',type=Path);p
 ASSETS=Path(__file__).resolve().parent.parent/'assets'
 OUT=args.output;OUT.mkdir(parents=True,exist_ok=True);media=OUT/'media';media.mkdir(exist_ok=True)
 data=json.loads(args.input.read_text());esc=old.esc
-VOICE=data.get('voice','zh-CN-XiaoxiaoNeural')
+VOICE=data.get('voice','zh-CN-YunyiMultilingualNeural')
 for card in data['cards']:
  if card.get('kind') not in ('concept','diagram'):
   raise ValueError('This generator creates concept/diagram cards only; quizzes require a separately requested workflow.')
