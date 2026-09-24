@@ -2,13 +2,17 @@
 
 `python scripts/build_logic_deck.py input.json output_dir [--preview]` 调用 `build_map_deck.py`。依赖见 scripts/requirements.txt，语音还需 FFmpeg。当前模板不再继承旧 quiz 样式。先按 `exam-answer-first.md` 研究目标真题与可信人类作答，再设计教学与排版；程序能力不限制 AI 使用更好的表达。
 
-批次：model_id、model_name、voice（省略即云希）、academic、syllabus{url,edition}、cards，可加css。卡片：id、namespace、deck_id、deck、title、target、width、height、root、nodes、edges、reading_order、sources、audit；学科卡还需 scope 与 exam_use。学科批次另需 exam_task，卡片需 answer_basis；旧输入要补真实研究后迁移，不能填空话绕过校验。纯渲染工程样例的 academic:false 不是学科制卡的逃生开关。
+批次：model_id、model_name、voice（省略即云希）、academic、syllabus{url,edition}、cards，可加css。卡片：id、namespace、deck_id、deck、title、target、width、height、root、nodes、edges、reading_order、sources、audit；学科卡还需 scope 与 exam_use。学科批次另需 exam_task 与共享 answer_basis，卡片需 research_use（可覆盖 answer_basis）；旧输入要补真实研究后迁移，不能填空话绕过校验。纯渲染工程样例的 academic:false 不是学科制卡的逃生开关。
 
 exam_task 含非空文字：qualification（例如已确认的考试及阶段）、authority（考试局／主办方）、version（适用考纲年份／考试格式）、component（卷别／skill／task）、task_type（用户要做的题）。syllabus 对 IELTS 等没有学科考纲的考试记录实际官方格式／assessment criteria 来源与适用版本，不虚构 syllabus code。
 
-answer_basis 含非空文字：question_refs（实际题目标识和位置）、human_answer_refs（人类示范作者／发布者、来源及定位，可引用本批 sources 条目）、quality_review（结合分数／评语／官方要求说明可学和不可照搬之处）、marking_refs（匹配的评分来源）、answer_moves（兼容字段名，记录范文研究怎样指导本卡选材、深度、重点或知识应用，不要求本卡是一段答案）、ai_additions（基于范文研究的新答案、改述、基础解释或假设案例，确实没有则说明）。此记录随卡保存到 Source 字段，不必把制作元数据挤进导图。卡面仍须有清楚的目标用途，真题 hook 可以用任务背景或相关片段表达，不强制整题解析。
+answer_basis 可在批次共享，或个别卡需要不同来源时覆盖。保留四项非空文字：question_refs（已读真题标识／位置与覆盖）、human_answer_refs（已读人类示范来源／作者及定位）、quality_review（评分／评语／官方要求如何支持其可用性及局限）、marking_refs（相应评分来源）。它们可引用批次 sources 的资料索引，记录真实阅读情况，不能只填“已检查”。无需每张卡重写同一份研究。
 
-程序只检查关键记录存在，不证明它们真实或充分。必须实际阅读并核对页码、作者、题目匹配与支持关系；人类示范不足的卡保留草稿，不能假填字段后导入。
+每卡 research_use 简要说明共享研究怎样指导本卡的知识应用、选材、深度或重点；无需六项答题模板。仍兼容旧卡自己的 answer_basis.answer_moves；ai_additions 可按需记录，含 AI 原创完整答案时说明研究基础及核对，普通概念卡不必硬填。最终有效研究和用途随卡保存到 Source 字段，制作元数据不挤进导图。
+
+程序检查记录存在，不证明来源真实或充分。实际阅读与研究充分性按 `exam-answer-first.md` 审查；证据不足不能假填字段。academic:false 只适用于真实非学科任务或明确工程样例，不能拿它绕过学科研究。
+
+标题默认是 plain title，用于检索、元数据与无障碍说明；需要公式或术语强调时提供 title_html（与节点一样的被动 HTML／MathML）及 title_speech（自然语言朗读），避免把数学标记显示或念出来。标题与语音表达同一含义，不允许额外播放器。
 
 nodes 每项有 id、x、y、width、html、speech，可选 style（root/branch/leaf/case/conclusion）。html 可含正文、table、MathML、SVG；节点内部组合不限单一形式。当前安全渲染器接受被动本地内容，若需动画或交互，显式扩展并测试，不退回文字。数学由作者提供 MathML，或用可信转换器将 LaTeX 转成 MathML；没有学科专用字符串替换词典。SVG需viewBox，准确性另用计算/标准模型核对。
 

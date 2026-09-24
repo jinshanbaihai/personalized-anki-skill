@@ -29,11 +29,37 @@ for missing in ['exam_task','human_answer_refs','quality_review','answer_moves']
  try:validate(d)
  except AssertionError:pass
  else:raise AssertionError(missing+' missing evidence not detected')
+# Shared research must work across cards, without six copied answer fields.
+shared=copy.deepcopy(academic)
+shared['answer_basis']=shared['cards'][0].pop('answer_basis')
+shared['cards'][0]['research_use']='Fixture: shared sources guide the teaching scope'
+shared['cards'][0]['title_html']='<math><mfrac><mi>x</mi><mi>y</mi></mfrac></math>'
+shared['cards'][0]['title_speech']='x 除以 y'
+validate(shared)
+page=render(shared['cards'][0],'test.mp3')
+assert '<h1><math>' in page and '&lt;math' not in page
+bad=copy.deepcopy(shared);del bad['cards'][0]['title_speech']
+try:validate(bad)
+except AssertionError:pass
+else:raise AssertionError('Formula title missing natural narration was accepted')
+from validate_package import inspect_page
+assert inspect_page(page)=='test.mp3'
+for broken in [page.replace('data-audio="test.mp3"','data-audio=""'),page.replace('src="test.mp3"','src="other.mp3"'),page.replace('<audio preload="none" src="test.mp3"></audio>',''),page.replace('class="speak"','class="speak" disabled')]:
+ try:inspect_page(broken)
+ except AssertionError:pass
+ else:raise AssertionError('Missing, mismatched or disabled narration was accepted')
+pending=page.replace('data-side="read"','data-side="read" data-audio-pending="1"').replace('class="speak"','class="speak" disabled').replace('data-audio="test.mp3"','data-audio=""').replace('src="test.mp3"','src=""')
+assert inspect_page(pending,True) is None
+try:inspect_page(pending)
+except AssertionError:pass
+else:raise AssertionError('Incomplete audio accepted as delivery')
+r=subprocess.run([sys.executable,str(p/'scripts/native_once.py')],capture_output=True,text=True)
+assert r.returncode and 'Retired' in r.stderr
 for f in (p/'scripts').glob('*.py'):ast.parse(f.read_text())
 for script in ['build_deck.py','build_consumer_deck.py','build_teaching_deck.py','legacy_logic_deck.py']:
  r=subprocess.run([sys.executable,str(p/'scripts'/script)],capture_output=True,text=True);assert r.returncode and 'Legacy maintenance only' in r.stderr,(script,r.stderr)
 # Check tangent and budget geometry independently at plotted E.
 epsilon=1e-5;assert abs((18/(6+epsilon)-18/(6-epsilon))/(2*epsilon)+.5)<1e-8
 assert 18/6==6-6/2
-result={'mixed_nodes_preserved':True,'invalid_inputs_rejected':9,'legacy_routes_fenced':4,'all_python_parse':True,'IC_tangency_verified':True}
+result={'mixed_nodes_preserved':True,'invalid_inputs_rejected':15,'shared_research_supported':True,'math_title_supported':True,'missing_media_rejected':True,'legacy_native_runner_retired':True,'legacy_routes_fenced':4,'all_python_parse':True,'IC_tangency_verified':True}
 print(json.dumps(result,indent=2))

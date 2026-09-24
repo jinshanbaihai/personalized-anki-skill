@@ -7,6 +7,11 @@ from speech_backend import DEFAULT_VOICE
 ASSETS = Path(__file__).resolve().parent.parent / 'assets'
 FIELDS = ['StableID','Label','Prompt','Answer','FrontHTML','BackHTML','Source','Target']
 def esc(t): return html.escape(str(t), quote=True)
+def passive_html(value):
+    assert isinstance(value, str) and value.strip(), 'Expected nonempty local HTML'
+    assert not re.search(r'<(?:script|iframe|audio|button)\b|\son\w+\s*=|(?:src|href)=["\'](?:https?:|file:|javascript:)', value, re.I), 'Use passive local content; extend renderer deliberately for interactions'
+    for svg in re.findall(r'<svg\b[\s\S]*?</svg>', value): check_svg(svg)
+
 def validate(data):
     ids = [c['id'] for c in data['cards']]
     assert ids and len(ids) == len(set(ids)), 'Card IDs must be unique'
@@ -20,6 +25,9 @@ def validate(data):
         assert c['reading_order'][0] == c['root'], 'Start narration with the map root'
         assert c.get('title') and c.get('target') and c.get('sources'), 'Missing teaching goal or sources'
         assert c.get('audit'), 'Record actual teaching review, not just a rendered map'
+        if c.get('title_html'):
+            passive_html(c['title_html'])
+            assert isinstance(c.get('title_speech'), str) and c['title_speech'].strip(), 'Mathematical titles need a natural spoken title'
         reached = {c['root']}
         for _ in nodes:
             for e in c['edges']:
@@ -31,17 +39,20 @@ def validate(data):
             assert n.get('html') and n.get('speech'), 'Each learning node needs content and explanation audio text'
             assert n['x'] >= 0 and n['y'] >= 0 and n['width'] > 0
             assert n['x'] + n['width'] <= c['width'], 'Node outside canvas'
-            assert not re.search(r'<(?:script|iframe|audio|button)\b|\son\w+\s*=|(?:src|href)=["\'](?:https?:|file:|javascript:)', n['html'], re.I), 'Use passive local content; extend renderer deliberately for interactions'
-            for svg in re.findall(r'<svg\b[\s\S]*?</svg>',n['html']): check_svg(svg)
+            passive_html(n['html'])
         if data.get('academic'):
             assert data.get('syllabus') and data['syllabus'].get('url') and data['syllabus'].get('edition')
             assert c.get('scope') and c.get('exam_use'), 'Academic scope and evidenced use are required'
-            basis = c.get('answer_basis', {})
-            assert isinstance(basis, dict) and all(isinstance(basis.get(k), str) and basis[k].strip() for k in ('question_refs', 'human_answer_refs', 'quality_review', 'marking_refs', 'answer_moves', 'ai_additions')), 'Record the human-answer research behind original AI writing; original writing cannot replace that research'
+            basis = c.get('answer_basis') or data.get('answer_basis', {})
+            assert isinstance(basis, dict) and all(isinstance(basis.get(k), str) and basis[k].strip() for k in ('question_refs', 'human_answer_refs', 'quality_review', 'marking_refs')), 'Record the shared human-answer research before drafting academic cards'
+            relevance = c.get('research_use') or c.get('answer_basis', {}).get('answer_moves')
+            assert isinstance(relevance, str) and relevance.strip(), 'Explain how this research informs this card, without forcing an answer template'
             # Presence is a traceability gate, never proof of source authenticity or quality.
+
 def render(c, name):
     out=f'<main class="ccpt-map" data-ccpt-single="1" data-side="read" data-note="{esc(c["id"])}">'
-    out+=f'<header><h1>{esc(c["title"])}</h1><button class="speak" data-audio="{name}" aria-label="整页讲解：播放、暂停或继续" aria-pressed="false">▶</button></header>'
+    title = c.get('title_html') or esc(c['title'])
+    out+=f'<header><h1>{title}</h1><button class="speak" data-audio="{name}" aria-label="整页讲解：播放、暂停或继续" aria-pressed="false">▶</button></header>'
     out+=f'<div class="map-viewport"><div class="map-board" style="width:{c["width"]}px;height:{c["height"]}px"><svg class="map-edges" aria-hidden="true"></svg>'
     for n in c['nodes']:
         cls='root' if n['id']==c['root'] else n.get('style','leaf')
@@ -63,13 +74,13 @@ def main():
     model=genanki.Model(data['model_id'],data['model_name'],fields=[{'name':x} for x in FIELDS],templates=[{'name':'单面阅读','qfmt':fmt,'afmt':fmt,'bqfmt':'{{Prompt}}','bafmt':'{{Answer}}'}],css=css,sort_field_index=1)
     decks={};rendered={}
     for i,c in enumerate(data['cards']):
-        nodes={n['id']:n for n in c['nodes']};text=c['title']+'。'+'。'.join(nodes[k]['speech'].rstrip('。') for k in c['reading_order'])
+        nodes={n['id']:n for n in c['nodes']};text=c.get('title_speech', c['title'])+'。'+'。'.join(nodes[k]['speech'].rstrip('。') for k in c['reading_order'])
         name=audio(text,voice);body=render(c,name)
         if a.text_only_test:
             body=body.replace('class="ccpt-map"','class="ccpt-map" data-audio-pending="1"').replace('class="speak"','class="speak" disabled title="目标 voice 不可用；当前为图文测试"').replace(f'data-audio="{name}"','data-audio=""').replace(f'<audio preload="none" src="{name}"></audio>','<audio preload="none"></audio>').replace('整页讲解 · 1.5×','图文测试 · 云希语音待补')
         rendered[c['id']]={'page':body,'narration':text}
         deck=decks.setdefault(c['deck_id'],genanki.Deck(c['deck_id'],c['deck']))
-        source=json.dumps({'sources':c['sources'],'scope':c.get('scope'),'exam_use':c.get('exam_use'),'exam_task':data.get('exam_task'),'answer_basis':c.get('answer_basis')},ensure_ascii=False)
+        source=json.dumps({'sources':c['sources'],'scope':c.get('scope'),'exam_use':c.get('exam_use'),'exam_task':data.get('exam_task'),'answer_basis':c.get('answer_basis') or data.get('answer_basis'),'research_use':c.get('research_use') or c.get('answer_basis',{}).get('answer_moves')},ensure_ascii=False)
         deck.add_note(genanki.Note(model=model,fields=[c['id'],c['id'],c['title'],c['target'],body,body,source,c['target']],guid=genanki.guid_for(c['namespace'],c['id']),tags=['ccpt','ccpt-single','map-v5'],due=i+1))
         preview=body.replace('data-audio="ccpt_','data-audio="media/ccpt_').replace('src="ccpt_','src="media/ccpt_')
         (out/f'{c["id"]}-read.html').write_text('<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+esc(c['title'])+'</title><style>'+css+'</style><body class="card">'+preview+'<script>'+js+'</script></body></html>')
