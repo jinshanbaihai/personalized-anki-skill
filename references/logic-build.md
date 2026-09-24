@@ -6,7 +6,7 @@
 
 exam_task 含非空文字：qualification（例如已确认的考试及阶段）、authority（考试局／主办方）、version（适用考纲年份／考试格式）、component（卷别／skill／task）、task_type（用户要做的题）。syllabus 对 IELTS 等没有学科考纲的考试记录实际官方格式／assessment criteria 来源与适用版本，不虚构 syllabus code。
 
-answer_basis 含非空文字：question_refs（实际题目标识和位置）、human_answer_refs（人类示范作者／发布者、来源及定位，可引用本批 sources 条目）、quality_review（结合分数／评语／官方要求说明可学和不可照搬之处）、marking_refs（匹配的评分来源）、answer_moves（本卡教的是哪段答题思路）、ai_additions（基于范文研究的新答案、改述、基础解释或假设案例，确实没有则说明）。此记录随卡保存到 Source 字段，不必把制作元数据挤进导图。卡面仍须有清楚的真实任务 hook 与作答用途。
+answer_basis 含非空文字：question_refs（实际题目标识和位置）、human_answer_refs（人类示范作者／发布者、来源及定位，可引用本批 sources 条目）、quality_review（结合分数／评语／官方要求说明可学和不可照搬之处）、marking_refs（匹配的评分来源）、answer_moves（兼容字段名，记录范文研究怎样指导本卡选材、深度、重点或知识应用，不要求本卡是一段答案）、ai_additions（基于范文研究的新答案、改述、基础解释或假设案例，确实没有则说明）。此记录随卡保存到 Source 字段，不必把制作元数据挤进导图。卡面仍须有清楚的目标用途，真题 hook 可以用任务背景或相关片段表达，不强制整题解析。
 
 程序只检查关键记录存在，不证明它们真实或充分。必须实际阅读并核对页码、作者、题目匹配与支持关系；人类示范不足的卡保留草稿，不能假填字段后导入。
 
