@@ -10,6 +10,9 @@ def esc(t): return html.escape(str(t), quote=True)
 def validate(data):
     ids = [c['id'] for c in data['cards']]
     assert ids and len(ids) == len(set(ids)), 'Card IDs must be unique'
+    if data.get('academic'):
+        task = data.get('exam_task', {})
+        assert isinstance(task, dict) and all(isinstance(task.get(k), str) and task[k].strip() for k in ('qualification', 'authority', 'version', 'component', 'task_type')), 'Confirm the target exam and task before making academic cards'
     for c in data['cards']:
         nodes = {n['id']: n for n in c['nodes']}
         assert len(nodes) == len(c['nodes']) and c['root'] in nodes
@@ -33,6 +36,9 @@ def validate(data):
         if data.get('academic'):
             assert data.get('syllabus') and data['syllabus'].get('url') and data['syllabus'].get('edition')
             assert c.get('scope') and c.get('exam_use'), 'Academic scope and evidenced use are required'
+            basis = c.get('answer_basis', {})
+            assert isinstance(basis, dict) and all(isinstance(basis.get(k), str) and basis[k].strip() for k in ('question_refs', 'human_answer_refs', 'quality_review', 'marking_refs', 'answer_moves', 'ai_additions')), 'Record the human-answer research behind original AI writing; original writing cannot replace that research'
+            # Presence is a traceability gate, never proof of source authenticity or quality.
 def render(c, name):
     out=f'<main class="ccpt-map" data-ccpt-single="1" data-side="read" data-note="{esc(c["id"])}">'
     out+=f'<header><h1>{esc(c["title"])}</h1><button class="speak" data-audio="{name}" aria-label="整页讲解：播放、暂停或继续" aria-pressed="false">▶</button></header>'
@@ -63,7 +69,7 @@ def main():
             body=body.replace('class="ccpt-map"','class="ccpt-map" data-audio-pending="1"').replace('class="speak"','class="speak" disabled title="目标 voice 不可用；当前为图文测试"').replace(f'data-audio="{name}"','data-audio=""').replace(f'<audio preload="none" src="{name}"></audio>','<audio preload="none"></audio>').replace('整页讲解 · 1.5×','图文测试 · 云希语音待补')
         rendered[c['id']]={'page':body,'narration':text}
         deck=decks.setdefault(c['deck_id'],genanki.Deck(c['deck_id'],c['deck']))
-        source=json.dumps({'sources':c['sources'],'scope':c.get('scope'),'exam_use':c.get('exam_use')},ensure_ascii=False)
+        source=json.dumps({'sources':c['sources'],'scope':c.get('scope'),'exam_use':c.get('exam_use'),'exam_task':data.get('exam_task'),'answer_basis':c.get('answer_basis')},ensure_ascii=False)
         deck.add_note(genanki.Note(model=model,fields=[c['id'],c['id'],c['title'],c['target'],body,body,source,c['target']],guid=genanki.guid_for(c['namespace'],c['id']),tags=['ccpt','ccpt-single','map-v5'],due=i+1))
         preview=body.replace('data-audio="ccpt_','data-audio="media/ccpt_').replace('src="ccpt_','src="media/ccpt_')
         (out/f'{c["id"]}-read.html').write_text('<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+esc(c['title'])+'</title><style>'+css+'</style><body class="card">'+preview+'<script>'+js+'</script></body></html>')

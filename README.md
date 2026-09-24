@@ -1,7 +1,11 @@
 # anki-ccpt-skill
 
-打开即见完整讲解的单面 Anki 思维导图阅读卡。先理解读者用途与考纲，再完成教学组织、图文、语音、原生交付。不是默认双面测试工具。
+打开即见完整讲解的单面 Anki 思维导图阅读卡。中心是“因为要做题，所以刷卡”：先确认目标考试与题型，研究适用考纲、相关真题、可信人类示范解答与评分评语，再围绕答题思路展开知识、图文与语音。不能让 AI 无榜样自拟标准答案后拿真题包装。不是默认双面测试工具。
 
 使用从 SKILL.md 开始。当前生成入口 scripts/build_logic_deck.py，数据格式见 references/logic-build.md，研究审查见 references/research-audit.md，双重验收见 references/acceptance.md。历史生成器需 --legacy-maintenance，不应用于新制卡。
 
 Space 播音；Enter Good；1 下一学习日再看。云希默认实际1.5×，不可用不得静默替换。桌面适配与调度偏好详见skill及对应reference。此仓库的发布不等于任何云端产品已安装。
+
+所有制卡任务先读 references/exam-answer-first.md；初学者的基础解释同样由真题作答所需反推。人类示范、官方评分依据与 AI 教学补充分开记录，表达方式保持开放。
+
+AI 可以原创完整答案；前提是充分研读大量相关的人类范文，并对新答案核对题意与评分要求。无需逐题存在现成范文，也不能把 AI 产出的答案当作人类榜样。
