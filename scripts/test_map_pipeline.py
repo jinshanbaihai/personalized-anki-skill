@@ -21,7 +21,19 @@ academic = copy.deepcopy(fixture)
 academic.update(academic=True, syllabus={'url':'fixture-only', 'edition':'fixture-only'}, exam_task={k:'synthetic test only' for k in ('qualification','authority','version','component','task_type')})
 for card in academic['cards']:
  card.update(scope='synthetic test only', exam_use='synthetic test only', answer_basis={k:'synthetic test only' for k in ('question_refs','human_answer_refs','quality_review','marking_refs','answer_moves','ai_additions')})
+for card in academic['cards']:
+ card['answer_coverage']={k:'Synthetic gate test' for k in ('question','standard','worked_answer','reconstruction_review')}
+ card['answer_coverage']['requirements']=[dict(requirement='Synthetic comparison',evidence='Fixture',teaching='Synthetic relationship',nodes=['a','b'])]
 validate(academic)
+for failure in ['no-coverage','empty-requirements','unknown-node','empty-reasoning']:
+ bad=copy.deepcopy(academic);c=bad['cards'][0]
+ if failure=='no-coverage':del c['answer_coverage']
+ elif failure=='empty-requirements':c['answer_coverage']['requirements']=[]
+ elif failure=='unknown-node':c['answer_coverage']['requirements'][0]['nodes']=['missing']
+ else:c['answer_coverage']['requirements'][0]['teaching']=''
+ try:validate(bad)
+ except AssertionError:pass
+ else:raise AssertionError('Coverage gate missed '+failure)
 for missing in ['exam_task','human_answer_refs','quality_review','answer_moves']:
  d=copy.deepcopy(academic)
  if missing=='exam_task':del d[missing]
@@ -61,5 +73,5 @@ for script in ['build_deck.py','build_consumer_deck.py','build_teaching_deck.py'
 # Check tangent and budget geometry independently at plotted E.
 epsilon=1e-5;assert abs((18/(6+epsilon)-18/(6-epsilon))/(2*epsilon)+.5)<1e-8
 assert 18/6==6-6/2
-result={'mixed_nodes_preserved':True,'invalid_inputs_rejected':15,'shared_research_supported':True,'math_title_supported':True,'missing_media_rejected':True,'legacy_native_runner_retired':True,'legacy_routes_fenced':4,'all_python_parse':True,'IC_tangency_verified':True}
+result={'mixed_nodes_preserved':True,'invalid_inputs_rejected':19,'coverage_reference_gate':True,'shared_research_supported':True,'math_title_supported':True,'missing_media_rejected':True,'legacy_native_runner_retired':True,'legacy_routes_fenced':4,'all_python_parse':True,'IC_tangency_verified':True}
 print(json.dumps(result,indent=2))

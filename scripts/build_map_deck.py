@@ -47,6 +47,14 @@ def validate(data):
             assert isinstance(basis, dict) and all(isinstance(basis.get(k), str) and basis[k].strip() for k in ('question_refs', 'human_answer_refs', 'quality_review', 'marking_refs')), 'Record the shared human-answer research before drafting academic cards'
             relevance = c.get('research_use') or c.get('answer_basis', {}).get('answer_moves')
             assert isinstance(relevance, str) and relevance.strip(), 'Explain how this research informs this card, without forcing an answer template'
+            coverage = c.get('answer_coverage', {})
+            for key in ('question', 'standard', 'worked_answer', 'reconstruction_review'):
+                assert isinstance(coverage.get(key), str) and coverage[key].strip(), 'Missing full-answer coverage: '+key
+            items = coverage.get('requirements', [])
+            assert items, 'Map actual assessment requirements to visible teaching nodes'
+            for item in items:
+                assert all(isinstance(item.get(k), str) and item[k].strip() for k in ('requirement', 'evidence', 'teaching')), 'Coverage must explain the requirement, source and reasoning'
+                assert item.get('nodes') and all(k in nodes for k in item['nodes']), 'Coverage references missing visible nodes'
             # Presence is a traceability gate, never proof of source authenticity or quality.
 
 def render(c, name):
@@ -80,7 +88,7 @@ def main():
             body=body.replace('class="ccpt-map"','class="ccpt-map" data-audio-pending="1"').replace('class="speak"','class="speak" disabled title="目标 voice 不可用；当前为图文测试"').replace(f'data-audio="{name}"','data-audio=""').replace(f'<audio preload="none" src="{name}"></audio>','<audio preload="none"></audio>').replace('整页讲解 · 1.5×','图文测试 · 云希语音待补')
         rendered[c['id']]={'page':body,'narration':text}
         deck=decks.setdefault(c['deck_id'],genanki.Deck(c['deck_id'],c['deck']))
-        source=json.dumps({'sources':c['sources'],'scope':c.get('scope'),'exam_use':c.get('exam_use'),'exam_task':data.get('exam_task'),'answer_basis':c.get('answer_basis') or data.get('answer_basis'),'research_use':c.get('research_use') or c.get('answer_basis',{}).get('answer_moves')},ensure_ascii=False)
+        source=json.dumps({'sources':c['sources'],'scope':c.get('scope'),'exam_use':c.get('exam_use'),'exam_task':data.get('exam_task'),'answer_basis':c.get('answer_basis') or data.get('answer_basis'),'research_use':c.get('research_use') or c.get('answer_basis',{}).get('answer_moves'),'answer_coverage':c.get('answer_coverage')},ensure_ascii=False)
         deck.add_note(genanki.Note(model=model,fields=[c['id'],c['id'],c['title'],c['target'],body,body,source,c['target']],guid=genanki.guid_for(c['namespace'],c['id']),tags=['ccpt','ccpt-single','map-v5'],due=i+1))
         preview=body.replace('data-audio="ccpt_','data-audio="media/ccpt_').replace('src="ccpt_','src="media/ccpt_')
         (out/f'{c["id"]}-read.html').write_text('<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+esc(c['title'])+'</title><style>'+css+'</style><body class="card">'+preview+'<script>'+js+'</script></body></html>')

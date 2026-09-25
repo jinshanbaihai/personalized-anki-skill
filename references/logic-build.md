@@ -8,7 +8,7 @@ exam_task 含非空文字：qualification（例如已确认的考试及阶段）
 
 answer_basis 可在批次共享，或个别卡需要不同来源时覆盖。保留四项非空文字：question_refs（已读真题标识／位置与覆盖）、human_answer_refs（已读人类示范来源／作者及定位）、quality_review（评分／评语／官方要求如何支持其可用性及局限）、marking_refs（相应评分来源）。它们可引用批次 sources 的资料索引，记录真实阅读情况，不能只填“已检查”。无需每张卡重写同一份研究。
 
-每卡 research_use 简要说明共享研究怎样指导本卡的知识应用、选材、深度或重点；无需六项答题模板。仍兼容旧卡自己的 answer_basis.answer_moves；ai_additions 可按需记录，含 AI 原创完整答案时说明研究基础及核对，普通概念卡不必硬填。最终有效研究和用途随卡保存到 Source 字段，制作元数据不挤进导图。
+每卡 research_use 简要说明共享研究怎样指导本卡的知识应用、选材、深度或重点；无需六项答题模板。仍兼容旧卡自己的 answer_basis.answer_moves；ai_additions 可按需记录，含 AI 原创完整答案时说明研究基础及核对，已指定的整题目标不得以概念卡名义缩减。最终有效研究和用途随卡保存到 Source 字段，制作元数据不挤进导图。
 
 程序检查记录存在，不证明来源真实或充分。实际阅读与研究充分性按 `exam-answer-first.md` 审查；证据不足不能假填字段。academic:false 只适用于真实非学科任务或明确工程样例，不能拿它绕过学科研究。
 
@@ -27,3 +27,5 @@ reading_order明确每个节点的整页讲解顺序，必须覆盖每节点一�
 原位更新沿用id/namespace/model与deck；测试牌组反而使用独立值。新包不可与既有namespace冲突。语音不可用先完成preview，未经用户同意不能静默改voice。
 
 仅当用户另建审查测试组、目标voice不可用且未批准替换时，可用 `--text-only-test` 并在批次设置 `test_deck:true` 先交付图文审查。卡面显性显示语音待补、唯一播放器禁用，manifest标明available=false；这不是完整音频交付。验证器需显式 `--allow-text-only-test`，报告仍保留缺失。正式音频包不能绕过默认检查。
+
+学科卡另需 answer_coverage：question（确切题目／指令与分值）、standard（当前最高评分要求）、worked_answer（制作端完整作答或可定位研究文件）、reconstruction_review（只从卡面重建的具体发现与修复）、requirements 数组。每项含 requirement、evidence（来源定位）、teaching（实际推理）、nodes（承载的可见节点 ID）。程序只检查记录与节点引用；实质完整性仍按 full-credit-coverage.md 人工审查，不生成评分承诺。

@@ -2,11 +2,11 @@
 
 ## 调研得到什么，尚不能说明什么
 
-**先认识组成部分，再处理关系。** Mayer 对 pre-training 的研究总结指出，先认识主要组成部分的名称与特征，有助于学习后续多媒体解释。本次据此先解释“每个点对应什么”“基准是什么”“pivot 与作用线是什么”，再引入比较或计算。这支持补齐先修理解；不能由此推导出任意概念都适合固定篇幅或固定页数。[Cambridge：Pre-training Principle](https://www.cambridge.org/core/books/abs/multimedia-learning/pretraining-principle/01791D57F5D4164251269E6DF56A8BF1)
+**先认识组成部分，再处理关系。** Mayer 对 pre-training 的研究总结指出，先认识主要组成部分的名称与特征，有助于学习后续多媒体解释。应用时先解释“每个点对应什么”“基准是什么”“pivot 与作用线是什么”，再引入比较或计算。这支持补齐先修理解；不能由此推导出任意概念都适合固定篇幅或固定页数。[Cambridge：Pre-training Principle](https://www.cambridge.org/core/books/abs/multimedia-learning/pretraining-principle/01791D57F5D4164251269E6DF56A8BF1)
 
-**让读者控制节奏，保留可比较的状态。** Mayer 与 Chandler 的两项实验研究了学习者控制分段动画节奏的作用，观察到部分条件下迁移表现的改善。当前应用为整面讲解可暂停、继续、重播，图形保留；分段研究不等于必须把卡片拆成多页或关卡。这是对教学机制的借鉴，研究对象和本次中文 Anki 物理卡不同，不能直接承诺相同效果。[原始论文](https://tecfa.unige.ch/tecfa/teaching/methodo/Mayer_Chandler01.pdf)
+**让读者控制节奏，保留可比较的状态。** Mayer 与 Chandler 的两项实验研究了学习者控制分段动画节奏的作用，观察到部分条件下迁移表现的改善。当前应用为整面讲解可暂停、继续、重播，图形保留；分段研究不等于必须把卡片拆成多页或关卡。这是对教学机制的借鉴，研究对象和中文 Anki 阅读卡不同，不能直接承诺相同效果。[原始论文](https://tecfa.unige.ch/tecfa/teaching/methodo/Mayer_Chandler01.pdf)
 
-**对照案例可以让解释有明确的着落。** Stanford 的研究项目展示了先比较精心组织的数据，再学习相关解释的方式。本次让读者观察“改变整组位置，保持分散”和“改变分散，保持平均位置”。操作前给出对象说明，操作后解释变化，不要求读者自行发明统计公式，也不把试错当作进入讲解的门槛。[Stanford：A Time for Telling](https://aaalab.stanford.edu/research/inventive-learning/a-time-for-telling/index.html)
+**对照案例可以让解释有明确的着落。** Stanford 的研究项目展示了先比较精心组织的数据，再学习相关解释的方式。例如让读者观察“改变整组位置，保持分散”和“改变分散，保持平均位置”。操作前给出对象说明，操作后解释变化，不要求读者自行发明统计公式，也不把试错当作进入讲解的门槛。[Stanford：A Time for Telling](https://aaalab.stanford.edu/research/inventive-learning/a-time-for-telling/index.html)
 
 **选择题需要反馈。** Butler 与 Roediger 的研究指出，选择题的干扰项可能带来错误信息；在其研究任务中，提供反馈改善了后续表现并减少干扰项侵入。这仅适用于用户另外要求的测验或旧选择题维护，当前新卡默认不制作四选一。答对一个选项仍然不能单独证明已经掌握整个概念或完整真题流程。[作者所在大学保存的原始论文](https://psychnet.wustl.edu/memory/wp-content/uploads/2018/04/Butler-Roediger-2008_MemCog.pdf)
 
@@ -17,4 +17,4 @@
 
 实施效果需要结合实际使用反馈判断。研究支持的是可能有帮助的机制，不能据此保证个人学习效果。
 
-2026-09-24 增补：初学者文本连贯性、具体案例、flashcard 与单面阅读的区别，以及理解线索的研究边界见 [comprehension-and-memory.md](comprehension-and-memory.md)。当前首先验收读懂，再考虑记忆支持。
+初学者文本连贯性、具体案例、flashcard 与单面阅读的区别，以及理解线索的研究边界见 [comprehension-and-memory.md](comprehension-and-memory.md)。当前首先验收读懂，再考虑记忆支持。

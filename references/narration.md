@@ -1,8 +1,8 @@
 # 新制卡的语音默认值
 
-用户于2026-09-24明确将默认声音改为微软云希 `zh-CN-YunxiNeural`，最终音频 **1.5×**。这项选择替代此前云逸要求，不再为默认制卡等待 Azure 开通。术语 English、解释中文；整页一个播放器，Space 开始／暂停／继续／重播。
+默认声音为微软云希 `zh-CN-YunxiNeural`，最终音频 **1.5×**。术语 English、解释中文；整页一个播放器，Space 开始／暂停／继续／重播。
 
-优先使用当前可用的免费 Edge read-aloud 服务。它与 Azure Speech 的声音目录不同，不能用 Azure 官方列表证明 Edge 可用。2026-09-24实测 Edge 普通话6个声音中包含云希，短样本合成成功；此前云逸请求返回 NoAudioReceived。每批先检测目标voice并合成短样本，不能仅见列表或 HTTP 成功就称播放通过。
+优先使用当前可用的免费 Edge read-aloud 服务。它与 Azure Speech 的声音目录不同，不能用 Azure 官方列表证明 Edge 可用。每批先检测目标voice并合成短样本，不能仅见列表或 HTTP 成功就称播放通过。
 
 `scripts/speech_backend.py --check` 检查目录与配置；`--probe /本机临时目录/probe.mp3` 实际合成。报告区分网络失败、声音缺失、Azure缺配置和真实合成成功。免费路径失败时先诊断重试；已配置且获授权的 Azure Speech 可作为同一voice的备选，环境变量 `AZURE_SPEECH_KEY` 与 `AZURE_SPEECH_REGION`，凭据不进 skill、日志或仓库。不静默换声，也不擅自开通收费资源。
 
