@@ -75,3 +75,12 @@ epsilon=1e-5;assert abs((18/(6+epsilon)-18/(6-epsilon))/(2*epsilon)+.5)<1e-8
 assert 18/6==6-6/2
 result={'mixed_nodes_preserved':True,'invalid_inputs_rejected':19,'coverage_reference_gate':True,'shared_research_supported':True,'math_title_supported':True,'missing_media_rejected':True,'legacy_native_runner_retired':True,'legacy_routes_fenced':4,'all_python_parse':True,'IC_tangency_verified':True}
 print(json.dumps(result,indent=2))
+
+# Simulate Anki extracting every script, then recover the map's semantic data.
+import re, html as html_module
+card_dom = re.sub(r"<script\b[^>]*>.*?</script>", "", html, flags=re.S | re.I)
+payload = re.search(r'<div hidden class="map-data">(.*?)</div>', card_dom, re.S)
+assert payload, "Native DOM lost map data after script extraction"
+parsed = json.loads(html_module.unescape(payload.group(1)))
+assert parsed['edges'] == fixture['cards'][0]['edges']
+assert parsed['reading_order'] == fixture['cards'][0]['reading_order']

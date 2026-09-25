@@ -67,7 +67,7 @@ def render(c, name):
         assert re.fullmatch(r'[a-z -]+',cls)
         out+=f'<section class="map-node {cls}" data-node="{esc(n["id"])}" style="left:{n["x"]}px;top:{n["y"]}px;width:{n["width"]}px">{n["html"]}</section>'
     out+='</div></div><footer><span class="audio-status">整页讲解 · 1.5×</span><span>Space 播音 · Enter 继续 · 1 明天再看</span></footer>'
-    out+='<script type="application/json" class="map-data">'+json.dumps({'edges':c['edges'],'reading_order':c['reading_order']},ensure_ascii=False).replace('<','\\u003c')+'</script>'
+    out+='<div hidden class="map-data">'+esc(json.dumps({'edges':c['edges'],'reading_order':c['reading_order']},ensure_ascii=False))+'</div>'
     out+=f'<audio preload="none" src="{name}"></audio></main>'
     return out
 def main():
