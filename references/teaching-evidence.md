@@ -10,7 +10,7 @@
 
 **选择题需要反馈。** Butler 与 Roediger 的研究指出，选择题的干扰项可能带来错误信息；在其研究任务中，提供反馈改善了后续表现并减少干扰项侵入。这仅适用于用户另外要求的测验或旧选择题维护，当前新卡默认不制作四选一。答对一个选项仍然不能单独证明已经掌握整个概念或完整真题流程。[作者所在大学保存的原始论文](https://psychnet.wustl.edu/memory/wp-content/uploads/2018/04/Butler-Roediger-2008_MemCog.pdf)
 
-**图像与文字共同建立理解。** 多媒体学习研究讨论的是如何组织图像和文字以促进学习。它没有为“纯图像”“字数越少越好”或“动画越多越好”提供通用依据。此次文字提供充分的因果解释，图像承载对象、对应关系和变化；全文始终可读，正文不因版面紧凑而被截断。[Cambridge：Multimedia Learning 导论](https://assets.cambridge.org/052183/8738/excerpt/0521838738_excerpt.htm)
+**图像与文字共同建立理解。** 多媒体学习研究讨论的是如何组织图像和文字以促进学习。它没有为“纯图像”“字数越少越好”或“动画越多越好”提供通用依据。制作时文字提供充分的因果解释，图像承载对象、对应关系和变化；全文始终可读，正文不因版面紧凑而被截断。[Cambridge：Multimedia Learning 导论](https://assets.cambridge.org/052183/8738/excerpt/0521838738_excerpt.htm)
 
 **干眼相关设计需要减少持续凝视的要求。** AOA 的数字设备用眼指导建议定期休息等措施。当前因此保留由一个入口控制的整面音频，取消强迫追随连续动画的流程，让图停留、语音可暂停。动态图同样使用视觉，卡片设计不能视为干眼治疗。1.5 倍速来自你的偏好，没有研究依据支持它是你的最佳理解速度。[AOA：Computer vision syndrome](https://www.aoa.org/healthy-eyes/eye-and-vision-conditions/computer-vision-syndrome)
 

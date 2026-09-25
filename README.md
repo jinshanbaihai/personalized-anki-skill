@@ -1,17 +1,9 @@
 # anki-ccpt-skill
 
-打开即见完整讲解的单面 Anki 思维导图阅读卡。中心是“因为要做题，所以刷卡”：先确认目标考试与题型，研究适用考纲、相关真题、可信人类示范解答与评分评语，再有针对性地写原有的概念讲解、案例、思维导图、学科图与语音。不能让 AI 无榜样自拟标准答案后拿真题包装。不是默认双面测试工具。
+为了完成用户的目标作答，先研究、再教懂。研读适用考纲、真题、可信人类完整作答、评分评语以及教师对关键机制与典型错误的讲解，再由 AI 自行撰写与设计。完整作答覆盖、初学者理解和可操作体验分别验收。
 
-使用从 SKILL.md 开始。当前生成入口 scripts/build_logic_deck.py，数据格式见 references/logic-build.md，研究审查见 references/research-audit.md，双重验收见 references/acceptance.md。历史生成器需 --legacy-maintenance，不应用于新制卡。
+产物是单面完整的 Anki 思维导图阅读卡。节点可用文字、现实设例、标准学科图、表格、数学或其他有效表达；不规定统一配方。讲图要让读者找到对象，并解释关系为什么成立。English 术语配充分中文解释，数学规范排版，完整关系同页可见。
 
-Space 播音；Enter Good；1 下一学习日再看。云希默认实际1.5×，不可用不得静默替换。桌面适配与调度偏好详见skill及对应reference。此仓库的发布不等于任何云端产品已安装。
+从 [SKILL.md](SKILL.md) 开始。教学研究见 [exam-answer-first.md](references/exam-answer-first.md)，读者教学见 [reader-first-teaching.md](references/reader-first-teaching.md)，完整作答与验收见 references 中对应文件。生成入口为 scripts/build_logic_deck.py，数据说明为 references/logic-build.md。
 
-新制卡或修改教学内容先读 references/exam-answer-first.md；纯语音、版式和快捷键修复复用仍适用的研究；初学者的基础解释同样由真题作答所需反推。人类示范、官方评分依据与 AI 教学补充分开记录，表达方式保持开放。
-
-AI 仍自行写概念、案例、讲图等教学卡；前提是充分研读大量相关人类范文，指导选材、深度和重点。先自行完成有评分依据的完整目标作答，再把作答所需的解释编排进思维导图；卡面不必成为连续范文，但不能丢失完整作答需要的内容。无需逐题存在现成范文，也不能把 AI 产出的答案当作人类榜样。
-
-## 完整作答覆盖
-
-真题及评分标准决定教学深度，不只充当 hook。先研究人类完整解答与评语，再完成目标作答、建立要求到卡面节点的覆盖关系，最后反向重建核查。保持单面思维导图；不靠省略 analysis、evaluation 或结论换取简洁。详见 [完整作答覆盖](references/full-credit-coverage.md)。
-
-涉及图像的讲解须让读者知道此刻看哪张图及哪个对象。卡面、图上标签与整页语音共用清楚的指向，跨图或跨分支重新定位；验收逐处检查能否找到对应证据。具体教学判断见 [从读者出发](references/reader-first-teaching.md)。
+Space 播音／暂停／继续，Enter Good，1 下一学习日再看；云希默认实际 1.5×、离线音频、一页一个播放器。原位修改保留身份与历史；独立测试组隔离。发布仓库、本机安装与云端安装分别验证，不混为一谈。

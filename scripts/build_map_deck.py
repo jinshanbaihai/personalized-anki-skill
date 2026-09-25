@@ -44,7 +44,7 @@ def validate(data):
             assert data.get('syllabus') and data['syllabus'].get('url') and data['syllabus'].get('edition')
             assert c.get('scope') and c.get('exam_use'), 'Academic scope and evidenced use are required'
             basis = c.get('answer_basis') or data.get('answer_basis', {})
-            assert isinstance(basis, dict) and all(isinstance(basis.get(k), str) and basis[k].strip() for k in ('question_refs', 'human_answer_refs', 'quality_review', 'marking_refs')), 'Record the shared human-answer research before drafting academic cards'
+            assert isinstance(basis, dict) and all(isinstance(basis.get(k), str) and basis[k].strip() for k in ('question_refs', 'human_answer_refs', 'quality_review', 'marking_refs', 'teaching_refs', 'difficulty_review')), 'Record the shared human-answer research before drafting academic cards'
             relevance = c.get('research_use') or c.get('answer_basis', {}).get('answer_moves')
             assert isinstance(relevance, str) and relevance.strip(), 'Explain how this research informs this card, without forcing an answer template'
             coverage = c.get('answer_coverage', {})

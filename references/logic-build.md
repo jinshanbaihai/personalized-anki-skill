@@ -6,11 +6,11 @@
 
 exam_task 含非空文字：qualification（例如已确认的考试及阶段）、authority（考试局／主办方）、version（适用考纲年份／考试格式）、component（卷别／skill／task）、task_type（用户要做的题）。syllabus 对 IELTS 等没有学科考纲的考试记录实际官方格式／assessment criteria 来源与适用版本，不虚构 syllabus code。
 
-answer_basis 可在批次共享，或个别卡需要不同来源时覆盖。保留四项非空文字：question_refs（已读真题标识／位置与覆盖）、human_answer_refs（已读人类示范来源／作者及定位）、quality_review（评分／评语／官方要求如何支持其可用性及局限）、marking_refs（相应评分来源）。它们可引用批次 sources 的资料索引，记录真实阅读情况，不能只填“已检查”。无需每张卡重写同一份研究。
+answer_basis 可在批次共享，或个别卡需要不同来源时覆盖。先记录以下四项：question_refs（已读真题标识／位置与覆盖）、human_answer_refs（已读人类示范来源／作者及定位）、quality_review（评分／评语／官方要求如何支持其可用性及局限）、marking_refs（相应评分来源）。它们可引用批次 sources 的资料索引，记录真实阅读情况，不能只填“已检查”。同时记录 teaching_refs 与 difficulty_review；这六项均为生成前的非空检查项，但程序不能证明研究充分。其中前者定位读过的人类教学／典型错误材料，后者记录具体障碍、证据、采用的解释及承载节点。无需每张卡重写同一份研究。
 
 每卡 research_use 简要说明共享研究怎样指导本卡的知识应用、选材、深度或重点；无需六项答题模板。仍兼容旧卡自己的 answer_basis.answer_moves；ai_additions 可按需记录，含 AI 原创完整答案时说明研究基础及核对，已指定的整题目标不得以概念卡名义缩减。最终有效研究和用途随卡保存到 Source 字段，制作元数据不挤进导图。
 
-程序检查记录存在，不证明来源真实或充分。实际阅读与研究充分性按 `exam-answer-first.md` 审查；证据不足不能假填字段。academic:false 只适用于真实非学科任务或明确工程样例，不能拿它绕过学科研究。
+程序只检查其支持的记录结构，不自动验证教学依据或误区研究；新增的教学记录仍须实质审查。字段存在不证明来源真实或充分。实际阅读与研究充分性按 `exam-answer-first.md` 审查；证据不足不能假填字段。academic:false 只适用于真实非学科任务或明确工程样例，不能拿它绕过学科研究。
 
 标题默认是 plain title，用于检索、元数据与无障碍说明；需要公式或术语强调时提供 title_html（与节点一样的被动 HTML／MathML）及 title_speech（自然语言朗读），避免把数学标记显示或念出来。标题与语音表达同一含义，不允许额外播放器。
 
