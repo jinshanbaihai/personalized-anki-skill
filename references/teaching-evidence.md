@@ -18,3 +18,7 @@
 实施效果需要结合实际使用反馈判断。研究支持的是可能有帮助的机制，不能据此保证个人学习效果。
 
 初学者文本连贯性、具体案例、flashcard 与单面阅读的区别，以及理解线索的研究边界见 [comprehension-and-memory.md](comprehension-and-memory.md)。当前首先验收读懂，再考虑记忆支持。
+
+## 图文定位的依据与边界
+
+Mayer 与 Fiorella 的 [multimedia learning 章节](https://www.cambridge.org/core/books/abs/cambridge-handbook-of-multimedia-learning/principles-for-reducing-extraneous-processing-in-multimedia-learning-coherence-signaling-redundancy-spatial-contiguity-and-temporal-contiguity-principles/CD5B7AE1279A9AB81F8EEBB53DBEC86E) 总结 spatial contiguity 与 signaling：对应图文靠近、提示组织关系，有助于减少无关搜索。这里依据的是公开章节摘要，并非声称阅读了付费全文。将图名、局部对象与讲解对应，是结合该方向和用户实际反馈的设计判断；研究不意味着每句都要加图号，也不能据此保证任何读者一次理解。

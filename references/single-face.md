@@ -14,7 +14,7 @@ Anki 的 question／answer 是内部状态；仅把答案显示到 question HTML
 
 已有本技能卡片优先复用 BackHTML 完整讲解，只更新模板与键盘脚本，保留 note id、card id、字段、牌组和复习历史；若必要条件仅在旧 FrontHTML 中，要把必要场景补入完整阅读面，避免无脑丢弃。不要把这个变更当作重写全部知识内容的许可。
 
-目标牌组采用单一 1d learning 和 1d relearning，leech 只标记。1 是“明天要再看”，不要求理由必须是完全遗忘，也不是重要旗标；这属于用户反馈映射，仍通过 Again 正常记入历史。随后 Good 回归 FSRS 正常调度。已有 retention 试用值与历史按 review-planning.md 保留。检查父牌组、当日覆盖和 review cap，保证次日到期卡不会因限额隐藏；不批量重排无关卡。
+目标牌组采用单一 1d learning 和 1d relearning，leech 只标记。1 是“明天要再看”，不要求理由必须是完全遗忘，也不是重要旗标；这属于用户反馈映射，仍通过 Again 正常记入历史。随后 Good 回归 FSRS 正常调度。已有 retention 设置与历史按 review-planning.md 保留。检查父牌组、当日覆盖和 review cap，保证次日到期卡不会因限额隐藏；不批量重排无关卡。
 
 ## 验证
 

@@ -8,6 +8,8 @@
 
 合成原速音频，执行 `atempo=1.5` 后离线随卡携带，页面 `playbackRate=1`，仅加速一次。缓存与manifest包含真实voice、完整正文、速度、provider及实际时长。接口失败不保留空文件冒充缓存；已有缓存不能解码就重建。
 
+讲图脚本与可见卡面共用图名和对象标签，按 `reader-first-teaching.md` 先定位再解释。切换图或从非讲图分支返回时重新说清目标；留出自然停顿供读者移动视线，不连续念坐标和字母代替讲解。朗读应覆盖内容含义，不必逐字念重复标签；卡面本身也必须有足够指向，不能只在语音补上。
+
 验收检查可解码、原速与成品时长比约1.5、中文与English术语发音、图像解说的阅读顺序、公式意义、一页一个播放器、Space暂停续播及切卡停止。声音能播放不能证明讲解容易理解；听感须另外检查。既有其他卡片不因默认值变化而自动全量改写，按本次授权范围更新。
 
 接口依据：[微软 REST 文档](https://learn.microsoft.com/en-us/azure/ai-services/speech-service/rest-text-to-speech)、[edge-tts 项目](https://github.com/rany2/edge-tts)。
