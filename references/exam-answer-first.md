@@ -57,6 +57,6 @@ essay 卡的主要篇幅服务可重建的 analysis／evaluation；语言任务�
 - Cambridge 9708 past papers 页面：https://www.cambridgeinternational.org/programmes-and-qualifications/cambridge-international-as-and-a-level-economics-9708/past-papers/ 。官方提示旧卷不一定符合当前 syllabus；公开页面只有部分材料，更多资源在 School Support Hub。入口不是具体题目的评分证据。
 - Cambridge 9708 课程页：https://www.cambridgeinternational.org/programmes-and-qualifications/view/cambridge-international-as-and-a-level-economics-9708/ 。列出学校可用的 example candidate responses 等资源；不能据此声称已读到受限文档。
 - IELTS Academic sample tasks：https://ielts.org/take-a-test/preparation-resources/sample-test-questions/academic-test 。这是官方样题入口，不能把 sample 称为往年实考题。
-- IELTS Writing sample candidate responses：https://ielts.org/cdn/computer-delivered-sample-tests-academic-writing/ielts-academic-writing-example-responses-to-parts-<DRIVE_ID>.pdf 。含 band scores 与 examiner comments；它展示不同表现，不能把所有样答称为高分范文。
+- IELTS Writing sample candidate responses：https://ielts.org/cdn/computer-delivered-sample-tests-academic-writing/ielts-academic-writing-example-responses-to-parts-1-and-2-with-band-scores-and-examiner-comments.pdf 。含 band scores 与 examiner comments；它展示不同表现，不能把所有样答称为高分范文。
 
 这些资源证明可以怎样寻找与区分依据，不证明“没看人类答案的 AI 每次都错”。本 skill 把研读适用人类示范设为用户要求的制作门槛，不把该偏好包装成未经验证的普遍科学结论。
