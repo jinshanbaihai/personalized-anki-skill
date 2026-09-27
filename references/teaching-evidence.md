@@ -17,7 +17,7 @@
 
 实施效果需要结合实际使用反馈判断。研究支持的是可能有帮助的机制，不能据此保证个人学习效果。
 
-初学者文本连贯性、具体案例、flashcard 与单面阅读的区别，以及理解线索的研究边界见 [comprehension-and-memory.md](comprehension-and-memory.md)。当前首先验收读懂，再考虑记忆支持。
+学习单位与随后整合的研究及边界见 [learning-unit.md](learning-unit.md)。初学者文本连贯性、具体案例、flashcard 与单面阅读的区别，以及理解线索的研究边界见 [comprehension-and-memory.md](comprehension-and-memory.md)。当前首先验收读懂，再考虑记忆支持。
 
 ## 图文定位的依据与边界
 

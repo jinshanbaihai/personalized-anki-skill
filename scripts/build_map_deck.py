@@ -12,7 +12,7 @@ def passive_html(value):
     assert not re.search(r'<(?:script|iframe|audio|button)\b|\son\w+\s*=|(?:src|href)=["\'](?:https?:|file:|javascript:)', value, re.I), 'Use passive local content; extend renderer deliberately for interactions'
     for svg in re.findall(r'<svg\b[\s\S]*?</svg>', value): check_svg(svg)
 
-def validate(data):
+def validate(data, *, legacy_coverage=False):
     ids = [c['id'] for c in data['cards']]
     assert ids and len(ids) == len(set(ids)), 'Card IDs must be unique'
     if data.get('academic'):
@@ -47,15 +47,54 @@ def validate(data):
             assert isinstance(basis, dict) and all(isinstance(basis.get(k), str) and basis[k].strip() for k in ('question_refs', 'human_answer_refs', 'quality_review', 'marking_refs', 'teaching_refs', 'difficulty_review')), 'Record the shared human-answer research before drafting academic cards'
             relevance = c.get('research_use') or c.get('answer_basis', {}).get('answer_moves')
             assert isinstance(relevance, str) and relevance.strip(), 'Explain how this research informs this card, without forcing an answer template'
-            coverage = c.get('answer_coverage', {})
+            if legacy_coverage:
+                coverage = c.get('answer_coverage', {})
+                for key in ('question', 'standard', 'worked_answer', 'reconstruction_review'):
+                    assert isinstance(coverage.get(key), str) and coverage[key].strip(), 'Missing legacy coverage: '+key
+                items = coverage.get('requirements', [])
+                assert items, 'Map actual assessment requirements to visible teaching nodes'
+                for item in items:
+                    assert all(isinstance(item.get(k), str) and item[k].strip() for k in ('requirement', 'evidence', 'teaching')), 'Coverage must explain the requirement, source and reasoning'
+                    assert item.get('nodes') and all(k in nodes for k in item['nodes']), 'Coverage references missing visible nodes'
+            else:
+                unit = c.get('learning_unit', {})
+                assert isinstance(unit, dict) and all(isinstance(unit.get(k), str) and unit[k].strip() for k in ('starting_point', 'boundary', 'explanation_review')), 'Define the local learning scope, reader starting point and substantive explanation review'
+            # Presence is a traceability gate, never proof of understanding or source quality.
+    if data.get('academic') and not legacy_coverage:
+        tasks = data.get('task_coverage', [])
+        assert isinstance(tasks, list) and tasks, 'Record shared task coverage; partial teaching must identify remaining scope'
+        card_nodes = {c['id']: {n['id'] for n in c['nodes']} for c in data['cards']}
+        mapped_cards = set()
+        for coverage in tasks:
+            assert isinstance(coverage, dict)
             for key in ('question', 'standard', 'worked_answer', 'reconstruction_review'):
-                assert isinstance(coverage.get(key), str) and coverage[key].strip(), 'Missing full-answer coverage: '+key
+                assert isinstance(coverage.get(key), str) and coverage[key].strip(), 'Missing shared coverage: '+key
+            status = coverage.get('status')
+            assert status in ('partial', 'complete'), 'State partial or complete task coverage'
+            remaining = coverage.get('remaining', '')
+            assert isinstance(remaining, str), 'Remaining scope must be explicit text'
+            assert remaining.strip() if status == 'partial' else not remaining.strip(), 'Partial coverage needs remaining scope; complete coverage cannot have unresolved gaps'
             items = coverage.get('requirements', [])
-            assert items, 'Map actual assessment requirements to visible teaching nodes'
+            assert isinstance(items, list) and items, 'Map the requirements supported by this delivery'
             for item in items:
-                assert all(isinstance(item.get(k), str) and item[k].strip() for k in ('requirement', 'evidence', 'teaching')), 'Coverage must explain the requirement, source and reasoning'
-                assert item.get('nodes') and all(k in nodes for k in item['nodes']), 'Coverage references missing visible nodes'
-            # Presence is a traceability gate, never proof of source authenticity or quality.
+                assert all(isinstance(item.get(k), str) and item[k].strip() for k in ('requirement', 'evidence', 'teaching')), 'Coverage needs actual requirements, evidence and reasoning'
+                locations = item.get('locations', [])
+                assert isinstance(locations, list) and locations, 'Map requirements to cards and visible nodes'
+                for loc in locations:
+                    cid = loc.get('card')
+                    assert cid in card_nodes, 'Coverage references a missing card'
+                    assert isinstance(loc.get('nodes'), list) and loc['nodes'] and all(n in card_nodes[cid] for n in loc['nodes']), 'Coverage references missing visible nodes'
+                    mapped_cards.add(cid)
+        assert mapped_cards == set(card_nodes), 'Explain each card’s contribution, including foundational teaching'
+
+def source_record(data, c):
+    """Keep local scope and shared task coverage separate in the exported note."""
+    return {'sources':c['sources'], 'scope':c.get('scope'), 'exam_use':c.get('exam_use'),
+            'exam_task':data.get('exam_task'),
+            'answer_basis':c.get('answer_basis') or data.get('answer_basis'),
+            'research_use':c.get('research_use') or c.get('answer_basis',{}).get('answer_moves'),
+            'learning_unit':c.get('learning_unit'), 'task_coverage':data.get('task_coverage'),
+            'answer_coverage':c.get('answer_coverage')}
 
 def render(c, name):
     out=f'<main class="ccpt-map" data-ccpt-single="1" data-side="read" data-note="{esc(c["id"])}">'
@@ -71,8 +110,8 @@ def render(c, name):
     out+=f'<audio preload="none" src="{name}"></audio></main>'
     return out
 def main():
-    ap=argparse.ArgumentParser();ap.add_argument('input',type=Path);ap.add_argument('output',type=Path);ap.add_argument('--preview',action='store_true');ap.add_argument('--text-only-test',action='store_true',help='Explicit test-deck draft only; voice unavailable is visibly disclosed');a=ap.parse_args()
-    data=json.loads(a.input.read_text());validate(data);SPEECH.clear()
+    ap=argparse.ArgumentParser();ap.add_argument('input',type=Path);ap.add_argument('output',type=Path);ap.add_argument('--preview',action='store_true');ap.add_argument('--text-only-test',action='store_true',help='Explicit test-deck draft only; voice unavailable is visibly disclosed');ap.add_argument('--legacy-coverage-maintenance',action='store_true',help='Preserve historical per-card coverage metadata during technical maintenance only');a=ap.parse_args()
+    data=json.loads(a.input.read_text());validate(data, legacy_coverage=a.legacy_coverage_maintenance);SPEECH.clear()
     if a.text_only_test: assert data.get('test_deck') is True, 'Audio omission is only available for a designated test deck'
     out=a.output;out.mkdir(parents=True,exist_ok=True);media=out/'media';media.mkdir(exist_ok=True)
     voice=data.get('voice',DEFAULT_VOICE)
@@ -88,7 +127,7 @@ def main():
             body=body.replace('class="ccpt-map"','class="ccpt-map" data-audio-pending="1"').replace('class="speak"','class="speak" disabled title="目标 voice 不可用；当前为图文测试"').replace(f'data-audio="{name}"','data-audio=""').replace(f'<audio preload="none" src="{name}"></audio>','<audio preload="none"></audio>').replace('整页讲解 · 1.5×','图文测试 · 云希语音待补')
         rendered[c['id']]={'page':body,'narration':text}
         deck=decks.setdefault(c['deck_id'],genanki.Deck(c['deck_id'],c['deck']))
-        source=json.dumps({'sources':c['sources'],'scope':c.get('scope'),'exam_use':c.get('exam_use'),'exam_task':data.get('exam_task'),'answer_basis':c.get('answer_basis') or data.get('answer_basis'),'research_use':c.get('research_use') or c.get('answer_basis',{}).get('answer_moves'),'answer_coverage':c.get('answer_coverage')},ensure_ascii=False)
+        source=json.dumps(source_record(data,c),ensure_ascii=False)
         deck.add_note(genanki.Note(model=model,fields=[c['id'],c['id'],c['title'],c['target'],body,body,source,c['target']],guid=genanki.guid_for(c['namespace'],c['id']),tags=['ccpt','ccpt-single','map-v5'],due=i+1))
         preview=body.replace('data-audio="ccpt_','data-audio="media/ccpt_').replace('src="ccpt_','src="media/ccpt_')
         (out/f'{c["id"]}-read.html').write_text('<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+esc(c['title'])+'</title><style>'+css+'</style><body class="card">'+preview+'<script>'+js+'</script></body></html>')

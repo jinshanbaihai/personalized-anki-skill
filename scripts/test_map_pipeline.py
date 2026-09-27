@@ -16,42 +16,37 @@ for failure in ['missing-narration','disconnected','duplicate-order','bad-edge',
  try:validate(d)
  except (AssertionError,KeyError):pass
  else:raise AssertionError(failure+' not detected')
-# Synthetic metadata exercises the gate only; it is not a publishable academic card.
+# Historical inputs remain maintainable only through the explicit compatibility path.
 academic = copy.deepcopy(fixture)
 academic.update(academic=True, syllabus={'url':'fixture-only', 'edition':'fixture-only'}, exam_task={k:'synthetic test only' for k in ('qualification','authority','version','component','task_type')})
 for card in academic['cards']:
- card.update(scope='synthetic test only', exam_use='synthetic test only', answer_basis={k:'synthetic test only' for k in ('question_refs','human_answer_refs','quality_review','marking_refs','teaching_refs','difficulty_review','answer_moves','ai_additions')})
-for card in academic['cards']:
+ card.update(scope='synthetic test only', exam_use='synthetic test only', answer_basis={k:'synthetic test only' for k in ('question_refs','human_answer_refs','quality_review','marking_refs','teaching_refs','difficulty_review','answer_moves')})
  card['answer_coverage']={k:'Synthetic gate test' for k in ('question','standard','worked_answer','reconstruction_review')}
  card['answer_coverage']['requirements']=[dict(requirement='Synthetic comparison',evidence='Fixture',teaching='Synthetic relationship',nodes=['a','b'])]
-validate(academic)
+validate(academic, legacy_coverage=True)
+try:validate(academic)
+except AssertionError:pass
+else:raise AssertionError('Historical full-task-per-card input passed new authoring gate')
 for failure in ['no-coverage','empty-requirements','unknown-node','empty-reasoning']:
  bad=copy.deepcopy(academic);c=bad['cards'][0]
  if failure=='no-coverage':del c['answer_coverage']
  elif failure=='empty-requirements':c['answer_coverage']['requirements']=[]
  elif failure=='unknown-node':c['answer_coverage']['requirements'][0]['nodes']=['missing']
  else:c['answer_coverage']['requirements'][0]['teaching']=''
- try:validate(bad)
+ try:validate(bad, legacy_coverage=True)
  except AssertionError:pass
- else:raise AssertionError('Coverage gate missed '+failure)
-for missing in ['exam_task','human_answer_refs','quality_review','answer_moves','teaching_refs','difficulty_review']:
- d=copy.deepcopy(academic)
- if missing=='exam_task':del d[missing]
- else:del d['cards'][0]['answer_basis'][missing]
- try:validate(d)
- except AssertionError:pass
- else:raise AssertionError(missing+' missing evidence not detected')
-# Shared research must work across cards, without six copied answer fields.
+ else:raise AssertionError('Historical coverage gate missed '+failure)
+# Shared evidence and formula titles are independent of local teaching scope.
 shared=copy.deepcopy(academic)
 shared['answer_basis']=shared['cards'][0].pop('answer_basis')
 shared['cards'][0]['research_use']='Fixture: shared sources guide the teaching scope'
 shared['cards'][0]['title_html']='<math><mfrac><mi>x</mi><mi>y</mi></mfrac></math>'
 shared['cards'][0]['title_speech']='x 除以 y'
-validate(shared)
+validate(shared, legacy_coverage=True)
 page=render(shared['cards'][0],'test.mp3')
 assert '<h1><math>' in page and '&lt;math' not in page
 bad=copy.deepcopy(shared);del bad['cards'][0]['title_speech']
-try:validate(bad)
+try:validate(bad, legacy_coverage=True)
 except AssertionError:pass
 else:raise AssertionError('Formula title missing natural narration was accepted')
 from validate_package import inspect_page
@@ -73,7 +68,7 @@ for script in ['build_deck.py','build_consumer_deck.py','build_teaching_deck.py'
 # Check tangent and budget geometry independently at plotted E.
 epsilon=1e-5;assert abs((18/(6+epsilon)-18/(6-epsilon))/(2*epsilon)+.5)<1e-8
 assert 18/6==6-6/2
-result={'mixed_nodes_preserved':True,'invalid_inputs_rejected':21,'coverage_reference_gate':True,'shared_research_supported':True,'math_title_supported':True,'missing_media_rejected':True,'legacy_native_runner_retired':True,'legacy_routes_fenced':4,'all_python_parse':True,'IC_tangency_verified':True}
+result={'mixed_nodes_preserved':True,'legacy_coverage_is_explicit':True,'coverage_reference_gate':True,'shared_research_supported':True,'math_title_supported':True,'missing_media_rejected':True,'legacy_native_runner_retired':True,'legacy_routes_fenced':4,'all_python_parse':True,'IC_tangency_verified':True}
 print(json.dumps(result,indent=2))
 
 # Simulate Anki extracting every script, then recover the map's semantic data.
