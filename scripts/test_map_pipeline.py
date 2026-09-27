@@ -3,6 +3,11 @@ import sys,json,copy,subprocess,ast
 p=Path(__file__).resolve().parent.parent;sys.path.insert(0,str(p/'scripts'))
 from build_map_deck import validate,render
 fixture=json.loads((p/'assets/map-example.json').read_text());validate(fixture)
+# A concrete observation may be narrated before the abstract map root.
+concrete_first=copy.deepcopy(fixture)
+order=concrete_first['cards'][0]['reading_order']
+concrete_first['cards'][0]['reading_order']=order[1:]+order[:1]
+validate(concrete_first)
 html=render(fixture['cards'][0],'test.mp3')
 assert all(x in html for x in ['<table','<math','<svg','data-side="read"','data-ccpt-single="1"'])
 assert html.count('class="speak"')==1 and 'data-choice' not in html

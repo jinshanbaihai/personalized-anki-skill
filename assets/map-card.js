@@ -11,10 +11,22 @@
  }
  const ro=new ResizeObserver(fit);ro.observe(vp);document.fonts.ready.then(fit);fit();
  const audio=root.querySelector('audio'),button=root.querySelector('.speak'),status=root.querySelector('.audio-status');
- button.addEventListener('click',async()=>{if(!audio.paused){audio.pause();return;}if(audio.ended)audio.currentTime=0;try{audio.playbackRate=1;await audio.play();}catch(e){status.textContent='语音未能播放，请检查本地音频';}},{signal:ctl.signal});
- audio.addEventListener('play',()=>{button.textContent='Ⅱ';button.setAttribute('aria-pressed','true');status.textContent='整页讲解 · 1.5×';});
- audio.addEventListener('pause',()=>{button.textContent=audio.ended?'↻':'▶';button.setAttribute('aria-pressed','false');status.textContent=audio.ended?'讲解结束 · 可重播':'已暂停 · Space 继续';});
- audio.addEventListener('ended',()=>{button.textContent='↻';status.textContent='讲解结束 · 可重播';});
+ const title=root.querySelector('h1'),cues=data.narration?.cues||[];
+ let activeCue=null,cleaned=false;
+ // Measured clip boundaries guide attention; nothing is hidden or scrolled.
+ function clearCue(){Object.values(nodes).forEach(n=>n.classList.remove('narrating'));title?.classList.remove('narrating');root.classList.remove('narration-paused');activeCue=null;}
+ function followNarration(){
+  if(cleaned||!cues.length)return;
+  if(audio.ended){clearCue();return;}
+  const cue=cues.find(c=>audio.currentTime>=c.start&&audio.currentTime<c.end)||null;
+  if(cue!==activeCue){clearCue();activeCue=cue;if(cue)(cue.node===null?title:nodes[cue.node])?.classList.add('narrating');}
+  root.classList.toggle('narration-paused',audio.paused&&!!activeCue);
+ }
+ button.addEventListener('click',async()=>{if(cleaned)return;if(!audio.paused){audio.pause();return;}if(audio.ended)audio.currentTime=0;try{audio.playbackRate=1;await audio.play();if(cleaned)audio.pause();}catch(e){if(!cleaned)status.textContent='语音未能播放，请检查本地音频';}},{signal:ctl.signal});
+ audio.addEventListener('play',()=>{button.textContent='Ⅱ';button.setAttribute('aria-pressed','true');status.textContent='整页讲解 · 1.5×';followNarration();},{signal:ctl.signal});
+ audio.addEventListener('pause',()=>{button.textContent=audio.ended?'↻':'▶';button.setAttribute('aria-pressed','false');status.textContent=audio.ended?'讲解结束 · 可重播':'已暂停 · Space 继续';followNarration();},{signal:ctl.signal});
+ audio.addEventListener('ended',()=>{button.textContent='↻';status.textContent='讲解结束 · 可重播';clearCue();},{signal:ctl.signal});
+ for(const event of ['timeupdate','seeking','seeked'])audio.addEventListener(event,followNarration,{signal:ctl.signal});
  window.ccptAudit=()=>{
   const scale=board.getBoundingClientRect().width/board.offsetWidth;
   const rects=Object.values(nodes).map(n=>({id:n.dataset.node,x:n.offsetLeft,y:n.offsetTop,w:n.offsetWidth,h:n.offsetHeight,font:parseFloat(getComputedStyle(n).fontSize)*scale}));
@@ -34,8 +46,9 @@
    overflow:rects.filter(n=>n.x+n.w>board.offsetWidth+1||n.y+n.h>board.offsetHeight+1),
    contentOverflow:Object.values(nodes).filter(n=>n.scrollWidth>n.clientWidth+1||n.scrollHeight>n.clientHeight+1).map(n=>n.dataset.node),
    overlaps:rects.flatMap((a,i)=>rects.slice(i+1).filter(b=>a.x<b.x+b.w&&a.x+a.w>b.x&&a.y<b.y+b.h&&a.y+a.h>b.y).map(b=>[a.id,b.id])),
+   narrationFollow:{enabled:!!cues.length,cueCount:cues.length,currentNode:activeCue?.node??null,currentTime:audio.currentTime,timing:data.narration?.timing||null},
    buttons:root.querySelectorAll('.speak').length,nodes:rects,math:root.querySelectorAll('math').length,tables:root.querySelectorAll('table').length,figures:root.querySelectorAll('.map-node svg').length};
  };
- window.ccptCleanup=()=>{audio.pause();audio.currentTime=0;ro.disconnect();ctl.abort();if(window.ccptSingleCleanup)window.ccptSingleCleanup();};
+ window.ccptCleanup=()=>{cleaned=true;ctl.abort();audio.pause();audio.currentTime=0;clearCue();ro.disconnect();if(window.ccptSingleCleanup)window.ccptSingleCleanup();};
  window.addEventListener('pagehide',window.ccptCleanup,{once:true,signal:ctl.signal});
 })();

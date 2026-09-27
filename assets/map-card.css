@@ -2,3 +2,7 @@
 .card .ccpt-map,.nightMode .ccpt-map,.night_mode .ccpt-map{background:#f7f7f3;color:#203342}.ccpt-map .map-node{color:#203342}.ccpt-map .map-node.root,.ccpt-map .map-node.branch{color:#fff}.ccpt-map .speak{flex:0 0 38px;box-sizing:border-box;padding:0}.ccpt-map .speak:disabled{opacity:.45;cursor:default}
 
 .ccpt-map{height:100vh;padding:8px 16px}.ccpt-map header{padding:0;margin:0;flex:0 0 44px;min-height:44px;box-sizing:border-box;border:0}.ccpt-map footer{padding:0;margin:0;flex:0 0 24px;box-sizing:border-box}.ccpt-map .speak{min-height:38px;max-height:38px;line-height:38px}
+.ccpt-map .map-node,.ccpt-map h1{transition:box-shadow .16s ease,outline-color .16s ease}
+.ccpt-map .narrating{outline:2px solid #bd8134;outline-offset:3px;box-shadow:0 0 0 6px rgba(189,129,52,.10)}
+.ccpt-map.narration-paused .narrating{outline-color:#a3a18f;box-shadow:none}
+@media(prefers-reduced-motion:reduce){.ccpt-map .map-node,.ccpt-map h1{transition:none}}

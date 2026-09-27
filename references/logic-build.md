@@ -2,7 +2,7 @@
 
 `python scripts/build_logic_deck.py input.json output_dir [--preview]` 调用 `build_map_deck.py`。依赖见 scripts/requirements.txt，语音还需 FFmpeg。当前模板不再继承旧 quiz 样式。先按 `exam-answer-first.md` 研究目标真题与可信人类作答，再设计教学与排版；程序能力不限制 AI 使用更好的表达。
 
-批次：model_id、model_name、voice（省略即云希）、academic、syllabus{url,edition}、cards，可加css。卡片：id、namespace、deck_id、deck、title、target、width、height、root、nodes、edges、reading_order、sources、audit；学科卡还需 scope 与 exam_use。学科批次另需 exam_task 与共享 answer_basis，卡片需 research_use（可覆盖 answer_basis）；新输入另含卡级 learning_unit 与批次 task_coverage，把局部教学与整题覆盖分开；不能填空话绕过校验。纯渲染工程样例的 academic:false 不是学科制卡的逃生开关。
+批次：model_id、model_name、voice（省略即云希）、可选 narration_follow（真实音轨节点定位，单卡可覆盖）、academic、syllabus{url,edition}、cards，可加css。卡片：id、namespace、deck_id、deck、title、target、width、height、root、nodes、edges、reading_order、sources、audit；学科卡还需 scope 与 exam_use。学科批次另需 exam_task 与共享 answer_basis，卡片需 research_use（可覆盖 answer_basis）；新输入另含卡级 learning_unit 与批次 task_coverage，把局部教学与整题覆盖分开；不能填空话绕过校验。纯渲染工程样例的 academic:false 不是学科制卡的逃生开关。
 
 exam_task 含非空文字：qualification（例如已确认的考试及阶段）、authority（考试局／主办方）、version（适用考纲年份／考试格式）、component（卷别／skill／task）、task_type（用户要做的题）。syllabus 对 IELTS 等没有学科考纲的考试记录实际官方格式／assessment criteria 来源与适用版本，不虚构 syllabus code。
 
@@ -18,7 +18,7 @@ nodes 每项有 id、x、y、width、html、speech，可选 style（root/branch/
 
 edges 每条含 from、to、meaning；direction=down 可表示纵向连接，arrow=true 可加箭头。meaning用于制作者审查及图中title；若关系不能仅从位置与节点理解，必须把关系解释直接写在可见节点/图中，而非藏在tooltip。合并与交叉连接可用，不局限树形分类。
 
-reading_order明确每个节点的整页讲解顺序，必须覆盖每节点一次且先根节点。speech是自然中文串联English术语的教学脚本，图和数表解释含义，不念排版代码。标题先读，后按reading_order；改布局须同步顺序。
+reading_order明确每个节点的整页讲解顺序，必须覆盖每节点一次；起点按理解路径选择，不强制根节点在先。speech是自然中文串联English术语的教学脚本，图和数表解释含义，不念排版代码。标题先读，后按reading_order；改布局须同步顺序。
 
 输出单面HTML、cards.json、rendered.json、speech-manifest.json、apkg。模板字段FrontHTML/BackHTML仅为兼容名称，两者相同，qfmt/afmt均呈现BackHTML。制作端 `ccptAudit()` 输出节点边界、字号、重叠及组件计数；必须在真实目标窗口检查。该接口不自动评价讲解。
 
@@ -37,3 +37,5 @@ reading_order明确每个节点的整页讲解顺序，必须覆盖每节点一�
 局部小样可标 partial，不要求每张卡作答整题。标 complete 时应有实际的整组重建与连接检查，remaining 为空；程序不能验证作者的“完整”判断，仍按 full-credit-coverage.md 审阅。每张卡都应说明自己在该应用中的作用，不能为通过检查虚构得分。cards 顺序可表达首次教学次序，但 Anki 的复习顺序未必相同，卡内必须能够重新定向。
 
 导出 Source 同时保存局部 learning_unit 和批次 task_coverage；学习正文不会被这些制作字段挤占。维护历史 per-card answer_coverage 时可显式传 --legacy-coverage-maintenance 保留旧结构，仅用于技术维护，不能用于新制卡或教学改版。新输入默认检查局部与整组两层；旧数据应实际重做范围与研究映射，而非只换字段名。
+
+启用 narration_follow 后，生成器按标题和节点分别合成、解码实测再拼为一个整页 MP3。只有整页音频入包；rendered.json、speech-manifest.json 与 map-data 保存实际 cue。ccptAudit().narrationFollow 返回当前定位状态；preview 不提供未经合成的假时间点。所有教学节点始终可见，暂停不丢关注位置，结束和切卡清理。

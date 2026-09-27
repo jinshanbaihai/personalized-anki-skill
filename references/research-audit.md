@@ -10,6 +10,14 @@
 | [Prinz, Golke & Wittwer 2021](https://link.springer.com/article/10.1007/s11251-021-09535-8)，N=92，refutation text 与 think sheet 实验 | 研究报告了与误解相关的即时理解收益，refutation text 的组间交互部分仅达边缘显著；未支持预期的延迟理解和迁移效果。不能据此证明穷举误解有效。 | 依据反馈识别合理误读，解释为何有吸引力及哪里不成立；不凑警告，不要求用户填写研究中使用的练习表。 |
 | [IES Practice Guide 2007](https://ies.ed.gov/ncee/wwc/PracticeGuide/1)，官方证据综述 | 图形配语言、抽象配具体获 moderate evidence；深层解释性问题获 strong evidence。指南不同策略证据不同，并非全部叠加必然增益。 | 制作者用“为什么／怎样”检查解释，选择图文、案例等能补实际缺口的方法；不由此强制 quiz 或统一教学顺序。 |
 
+## 解释路径的探索依据
+
+[Gentner、Loewenstein 与 Thompson（2003）](https://groups.psych.northwestern.edu/gentner/papers/GentnerLoewensteinThompson03.pdf) 的三项 negotiation 新手研究发现，引导比较案例可帮助提炼共同关系与迁移。已核查摘要与 General Discussion。研究含主动比较任务，不能由此声称被动看两例有同等收益。本 skill 的设计推论是显性展示可比关系与关键差异，案例数量不固定。
+
+[Mapping principles and worked examples for structural learning（2023）](https://www.frontiersin.org/journals/psychology/articles/10.3389/fpsyg.2023.1241873/full) 的概率学习实验纳入 138 名大学生，比较 principle–example 与 example–example mapping；没有证明前者普遍更强，困难的关系可能被读者跳过。已核查方法、结果、讨论与限制。对本 skill 的启发是帮助读者完成情境、图与原理的对应，不假设并排呈现就会自动整合；不是 Anki 上的效果保证。
+
+由这些依据和用户反馈形成的创造性方向见 `reader-first-teaching.md`：先识别理解缺口，比较不同解释路径，再以实际卡面的可观察关系检验。同步语音定位属于减少视觉搜索的设计选择，其时序可以工程验证，理解增益仍需用户体验确认。
+
 ## 不能从这些研究推出什么
 
 - 不能保证读完便永久记住，也不能保证任何读者都没有疑问；用户看不懂仍需返工。
