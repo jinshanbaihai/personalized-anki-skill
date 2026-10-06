@@ -97,7 +97,7 @@
 
 ## 易错卡（pitfall）
 
-来源：老师批注、ER、MS 的 SC 与 B0 说明、用户自己卷面的逐分记录。每条写错误写法、正确写法、为什么、丢哪一分、来源，并用 `source_type` 标来源种类（`er` 考官报告、`ms` 评分方案、`ecr` 真实考生答卷的考官评语（Cambridge Example Candidate Responses、Pearson exemplar）、`specimen` 考试局撰写的示范答案（不是真实考生）、`teacher` 老师批注、`user-script` 你的卷面、`textbook` 教材、`author` 归纳）；卡面印出种类标签，老师批注不冒称考官报告。一张易错卡聚焦一个方法或一道题的错误群，不做成全书错误大全。
+来源：老师批注、ER、MS 的 SC 与 B0 说明、本卷批改的逐分记录。每条写错误写法、正确写法、为什么、丢哪一分、来源，并用 `source_type` 标来源种类（`er` 考官报告、`ms` 评分方案、`ecr` 真实考生答卷的考官评语（Cambridge Example Candidate Responses、Pearson exemplar）、`specimen` 考试局撰写的示范答案（不是真实考生）、`teacher` 老师批注、`user-script` 本卷批改记录（只记题号、分点、得失，不写姓名和总分）、`textbook` 教材、`author` 归纳）；卡面印出种类标签，老师批注不冒称考官报告。一张易错卡聚焦一个方法或一道题的错误群，不做成全书错误大全。
 
 ## 全景卡（overview）
 

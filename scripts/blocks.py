@@ -728,7 +728,7 @@ def r_figure(b, bid, where):
 
 # Where a pitfall comes from; a teacher's note is never presented as an examiner's report.
 SOURCE_TYPES = {'er': '考官报告', 'ms': '评分方案', 'ecr': '考生答卷评语', 'specimen': '官方示范答案', 'teacher': '老师批注',
-                'user-script': '你的卷面', 'textbook': '教材', 'author': '归纳'}
+                'user-script': '本卷批改记录', 'textbook': '教材', 'author': '归纳'}
 
 
 def r_pitfall(b, bid, where):

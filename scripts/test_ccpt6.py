@@ -482,7 +482,7 @@ def test_pitfall_source_types_are_labelled():
     with pytest.raises(blocks.BlockError, match='source_type'):
         blocks.render_block({'type': 'pitfall', 'items': [{'wrong': 'a', 'right': 'b', 'source': 'x', 'source_type': 'rumour'}]}, 'b0', 'w')
     html, _ = blocks.render_block({'type': 'pitfall', 'items': [{'wrong': 'a', 'right': 'b', 'source': 'Q01 A2 = 0', 'source_type': 'user-script'}]}, 'b0', 'w')
-    assert '你的卷面' in html
+    assert '本卷批改记录' in html
 
 
 def test_theme_by_subdeck_and_formula_booklet():

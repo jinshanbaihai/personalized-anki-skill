@@ -13,7 +13,9 @@ import hashlib
 import json
 import os
 import re
+import shutil
 import subprocess
+import sys
 import tempfile
 from pathlib import Path
 
@@ -35,6 +37,27 @@ DEFAULT_LEXICON = {'λ': 'lambda', 'μ': 'mu', 'σ': 'sigma', 'θ': 'theta', 'π
                    'Σ': 'sigma 求和', 'Δ': 'delta', '≥': '大于等于', '≤': '小于等于', '≠': '不等于', '≈': '约等于',
                    '↑': '上升', '↓': '下降', '∴': '所以', '∵': '因为', '∈': '属于', '°': '度', '²': '的平方', '³': '的立方', '½': '二分之一',
                    'e.g.': '例如', 'i.e.': '也就是', 'vs': '对比', '<': '小于', '>': '大于', '×': '乘以', '÷': '除以'}
+
+
+INSTALL_FFMPEG = ('  Windows: winget install Gyan.FFmpeg    macOS: brew install ffmpeg    Linux: sudo apt install ffmpeg\n'
+                  '  Then open a new terminal so ffmpeg and ffprobe are on PATH, and run the same command again.')
+
+
+class ToolMissing(RuntimeError):
+    pass
+
+
+def missing_tools():
+    return [t for t in ('ffmpeg', 'ffprobe') if not shutil.which(t)]
+
+
+def require_tools():
+    """Narration needs ffmpeg and ffprobe; say so plainly instead of blaming the voice service later."""
+    missing = missing_tools()
+    if missing:
+        print(f'✗ ffmpeg_missing: {" and ".join(missing)} not found on PATH (needed to trim, speed up and join narration).\n'
+              + INSTALL_FFMPEG, file=sys.stderr)
+        sys.exit(4)
 
 
 def cache_root():
@@ -98,6 +121,8 @@ def decodes(path):
         if not duration(path) > 0:
             return False
         return subprocess.run(['ffmpeg', '-v', 'error', '-i', str(path), '-f', 'null', '-'], capture_output=True).returncode == 0
+    except FileNotFoundError as error:  # ffprobe/ffmpeg itself is missing: not a bad file, and not the voice service
+        raise ToolMissing(f'ffmpeg_missing: {error.filename or "ffmpeg"} not found on PATH\n{INSTALL_FFMPEG}') from None
     except (OSError, ValueError, subprocess.SubprocessError):
         return False
 
