@@ -34,7 +34,8 @@ def deck():
             {'type': 'er', 'ref': 'synthetic ER', 'read': 'Q2', 'used_for': 'pitfalls'},
         ],
         'board': [{'id': 'B01', 'where': 'p1', 'point': 'statistic definition', 'items': ['S-1']}],
-        'coverage': {'scope': 'synthetic 4.2', 'status': 'complete', 'remaining': '', 'items': [
+        'demands': [{'id': 'D1', 'series': 'Jan 2025', 'q': 'Q2(a)', 'ask': 'Explain why X is a statistic', 'points': ['S-1'], 'cards': ['T01']}],
+        'coverage': {'scope': 'synthetic 4.2', 'status': 'complete', 'remaining': '', 'saturation': 'synthetic: 4 series, last 3 added nothing new', 'items': [
             {'id': 'S-1', 'spec': '4.2', 'point': 'statistic', 'class': 'core', 'level': 'MS keywords', 'kind': 'term',
              'evidence': ['WST02 Jan 2025 Q2 MS', 'WST02 Jun 2023 ER Q2']},
             {'id': 'X-1', 'spec': 'S3 3.6', 'point': 'CLT', 'class': 'excluded', 'reason': 'other unit'}]},
@@ -43,7 +44,7 @@ def deck():
             'blocks': [
                 {'type': 'lead', 'text': '只用样本就能算出的量'},
                 {'type': 'definition', 'term': 'Statistic', 'text': 'A quantity calculated only from the sample, containing no unknown parameters.',
-                 'keywords': ['only from the sample', 'no unknown parameters'], 'reject': ['because it is known']},
+                 'keywords': ['only from the sample', 'no unknown parameters'], 'reject': ['because it is known'], 'source': 'synthetic MS'},
                 {'type': 'examples', 'yes': [{'text': 'sample mean', 'why': 'only sample values'}], 'no': [{'text': 'population mean', 'why': 'unknown parameter'}]},
                 {'type': 'steps', 'items': [{'do': '$\\frac{9}{245}$〔245 分之 9〕', 'why': '不放回', 'mark': 'B1'}]},
                 {'type': 'map', 'root': {'text': 'root', 'children': [{'text': 'a', 'rel': '导致', 'children': [{'text': 'b', 'rel': '所以'}]}]}},
@@ -401,3 +402,109 @@ def test_in_place_update_keeps_history(tmp_path):
     assert col.db.all('select id,nid,did,due,ivl,reps,type,queue from cards') == before
     assert col.db.all('select * from revlog') == logs
     col.close()
+
+
+def test_demand_inventory_is_required_and_linked():
+    d = deck()
+    del d['demands']
+    with pytest.raises(deck_rules.DeckError, match='demands'):
+        deck_rules.check(d)
+    d = deck()
+    d['demands'][0]['cards'] = ['NOPE']
+    with pytest.raises(deck_rules.DeckError, match='card ids'):
+        deck_rules.check(d)
+    d = deck()
+    d['demands'][0]['cards'] = []
+    with pytest.raises(deck_rules.DeckError, match='not_carded'):
+        deck_rules.check(d)
+    d = deck()
+    d['coverage']['items'].append({'id': 'S-2', 'spec': '4.2', 'point': 'sampling distribution', 'class': 'core', 'level': 'x', 'kind': 'term',
+                                   'evidence_gap': 'synthetic', 'existing': 'old deck card'})
+    assert deck_rules.check(d)['coverage']['undemanded'] == ['S-2']
+
+
+def test_adjacent_points_are_listed_not_taught():
+    d = deck()
+    d['coverage']['items'].append({'id': 'H-1', 'spec': '4.3', 'point': 'critical region', 'class': 'adjacent', 'reason': 'same section, next batch'})
+    assert deck_rules.check(deck_rules_copy(d))['coverage']['adjacent'] == ['H-1']
+    d['cards'][0]['covers'].append('H-1')
+    with pytest.raises(deck_rules.DeckError, match='adjacent'):
+        deck_rules.check(d)
+
+
+def deck_rules_copy(d):
+    return copy.deepcopy(d)
+
+
+def test_each_paper_format_needs_its_own_source():
+    d = deck()
+    d['exam']['papers'] = [{'code': '9708/3', 'format': 'mcq'}]
+    with pytest.raises(deck_rules.DeckError, match='9708/3'):
+        deck_rules.check(d)
+    d['research'][1]['paper'] = ['9708/3']
+    deck_rules.check(d)
+
+
+def test_blurry_board_points_need_a_confirming_source():
+    d = deck()
+    d['board'][0]['legibility'] = 'low'
+    with pytest.raises(deck_rules.DeckError, match='confirmed_by'):
+        deck_rules.check(d)
+    d['board'][0]['confirmed_by'] = 'WST02 Jan 2025 MS p.8'
+    deck_rules.check(d)
+
+
+def test_term_definition_needs_a_source():
+    d = deck()
+    del d['cards'][0]['blocks'][1]['source']
+    with pytest.raises(deck_rules.DeckError, match='definition.source'):
+        deck_rules.check(d)
+
+
+def test_heuristic_note_names_exceptions():
+    with pytest.raises(blocks.BlockError, match='exceptions'):
+        blocks.render_block({'type': 'note', 'tone': 'heuristic', 'text': 'ILATE'}, 'b0', 'w')
+    html, parts = blocks.render_block({'type': 'note', 'tone': 'heuristic', 'text': 'ILATE 选 u',
+                                       'exceptions': ['$\\int \\ln x\\,dx$〔ln x 的积分〕：把 1 当作 dv']}, 'b0', 'w')
+    assert '经验法则' in html and '不是评分要求' in parts[0].text and 'ln x 的积分' in parts[0].text
+
+
+def test_alternative_method_says_when_to_use_it():
+    html, parts = blocks.render_block({'type': 'steps', 'label': '另一种做法', 'when': '分母是一次因式时更快',
+                                       'items': [{'do': 'x', 'why': '为了消去 B'}]}, 'b0', 'w')
+    assert 'steps-when' in html and parts[0].text.startswith('另一种做法') and '什么时候用这种做法' in parts[0].text
+
+
+def test_pitfall_source_types_are_labelled():
+    with pytest.raises(blocks.BlockError, match='source_type'):
+        blocks.render_block({'type': 'pitfall', 'items': [{'wrong': 'a', 'right': 'b', 'source': 'x', 'source_type': 'rumour'}]}, 'b0', 'w')
+    html, _ = blocks.render_block({'type': 'pitfall', 'items': [{'wrong': 'a', 'right': 'b', 'source': 'Q01 A2 = 0', 'source_type': 'user-script'}]}, 'b0', 'w')
+    assert '你的卷面' in html
+
+
+def test_theme_by_subdeck_and_formula_booklet():
+    d = deck()
+    d['style']['theme_by_subdeck'] = {'P4': 'paper'}
+    d['cards'][0]['subdeck'] = 'P4'
+    d['cards'][0]['formula_booklet'] = 'memorise'
+    deck_rules.check(d)
+    r = build_cards.render_card(d, d['cards'][0], d['style'])
+    assert r['theme'] == 'paper'
+    d['cards'][0]['formula_booklet'] = 'maybe'
+    with pytest.raises(deck_rules.DeckError, match='formula_booklet'):
+        deck_rules.check(d)
+
+
+def test_board_legibility_gate_flags_recompressed_images():
+    from PIL import Image
+    from slice_board import legibility
+    assert legibility(Image.new('RGB', (259, 2000), 'white'))['verdict'] == 'low'
+    assert legibility(Image.new('RGB', (1600, 2000), 'white'))['verdict'] == 'ok'
+    assert legibility(Image.new('RGB', (600, 800), 'white'), rendered_pdf=True)['verdict'] == 'ok'
+
+
+def test_inline_integrals_are_text_style():
+    html = blocks.inline('$\\int_0^1 x\\,dx$〔x 从 0 到 1 的积分〕', 'w').html
+    assert 'largeop="false"' in html
+    display = blocks.inline('$$\\int_0^1 x\\,dx$$〔x 从 0 到 1 的积分〕', 'w').html
+    assert 'largeop="false"' not in display

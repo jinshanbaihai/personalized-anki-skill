@@ -84,7 +84,7 @@ def render_card(data, card, style):
         sections.append(section)
         parts += [(p.target, p.text) for p in block_parts]
     voice = resolve_voice(style.get('voice_by_subdeck', {}).get(card.get('subdeck', ''), style.get('voice') or DEFAULT_VOICE))
-    theme = card.get('theme') or style.get('theme', 'editorial')
+    theme = card.get('theme') or style.get('theme_by_subdeck', {}).get(card.get('subdeck', '')) or style.get('theme', 'editorial')
     if theme in ELBOW_THEMES:  # textbook and engineering themes draw right-angled connectors by default
         sections = [re.sub(r'<div class="mm" (?![^>]*data-edge)', '<div class="mm" data-edge="elbow" ', sec) for sec in sections]
     return {'title_html': title.html, 'sections': sections, 'parts': parts, 'voice': voice, 'theme': theme}
@@ -100,6 +100,9 @@ def choose_speed(card, style, narration_text, seen_terms):
     if deck_speed != 'auto':
         return float(deck_speed), style.get('speed_reason', ''), metrics, auto_speed
     return auto_speed, auto_reason, metrics, auto_speed
+
+
+FORMULA_BOOKLET = {'given': '公式表已给', 'memorise': '须背：公式表没有', 'derive': '须会推导'}
 
 
 def clock(seconds):
@@ -122,7 +125,9 @@ def page(data, card, r, audio_name, cues, pending_message=None):
     length = f' · {clock(cues["duration"])}' if cues else ''
     status = esc(pending_message) if pending_message else f'{voice_label} · {speed_label}{length}'
     out = (f'<main {attrs}><header class="cc-head"><div class="cc-meta"><span class="cc-genre">{GENRES[genre]}</span>'
-           f'<span class="cc-tag">{esc(card_tag(data, card))}</span></div>'
+           f'<span class="cc-tag">{esc(card_tag(data, card))}</span>'
+           + (f'<span class="cc-fb" data-fb="{card["formula_booklet"]}">{FORMULA_BOOKLET[card["formula_booklet"]]}</span>' if card.get('formula_booklet') else '')
+           + '</div>'
            f'<div class="cc-titlebar"><h1 data-node="title">{r["title_html"]}</h1><div class="cc-player">{player}</div></div></header>'
            f'<article class="cc-body">{"".join(r["sections"])}</article>'
            f'<footer class="cc-foot"><span class="audio-status">{status}</span><span class="keys">{KEYS_HINT if not pending_message else "Enter 继续 · 1 明天再看"}</span></footer>')
@@ -174,6 +179,33 @@ def re_latin(value):
 COMMON_EN = set('a an the of to in on for and or is are be by with from as at it its this that than then not no can may must which who what when where how per each all any one two'.split())
 
 
+CAUSAL = r'^(导致|引起|造成|使得|使|所以|因此|从而|进而|于是|带来|leads? to|causes?|so|therefore)'
+DIRECTION = (r'上升|下降|增加|增大|减少|减小|扩大|缩小|提高|降低|升高|升至|升到|降至|降到|涨|跌|右移|左移|上移|下移|外移|内移|移动|'
+             r'高于|低于|大于|小于|超过|不足|多于|少于|等于|回到|变为|变成|偏离|消除|消失|出现|形成|过度|过少|过多|→|rise|fall|increase|decrease|shift|exceed|'
+             r'失灵|短缺|过剩|损失|浪费|低效|无效|有效|效率|均衡|最优|failure|shortage|surplus|loss|efficien|equilibrium|optimum')
+CONDITION = r'取决于|如果|假如|若|当|只有|除非|前提|条件|视|depends|unless|only if|provided'
+REASONING = r'为了|因为|由于|所以|使|才能|需要|要|否则|根据|满足|成立|保证|目的|以便|这样|定理|法则|公式|定义|条件|规则|性质|等价|代入|消去|抵消|得到'
+
+
+def chain_nodes(items):
+    for e in items:
+        if isinstance(e, dict) and 'fork' in e:
+            for branch in e['fork']:
+                yield from chain_nodes(branch)
+        elif isinstance(e, dict):
+            yield e
+
+
+def why_echoes(why, do):
+    """A "why" that has no reasoning word and mostly repeats the step's own symbols explains nothing."""
+    w = re.sub(r'\s|\$|〔[^〕]*〕', '', strip_tags(why))
+    d = re.sub(r'\s|\$|〔[^〕]*〕', '', strip_tags(do))
+    if re.search(REASONING, w) or not w:
+        return False
+    shared = sum(1 for ch in w if ch in d)
+    return shared / len(w) > 0.7
+
+
 def lint_card(card):
     """Advisory checks that keep cards explained, readable and in the user's preferred shape."""
     out = []
@@ -189,8 +221,23 @@ def lint_card(card):
                 out.append('trivial 步超过四分之一，检查是否跳过了需要讲的步骤')
             if any(i.get('why') and len(strip_tags(i['why'])) < 6 for i in items):
                 out.append('有的“为什么”少于 6 个字，可能没讲出原理')
+            echo = [n + 1 for n, i in enumerate(items) if i.get('why') and why_echoes(i['why'], i.get('do', ''))]
+            if echo:
+                out.append(f'第 {"、".join(map(str, echo))} 步的“为什么”像在复述做法：写目的（为了…）、条件（因为…成立）或原理名')
         if b.get('type') == 'sections' and any(len(strip_tags(i.get('text', ''))) > 60 for i in b.get('items', [])):
             out.append('sections 有超过 60 字的长段：文科展开改用 chain 或 map 的箭头结构')
+        if b.get('type') == 'chain':
+            vague, unjudged = [], []
+            for node in chain_nodes(b.get('items', [])):
+                states_change = node.get('kind', 'topic') in ('topic', 'cause', 'effect', 'policy')
+                if states_change and re.match(CAUSAL, strip_tags(node.get('rel', ''))) and not re.search(DIRECTION + '|' + CONDITION, strip_tags(node.get('text', ''))):
+                    vague.append(strip_tags(node['text'])[:12])
+                if (node.get('ao') == 'AO3' or node.get('kind') == 'evaluation') and not (node.get('cond') or node.get('note') or re.search(CONDITION, strip_tags(node.get('text', '')))):
+                    unjudged.append(strip_tags(node['text'])[:12])
+            if vague:
+                out.append('因果箭头的结果没写变量往哪个方向变（如“Q 由 Qm 降到 Q*”“MPC 上移”）：' + '｜'.join(vague[:4]))
+            if unjudged:
+                out.append('评价节点缺条件或对结论的影响（cond 或 note）：' + '｜'.join(unjudged[:4]))
         if b.get('type') == 'map':
             branches = b.get('root', {}).get('children', [])
             def count(n):
@@ -317,9 +364,9 @@ def main(argv=None):
         warn = []
         if 'speed' in card and float(card['speed']) != auto_speeds[card['id']]:
             warn.append(f'手动速度 {card["speed"]}× 与计算规则 {auto_speeds[card["id"]]}× 不同，确认理由')
-        maps = [m for m in re.findall(r'class="mm-node"', body)]
-        if len(maps) > 20:
-            warn.append(f'导图 {len(maps)} 个节点，超过 20 个时考虑拆卡')
+        nodes = len(re.findall(r'class="mm-node"', body))
+        if nodes > 60:
+            warn.append(f'导图 {nodes} 个节点，超过 60 个：拆成全景图加分支子图')
         warn += lint_card(card)
         odd = narration.speech_lint(p['text'])
         if odd:
@@ -350,6 +397,11 @@ def main(argv=None):
     deck_warnings = []
     if len(report_cards) >= 5 and len(slow) > 0.3 * len(report_cards):
         deck_warnings.append(f'{len(slow)}/{len(report_cards)} 张卡判为 1.5×，超过三成：复核速度规则或卡片是否过密')
+    cov = summary.get('coverage') or {}
+    if cov.get('undemanded'):
+        deck_warnings.append('这些 core 考点没有出现在任何真题需求里（新考点或漏读真题？）：' + '、'.join(cov['undemanded']))
+    if cov.get('adjacent'):
+        deck_warnings.append('同节相邻、留给下一批的考点（交付时告诉用户）：' + '、'.join(cov['adjacent']))
     ledger = term_ledger(data, pages) if data.get('academic', True) else []
     if ledger:
         deck_warnings.append('这些 English 词出现在多张卡上，但没有术语卡、<abbr> 或 terms_known 解释：' + '、'.join(x['term'] for x in ledger[:10]))

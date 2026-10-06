@@ -83,6 +83,8 @@ def inline(text, where, *, allow_block_html=False):
         source = tidy_latex((match.group(2) if display else match.group(3)).strip())
         try:
             mathml = latex_to_mathml(source, display='block' if display else 'inline')
+            if not display:  # text-style big operators inside a sentence, as in a printed textbook
+                mathml = re.sub(r'<mo>(&#x0222B;|&#x0222C;|&#x0222E;|&#x02211;|&#x0220F;)</mo>', r'<mo largeop="false">\1</mo>', mathml)
         except Exception as error:  # noqa: BLE001
             fail(where, f'LaTeX could not be converted: {source!r} ({error})')
         out_html.append(f'<span class="math{" math-display" if display else ""}" data-tex="{html.escape(source, quote=True)}">{mathml}</span>')
@@ -174,10 +176,19 @@ def r_note(b, bid, where):
     label = inline(b.get('label'), where)
     head = f'<h3 class="blk-label">{label.html}</h3>' if label else ''
     tone = b.get('tone', 'plain')
-    if tone not in ('plain', 'key', 'aside', 'warn'):
-        fail(where, 'tone must be plain, key, aside or warn')
-    return (f'<div class="note tone-{tone}">{head}<p>{t.html}</p></div>',
-            [Part(bid, joined(label.speech, t.speech), t.unspoken + label.unspoken)])
+    if tone not in ('plain', 'key', 'aside', 'warn', 'heuristic'):
+        fail(where, 'tone must be plain, key, aside, warn or heuristic')
+    if tone != 'heuristic':
+        return (f'<div class="note tone-{tone}">{head}<p>{t.html}</p></div>',
+                [Part(bid, joined(label.speech, t.speech), t.unspoken + label.unspoken)])
+    # A teacher's rule of thumb (e.g. ILATE) is not in the syllabus or mark scheme: say so and show where it fails.
+    exceptions = need_list(b, 'exceptions', where)
+    rendered = [inline(e, f'{where}.exceptions[{i}]') for i, e in enumerate(exceptions)]
+    head = head or '<h3 class="blk-label">经验法则</h3>'
+    out = (f'<div class="note tone-heuristic">{head}<p>{t.html}</p><p class="heur-flag">考纲和评分方案都不要求这个口诀；它帮你选方法，不能代替理由。</p>'
+           '<h4 class="heur-ex">例外</h4><ul class="heur-list">' + ''.join(f'<li>{r.html}</li>' for r in rendered) + '</ul></div>')
+    speech = joined(label.speech or '经验法则', t.speech, '这是经验法则，不是评分要求。例外：' + '；'.join(r.speech for r in rendered))
+    return out, [Part(bid, speech, t.unspoken + label.unspoken + sum(r.unspoken for r in rendered))]
 
 
 def r_definition(b, bid, where):
@@ -291,11 +302,15 @@ def r_steps(b, bid, where):
     label = inline(b.get('label'), where)
     given = inline(b.get('given'), where)
     goal = inline(b.get('goal'), where)
+    when = inline(b.get('when'), where)
     out = f'<h3 class="blk-label">{label.html}</h3>' if label else ''
+    if when:  # an alternative method the mark scheme also accepts: say when to choose it
+        out += f'<p class="steps-when"><span class="tagline">何时用</span>{when.html}</p>'
+    intro = joined(label.speech, ('什么时候用这种做法：' + when.speech) if when else '')
     parts = []
     if given:
         out += f'<div class="steps-given" data-node="{bid}-given"><span class="tagline">已知</span>{given.html}</div>'
-        parts.append(Part(f'{bid}-given', joined(label.speech, '已知：' + given.speech), given.unspoken))
+        parts.append(Part(f'{bid}-given', joined(intro, '已知：' + given.speech), given.unspoken + when.unspoken))
     out += '<ol class="steps">'
     current_goal = None
     for i, item in enumerate(items):
@@ -324,9 +339,11 @@ def r_steps(b, bid, where):
                 + (f'<div class="step-mark-note">{note.html}</div>' if note else '')
                 + '</div>' + (f'<span class="mark-badge" data-type="{mark_type(mark)}">{esc(mark)}</span>' if mark else '') + '</li>')
         speech = joined(goal_speech, f'第{i + 1}步，{do.speech}', ('为什么？' + why.speech) if why else '', ('依据：' + basis.speech) if basis else '')
-        if not given and i == 0 and label:
-            speech = joined(label.speech, speech)
-        parts.append(Part(nid, speech, do.unspoken + why.unspoken + basis.unspoken + subgoal.unspoken))
+        first_extra = 0
+        if not given and i == 0 and intro:
+            speech = joined(intro, speech)
+            first_extra = when.unspoken
+        parts.append(Part(nid, speech, do.unspoken + why.unspoken + basis.unspoken + subgoal.unspoken + first_extra))
     out += '</ol>'
     basis_note = inline(b.get('marks_basis'), where)
     if basis_note:
@@ -538,6 +555,10 @@ def r_figure(b, bid, where):
     return out, parts
 
 
+# Where a pitfall comes from; a teacher's note is never presented as an examiner's report.
+SOURCE_TYPES = {'er': '考官报告', 'ms': '评分方案', 'teacher': '老师批注', 'user-script': '你的卷面', 'textbook': '教材', 'author': '归纳'}
+
+
 def r_pitfall(b, bid, where):
     items = need_list(b, 'items', where)
     label = inline(b.get('label', '易错点'), where)
@@ -549,13 +570,18 @@ def r_pitfall(b, bid, where):
         right = inline(need_text(item, 'right', w), w)
         why = inline(item.get('why'), w)
         src = inline(item.get('source'), w)
+        kind = item.get('source_type')
+        if kind is not None and kind not in SOURCE_TYPES:
+            fail(w, f'source_type must be one of {sorted(SOURCE_TYPES)}')
+        if kind and not src:
+            fail(w, 'source_type needs a source (which report, mark scheme, script or annotation)')
         lost = item.get('lost')
         nid = f'{bid}-f{i}'
         out += (f'<div class="pf" data-node="{nid}">' + (f'<span class="mark-badge pf-lost" title="丢的分">−{esc(lost)}</span>' if lost else '')
                 + f'<div class="pf-wrong"><span class="pf-mark">✗</span>{wrong.html}</div>'
                 f'<div class="pf-right"><span class="pf-mark">✓</span>{right.html}</div>'
                 + (f'<div class="pf-why">{why.html}</div>' if why else '')
-                + (f'<div class="pf-src">{src.html}</div>' if src else '') + '</div>')
+                + (f'<div class="pf-src" data-type="{kind or ""}">' + (f'<span class="pf-src-type">{SOURCE_TYPES[kind]}</span>' if kind else '') + f'{src.html}</div>' if src else '') + '</div>')
         lead = label.speech + '。' if i == 0 else ''
         parts.append(Part(nid, joined(lead + '错误写法：' + wrong.speech, '正确：' + right.speech, why.speech), wrong.unspoken + right.unspoken + why.unspoken))
     return out + '</div>', parts

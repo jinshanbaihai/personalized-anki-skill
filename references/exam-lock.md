@@ -18,8 +18,10 @@
 2. **定考试局**：有 A 级证据即定；否则看版式指纹（下表）。
 3. **定资格与单元**：把每个知识点映射到候选考纲的条目号与印刷页码。候选考纲覆盖全部知识点才保留；有两个以上知识点找不到对应条目（且不属于老师明显的拓展或先修）就排除。优先比较排他点。
 4. **定版本**：先确定目标考季（板书日期、用户计划、老师说明；不知道时取下一个可报考季并记为假设）。CIE 看封面“Use this syllabus for exams in …”与 Version；Pearson 看 Issue 号、ISBN 与 Summary of changes（2013 旧 IAL 数学考纲也有 “Issue 3”，只看 Issue 号会混淆）。
-5. **多候选仍并存**：先查用户 Google Drive、已有牌组和报名材料。候选差异不影响本批内容时，按更严格的一方制作并写明；差异会改变范围或深度时，问用户一次，用选项问（“A) Pearson IAL WMA14，2027 年 1 月　B) CIE 9709 Paper 3，2027 年 6 月？”）。
-6. **记录**：`exam.identified_by` 写 `paper-code`／`exclusive-content`／`user`；`evidence` 写每条证据及其级别；用排他内容锁定时 `ruled_out` 写每个近似考试与排除它的证据。
+5. **多候选仍并存**：先查用户 Google Drive、已有牌组和报名材料。候选差异不影响本批内容时，按更严格的一方制作并写明。差异会改变范围或深度时：开工前用户在场，就用选项问一次（“A) Pearson IAL WMA14，2027 年 1 月　B) CIE 9709 Paper 3，2027 年 6 月？”）；在要求一次做完的任务里，按证据最强的候选制作，`session_assumed` 或 `evidence` 写明假设，交付说明第一行写出另一候选会改变哪些卡。
+6. **定报考结构**：这批内容会出现在哪些试卷、哪种卷型（9708 的 7.4／8.1 同时出现在 Paper 3 选择题与 Paper 4 essay；分段报考的学生还可能考 AS Paper 2 的 8＋12 分两问 essay）。写进 `exam.papers`，每种卷型分别标定（[coverage-ledger.md](coverage-ledger.md) §3）。
+7. **题目溯源**：板书上的每道印刷题都去找官方出处——Drive 全文检索（`fullText contains '…题干里一段独特的话…'`）、本地真题 `pdftotext` 后 `grep`、Edexcel-Finder 一类的题干索引只作指针。找到就写 `board[i].source_paper`，并读该卷 MS 与 ER；排除过的考季也记下（“已排除 June 2025 /01、/01A、October 2025”），下次不重复找。
+8. **记录**：`exam.identified_by` 写 `paper-code`／`exclusive-content`／`user`；`evidence` 写每条证据及其级别；用排他内容锁定时 `ruled_out` 写每个近似考试与排除它的证据。
 
 ## 版式指纹
 

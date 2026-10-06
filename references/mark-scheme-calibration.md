@@ -7,6 +7,9 @@
 - 每个 core 考点至少找到 **2 个不同考季**、问法不同的真题，连同对应 MS 一起读；高频考点读到问法不再出新。定义题、计算题、证明题、essay 题分别找。
 - 每个单元至少读 1 份 examiner report（Pearson 叫 Examiners' report／PEF，Cambridge 叫 Principal Examiner Report for Teachers），重点读与本批考点相关的题段。
 - essay 类科目找**同一题的高中低档真实作答**（Cambridge ECR、Pearson exemplar responses），看档位之间差在哪里。
+- 每种卷型分别标定：同一考点在选择题（考辨析细节与干扰项）、结构题、essay 里的掌握要求不同。选择题用考官报告的逐题说明（哪个干扰项最常被选、为什么）做辨析卡。
+- **用户自己的卷面**也是标定材料：讲评 PDF 里的逐分记录（`Q01B 1｜Q01M 1｜Q01A1 1｜Q01A2 0`）直接显示这位考生在哪类分上丢分，A 分为 0 的点优先做易错卡（`source_type: "user-script"`）。
+- 数学的“真实考生作答”通常只有两种来源：考官报告里转述的考生写法，和用户自己被批改过的卷子；Pearson 是否为 IAL 数学发布带评语的 exemplar 要查，查不到就写进 `research_gaps`。
 - 读不到时在 `research_gaps` 写明，并写用什么替代（同类题、同考试局其他单元的 ER、教材）。
 
 ## Pearson（IAL／GCE 数学、统计）MS 记号

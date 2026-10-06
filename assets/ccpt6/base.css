@@ -232,6 +232,17 @@
  radial-gradient(farthest-side at 0 50%,rgba(0,0,0,.22),transparent) left/10px 100% no-repeat scroll,
  radial-gradient(farthest-side at 100% 50%,rgba(0,0,0,.22),transparent) right/10px 100% no-repeat scroll}
 
+/* teacher's rule of thumb: visibly not a mark-scheme requirement, exceptions listed */
+.note.tone-heuristic{border-left:4px dashed var(--rule-strong);padding-left:14px}
+.heur-flag{font:15px/1.55 var(--font-ui);color:var(--ink-2);margin:.4em 0 0}
+.heur-ex{font:700 13.5px/1.3 var(--font-ui);letter-spacing:.06em;color:var(--bad);margin:10px 0 2px}
+.heur-list{margin:0;padding-left:1.15em}
+.steps-when{font-size:var(--fs-small);color:var(--ink-2);margin:-2px 0 10px;max-width:var(--measure)}
+.pf-src-type{display:inline-block;font:700 12.5px/1.2 var(--font-ui);letter-spacing:.06em;color:var(--surface);background:var(--pen);border-radius:4px;padding:3px 6px;margin-right:8px;vertical-align:2px}
+.pf-src[data-type="er"] .pf-src-type,.pf-src[data-type="ms"] .pf-src-type{background:var(--ink)}
+.cc-fb{font-weight:700;color:var(--ink);border:1px solid var(--rule-strong);border-radius:4px;padding:2px 7px}
+.cc-fb[data-fb="memorise"]{border-color:var(--bad);color:var(--bad)}
+
 /* ---------- 5. Narration focus ---------- */
 .ccpt6 .narrating{outline:2px solid var(--focus);outline-offset:3px;box-shadow:0 0 0 7px var(--focus-soft);border-radius:8px;transition:outline-color .15s ease,box-shadow .15s ease}
 .ccpt6.narration-paused .narrating{outline-color:var(--rule-strong);box-shadow:none}
@@ -402,3 +413,23 @@
 /* narration focus (player.js adds .narrating) */
 :is(.ccmm,.ccchain) .narrating{outline:2px solid var(--mm-focus);outline-offset:2px;box-shadow:0 0 0 6px var(--focus-soft,rgba(13,110,116,.14))}
 @media (prefers-reduced-motion:no-preference){:is(.ccmm,.ccchain) .mm-node,.ch-node{transition:outline-color .15s ease}}
+
+/* ---------- 8. Card-type motifs: one visual idea per card type, drawn only with theme tokens ---------- */
+/* term = dictionary entry: the definition is an open entry between a double and a single rule, not a boxed panel */
+.ccpt6[data-genre="term"] .blk-definition{background:transparent;border:0;border-top:3px double var(--rule-strong);border-bottom:1px solid var(--rule-strong);border-radius:0;box-shadow:none;padding-left:2px;padding-right:2px}
+.ccpt6[data-genre="term"] .def-term{font-size:calc(var(--fs-term) + 4px)}
+/* derivation/method = marked script: a margin rule separates the working from the marks column (desktop) */
+@media (min-width:641px){
+ .ccpt6:is([data-genre="derivation"],[data-genre="method"],[data-genre="formula"]) .step{grid-template-columns:36px minmax(0,1fr) 84px;
+  background:linear-gradient(var(--rule-strong),var(--rule-strong)) no-repeat right 92px top 0/1px 100%}
+ .ccpt6:is([data-genre="derivation"],[data-genre="method"],[data-genre="formula"]) .step>.mark-badge{justify-self:center;white-space:normal;text-align:center;line-height:1.45;max-width:84px}
+}
+/* chain/map/overview = drafting sheet: a faint dot grid behind the diagram, so the arrows read as a drawn figure */
+.ccpt6:is([data-genre="chain"],[data-genre="map"],[data-genre="overview"]) :is(.blk-chain,.blk-map){background-image:radial-gradient(var(--rule) 1.1px,transparent 1.3px);background-size:18px 18px}
+/* essay = answer booklet: paragraph numbers sit in a red margin, like the ruled margin of an exam script */
+.ccpt6[data-genre="essay"] .sections{background:linear-gradient(var(--pen),var(--pen)) no-repeat 36px 0/1.5px 100%}
+.ccpt6[data-genre="essay"] .sec{padding-left:52px}
+/* pitfall = corrected script: each item carries a red-pen margin */
+.ccpt6[data-genre="pitfall"] .pf{border-left:4px solid var(--pen)}
+/* diagram = plate: the caption sits under a rule like a figure plate */
+.ccpt6[data-genre="diagram"] .fig figcaption{border-top:1px solid var(--rule);padding-top:8px;max-width:640px;margin-left:auto;margin-right:auto}

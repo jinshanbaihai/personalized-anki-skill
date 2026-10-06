@@ -13,9 +13,11 @@ GENRES = {
 }
 THEMES = {'editorial', 'paper', 'lab', 'blueprint', 'manuscript'}
 RESEARCH_TYPES = {'spec', 'qp', 'ms', 'er', 'exemplar', 'specimen', 'textbook', 'board', 'teacher', 'other'}
-ITEM_CLASSES = {'core', 'prerequisite', 'excluded'}
+ITEM_CLASSES = {'core', 'prerequisite', 'adjacent', 'excluded'}
 ITEM_KINDS = {'term', 'method', 'formula', 'diagram', 'chain', 'essay', 'command', 'fact'}
 SPEEDS = {2.0, 1.5}
+PAPER_FORMATS = {'mcq', 'structured', 'data-response', 'essay', 'practical', 'oral'}
+FORMULA_BOOKLET = {'given', 'memorise', 'derive'}
 
 
 class DeckError(ValueError):
@@ -47,6 +49,9 @@ def check_deck(data):
     style = data.setdefault('style', {})
     need(isinstance(style, dict), 'style must be an object')
     need(style.get('theme', 'editorial') in THEMES, f'style.theme must be one of {sorted(THEMES)}')
+    themes_by = style.get('theme_by_subdeck', {})
+    need(isinstance(themes_by, dict) and all(text(k) and v in THEMES for k, v in themes_by.items()),
+         f'style.theme_by_subdeck maps a subdeck name to one of {sorted(THEMES)} (e.g. statistics in lab, pure maths in paper)')
     speed = style.get('speed', 'auto')
     need(speed == 'auto' or (isinstance(speed, (int, float)) and float(speed) in SPEEDS),
          'style.speed: "auto" (default: 2× unless the card is genuinely dense), or 2.0 / 1.5 for the whole deck')
@@ -77,6 +82,9 @@ def check_exam(data):
     if identified == 'exclusive-content':
         need(ruled_out and all(isinstance(r, dict) and text(r.get('candidate')) and text(r.get('why_not')) for r in ruled_out),
              'exam.ruled_out: name each near-miss exam and the evidence that excludes it')
+    papers = exam.get('papers', [])
+    need(isinstance(papers, list) and all(isinstance(p, dict) and text(p.get('code')) and p.get('format') in PAPER_FORMATS for p in papers),
+         f'exam.papers: list each paper that examines this content as {{code, format}}, format one of {sorted(PAPER_FORMATS)}')
 
 
 def check_research(data):
@@ -94,6 +102,14 @@ def check_research(data):
     need(isinstance(gaps, str), 'research_gaps must be text')
     if not kinds & {'er', 'exemplar', 'specimen'}:
         need(gaps.strip(), 'research: read examiner reports or real/specimen answers, or state in research_gaps what could not be obtained')
+    # Every paper format that examines this content is calibrated separately (an MCQ asks for different mastery than an essay).
+    read_papers = set()
+    for r in records:
+        value = r.get('paper', [])
+        read_papers |= {value} if isinstance(value, str) else set(value) if isinstance(value, list) else set()
+    for p in (data.get('exam') or {}).get('papers', []):
+        need(p['code'] in read_papers or p['code'] in gaps,
+             f'research: no source tagged paper "{p["code"]}" ({p["format"]}); read its mark scheme or examiner report, or name the gap in research_gaps')
 
 
 def check_coverage(data, card_ids, card_covers):
@@ -114,7 +130,7 @@ def check_coverage(data, card_ids, card_covers):
             need(text(item.get(key)), f'coverage.items[{i}].{key} must be text')
         need(item['id'] not in by_id, f'coverage item id {item["id"]} is duplicated')
         cls = item.get('class')
-        need(cls in ITEM_CLASSES, f'coverage.items[{i}].class: core, prerequisite or excluded')
+        need(cls in ITEM_CLASSES, f'coverage.items[{i}].class: core, prerequisite, adjacent (same syllabus section, later batch) or excluded')
         if cls == 'core':
             need(text(item.get('level')), f'coverage.items[{i}].level: state what the mark schemes require (wording, method, diagram, evaluation)')
             need(item.get('kind') in ITEM_KINDS, f'coverage.items[{i}].kind: one of {sorted(ITEM_KINDS)} (what kind of mastery the point needs)')
@@ -130,9 +146,10 @@ def check_coverage(data, card_ids, card_covers):
         for item_id in covers:
             need(item_id in by_id, f'card {cid} covers unknown item {item_id}')
             need(by_id[item_id]['class'] != 'excluded', f'card {cid} teaches excluded item {item_id}')
+            need(by_id[item_id]['class'] != 'adjacent', f'card {cid} teaches {item_id}, marked adjacent (later batch); reclassify it as core if this deck teaches it')
             taught.setdefault(item_id, []).append(cid)
     # A point already taught well by an existing card counts when that card is named.
-    missing = [k for k, v in by_id.items() if v['class'] != 'excluded' and k not in taught and not text(v.get('existing'))]
+    missing = [k for k, v in by_id.items() if v['class'] in ('core', 'prerequisite') and k not in taught and not text(v.get('existing'))]
     for k, v in by_id.items():
         if v.get('kind') == 'term' and k in taught and not text(v.get('existing')):
             need(any(genres[c] == 'term' for c in taught[k]), f'coverage item {k} is a term: give it its own term card, not only a mention inside another card')
@@ -146,7 +163,35 @@ def check_coverage(data, card_ids, card_covers):
         mapped = point.get('items', [])
         need(isinstance(mapped, list) and all(m in by_id for m in mapped), f'board[{i}].items must reference coverage item ids')
         need(mapped or text(point.get('note')), f'board[{i}] maps to no syllabus point; explain in note (correction, digression or out of scope)')
-    return {'items': len(by_id), 'taught': len(taught), 'missing': missing}
+        need(point.get('legibility', 'ok') in ('ok', 'low'), f'board[{i}].legibility: ok or low')
+        if point.get('legibility') == 'low':
+            need(text(point.get('confirmed_by')), f'board[{i}] is hard to read: say which source confirmed the content (confirmed_by); never fill in guessed words')
+    undemanded = check_demands(data, by_id, set(genres))
+    adjacent = [k for k, v in by_id.items() if v['class'] == 'adjacent']
+    return {'items': len(by_id), 'taught': len(taught), 'missing': missing, 'undemanded': undemanded, 'adjacent': adjacent}
+
+
+def check_demands(data, by_id, card_ids):
+    """The past-paper demand inventory: every way the locked papers have asked about this content."""
+    demands = data.get('demands')
+    need(isinstance(demands, list) and demands,
+         'demands: list the past-paper questions that examine this content ({id, series, q, ask, points, cards}); see references/coverage-ledger.md')
+    need(text((data.get('coverage') or {}).get('saturation')),
+         'coverage.saturation: say which series were read for demands and why reading stopped (e.g. "the last 3 series added no new kind of question")')
+    seen, used = set(), set()
+    for i, d in enumerate(demands):
+        need(isinstance(d, dict), f'demands[{i}] must be an object')
+        for key in ('id', 'series', 'q', 'ask'):
+            need(text(d.get(key)), f'demands[{i}].{key} must be text')
+        need(d['id'] not in seen, f'demand id {d["id"]} is duplicated')
+        seen.add(d['id'])
+        points = d.get('points')
+        need(texts(points) and all(p in by_id for p in points), f'demands[{i}].points must list coverage item ids')
+        cards = d.get('cards', [])
+        need(isinstance(cards, list) and all(c in card_ids for c in cards), f'demands[{i}].cards must list card ids')
+        need(cards or text(d.get('not_carded')), f'demands[{i}] has no card: name the card that prepares it, or explain not_carded')
+        used |= set(points)
+    return [k for k, v in by_id.items() if v['class'] == 'core' and k not in used]
 
 
 def check_cards(data):
@@ -167,7 +212,10 @@ def check_cards(data):
                 need(text(c.get('speed_reason')), f'card {c["id"]}: say why this card is complex enough for 1.5×')
         need(texts(c.get('sources', []), nonempty=False), f'card {c["id"]}: sources must be a list of text locations')
         need('voice' not in c, f'card {c["id"]}: voices are chosen per deck (style.voice) or per subdeck (style.voice_by_subdeck), not per card')
-        check_genre(c)
+        need(c.get('formula_booklet', 'given') in FORMULA_BOOKLET,
+             f'card {c["id"]}: formula_booklet is given (printed in the exam formula booklet), memorise or derive')
+        need(c.get('theme', 'editorial') in THEMES, f'card {c["id"]}: theme must be one of {sorted(THEMES)}')
+        check_genre(c, data.get('academic', True))
     return ids
 
 
@@ -175,12 +223,13 @@ def blocks_of(card, kind):
     return [b for b in card['blocks'] if isinstance(b, dict) and b.get('type') == kind]
 
 
-def check_genre(c):
+def check_genre(c, academic=True):
     """Minimum teaching structure per card type (evidence: references/learning-science.md)."""
     cid = c['id']
     if c['genre'] == 'term':
         defs = blocks_of(c, 'definition')
         need(defs, f'card {cid}: a term card states the exam definition in a definition block')
+        need(not academic or text(defs[0].get('source')), f'card {cid}: say where the exam definition comes from (mark scheme, examiner report, syllabus or an endorsed textbook glossary) in definition.source')
         idea_units = len(defs[0].get('keywords', [])) >= 2 or blocks_of(c, 'unpack')
         need(idea_units, f'card {cid}: split the definition into idea units (≥2 keywords or an unpack block)')
         if not text(c.get('examples_waived')):

@@ -9,6 +9,12 @@ Each slice keeps the original pixel scale (narrow images are enlarged so text is
 downsampled again when viewed). The index records which original rows every slice
 covers, so a board point can be cited as "p2 slice 3, rows 1800–2600" and nothing
 between slices is skipped.
+
+Input quality gate: chat apps often recompress a long board to a few hundred pixels wide.
+Each raster page gets a legibility verdict from its width. Below about 800 px wide, small
+handwriting is no longer reliably readable: mark the affected board points legibility "low", confirm
+their content from official sources (confirmed_by), never fill in guessed words, and ask
+the user for the original export in the delivery note.
 """
 import argparse
 import json
@@ -36,6 +42,20 @@ def slices_for(image, target_width=1200, aspect=1.25, overlap=0.15):
         top += step
 
 
+MIN_WIDTH = 800
+
+
+def legibility(image, rendered_pdf=False):
+    """Width-based gate. Line-height estimates proved unreliable across white, green and dark boards,
+    so the verdict uses the one robust signal: a full-width board line holds 20–40 handwritten characters,
+    and below ~800 px that leaves fewer than ~20 px per character."""
+    if rendered_pdf:
+        return {'width': image.width, 'verdict': 'ok', 'why': 'PDF page rendered at the requested dpi'}
+    low = image.width < MIN_WIDTH
+    why = f'width {image.width}px < {MIN_WIDTH}px: probably recompressed by a chat app' if low else ''
+    return {'width': image.width, 'verdict': 'low' if low else 'ok', 'why': why}
+
+
 def pages(path, dpi):
     if path.suffix.lower() != '.pdf':
         yield path.stem, Image.open(path).convert('RGB')
@@ -54,15 +74,20 @@ def main():
     ap.add_argument('--width', type=int, default=1200, help='enlarge narrower images to this width')
     a = ap.parse_args()
     a.output.mkdir(parents=True, exist_ok=True)
-    index = []
+    index, quality = [], {}
     for path in a.inputs:
         for name, image in pages(path, a.dpi):
+            quality[name] = legibility(image, rendered_pdf=path.suffix.lower() == '.pdf')
             for i, (crop, top, bottom) in enumerate(slices_for(image, a.width), 1):
                 file = a.output / f'{name}-s{i:02d}.png'
                 crop.save(file)
                 index.append({'source': str(path), 'page': name, 'slice': i, 'rows': [top, bottom], 'original_size': list(image.size), 'file': str(file)})
-    (a.output / 'index.json').write_text(json.dumps(index, ensure_ascii=False, indent=1))
-    print(json.dumps({'slices': len(index), 'index': str(a.output / 'index.json')}, ensure_ascii=False))
+    (a.output / 'index.json').write_text(json.dumps({'quality': quality, 'slices': index}, ensure_ascii=False, indent=1))
+    low = {k: v['why'] for k, v in quality.items() if v['verdict'] == 'low'}
+    print(json.dumps({'slices': len(index), 'index': str(a.output / 'index.json'), 'quality': quality}, ensure_ascii=False))
+    if low:
+        print('⚠ low legibility: ' + json.dumps(low, ensure_ascii=False)
+              + '\n  Mark affected board points legibility "low" with confirmed_by; do not guess words; ask for the original export in the delivery note.')
 
 
 if __name__ == '__main__':
