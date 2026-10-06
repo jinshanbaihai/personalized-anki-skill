@@ -119,7 +119,7 @@
 
 | 类型 | 来源与位置 | 结论与限制 |
 |---|---|---|
-| 真实考生（ECR） | Example Candidate Responses – Paper 4（© 2024 v1），June 2023 /42 Q2（EV 两政策）：high pp.15–17 = 12/14 + 4/6 = 16；middle pp.18–19 = 7 + 3 = 10；low pp.20–21 = 4 + 1 = 5；common mistakes p.21 | 高档：清楚定义、有标签的图、补贴图在正文完整分析；扣分：第一张图正文评论不足、第二政策只有轮廓。中档：坐标轴无标签、评价未达 L2。低档：**把税画成 minimum price**；须用 private/social 之差精确定义外部性。**只读到评语文本层，手写答卷是图片，未读**。 |
+| 真实考生（ECR） | Example Candidate Responses – Paper 4（© 2024 v1），June 2023 /42 Q2（EV 两政策）：high pp.15–17 = 12/14 + 4/6 = 16；middle pp.18–19 = 7 + 3 = 10；low pp.20–21 = 4 + 1 = 5；common mistakes p.21 | 高档：清楚定义、有标签的图、补贴图在正文完整分析；扣分：第一张图正文评论不足、第二政策只有轮廓。中档：坐标轴无标签、评价未达 L2。低档：**把税画成 minimum price**；须用 private/social 之差精确定义外部性。手写答卷已渲染逐页看图读（130 dpi，图 260 dpi）：高档图 1 标 `MPC = MSC = S`、`MPB = D`、`MSB`、Pm/Ps、Qm/Qs 与阴影 welfare loss，并注明“assumes there is no production externality”；补贴图 S0→S1、Em→E1、Qm→Qs 并在正文分析（供给线误标 MPB = MSB = S0，考官未扣）；中档把成本线与收益线标反、无坐标；低档税画成水平 minimum price、第二张图无标签且正文不提 P1/P2。 |
 | 官方示范（SPA） | Specimen Paper Answers – Paper 4（© 2021 v2，updated Nov 2023）Q2 pp.9–11，正是 Specimen Q2（正外部性） | 18/20（13/14 + 5/6），Cambridge 撰写，**不是真实考生**。subsidy “should be equal to the positive externality”；三政策（subsidy/voucher、advertising、compulsory education 立法）；常见错误：不解释 MC、只断言 P = MC、图不引用、写大量负外部性、政策只列不释、无结论。图为图片，未见。 |
 
 ### 五、Paper 3 MCQ：本主题题目与 key
@@ -188,5 +188,5 @@
 缺口以 `python scripts/exam_index.py 9708 --gaps` 输出为准（快照 2026-10-06）。
 
 登记之外：
-- ECR 手写答卷图像；SPA 图。
+- 2023 年以后其他场次的 ECR（June 2023 /42 Q2 的三档手写答卷与 SPA 图已渲染读过，见第 122 行）。
 - Cambridge 认可教材（Coursebook）术语表，用于 8.1.1 各措施与 nudge 的定义句。

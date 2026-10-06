@@ -426,7 +426,8 @@ ABBR_GLOSS = re.compile(r'\b([A-Z]{2,5})\s*[（(][^）)]*[\u4e00-\u9fff]')
 def term_ledger(data, pages):
     """English subject words on the cards that no term card, <abbr>, gloss or terms_known explains.
     Single words count too (externality, integrand, separable); words inside a definition's own sentence do not.
-    Quoted exam stems are scanned as well: the learner needs those words too. Returns the full ledger."""
+    Quoted exam stems are scanned too unless a Chinese rendering of the whole sentence sits beside them
+    (untranslated quotes are reported separately). Returns the full ledger."""
     defined = {k.lower() for k in known_terms(data)}
     for c in data['cards']:
         for b in c['blocks']:
@@ -442,8 +443,9 @@ def term_ledger(data, pages):
         body = re.sub(r'<(p|span|div) class="(?:def-text|def-label|def-src|pf-src|tbl-cap|marks-basis)[^"]*"[^>]*>[\s\S]*?</\1>', ' ', body)
         body = re.sub(r'<math[\s\S]*?</math>', ' ', body)
         defined_here = {m.lower() for m in re.findall(r'<abbr[^>]*>(.*?)</abbr>', body)}
-        visible = re.sub(r'<[^>]+>', ' ', body)  # a space at every tag boundary, so adjacent spans never merge
-        visible = strip_tags(visible)
+        # a quoted sentence (8+ English words) with its Chinese rendering beside it is explained as a whole
+        segments = text_segments(body)
+        visible = ' '.join(seg for i, seg in enumerate(segments) if not translated_quote(segments, i))
         # a gloss written right after the word counts as an explanation: integrand（被积函数）, MS（评分方案）
         defined_here |= {m.lower().strip() for m in GLOSS.findall(visible)} | {m.lower() for m in ABBR_GLOSS.findall(visible)}
         # compare glossed phrases in the same reduced form as the keys ("youth club members" → "youth member")
@@ -472,17 +474,31 @@ def walk_text(*values):
             yield from walk_text(*value)
 
 
+def text_segments(body):
+    """Visible text of a page split at block-level tags (paragraphs, list items, cells, nodes)."""
+    body = re.sub(r'<header[\s\S]*?</header>|<footer[\s\S]*?</footer>|<div hidden[\s\S]*?</div>|<math[\s\S]*?</math>', ' ', body)
+    body = re.sub(r'<(p|span|div) class="(?:def-src|pf-src|tbl-cap|marks-basis)[^"]*"[^>]*>[\s\S]*?</\1>', ' ', body)
+    segments = [strip_tags(re.sub(r'<[^>]+>', ' ', x)).strip() for x in re.split(r'</?(?:p|li|div|td|th|dd|dt|h1|h2|h3|section|tr)\b[^>]*>', body)]
+    return [x for x in segments if x]
+
+
+def is_quote(segment):
+    return len(re.findall(r'[A-Za-z]+', segment)) >= 8
+
+
+def translated_quote(segments, i):
+    """An English sentence with Chinese in it or right beside it (a rendering of the whole sentence)."""
+    beside = [segments[j] for j in (i - 1, i + 1) if 0 <= j < len(segments)]
+    return is_quote(segments[i]) and (bool(HAN.search(segments[i])) or any(HAN.search(x) for x in beside))
+
+
 def untranslated(pages):
-    """Card ids with an English sentence of 8+ words and no Chinese in it or right after it."""
+    """Card ids with an English sentence of 8+ words and no Chinese in it or beside it."""
     out = {}
     for cid, body in pages.items():
-        body = re.sub(r'<header[\s\S]*?</header>|<footer[\s\S]*?</footer>|<div hidden[\s\S]*?</div>|<math[\s\S]*?</math>', ' ', body)
-        body = re.sub(r'<(p|span|div) class="(?:def-src|pf-src|tbl-cap|marks-basis)[^"]*"[^>]*>[\s\S]*?</\1>', ' ', body)
-        segments = [strip_tags(x).strip() for x in re.split(r'</?(?:p|li|div|td|th|dd|dt|h1|h2|h3|section|tr)\b[^>]*>', body)]
-        segments = [x for x in segments if x]
+        segments = text_segments(body)
         for i, seg in enumerate(segments):
-            beside = [segments[j] for j in (i - 1, i + 1) if 0 <= j < len(segments)]
-            if len(re.findall(r'[A-Za-z]+', seg)) >= 8 and not HAN.search(seg) and not any(HAN.search(x) for x in beside):
+            if is_quote(seg) and not translated_quote(segments, i):
                 out.setdefault(cid, []).append(seg[:50])
     return out
 
