@@ -88,5 +88,7 @@ def package(out_dir='.', files=None):
 
 
 if __name__ == '__main__':
+    if hasattr(sys.stdout, 'reconfigure'):
+        sys.stdout.reconfigure(encoding='utf-8', errors='replace')
     target, n = package(sys.argv[1] if len(sys.argv) > 1 else '.')
     print(f'{target} ({n} files, {target.stat().st_size / 1e6:.1f} MB)')

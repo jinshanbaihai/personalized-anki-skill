@@ -115,7 +115,7 @@ def page_name(voice, parts, speed):
 
 
 def duration(path):
-    out = subprocess.check_output(['ffprobe', '-v', 'error', '-show_entries', 'format=duration', '-of', 'default=noprint_wrappers=1:nokey=1', str(path)], text=True)
+    out = subprocess.check_output(['ffprobe', '-v', 'error', '-show_entries', 'format=duration', '-of', 'default=noprint_wrappers=1:nokey=1', str(path)], text=True, encoding='utf-8', errors='replace')
     return float(out.strip())
 
 

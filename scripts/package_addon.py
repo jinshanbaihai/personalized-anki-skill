@@ -7,6 +7,7 @@ add-on config shown under Tools → Add-ons → Config: config.json (defaults) a
 Anki keeps the user's saved config in meta.json, so reinstalling a newer package keeps their decisions.
 """
 import argparse
+import sys
 import json
 import zipfile
 from pathlib import Path
@@ -42,4 +43,6 @@ def write_addon(folder):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Write ccpt_single_face.ankiaddon (Anki desktop add-on for CCPT reading cards).')
     parser.add_argument('out_dir', nargs='?', default='.', help='folder to write the .ankiaddon into (default: current folder)')
+    if hasattr(sys.stdout, 'reconfigure'):
+        sys.stdout.reconfigure(encoding='utf-8', errors='replace')
     print(write_addon(parser.parse_args().out_dir))
