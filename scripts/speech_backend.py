@@ -67,8 +67,11 @@ async def inspect_voice(voice):
         report.update(edge_list_available=True, edge_voice_available=voice in names,
                       edge_chinese_voices=sorted(v for v in names if v.startswith('zh-CN-')))
     except Exception as exc:
+        # edge-tts reports a proxy's 403 as SkewAdjustmentError (no server date): name the real cause.
+        name = type(exc).__name__
+        blocked = name in ('SkewAdjustmentError', 'ClientHttpProxyError', 'ClientProxyConnectionError') or '403' in str(exc)
         report.update(edge_list_available=False, edge_voice_available=None,
-                      edge_error=type(exc).__name__)
+                      edge_error='network_blocked (proxy or firewall refused speech.platform.bing.com)' if blocked else name)
     report['route'] = ('edge' if report['edge_voice_available'] else
                        'azure' if report['azure_configured'] else 'unavailable')
     return report

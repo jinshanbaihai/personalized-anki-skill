@@ -11,7 +11,7 @@ python scripts/build_cards.py deck.json out/ --audio-pending   # 语音服务不
 python scripts/validate_package.py out/<牌组>.apkg --output out/validate.json   # 隔离 collection 导入、解码、重复导入保历史
 ```
 
-`--audio-pending` 的包可以先导入学习；之后在能访问语音服务的机器上用同一份 deck.json 去掉该参数重跑、再导入，同 GUID 的 note 原位更新，复习历史保留。
+`--audio-pending` 的包可以先导入学习；输出目录里同时写出 `deck.json` 与 `补语音.txt`。之后在能访问语音服务的机器上用这份 deck.json 去掉该参数重跑、再导入，同 GUID 的 note 原位更新（Anki 默认“较新时更新”），复习历史保留。Note 字段 `StableID, Title, Page, Source, Narration` 永远不改，改了旧卡就无法原位更新（测试锁定）。
 
 ## 顶层结构
 
@@ -23,6 +23,7 @@ python scripts/validate_package.py out/<牌组>.apkg --output out/validate.json 
   "style": {"theme": "lab", "voice": "xiaoxiao", "speed": "auto"},
   "speech_lexicon": {"ILATE": "I L A T E"},
   "exam": { ... },
+  "terms_known": ["sample", "population"],
   "research": [ ... ],
   "research_gaps": "",
   "board": [ ... ],
@@ -33,7 +34,7 @@ python scripts/validate_package.py out/<牌组>.apkg --output out/validate.json 
 
 - `deck_id`、`model_id` 取一次后固定；`namespace` + 卡 `id` 决定 GUID，原位更新时两者都不能改。
 - `style.theme`：`editorial`（经济、商科、社科）、`paper`（纯数）、`lab`（统计、数据）、`blueprint`（物理、化学、工程）、`manuscript`（历史、文学、哲学）。单卡可用 `theme` 覆盖。
-- `style.voice`：`xiaoxiao`（默认）或 `yunyang`，整副牌组一个声音；`style.speed`：`"auto"`（默认：逐卡按规则判定 2× 或 1.5×），或整副牌组固定 `2.0`／`1.5`（1.5 需写 `style.speed_reason`）。`speech_lexicon` 是读音替换表。规则见 [narration.md](narration.md)。
+- `style.voice`：`xiaoxiao`（默认）或 `yunyang`；`style.voice_by_subdeck` 可以给子牌组单独指定（如 `{"Essay": "yunyang"}`），同一子牌组内不混用；`style.speed`：`"auto"`（默认：逐卡按规则判定 2× 或 1.5×），或整副牌组固定 `2.0`／`1.5`（1.5 需写 `style.speed_reason`）。`speech_lexicon` 是读音替换表。规则见 [narration.md](narration.md)。
 - 非考试材料设 `"academic": false`，可省略 `exam`、`research`、`coverage`；有考试目标时不能用它绕过取证。
 
 ## exam：锁定考试
@@ -41,14 +42,14 @@ python scripts/validate_package.py out/<牌组>.apkg --output out/validate.json 
 ```json
 "exam": {
   "board": "Pearson Edexcel", "qualification": "International Advanced Level Mathematics", "code": "XMA01/YMA01",
-  "units": ["WST02"], "spec_version": "Issue 3 (first teaching 2018)", "spec_url": "https://...",
+  "units": ["WST02"], "spec_version": "Issue 3 (April 2019)", "spec_url": "https://...", "session": "January 2027",
   "identified_by": "exclusive-content",
-  "evidence": ["板书标题 EDX-IAL", "题干版式 (Total for Question … marks)", "sampling distribution / statistic 属 S2 第 6 章"],
+  "evidence": ["板书标题 EDX-IAL", "题干版式 (Total for Question … marks)", "sampling frame、statistic、sampling distribution 属 S2 考纲 4.1–4.2"],
   "ruled_out": [{"candidate": "Edexcel 9MA0 Paper 3", "why_not": "9MA0 统计不含 sampling distribution of a statistic 的列举求法"}]
 }
 ```
 
-`identified_by`：`paper-code`（材料上直接有试卷代码）、`exclusive-content`（版式＋排他知识点；此时 `ruled_out` 必填）、`user`（用户明确告知）。方法见 [exam-lock.md](exam-lock.md)。
+`identified_by`：`paper-code`（材料上直接有试卷代码）、`exclusive-content`（版式＋排他知识点；此时 `ruled_out` 必填）、`user`（用户明确告知）。`session` 是目标考季，它决定适用的考纲版本；不知道时写推定的下一个考季并加 `"session_assumed": true`。方法见 [exam-lock.md](exam-lock.md)。
 
 ## research：实际读过的资料
 
@@ -62,12 +63,13 @@ python scripts/validate_package.py out/<牌组>.apkg --output out/validate.json 
 
 ```json
 "coverage": {
-  "scope": "WST02 Chapter 6 Populations and samples（spec 6.1–6.4）",
+  "scope": "WST02 考纲 4.1–4.2 Population, census and sample; statistic and its sampling distribution",
   "status": "complete",
   "remaining": "",
   "items": [
-    {"id": "S2-6.3", "spec": "6.3 Concept of a statistic and its sampling distribution", "class": "core",
-     "point": "statistic 的定义与判断", "level": "MS：判断题需给理由 contains no unknown parameters；B1 定义关键词…"},
+    {"id": "S2-4.2a", "spec": "4.2 Concepts of a statistic and its sampling distribution", "class": "core", "kind": "term",
+     "point": "statistic 的定义与判断", "level": "MS：判断需给理由 contains no unknown parameters／based only on the sample；“because it is known”不给分",
+     "evidence": ["WST02 Jan 2025 Q2(i) MS p.8", "WST02 Jun 2023 ER p.4"]},
     {"id": "PRE-BIN", "spec": "S2 2.1 Binomial distribution", "class": "prerequisite", "point": "B(n,p) 的 P(X=0)",
      "reason": "求最小 n 的题需要"},
     {"id": "X-CLT", "spec": "S3", "class": "excluded", "point": "central limit theorem", "reason": "属 WST03，不在本卷"}
@@ -75,7 +77,7 @@ python scripts/validate_package.py out/<牌组>.apkg --output out/validate.json 
 }
 ```
 
-`class`：`core`（本卷考点，必须写 `level`：MS 要求的措辞、步骤、图或评价深度；已由其他牌组的卡讲透时写 `existing` 指明那张卡）、`prerequisite`（理解或解题必需的先修，写 `reason`）、`excluded`（教材或板书出现但不属于本卷，写 `reason`，任何卡不得覆盖）。`status: complete` 时每个 core／prerequisite 至少有一张卡；`partial` 时 `remaining` 写清还差什么。卡片用 `covers` 反向声明自己教哪些考点，生成器双向核对。方法见 [coverage-ledger.md](coverage-ledger.md)。
+`class`：`core`（本卷考点，必须写 `level`：MS 要求的措辞、步骤、图或评价深度；`kind`：`term`／`method`／`formula`／`diagram`／`chain`／`essay`／`command`／`fact`，`term` 类考点必须有自己的术语卡；`evidence`：至少两条不同考季的 MS 或 ER 出处，取不到就写 `evidence_gap`；已由其他牌组的卡讲透时写 `existing` 指明那张卡）、`prerequisite`（理解或解题必需的先修，写 `reason`）、`excluded`（教材或板书出现但不属于本卷，写 `reason`，任何卡不得覆盖）。`status: complete` 时每个 core／prerequisite 至少有一张卡；`partial` 时 `remaining` 写清还差什么。卡片用 `covers` 反向声明自己教哪些考点，生成器双向核对。方法见 [coverage-ledger.md](coverage-ledger.md)。
 
 ## cards：卡片
 
@@ -86,6 +88,7 @@ python scripts/validate_package.py out/<牌组>.apkg --output out/validate.json 
 ```
 
 - `genre`：`term` 术语、`derivation` 推导、`method` 方法、`formula` 公式、`chain` 因果、`map` 导图、`diagram` 图解、`compare` 辨析、`essay` 论述、`pitfall` 易错、`overview` 全景、`case` 案例。卡型怎样配块见 [card-genres.md](card-genres.md)。
+- 牌组级 `terms_known` 列出本牌组之前已经讲透、不必再解释的 English 词；生成器把卡上反复出现、却没有术语卡、`<abbr>` 或 `terms_known` 解释的 English 词列进 `report.json` 的 `term_ledger`，提醒补术语卡。
 - `speed` 可覆盖自动判定（`1.5` 必须同时写 `speed_reason`）；`theme`、`tag`（页眉考试标签）、`subdeck`、`title_speech`、`examples_waived`（术语卡没有自然非例时的理由）可选。声音只在 `style.voice` 设一次。
 - 生成器按卡型检查最低结构：`term` 卡要有 definition、至少两个 idea units（keywords 或 unpack）、至少一个例子和一个写了理由的非例；`derivation` 卡要有 steps 与 finish。
 - 卡片顺序就是首次学习顺序：先修与术语在前，推导与论述在后。
@@ -121,4 +124,4 @@ python scripts/validate_package.py out/<牌组>.apkg --output out/validate.json 
 
 ## 输出
 
-`out/<id>.html`（预览页）、`pages.json`、`speech-manifest.json`（每卡 voice、speed、atempo、分段朗读文本与实测 cue）、`report.json`（每卡速度与理由、S／M／m%／T／E／N／C 指标、时长、警告、覆盖统计）、`<牌组名>.apkg`，以及可选的 `term-sampler.mp3`。Note 字段：`StableID, Title, Page, Source, Narration`；Source 存 JSON（考试锁定、covers、来源），不显示在卡面。
+`out/<id>.html`（预览页）、`ccpt_single_face.ankiaddon`（双击安装的桌面插件）、`pages.json`、`speech-manifest.json`（每卡 voice、speed、atempo、分段朗读文本与实测 cue）、`report.json`（每卡速度与理由、S／M／m%／T／E／N／C 指标、时长、警告、覆盖统计）、`<牌组名>.apkg`，以及可选的 `term-sampler.mp3`。Note 字段：`StableID, Title, Page, Source, Narration`；Source 存 JSON（考试锁定、covers、来源），不显示在卡面。

@@ -30,7 +30,7 @@ SYMBOLS = re.compile(r'[\\^_{}$→⇒⟹≥≤≠×÷√∑∫∞±≈∝]|[A-Za
 TEX_REMNANT = re.compile(r'\\[A-Za-z]+|[\^_{}$]')
 DEFAULT_LEXICON = {'λ': 'lambda', 'μ': 'mu', 'σ': 'sigma', 'θ': 'theta', 'π': 'pi', 'α': 'alpha', 'β': 'beta',
                    'Σ': 'sigma 求和', 'Δ': 'delta', '≥': '大于等于', '≤': '小于等于', '≠': '不等于', '≈': '约等于',
-                   'e.g.': '例如', 'i.e.': '也就是', 'vs': '对比'}
+                   'e.g.': '例如', 'i.e.': '也就是', 'vs': '对比', '<': '小于', '>': '大于', '−': '减', '×': '乘以', '÷': '除以'}
 
 
 def cache_root():
@@ -44,6 +44,7 @@ def speech_lint(text):
 
 def apply_lexicon(text, lexicon):
     """Edge accepts plain text only (no <sub>/<phoneme>), so readings are substituted before synthesis."""
+    text = re.sub(r'(^|[=(（\s，,：:])[−-](?=\d)', r'\1负', text)  # a minus before a number is "负", not "减"
     merged = dict(DEFAULT_LEXICON, **(lexicon or {}))
     for written in sorted(merged, key=len, reverse=True):
         if re.fullmatch(r'[A-Za-z.]+', written):
@@ -239,11 +240,12 @@ def speed_metrics(card, narration_text, seen_terms):
     source = '\n'.join(strings(card.get('blocks', []))) + '\n' + card.get('title', '')
     spoken = SPOKEN_MATH.findall(source)
     explicit = sum(b.get('speech', '') != '' and '$' in json.dumps(b, ensure_ascii=False) for b in card['blocks'] if isinstance(b, dict))
+    # Only dependent derivation steps count; causal chains and maps carry their structure visibly.
     steps = sum(len([i for i in b.get('items', []) if not i.get('trivial')]) for b in card['blocks'] if b.get('type') == 'steps')
-    steps += sum(1 for b in card['blocks'] if b.get('type') == 'chain' for i in b.get('items', [])[1:]
-                 if isinstance(i, dict) and i.get('rel') in ('所以', '因此', '从而'))
-    numbers = max([len({n for n in NUMBER.findall('\n'.join(strings(b))) if n not in ('0', '1', '2', '3')}) for b in card['blocks']] or [0])
-    conditional = sum(1 for s in strings(card['blocks']) if s in ('仅当', '除非', '前提是', '取决于', '但是'))
+    # Numbers the listener must hold: tables and figures are on screen, so they do not count.
+    heard = [b for b in card['blocks'] if b.get('type') not in ('table', 'figure', 'chain', 'map')]
+    numbers = max([len({n for n in NUMBER.findall('\n'.join(strings(b))) if n not in ('0', '1', '2', '3')}) for b in heard] or [0])
+    conditional = sum(len(re.findall(r'仅当|除非|前提是|取决于', s)) for b in heard for s in strings(b))
     terms = [t for b in card['blocks'] if b.get('type') == 'definition' for t in [b.get('term', '')] if t and t not in seen_terms]
     seen_terms.update(terms)
     han = len(re.findall(r'[\u4e00-\u9fff]', narration_text)) or 1

@@ -11,8 +11,10 @@
 
 从 [SKILL.md](SKILL.md) 开始。生成器入口 `scripts/build_cards.py`，数据格式见 [references/deck-json.md](references/deck-json.md)。
 
+依赖：Python 3.10+（`pip install -r scripts/requirements.txt`）、ffmpeg／ffprobe；板书识别另需 poppler（pdftoppm、pdftotext）与 tesseract（含 `chi_sim`）；版式检查需要 Node 与 Playwright（Chromium）。
+
 ```bash
-pip install -r scripts/requirements.txt     # 另需 ffmpeg；版式检查需要 Node + Playwright
+pip install -r scripts/requirements.txt
 python scripts/build_cards.py deck.json out/ --preview
 node scripts/render_check.mjs out/ --phone --dark
 python scripts/build_cards.py deck.json out/

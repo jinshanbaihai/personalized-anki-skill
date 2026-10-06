@@ -24,6 +24,7 @@ from blocks import inline, render_block, esc, BlockError, strip_tags
 from deck_rules import check, GENRES, DeckError
 from speech_backend import resolve_voice, inspect_voice, DEFAULT_VOICE
 import narration
+from package_addon import write_addon
 
 ROOT = Path(__file__).resolve().parent.parent
 ASSETS = ROOT / 'assets' / 'ccpt6'
@@ -82,7 +83,7 @@ def render_card(data, card, style):
         section, block_parts = render_block(block, f'b{i}', f'{where}.blocks[{i}]')
         sections.append(section)
         parts += [(p.target, p.text) for p in block_parts]
-    voice = resolve_voice(style.get('voice') or DEFAULT_VOICE)
+    voice = resolve_voice(style.get('voice_by_subdeck', {}).get(card.get('subdeck', ''), style.get('voice') or DEFAULT_VOICE))
     theme = card.get('theme') or style.get('theme', 'editorial')
     if theme in ELBOW_THEMES:  # textbook and engineering themes draw right-angled connectors by default
         sections = [re.sub(r'<div class="mm" (?![^>]*data-edge)', '<div class="mm" data-edge="elbow" ', sec) for sec in sections]
@@ -133,12 +134,13 @@ def page(data, card, r, audio_name, cues, pending_message=None):
 
 
 def source_record(data, card, speed=None, speed_reason=''):
-    record = {'schema': 'ccpt-6', 'card': card['id'], 'covers': card.get('covers', []), 'sources': card.get('sources', []),
-              'exam': data.get('exam'), 'coverage_scope': (data.get('coverage') or {}).get('scope'), 'speed': speed}
+    exam = data.get('exam') or {}
+    record = {'schema': 'ccpt-6', 'card': card['id'], 'exam': ' '.join(filter(None, [exam.get('code'), '/'.join(exam.get('units', []))])) or None,
+              'covers': card.get('covers', []), 'sources': card.get('sources', []), 'speed': speed}
     if speed_reason:
         record['speed_reason'] = speed_reason
     # Anki stores fields as HTML; JSON escapes keep json.loads exact without HTML-escaping.
-    return json.dumps(record, ensure_ascii=False).replace('<', r'<').replace('>', r'>').replace('&', r'&')
+    return json.dumps(record, ensure_ascii=False).replace('<', r'\u003c').replace('>', r'\u003e').replace('&', r'\u0026')
 
 
 def subdeck_id(base, name):
@@ -167,6 +169,60 @@ def write_term_sampler(data, out, media, lexicon):
 
 def re_latin(value):
     return bool(re.search(r'[A-Za-z]', value))
+
+
+COMMON_EN = set('a an the of to in on for and or is are be by with from as at it its this that than then not no can may must which who what when where how per each all any one two'.split())
+
+
+def lint_card(card):
+    """Advisory checks that keep cards explained, readable and in the user's preferred shape."""
+    out = []
+    for b in card['blocks']:
+        if b.get('type') == 'steps':
+            items = b.get('items', [])
+            trivial = [i for i in items if i.get('trivial')]
+            for i in trivial:
+                if re.search(r'\^|\\frac|\d\s*[x(]|[+-]\s*\d', i.get('do', '')):
+                    out.append('trivial 步含系数、乘方或符号运算，这正是丢 A 分处，请写 why 或 mark_note')
+                    break
+            if items and len(trivial) > len(items) * 0.25:
+                out.append('trivial 步超过四分之一，检查是否跳过了需要讲的步骤')
+            if any(i.get('why') and len(strip_tags(i['why'])) < 6 for i in items):
+                out.append('有的“为什么”少于 6 个字，可能没讲出原理')
+        if b.get('type') == 'sections' and any(len(strip_tags(i.get('text', ''))) > 60 for i in b.get('items', [])):
+            out.append('sections 有超过 60 字的长段：文科展开改用 chain 或 map 的箭头结构')
+        if b.get('type') == 'map':
+            branches = b.get('root', {}).get('children', [])
+            def count(n):
+                return 1 + sum(count(c) for c in n.get('children', []))
+            if len(branches) > 7:
+                out.append(f'导图一级分支 {len(branches)} 个，超过 7 个时考虑分组或拆卡')
+            for i, br in enumerate(branches):
+                if count(br) > 12:
+                    out.append(f'导图第 {i + 1} 个分支有 {count(br)} 个命题，超过 12 个时考虑把这一支拆成子图卡')
+    return out
+
+
+def term_ledger(data, pages):
+    """English subject words used on cards that no term card, abbr or lexicon entry explains."""
+    defined = set(k.lower() for k in data.get('terms_known', []))
+    for c in data['cards']:
+        for b in c['blocks']:
+            if b.get('type') == 'definition':
+                defined.add(strip_tags(inline(b['term'], 'ledger').html).lower())
+    seen = {}
+    for cid, body in pages.items():
+        visible = strip_tags(re.sub(r'<math[\s\S]*?</math>', ' ', body))
+        defined |= {m.lower() for m in re.findall(r'<abbr[^>]*>(.*?)</abbr>', body)}
+        for phrase in re.findall(r'\b[A-Za-z][a-z]+(?: [a-z]+){1,3}\b|\b[A-Z]{2,5}\b', visible):
+            words = phrase.lower().split()
+            if all(w in COMMON_EN for w in words) or phrase.lower() in defined:
+                continue
+            if any(phrase.lower() in d or d in phrase.lower() for d in defined if len(d) > 3):
+                continue
+            seen.setdefault(phrase, set()).add(cid)
+    ranked = sorted(seen.items(), key=lambda kv: -len(kv[1]))
+    return [{'term': t, 'cards': sorted(c)} for t, c in ranked if len(c) >= 2][:20]
 
 
 def preflight(voice):
@@ -264,6 +320,7 @@ def main(argv=None):
         maps = [m for m in re.findall(r'class="mm-node"', body)]
         if len(maps) > 20:
             warn.append(f'导图 {len(maps)} 个节点，超过 20 个时考虑拆卡')
+        warn += lint_card(card)
         odd = narration.speech_lint(p['text'])
         if odd:
             warn.append('朗读文本含难读符号 ' + ' '.join(odd) + '：改写成文字读法')
@@ -282,10 +339,24 @@ def main(argv=None):
         safe = re.sub(r'[^\w一-鿿.-]+', '_', deck_info['name'])[:60]
         package = out / f'{safe}.apkg'
         pkg.write_to_file(str(package))
-    report = {'cards': report_cards, 'summary': summary, 'audio': 'preview' if a.preview else 'pending' if a.audio_pending else 'complete',
+    write_addon(out)
+    if a.audio_pending:
+        (out / 'deck.json').write_text(json.dumps(data, ensure_ascii=False, indent=1))
+        (out / '补语音.txt').write_text(
+            '这个包先交付了图文，语音待补。在能访问 speech.platform.bing.com 的电脑上，进入本 skill 目录运行：\n\n'
+            '  python scripts/build_cards.py <本文件夹>/deck.json <本文件夹>\n\n'
+            '生成的新 .apkg 导入 Anki 即可原位补上语音（同一张卡，复习记录保留）。\n')
+    slow = [c for c in report_cards if c['speed'] < 2]
+    deck_warnings = []
+    if len(report_cards) >= 5 and len(slow) > 0.3 * len(report_cards):
+        deck_warnings.append(f'{len(slow)}/{len(report_cards)} 张卡判为 1.5×，超过三成：复核速度规则或卡片是否过密')
+    ledger = term_ledger(data, pages) if data.get('academic', True) else []
+    if ledger:
+        deck_warnings.append('这些 English 词出现在多张卡上，但没有术语卡、<abbr> 或 terms_known 解释：' + '、'.join(x['term'] for x in ledger[:10]))
+    report = {'deck_warnings': deck_warnings, 'term_ledger': ledger, 'cards': report_cards, 'summary': summary, 'audio': 'preview' if a.preview else 'pending' if a.audio_pending else 'complete',
               'package': str(package) if package else None}
     (out / 'report.json').write_text(json.dumps(report, ensure_ascii=False, indent=1))
-    warnings = [f'{c["id"]}: {w}' for c in report_cards for w in c['warnings']]
+    warnings = deck_warnings + [f'{c["id"]}: {w}' for c in report_cards for w in c['warnings']]
     print(json.dumps({'cards': len(report_cards), 'audio': report['audio'], 'package': report['package'], 'coverage': summary.get('coverage'),
                       'warnings': warnings}, ensure_ascii=False, indent=1))
 

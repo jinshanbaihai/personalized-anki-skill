@@ -2,8 +2,8 @@
 
 ## 默认值
 
-- **声音**：一副牌组一个声音，写在 `style.voice`。默认**晓晓** `zh-CN-XiaoxiaoNeural`（微软旗舰中文女声，Edge 元数据 News／Novel、Warm）；男声选**云扬** `zh-CN-YunyangNeural`——Edge 可用的中文男声里只有它标为 News／Professional, Reliable，Azure 里的 style 也全是播报类（narration-professional、newscast-casual），最符合“男 AI 播音员”。云希只用于维护旧卡。同一牌组不混用声音：2× 下换声会增加适应成本。
-- **何时选云扬**：文科长因果链、essay 骨架这类连续陈述、要反复听的牌组，用户想要播报感时；或常在嘈杂环境（通勤）听时——Johnson & Ferguson（2020，JSLHR）发现噪声中压缩语音对女声可懂度伤害更大，这是弱证据。用户偏好一经确定写进 `style.voice`，之后不再问。`python scripts/speech_backend.py --sampler 目录/` 生成晓晓与云扬各自 2× 与 1.5× 的同一段中英数混读样音，供首次挑选。
+- **声音**：一副牌组一个声音，写在 `style.voice`；子牌组可以用 `style.voice_by_subdeck` 单独指定（例如 essay 骨架子牌组用云扬播报、术语子牌组用晓晓），同一子牌组内不混用。默认**晓晓** `zh-CN-XiaoxiaoNeural`（微软旗舰中文女声，Edge 元数据 News／Novel、Warm）；男声选**云扬** `zh-CN-YunyangNeural`——Edge 可用的中文男声里只有它标为 News／Professional, Reliable，Azure 里的 style 也全是播报类（narration-professional、newscast-casual），最符合“男 AI 播音员”。云希只用于维护旧卡。同一牌组不混用声音：2× 下换声会增加适应成本。
+- **何时选云扬**：文科长因果链、essay 骨架这类连续陈述、要反复听的牌组，用户想要播报感时；或常在嘈杂环境（通勤）听时——Johnson & Ferguson（2020，JSLHR）发现噪声中压缩语音对女声可懂度伤害更大，这是弱证据。用户偏好一经确定写进 `style.voice`，之后不再问。需要对比时，`python scripts/speech_backend.py --sampler 目录/` 生成晓晓与云扬各自 2× 与 1.5× 的同一段中英数混读样音（可选，不是用户必须做的步骤）。
 - **速度**：默认 **2×**，真正复杂的卡 **1.5×**，不超过 2×。`style.speed` 默认 `"auto"`，由生成器逐卡判定（见下）；作者可在单卡写 `speed` 覆盖，1.5× 必须写 `speed_reason`。播放时点速度按钮可在 2× 与 1.5× 之间临时切换，只对当前卡有效，下一张回到它自己的速度。
 
 ## 1.5× 的判定规则
@@ -38,7 +38,7 @@ Edge 只接受纯文本（不能用 SSML 的 `<lang>`、`<phoneme>`、`<say-as>`
 - 公式在卡面写 LaTeX，紧跟中文读法 `〔…〕`；读“含义＋结构”，不逐个念符号。示例见 [language-and-math.md](language-and-math.md)。
 - 牌组级 `speech_lexicon` 是读音替换表（Edge 能用的 `<sub>` 替代）：`{"ILATE": "I L A T E", "MEC": "M E C"}`。生成器已内置希腊字母（λ→lambda、μ→mu、σ→sigma…）、≥ ≤ ≠ ≈、e.g.／i.e.／vs 的替换。朗读文本残留 LaTeX（`\frac`、`^`、`_`、`{}`、`$`）时构建失败；残留 `→`、`/` 等难读符号时报告警告。
 - 用逗号控制停顿（Edge 唯一可用的停顿手段）。缩写第一次出现时读全称。
-- `--term-sampler` 生成 `term-sampler.mp3`：把牌组里每个 English 术语放进“下面这个词是：___。”逐个读一遍，导入前花一分钟听，读错就改 `speech_lexicon` 后重建。
+- `--term-sampler` 生成 `term-sampler.mp3`：把牌组里每个 English 术语放进“下面这个词是：___。”逐个读一遍，**制作端**听一遍，读错就改 `speech_lexicon` 后重建；这是制作检查，不交给用户去做。
 - 语音与卡面用同一术语和符号读法；句子可以略改述、补连接词与“为什么”，不逐字念长段，也不讲卡面没有的新论点。静音时卡面必须完整。
 
 ## 服务可用性与断网

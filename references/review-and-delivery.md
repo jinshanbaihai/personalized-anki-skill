@@ -39,7 +39,9 @@ python scripts/validate_package.py out/<牌组>.apkg --output out/validate.json 
 
 用户只看一页完整内容，没有题目面、翻面、输入答案或选择题。**Space** 播放／暂停／继续／重播语音，不评分；**Enter** 记 Good 并进入下一张；**1** 记 Again，下一个 Anki 学习日再看。
 
-实现：question 与 answer 模板显示同一页；`scripts/single_face_addon.py` 安装为 Anki 数据目录下 `addons21/ccpt_single_face/__init__.py`（配 `meta.json` 启用，重启 Anki），只对模板含 `data-ccpt-single` 的卡生效：首次显示后自动切到可评分状态，接管 Space／Enter／1，长按不连发，其他卡与编辑器不受影响，不改调度参数。已核对 Anki 26.09.3（aqt 26.9.3）源码：`Reviewer._shortcutKeys`、`_answerCard`、`_showAnswer`、`state`、`reviewer_did_show_question`、`webview_did_receive_js_message` 均存在；26.x 的作答键来自可配置的 `get_answer_key`，插件在 `1` 被改键时会补回。Anki 升级后先在测试 profile 复核。AnkiMobile／AnkiDroid 不加载桌面插件：页面内容与语音可用，评分走各端自己的按钮。
+实现：question 与 answer 模板显示同一页；每次构建都在输出目录写出 `ccpt_single_face.ankiaddon`（也可 `python scripts/package_addon.py 目录/`），用户双击即安装（重启 Anki）。插件只对模板含 `data-ccpt-single` 的卡生效：首次显示后自动切到可评分状态，接管 Space／Enter／1，长按不连发，其他卡与编辑器不受影响，不改调度参数。插件通过公开钩子 `gui_hooks.state_shortcuts_will_change` 改写 reviewer 的 Space／Enter／1（旧版 Anki 回退到 `Reviewer._shortcutKeys`）；`_answerCard`、`_showAnswer` 不存在时只提示“需要更新插件”，不让 Anki 报错。已核对 Anki 26.09.3（aqt 26.9.3）源码中这些接口与钩子均存在；26.x 的作答键来自可配置的 `get_answer_key`，插件在 `1` 被改键时会补回。Anki 升级后先在测试 profile 复核。
+
+**“1 = 下一学习日再看”依赖牌组的学习步长**：Anki 默认步长（1m、10m）下，按 1 的卡和 Enter 的新卡会在当天几分钟后再出现。插件在工具菜单提供“CCPT：当前牌组使用阅读预设”，确认后克隆当前预设，只把新卡与遗忘卡的步长改成 1 天、leech 只加标签，其余设置（每日数量、FSRS、retention）不变；当牌组步长短于 1 天时，第一次按 1 会弹出一句提示。交付时告诉用户这一步（一次性）。AnkiMobile／AnkiDroid 不加载桌面插件：页面内容与语音可用，评分走各端自己的按钮。
 
 实测项：打开卡即见完整内容；Space 只控制语音；Enter 一次 Good；1 一次 Again 且 due = 下一学习日；切卡停止旧音频。评分测试在测试 profile 或测试后立即撤销，并核对原卡状态与 revlog，不污染学习历史。
 

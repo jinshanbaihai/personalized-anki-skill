@@ -26,7 +26,7 @@ def deck():
         'style': {'theme': 'lab', 'voice': 'xiaoxiao'},
         'exam': {'board': 'Pearson Edexcel', 'qualification': 'IAL Mathematics', 'code': 'YMA01', 'units': ['WST02'],
                  'spec_version': 'Issue 3 (April 2019)', 'spec_url': 'https://example.invalid/spec.pdf',
-                 'identified_by': 'exclusive-content', 'evidence': ['synthetic evidence'],
+                 'identified_by': 'exclusive-content', 'evidence': ['synthetic evidence'], 'session': 'January 2027',
                  'ruled_out': [{'candidate': 'UK 9MA0', 'why_not': 'synthetic reason'}]},
         'research': [
             {'type': 'spec', 'ref': 'synthetic spec', 'read': 'p.59', 'used_for': 'scope'},
@@ -35,7 +35,8 @@ def deck():
         ],
         'board': [{'id': 'B01', 'where': 'p1', 'point': 'statistic definition', 'items': ['S-1']}],
         'coverage': {'scope': 'synthetic 4.2', 'status': 'complete', 'remaining': '', 'items': [
-            {'id': 'S-1', 'spec': '4.2', 'point': 'statistic', 'class': 'core', 'level': 'MS keywords'},
+            {'id': 'S-1', 'spec': '4.2', 'point': 'statistic', 'class': 'core', 'level': 'MS keywords', 'kind': 'term',
+             'evidence': ['WST02 Jan 2025 Q2 MS', 'WST02 Jun 2023 ER Q2']},
             {'id': 'X-1', 'spec': 'S3 3.6', 'point': 'CLT', 'class': 'excluded', 'reason': 'other unit'}]},
         'cards': [{
             'id': 'T01', 'genre': 'term', 'title': 'Statistic', 'covers': ['S-1'], 'sources': ['synthetic'],
@@ -103,7 +104,10 @@ def test_deck_rules_accept_valid_deck():
     (lambda d: d['exam'].update(ruled_out=[]), 'near-miss'),
     (lambda d: d['research'].pop(1), 'mark schemes'),
     (lambda d: d['cards'][0].update(covers=['X-1']), 'excluded'),
-    (lambda d: d['coverage']['items'].append({'id': 'S-2', 'spec': '4.1', 'point': 'frame', 'class': 'core', 'level': 'x'}), 'no card'),
+    (lambda d: d['coverage']['items'].append({'id': 'S-2', 'spec': '4.1', 'point': 'frame', 'class': 'core', 'level': 'x', 'kind': 'term', 'evidence_gap': 'x'}), 'no card'),
+    (lambda d: d['exam'].pop('session'), 'exam.session'),
+    (lambda d: d['coverage']['items'][0].pop('kind'), 'kind'),
+    (lambda d: d['coverage']['items'][0].update(evidence=['one']), 'two past-paper'),
     (lambda d: d['coverage']['items'][0].pop('level'), 'level'),
     (lambda d: d['board'][0].update(items=[]), 'maps to no syllabus point'),
     (lambda d: d['cards'][0].update(speed=1.5), 'complex enough'),
@@ -120,7 +124,7 @@ def test_deck_rules_reject(mutate, message):
 
 def test_existing_card_counts_as_coverage():
     d = deck()
-    d['coverage']['items'].append({'id': 'S-2', 'spec': '4.1', 'point': 'frame', 'class': 'core', 'level': 'x', 'existing': 'IAL S2::T07'})
+    d['coverage']['items'].append({'id': 'S-2', 'spec': '4.1', 'point': 'frame', 'class': 'core', 'level': 'x', 'kind': 'term', 'evidence_gap': 'x', 'existing': 'IAL S2::T07'})
     assert deck_rules.check(d)['coverage']['missing'] == []
 
 
@@ -173,8 +177,15 @@ def test_preview_and_pending_package(tmp_path):
 
 def test_source_field_round_trips():
     d = deck()
-    raw = build_cards.source_record(d, d['cards'][0])
-    assert '<' not in raw and json.loads(raw)['covers'] == ['S-1']
+    d['cards'][0]['sources'] = ['MSB < MSC & P > Q']
+    raw = build_cards.source_record(d, d['cards'][0], 2.0)
+    assert '<' not in raw and '&' not in raw and '>' not in raw
+    assert json.loads(raw)['sources'] == ['MSB < MSC & P > Q'] and json.loads(raw)['exam'] == 'YMA01 WST02'
+
+
+def test_note_fields_are_frozen():
+    """Changing fields would stop in-place updates of every existing card."""
+    assert build_cards.FIELDS == ['StableID', 'Title', 'Page', 'Source', 'Narration']
 
 
 def test_themes_define_light_and_night_tokens():
@@ -227,7 +238,7 @@ def test_full_audio_pipeline_offline(tmp_path, monkeypatch):
     cues = manifest['narration']['cues']
     assert cues[0]['target'] is None and [c['target'] for c in cues][1:5] == ['b0', 'b1', 'b2-yes0', 'b2-no0']
     page = json.loads((tmp_path / 'out' / 'pages.json').read_text())['T01']
-    assert inspect_page(page) == manifest['file'] and 'data-encoded="1.5"' in page and 'speed-reason' not in page or True
+    assert inspect_page(page) == manifest['file'] and 'data-encoded="1.5"' in page
     # Designed pauses: 0.5 s after the title and between blocks, 0.3 s inside a block.
     gaps = [round(b['start'] - a['end'], 2) for a, b in zip(cues, cues[1:])]
     assert gaps[0] == 0.5 and 0.3 in gaps
@@ -243,6 +254,14 @@ def test_full_audio_pipeline_offline(tmp_path, monkeypatch):
     assert calls == [] and json.loads((tmp_path / 'out2' / 'speech-manifest.json').read_text())[0]['speed'] == 2.0
 
 
+def test_speed_rule_ignores_visible_structure():
+    chain = {'genre': 'chain', 'title': 'x', 'blocks': [{'type': 'chain', 'items': [{'text': 'a'}] + [{'rel': r, 'text': 'b'} for r in ('所以', '因此', '从而', '仅当', '但是')]}]}
+    assert narration.decide_speed(narration.speed_metrics(chain, '因果' * 80, set()))[0] == 2.0
+    table = {'genre': 'term', 'title': 'x', 'blocks': [{'type': 'definition', 'term': 'X', 'text': 'y'},
+             {'type': 'table', 'head': ['m', 'P'], 'rows': [['4', '9/245'], ['5.5', '6/49'], ['7', '71/245'], ['8.5', '15/49'], ['10', '12/49']]}]}
+    assert narration.decide_speed(narration.speed_metrics(table, '分布' * 80, set()))[0] == 2.0
+
+
 def test_speed_rule():
     dense = {'genre': 'derivation', 'title': 'x', 'blocks': [{'type': 'steps', 'items': [
         {'do': f'$x^{i}$〔x 的 {i} 次方〕', 'why': 'w'} for i in range(5)]}]}
@@ -256,6 +275,7 @@ def test_speed_rule():
 
 def test_lexicon_and_lint():
     assert narration.apply_lexicon('r = a + λ b，e.g. vs', {'ILATE': 'I L A T E'}) == 'r = a + lambda b，例如 对比'
+    assert narration.apply_lexicon('x = −2，MPC − s', {}) == 'x = 负2，MPC 减 s'
     assert narration.apply_lexicon('use ILATE', {'ILATE': 'I L A T E'}) == 'use I L A T E'
     assert narration.speech_lint('MU/P') == ['MU/P']
 
@@ -271,12 +291,16 @@ def test_term_and_derivation_structure():
     d['cards'][0]['genre'] = 'derivation'
     with pytest.raises(deck_rules.DeckError, match='finish block'):
         deck_rules.check(d)
+    d = deck()
+    d['cards'][0]['genre'] = 'overview'
+    with pytest.raises(deck_rules.DeckError, match='own term card'):
+        deck_rules.check(d)
 
 
 def test_voice_is_per_deck():
     d = deck()
     d['cards'][0]['voice'] = 'yunyang'
-    with pytest.raises(deck_rules.DeckError, match='once per deck'):
+    with pytest.raises(deck_rules.DeckError, match='per deck'):
         deck_rules.check(d)
 
 
@@ -334,3 +358,46 @@ def test_fonts_are_bundled_with_content_hashes(tmp_path):
     with zipfile.ZipFile(next((tmp_path / 'out').glob('*.apkg'))) as z:
         names = json.loads(z.read('media')).values()
     assert set(fonts) <= set(names)
+
+
+def test_in_place_update_keeps_history(tmp_path):
+    """v1 → study → v2 with new wording and CSS: content updates, schedule and review log stay."""
+    anki = pytest.importorskip('anki.collection')
+    from anki import import_export_pb2
+    from anki.scheduler.v3 import CardAnswer
+    d = deck()
+    src = tmp_path / 'deck.json'
+    src.write_text(json.dumps(d, ensure_ascii=False))
+    build_cards.main([str(src), str(tmp_path / 'v1'), '--audio-pending'])
+    path = str(tmp_path / 'c.anki2')
+    col = anki.Collection(path)
+
+    def load(folder):
+        req = import_export_pb2.ImportAnkiPackageRequest(package_path=str(next((tmp_path / folder).glob('*.apkg'))),
+                                                         options=import_export_pb2.ImportAnkiPackageOptions(with_scheduling=False))
+        col.import_anki_package(req)
+    load('v1')
+    cid = col.find_cards('')[0]
+    col.decks.select(col.get_card(cid).did)
+    queued = col.sched.get_queued_cards().cards[0]
+    card = col.get_card(queued.card.id)
+    card.start_timer()
+    col.sched.answer_card(col.sched.build_answer(card=card, states=queued.states, rating=CardAnswer.GOOD))
+    before = col.db.all('select id,nid,did,due,ivl,reps,type,queue from cards')
+    logs = col.db.all('select * from revlog')
+    col.close()
+    import time
+    time.sleep(1.1)  # Anki's default "update if newer" compares note modification seconds
+    d['cards'][0]['blocks'][0]['text'] = '改写后的主干句'
+    d['css'] = '.ccpt6 .lead{letter-spacing:.01em}'
+    src.write_text(json.dumps(d, ensure_ascii=False))
+    build_cards.main([str(src), str(tmp_path / 'v2'), '--audio-pending'])
+    col = anki.Collection(path)
+    load('v2')
+    col.close()
+    col = anki.Collection(path)  # reopen: the notetype cache would otherwise show stale CSS
+    note = col.get_card(cid).note()
+    assert '改写后的主干句' in note['Page'] and 'letter-spacing:.01em' in note.note_type()['css']
+    assert col.db.all('select id,nid,did,due,ivl,reps,type,queue from cards') == before
+    assert col.db.all('select * from revlog') == logs
+    col.close()

@@ -14,6 +14,7 @@ GENRES = {
 THEMES = {'editorial', 'paper', 'lab', 'blueprint', 'manuscript'}
 RESEARCH_TYPES = {'spec', 'qp', 'ms', 'er', 'exemplar', 'specimen', 'textbook', 'board', 'teacher', 'other'}
 ITEM_CLASSES = {'core', 'prerequisite', 'excluded'}
+ITEM_KINDS = {'term', 'method', 'formula', 'diagram', 'chain', 'essay', 'command', 'fact'}
 SPEEDS = {2.0, 1.5}
 
 
@@ -51,8 +52,11 @@ def check_deck(data):
          'style.speed: "auto" (default: 2× unless the card is genuinely dense), or 2.0 / 1.5 for the whole deck')
     if speed != 'auto' and float(speed) == 1.5:
         need(text(style.get('speed_reason')), 'style.speed 1.5 for a whole deck needs style.speed_reason')
-    need(style.get('voice', 'xiaoxiao') in ('xiaoxiao', 'yunyang', 'zh-CN-XiaoxiaoNeural', 'zh-CN-YunyangNeural', 'yunxi', 'zh-CN-YunxiNeural'),
-         'style.voice: xiaoxiao (default) or yunyang; one voice per deck (yunxi only for maintaining old cards)')
+    voices = ('xiaoxiao', 'yunyang', 'zh-CN-XiaoxiaoNeural', 'zh-CN-YunyangNeural', 'yunxi', 'zh-CN-YunxiNeural')
+    need(style.get('voice', 'xiaoxiao') in voices, 'style.voice: xiaoxiao (default) or yunyang (yunxi only for maintaining old cards)')
+    by_sub = style.get('voice_by_subdeck', {})
+    need(isinstance(by_sub, dict) and all(text(k) and v in voices for k, v in by_sub.items()),
+         'style.voice_by_subdeck maps a subdeck name to xiaoxiao or yunyang (one voice per subdeck)')
     lexicon = data.get('speech_lexicon', {})
     need(isinstance(lexicon, dict) and all(text(k) and isinstance(v, str) for k, v in lexicon.items()),
          'speech_lexicon maps written forms to how they should be read, e.g. {"λ": "lambda"}')
@@ -65,6 +69,7 @@ def check_exam(data):
         need(text(exam.get(key)), f'exam.{key} must be text')
     need(texts(exam.get('units')), 'exam.units: list the unit or paper codes in scope, e.g. ["WST02"] or ["9708/4"]')
     need(texts(exam.get('evidence')), 'exam.evidence: list the concrete clues that identify this exam')
+    need(text(exam.get('session')), 'exam.session: the target exam series (e.g. "January 2027"); if unknown, give your assumption and set session_assumed: true')
     identified = exam.get('identified_by')
     need(identified in ('paper-code', 'exclusive-content', 'user'), 'exam.identified_by: paper-code, exclusive-content or user')
     ruled_out = exam.get('ruled_out', [])
@@ -112,10 +117,15 @@ def check_coverage(data, card_ids, card_covers):
         need(cls in ITEM_CLASSES, f'coverage.items[{i}].class: core, prerequisite or excluded')
         if cls == 'core':
             need(text(item.get('level')), f'coverage.items[{i}].level: state what the mark schemes require (wording, method, diagram, evaluation)')
+            need(item.get('kind') in ITEM_KINDS, f'coverage.items[{i}].kind: one of {sorted(ITEM_KINDS)} (what kind of mastery the point needs)')
+            evidence = item.get('evidence', [])
+            need((isinstance(evidence, list) and len([e for e in evidence if text(e)]) >= 2) or text(item.get('evidence_gap')),
+                 f'coverage.items[{i}].evidence: cite at least two past-paper mark schemes or examiner reports from different series, or explain evidence_gap')
         else:
             need(text(item.get('reason')), f'coverage.items[{i}].reason: justify why this is a prerequisite or excluded')
         by_id[item['id']] = item
     taught = {}
+    genres = {c['id']: c['genre'] for c in data['cards']}
     for cid, covers in card_covers.items():
         for item_id in covers:
             need(item_id in by_id, f'card {cid} covers unknown item {item_id}')
@@ -123,6 +133,9 @@ def check_coverage(data, card_ids, card_covers):
             taught.setdefault(item_id, []).append(cid)
     # A point already taught well by an existing card counts when that card is named.
     missing = [k for k, v in by_id.items() if v['class'] != 'excluded' and k not in taught and not text(v.get('existing'))]
+    for k, v in by_id.items():
+        if v.get('kind') == 'term' and k in taught and not text(v.get('existing')):
+            need(any(genres[c] == 'term' for c in taught[k]), f'coverage item {k} is a term: give it its own term card, not only a mention inside another card')
     if status == 'complete':
         need(not missing, f'coverage is complete but these points have no card: {missing}')
     board = data.get('board', [])
@@ -153,7 +166,7 @@ def check_cards(data):
             if float(c['speed']) == 1.5:
                 need(text(c.get('speed_reason')), f'card {c["id"]}: say why this card is complex enough for 1.5×')
         need(texts(c.get('sources', []), nonempty=False), f'card {c["id"]}: sources must be a list of text locations')
-        need('voice' not in c, f'card {c["id"]}: voice is set once per deck in style.voice; switching voices mid-deck costs listening effort')
+        need('voice' not in c, f'card {c["id"]}: voices are chosen per deck (style.voice) or per subdeck (style.voice_by_subdeck), not per card')
         check_genre(c)
     return ids
 

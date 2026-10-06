@@ -15,7 +15,9 @@
 - 打开锁定版本的考纲原文，把**本批范围涉及的每一条**逐句拆成考点：一个可单独考的定义、关系、方法、图、计算、评价角度就是一个考点。考纲的指导栏（guidance／notes）同样要读，它常常写着“包括哪些情形”“不要求什么”。
 - 范围边界的确定方式：以板书讲到的考纲小节为核心，**整小节补全**（板书讲了 sampling frame，就把同一小节的 population、census、sampling unit、statistic、sampling distribution 都纳入）；同时纳入做题必需的先修（`prerequisite`，写理由）；板书或教材里出现、但属于其他单元或超出本考试的内容标 `excluded`（写理由），任何卡都不能教它。
 - 用评分材料补“隐性考点”：真题与 MS 反复要求、考纲字面没有单列的东西（结论句写法、有效范围、语境词 proportion 而非 number、图的标注）也是考点，挂在对应考纲条目下。
-- 每个 core 考点写 `level`：MS 认可的措辞、必需步骤、需要的图、评价深度（方法见 [mark-scheme-calibration.md](mark-scheme-calibration.md)）。
+- 每个 core 考点写 `level`：MS 认可的措辞、必需步骤、需要的图、评价深度（方法见 [mark-scheme-calibration.md](mark-scheme-calibration.md)）；写 `kind`（term／method／formula／diagram／chain／essay／command／fact），决定它需要什么卡；写 `evidence`：至少两条不同考季的 MS 或 ER 出处，证明这个水平不是凭印象定的。
+- **术语台账**：把板书、考纲、MS 与题干里出现的每个 English 学科词列出来，逐个决定：有术语卡、在卡上就地释义（`<abbr>` 或 gloss），或写进 `terms_known`（本牌组之前已讲透）。数学同样做：validity range、Cartesian equation、direction vector、separable、particular solution、integrand、exact 这类词最容易被默认“懂了”。生成器的 `term_ledger` 会列出漏网的词。
+- **命令词**：每个单元的 command words（Pearson：Show that、Hence、Hence or otherwise、exact、in the form；Cambridge：Define、Explain、Analyse、Assess、Evaluate、Discuss）是 `kind: command` 的考点，按官方命令词表与 MS 写成卡：这个词要求做到什么、没做到会丢什么分。
 
 ## 3. 双向核对
 
