@@ -31,10 +31,32 @@ FIELDS = ['StableID', 'Title', 'Page', 'Source', 'Narration']
 KEYS_HINT = 'Space 播音 · Enter 继续 · 1 明天再看'
 
 
+FONT_URL = re.compile(r'url\("(_ccpt6-[\w.-]+\.woff2)"\)')
+ELBOW_THEMES = {'paper', 'lab', 'blueprint'}
+
+
 def asset_css(extra=''):
     parts = [(ASSETS / 'base.css').read_text()]
     parts += [p.read_text() for p in sorted((ASSETS / 'themes').glob('*.css'))]
     return '\n'.join(parts) + ('\n' + extra if extra else '')
+
+
+def bundle_fonts(css, themes):
+    """Content-hashed font names: Anki never overwrites an existing "_" media file on import,
+    so a changed subset under an old name would silently keep stale glyphs."""
+    needed = set(FONT_URL.findall((ASSETS / 'base.css').read_text()))
+    for theme in themes:
+        needed |= set(FONT_URL.findall((ASSETS / 'themes' / f'{theme}.css').read_text()))
+    files = []
+    for name in sorted(needed):
+        source = ASSETS / 'fonts' / name
+        if not source.is_file():
+            continue
+        digest = hashlib.sha1(source.read_bytes()).hexdigest()[:8]
+        hashed = name.replace('.woff2', f'.{digest}.woff2')
+        css = css.replace(f'url("{name}")', f'url("{hashed}")')
+        files.append((source, hashed))
+    return css, files
 
 
 def asset_js():
@@ -62,6 +84,8 @@ def render_card(data, card, style):
         parts += [(p.target, p.text) for p in block_parts]
     voice = resolve_voice(style.get('voice') or DEFAULT_VOICE)
     theme = card.get('theme') or style.get('theme', 'editorial')
+    if theme in ELBOW_THEMES:  # textbook and engineering themes draw right-angled connectors by default
+        sections = [re.sub(r'<div class="mm" (?![^>]*data-edge)', '<div class="mm" data-edge="elbow" ', sec) for sec in sections]
     return {'title_html': title.html, 'sections': sections, 'parts': parts, 'voice': voice, 'theme': theme}
 
 
@@ -204,7 +228,9 @@ def main(argv=None):
         if a.term_sampler:
             write_term_sampler(data, out, media, lexicon)
 
-    css = asset_css(data.get('css', ''))
+    css, fonts = bundle_fonts(asset_css(data.get('css', '')), sorted({r['theme'] for r in rendered.values()}))
+    for source, hashed in fonts:
+        (out / hashed).write_bytes(source.read_bytes())
     js = asset_js()
     template = '<div class="ccpt6-card" data-ccpt-single="1">{{Page}}</div><script>' + js + '</script>'
     deck_info = data['deck']
@@ -252,7 +278,7 @@ def main(argv=None):
     package = None
     if not a.preview:
         pkg = genanki.Package(list(decks.values()))
-        pkg.media_files = [] if a.audio_pending else [str(media / p['file']) for p in plans.values()]
+        pkg.media_files = [str(out / hashed) for _, hashed in fonts] + ([] if a.audio_pending else [str(media / p['file']) for p in plans.values()])
         safe = re.sub(r'[^\w一-鿿.-]+', '_', deck_info['name'])[:60]
         package = out / f'{safe}.apkg'
         pkg.write_to_file(str(package))

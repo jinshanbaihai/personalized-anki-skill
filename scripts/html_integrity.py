@@ -119,4 +119,10 @@ def check_svg(svg):
             if key in {'href', 'src'}:
                 assert value.startswith('#'), 'Only internal SVG references are allowed'
             assert not re.search(r'url\(\s*["\']?(?!#)[^\s]', value, re.I), 'Only internal SVG references are allowed'
+            if key in {'fill', 'stroke', 'color', 'stop-color'}:
+                assert value.strip().lower() in {'none', 'currentcolor', 'transparent'} or value.strip().startswith('var('), (
+                    f'{key}="{value}" is a fixed colour that disappears in night mode; use a theme class '
+                    '(ax grid guide c1–c4 shade shade-2 bar bar-hi dot dot-hi lbl lbl-2 c1-t…) or var(--token)')
+            if key == 'style':
+                assert not re.search(r'(?:^|;)\s*(?:fill|stroke|color)\s*:\s*(?!none|currentcolor|var\()', value, re.I), 'Use theme classes instead of fixed colours in style'
     return svg

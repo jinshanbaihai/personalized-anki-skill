@@ -41,6 +41,16 @@ def passive(markup, where):
     return markup
 
 
+def tidy_latex(source):
+    """Small rewrites that make latex2mathml space things as a textbook would."""
+    # |x| as absolute value: plain bars become infix operators with wrong spacing.
+    # Bars that hold parentheses are left alone (conditional probability P(A|B) stays as written).
+    source = re.sub(r'(?<!\\left)(?<!\\right)(?<!\\)\|([^|()]+?)(?<!\\right)\|', r'\\left|\1\\right|', source)
+    # A minus that opens a group is unary, not binary.
+    source = re.sub(r'(\(|\[|\{|=|,)\s*-(?=[\w\\{(])', r'\1{-}', source)
+    return source
+
+
 class Inline:
     """Rendered inline text with its spoken counterpart."""
     __slots__ = ('html', 'speech', 'unspoken')
@@ -70,12 +80,12 @@ def inline(text, where, *, allow_block_html=False):
         out_html.append(before)
         out_speech.append(before)
         display = match.group(2) is not None
-        source = (match.group(2) if display else match.group(3)).strip()
+        source = tidy_latex((match.group(2) if display else match.group(3)).strip())
         try:
             mathml = latex_to_mathml(source, display='block' if display else 'inline')
         except Exception as error:  # noqa: BLE001
             fail(where, f'LaTeX could not be converted: {source!r} ({error})')
-        out_html.append(f'<span class="math{" math-display" if display else ""}">{mathml}</span>')
+        out_html.append(f'<span class="math{" math-display" if display else ""}" data-tex="{html.escape(source, quote=True)}">{mathml}</span>')
         spoken = match.group(4)
         if spoken is None or not spoken.strip():
             unspoken += 1
@@ -86,6 +96,8 @@ def inline(text, where, *, allow_block_html=False):
     out_html.append(text[pos:])
     out_speech.append(text[pos:])
     markup = ''.join(out_html).replace('\\$', '$')
+    # A formula and the CJK punctuation after it stay on one line (no "，" at a line start).
+    markup = re.sub(r'(<span class="math"[^>]*>(?:(?!<span class="math")[\s\S])*?</math></span>)([，。；：、）”！？])', r'<span class="nw">\1\2</span>', markup)
     if not allow_block_html:
         for tag in re.findall(r'</?\s*([a-zA-Z][\w-]*)', re.sub(r'<math\b[\s\S]*?</math>', '', markup)):
             if tag.lower() not in INLINE_TAGS:
@@ -130,6 +142,11 @@ def need_text(block, key, where):
     if not isinstance(value, str) or not value.strip():
         fail(where, f'"{key}" must be non-empty text')
     return value
+
+
+def mark_type(mark):
+    first = str(mark).lstrip('d')[:1].upper()
+    return {'M': 'M', 'A': 'A', 'B': 'B'}.get(first, 'other') if not str(mark).startswith('AO') else 'AO'
 
 
 def highlight_keywords(markup, keywords, where):
@@ -305,7 +322,7 @@ def r_steps(b, bid, where):
                 + (f'<div class="step-why"><span class="tagline">为什么</span>{why.html}</div>' if why else '')
                 + (f'<div class="step-basis"><span class="tagline">依据</span>{basis.html}</div>' if basis else '')
                 + (f'<div class="step-mark-note">{note.html}</div>' if note else '')
-                + '</div>' + (f'<span class="mark-badge">{esc(mark)}</span>' if mark else '') + '</li>')
+                + '</div>' + (f'<span class="mark-badge" data-type="{mark_type(mark)}">{esc(mark)}</span>' if mark else '') + '</li>')
         speech = joined(goal_speech, f'第{i + 1}步，{do.speech}', ('为什么？' + why.speech) if why else '', ('依据：' + basis.speech) if basis else '')
         if not given and i == 0 and label:
             speech = joined(label.speech, speech)
@@ -320,40 +337,126 @@ def r_steps(b, bid, where):
     return out, parts
 
 
-REL_DEFAULT = {'cause': '导致', 'reason': '因为', 'condition': '仅当', 'evaluation': '但是', 'example': '例如'}
+# Relation words decide connector semantics; keep in step with REL_RULES in assets/ccpt6/layout.js.
+REL_RULES = [
+    (re.compile(r'^(当且仅当|仅当|只有|如果|假如|若|只要|前提|条件|假设|当|only if|if|when|provided|unless)', re.I), ('none', 'dashed', 'cond')),
+    (re.compile(r'^(因为|由于|源于|取决于|来自|基于|because|since|due to|depends on)', re.I), ('back', 'solid', 'cause')),
+    (re.compile(r'^(导致|引起|造成|使得|使|所以|因此|从而|进而|于是|推出|得到|带来|意味着|则|→|⇒|leads? to|causes?|so|therefore|hence|thus|results? in)', re.I), ('forward', 'solid', 'cause')),
+    (re.compile(r'^(但是|但|然而|不过|却|反之|可是|局限|评价|however|but|yet|although)', re.I), ('none', 'dotted', 'eval')),
+    (re.compile(r'^(例如|比如|譬如|如|例|e\.g\.|for example|such as)', re.I), ('none', 'thin', 'example')),
+]
+ARROWS, LINES = ('forward', 'back', 'none'), ('solid', 'dashed', 'dotted', 'thin')
+MAP_KINDS = {'root', 'topic', 'definition', 'cause', 'effect', 'condition', 'evaluation', 'example', 'step', 'contrast', 'policy', 'limit', 'note'}
+
+
+def rel_semantics(rel_text, kind, node, where):
+    arrow, line, tone = ('forward' if kind in ('effect', 'step') else 'none'), 'solid', 'plain'
+    plain = strip_tags(rel_text or '')
+    for pattern, values in REL_RULES:
+        if plain and pattern.search(plain):
+            arrow, line, tone = values
+            break
+    if node.get('arrow') is not None:
+        if node['arrow'] not in ARROWS:
+            fail(where, f'arrow must be one of {ARROWS}')
+        arrow = node['arrow']
+    if node.get('line') is not None:
+        if node['line'] not in LINES:
+            fail(where, f'line must be one of {LINES}')
+        line = node['line']
+    if len(plain) > 16 or (re.search(r'[\u4e00-\u9fff]', plain) and len(plain) > 8):
+        fail(where, f'relation word "{plain}" is long; keep it to a short connective and put the condition in a condition node or cond note')
+    return arrow, line, tone
+
+
+def ao_badge(node, where):
+    ao = node.get('ao')
+    if ao is None:
+        return ''
+    if ao not in ('AO1', 'AO2', 'AO3', 'AO4'):
+        fail(where, 'ao must be AO1, AO2, AO3 or AO4')
+    return f'<span class="ao-badge">{ao}</span>'
+
+
+def ao_attr(node):
+    return f' data-ao="{node["ao"]}"' if node.get('ao') in ('AO1', 'AO2', 'AO3', 'AO4') else ''
 
 
 def r_chain(b, bid, where):
+    """A causal chain with optional forks (parallel branches that rejoin) and condition notes."""
     items = need_list(b, 'items', where)
-    if len(items) < 2:
-        fail(where, 'a causal chain needs at least two links')
     label = inline(b.get('label'), where)
-    out = f'<h3 class="blk-label">{label.html}</h3>' if label else ''
-    out += f'<ol class="chain" data-direction="{esc(b.get("direction", "down"))}">'
-    parts = []
-    for i, item in enumerate(items):
-        w = f'{where}.items[{i}]'
-        item = item if isinstance(item, dict) else {'text': item}
-        text = inline(need_text(item, 'text', w), w)
-        note = inline(item.get('note'), w)
-        rel = inline(item.get('rel', '导致' if i else None), w)
-        nid = f'{bid}-c{i}'
-        if i:
-            out += f'<li class="chain-rel" aria-hidden="false"><span class="rel-arrow">↓</span><span class="rel-word">{rel.html}</span></li>'
-        ao = item.get('ao')
-        if ao is not None and ao not in ('AO1', 'AO2', 'AO3', 'AO4'):
-            fail(w, 'ao must be AO1, AO2, AO3 or AO4')
-        out += (f'<li class="chain-node" data-node="{nid}">' + (f'<span class="ao-badge">{ao}</span>' if ao else '') + f'<div class="chain-text">{text.html}</div>'
-                + (f'<div class="chain-note">{note.html}</div>' if note else '') + '</li>')
-        speech = joined((rel.speech + '，' if i else '') + text.speech, note.speech)
-        if i == 0 and label:
-            speech = joined(label.speech, speech)
-        parts.append(Part(nid, speech, text.unspoken + note.unspoken + rel.unspoken))
-    out += '</ol>'
-    return out, parts
+    direction = b.get('direction', 'auto')
+    if direction not in ('auto', 'row', 'column', 'down'):
+        fail(where, 'direction must be auto, row or column')
+    parts, counter, pending = [], [0], ['']
 
+    def node_item(d, w, first):
+        if not isinstance(d, dict):
+            d = {'text': d}
+        text = inline(need_text(d, 'text', w), w)
+        rel = inline(d.get('rel'), w)
+        cond = inline(d.get('cond'), w)
+        note = inline(d.get('note'), w)
+        kind = d.get('kind', 'topic')
+        if kind not in MAP_KINDS:
+            fail(w, f'kind must be one of {sorted(MAP_KINDS)}')
+        if rel and not first:
+            arrow, line, tone = rel_semantics(rel.html, kind, d, w)
+            if tone == 'plain' and d.get('arrow') is None:
+                arrow = 'forward'
+        elif not first:
+            arrow, line, tone = 'forward', 'solid', 'cause'
+        else:
+            arrow, line, tone = 'none', 'solid', 'plain'
+        nid = f'{bid}-c{counter[0]}'
+        counter[0] += 1
+        link = '' if first else (rel.speech or '导致')
+        lead = f'{link}{cond.speech}，' if cond else (f'{link}，' if link else '')
+        spoken = joined(pending[0], lead + text.speech, note.speech)
+        pending[0] = ''
+        parts.append(Part(nid, spoken, text.unspoken + rel.unspoken + cond.unspoken + note.unspoken))
+        return (f'<li class="ch-item" data-kind="{kind}" data-arrow="{arrow}" data-line="{line}" data-tone="{tone}">'
+                + (f'<span class="ch-rel">{rel.html}</span>' if rel and not first else '')
+                + (f'<span class="ch-cond">{cond.html}</span>' if cond else '')
+                + f'<div class="ch-node" data-kind="{kind}" data-node="{nid}"{ao_attr(d)}>{ao_badge(d, w)}{text.html}'
+                + (f'<div class="ch-note">{note.html}</div>' if note else '') + '</div></li>')
 
-MAP_KINDS = {'root', 'topic', 'definition', 'cause', 'effect', 'condition', 'evaluation', 'example', 'step', 'contrast', 'policy', 'limit', 'note'}
+    def seq(entries, w, cls=''):
+        if not entries:
+            fail(w, 'a chain or branch needs at least one node')
+        out, prev_fork = [], False
+        for i, e in enumerate(entries):
+            ew = f'{w}[{i}]'
+            if isinstance(e, dict) and 'fork' in e:
+                branches = e['fork']
+                if not isinstance(branches, list) or len(branches) < 2 or not all(isinstance(x, list) and x for x in branches):
+                    fail(ew, '"fork" is a list of at least two non-empty branches')
+                if prev_fork:
+                    fail(ew, 'two forks in a row need a joining node between them')
+                if i == 0:
+                    fail(ew, 'a chain cannot start with a fork; give the shared cause first')
+                rendered = []
+                for k, branch in enumerate(branches):
+                    if isinstance(branch[0], dict) and 'fork' in branch[0]:
+                        fail(f'{ew}.fork[{k}]', 'a branch starts with a node, not another fork')
+                    pending[0] = f'分支{"一二三四五六"[k] if k < 6 else k + 1}'
+                    rendered.append(seq(branch, f'{ew}.fork[{k}]', 'ch-branch'))
+                pending[0] = '各分支汇合'
+                out.append(f'<li class="ch-fork" data-n="{len(branches)}">' + ''.join(rendered) + '</li>')
+                prev_fork = True
+            else:
+                out.append(node_item(e, ew, first=(i == 0 and not cls)))
+                prev_fork = False
+        return f'<ol class="ch-seq{(" " + cls) if cls else ""}">' + ''.join(out) + '</ol>'
+
+    body = seq(items, f'{where}.items')
+    if counter[0] < 2:
+        fail(where, 'a causal chain needs at least two linked statements')
+    if label:
+        parts[0].text = joined(label.speech, parts[0].text)
+    head = f'<h3 class="blk-label">{label.html}</h3>' if label else ''
+    return head + f'<div class="ccchain" data-dir="{"column" if direction == "down" else direction}">{body}</div>', parts
 
 
 def r_map(b, bid, where):
@@ -363,17 +466,23 @@ def r_map(b, bid, where):
     layout = b.get('layout', 'auto')
     if layout not in ('auto', 'logic', 'outline'):
         fail(where, 'layout must be auto, logic or outline')
-    parts, counter = [], [0]
-    depth_seen = [0]
+    edge = b.get('edge')
+    if edge is not None and edge not in ('curve', 'elbow'):
+        fail(where, 'edge must be curve or elbow')
+    fold = b.get('fold', True)
+    if not isinstance(fold, bool):
+        fail(where, 'fold must be true or false')
+    parts, counter, depth_seen = [], [0], [0]
 
-    def node(n, w, depth, top_branch):
+    def node(n, w, depth, branch):
         if not isinstance(n, dict):
-            fail(w, 'map nodes are objects {text, rel?, kind?, children?}')
+            fail(w, 'map nodes are objects {text, rel?, kind?, ao?, children?}')
         text = inline(need_text(n, 'text', w), w)
         rel = inline(n.get('rel'), w)
         kind = n.get('kind', 'root' if depth == 0 else 'topic')
         if kind not in MAP_KINDS:
             fail(w, f'kind must be one of {sorted(MAP_KINDS)}')
+        arrow, line, tone = rel_semantics(rel.html if rel else '', kind, n, w)
         nid = f'{bid}-n{counter[0]}'
         counter[0] += 1
         depth_seen[0] = max(depth_seen[0], depth)
@@ -387,21 +496,21 @@ def r_map(b, bid, where):
         else:
             parts[-1].text = joined(parts[-1].text, spoken)
             parts[-1].unspoken += text.unspoken + rel.unspoken
-        kids = ''.join(node(c, f'{w}.children[{i}]', depth + 1, top_branch if depth else i) for i, c in enumerate(children))
-        rel_html = f'<span class="mm-rel">{rel.html}</span>' if rel else ''
-        sub = f'<ul>{kids}</ul>' if kids else ''
-        ao = n.get('ao')
-        if ao is not None and ao not in ('AO1', 'AO2', 'AO3', 'AO4'):
-            fail(w, 'ao must be AO1, AO2, AO3 or AO4')
-        badge = f'<span class="ao-badge">{ao}</span>' if ao else ''
-        return f'<li class="mm-item" data-kind="{kind}" data-depth="{depth}">{rel_html}<div class="mm-node" data-node="{nid}">{badge}{text.html}</div>{sub}</li>'
+        kids = ''.join(node(c, f'{w}.children[{i}]', depth + 1, i if depth == 0 else branch) for i, c in enumerate(children))
+        b_attr = 'root' if depth == 0 else str(branch % 6)
+        return (f'<li class="mm-item{" has-rel" if rel else ""}" data-kind="{kind}" data-depth="{depth}" data-branch="{b_attr}" '
+                f'data-arrow="{arrow}" data-line="{line}" data-tone="{tone}">'
+                + (f'<span class="mm-rel">{rel.html}</span>' if rel else '')
+                + f'<div class="mm-node" data-kind="{kind}" data-node="{nid}"{ao_attr(n)}>{ao_badge(n, w)}{text.html}</div>'
+                + (f'<ul>{kids}</ul>' if kids else '') + '</li>')
 
     tree = node(root, f'{where}.root', 0, 0)
     label = inline(b.get('label'), where)
     head = f'<h3 class="blk-label">{label.html}</h3>' if label else ''
     if label:
         parts[0].text = joined(label.speech, parts[0].text)
-    return (f'{head}<div class="mm" data-layout="{layout}" data-depth="{depth_seen[0]}"><ul class="mm-tree">{tree}</ul></div>', parts)
+    attrs = f'data-layout="{layout}" data-depth="{depth_seen[0]}" data-nodes="{counter[0]}"' + (f' data-edge="{edge}"' if edge else '') + ('' if fold else ' data-fold="false"')
+    return f'{head}<div class="mm" {attrs}><ul class="mm-tree">{tree}</ul></div>', parts
 
 
 def r_figure(b, bid, where):
@@ -463,7 +572,7 @@ def r_exam(b, bid, where):
         t = inline(need_text(item, 'text', w), w)
         mark = item.get('mark')
         nid = f'{bid}-e{i}'
-        out += f'<li data-node="{nid}">' + (f'<span class="mark-badge">{esc(mark)}</span>' if mark else '') + f'<span>{t.html}</span></li>'
+        out += f'<li data-node="{nid}">' + (f'<span class="mark-badge" data-type="{mark_type(mark)}">{esc(mark)}</span>' if mark else '') + f'<span>{t.html}</span></li>'
         parts.append(Part(nid, joined((label.speech + '。') if i == 0 else '', t.speech), t.unspoken))
     return out + '</ul>', parts
 
@@ -493,7 +602,7 @@ def r_sections(b, bid, where):
         text = inline(need_text(item, 'text', w), w)
         mark = item.get('mark')
         nid = f'{bid}-x{i}'
-        out += (f'<section class="sec" data-node="{nid}"><h4>{head.html}' + (f'<span class="mark-badge">{esc(mark)}</span>' if mark else '')
+        out += (f'<section class="sec" data-node="{nid}"><h4>{head.html}' + (f'<span class="mark-badge" data-type="{mark_type(mark)}">{esc(mark)}</span>' if mark else '')
                 + f'</h4><p>{text.html}</p></section>')
         parts.append(Part(nid, joined((label.speech + '。') if i == 0 and label else '', head.speech, text.speech), head.unspoken + text.unspoken))
     return out + '</div>', parts

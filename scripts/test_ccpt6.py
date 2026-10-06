@@ -4,6 +4,8 @@ import json
 import re
 import shutil
 import subprocess
+import sys
+import zipfile
 from pathlib import Path
 
 import pytest
@@ -284,3 +286,51 @@ def test_subgoal_and_trivial_steps():
         {'subgoal': '代入公式', 'do': 'e', 'basis': 'f'}]}, 'b0', 'w')
     assert html.count('class="subgoal"') == 2 and 'step trivial' in html
     assert parts[0].text.startswith('把括号首项化成 1') and not parts[1].text.startswith('把括号')
+
+
+def test_tidy_latex():
+    assert blocks.tidy_latex(r'|x|<\frac14') == r'\left|x\right|<\frac14'
+    assert blocks.tidy_latex(r'P(A|B)+P(C|D)') == r'P(A|B)+P(C|D)'
+    assert blocks.tidy_latex(r'(-\frac23)') == r'({-}\frac23)'
+
+
+def test_svg_colours_follow_theme():
+    ok = '<svg viewBox="0 0 10 10"><line class="ax" x1="0" y1="0" x2="5" y2="5"/><rect fill="none" stroke="var(--ink)" width="1" height="1"/></svg>'
+    blocks.render_block({'type': 'figure', 'svg': ok, 'caption': 'x'}, 'b0', 'w')
+    with pytest.raises(blocks.BlockError, match='night mode'):
+        blocks.render_block({'type': 'figure', 'svg': '<svg viewBox="0 0 10 10"><line stroke="#000" x1="0" y1="0" x2="5" y2="5"/></svg>', 'caption': 'x'}, 'b0', 'w')
+
+
+def test_math_punctuation_nowrap_is_local():
+    html, _ = blocks.render_block({'type': 'lead', 'text': '甲 $a$〔a〕可以；而 $b$〔b〕含 $c$〔c〕，不是'}, 'b0', 'w')
+    assert html.count('class="nw"') == 1
+    inner = html.split('class="nw">', 1)[1].split('，</span>', 1)[0]
+    assert inner.count('class="math"') == 1
+
+
+def test_theme_contrast_meets_wcag():
+    result = subprocess.run([sys.executable, str(ROOT / 'scripts/contrast_check.py')], capture_output=True, text=True)
+    assert result.returncode == 0, result.stdout[-800:]
+
+
+def test_css_stays_within_anki_engines():
+    """Anki 25.02 ships Chromium 112: no CSS nesting, light-dark(), color-mix() or container queries."""
+    for css in [ROOT / 'assets/ccpt6/base.css', *(ROOT / 'assets/ccpt6/themes').glob('*.css')]:
+        text = re.sub(r'/\*[\s\S]*?\*/', '', css.read_text())
+        for banned in ('light-dark(', 'color-mix(', '@container'):
+            assert banned not in text, f'{css.name} uses {banned}'
+        assert not re.search(r'{[^{}]*&', text), f'{css.name} uses CSS nesting'
+    for css in (ROOT / 'assets/ccpt6/themes').glob('*.css'):
+        text = css.read_text()
+        assert f'.night_mode .ccpt6[data-theme="{css.stem}"]' in text and f'.nightMode.card:has(.ccpt6[data-theme="{css.stem}"])' in text
+
+
+def test_fonts_are_bundled_with_content_hashes(tmp_path):
+    src = tmp_path / 'deck.json'
+    src.write_text(json.dumps(deck(), ensure_ascii=False))
+    build_cards.main([str(src), str(tmp_path / 'out'), '--audio-pending'])
+    fonts = sorted(p.name for p in (tmp_path / 'out').glob('_ccpt6-*.woff2'))
+    assert fonts and all(re.fullmatch(r'_ccpt6-[\w-]+\.[0-9a-f]{8}\.woff2', f) for f in fonts)
+    with zipfile.ZipFile(next((tmp_path / 'out').glob('*.apkg'))) as z:
+        names = json.loads(z.read('media')).values()
+    assert set(fonts) <= set(names)

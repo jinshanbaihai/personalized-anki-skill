@@ -51,6 +51,11 @@
  on(audio,'ended',()=>{button.textContent='↻';setStatus('讲解结束 · Space 重播');clearCue();});
  for(const ev of ['timeupdate','seeking','seeked'])on(audio,ev,follow);
  label();
+ // Old Android WebViews (before Chromium 109) cannot lay out MathML: fall back to the host's MathJax, else readable TeX.
+ (()=>{const probe=document.createElement('div');probe.style.cssText='position:absolute;visibility:hidden';probe.innerHTML='<math><mspace width="40px"></mspace></math>';document.body.appendChild(probe);
+  const ok=probe.firstChild.getBoundingClientRect().width>30;probe.remove();if(ok)return;
+  root.querySelectorAll('.math[data-tex]').forEach(m=>{const d=m.classList.contains('math-display');m.textContent=(d?'\\[':'\\(')+m.dataset.tex+(d?'\\]':'\\)');});
+  if(window.MathJax&&MathJax.typesetPromise)MathJax.typesetPromise([root]).catch(()=>{});})();
  if(window.ccptLayout)window.ccptLayout(root,ctl.signal);
  window.ccptAudit=()=>{
   const runs=[],walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);
@@ -72,8 +77,11 @@
   const floor={content:15,chrome:12,math:9.5};
   return {viewport:[vw,window.innerHeight],pageHeight:document.documentElement.scrollHeight,minFont:min('content'),minChrome:min('chrome'),minMath:min('math'),
    smallText:runs.filter(r=>r.font<floor[r.kind]).slice(0,10),horizontalOverflow:document.documentElement.scrollWidth>vw+1,
-   clipped:[...root.querySelectorAll('.blk')].filter(b=>b.scrollWidth>b.clientWidth+2&&getComputedStyle(b).overflowX!=='auto').map(b=>b.dataset.node),
-   mapOverlaps:overlaps.length,maps:[...root.querySelectorAll('.mm')].map(m=>({layout:m.dataset.applied||m.dataset.layout,depth:+m.dataset.depth})),
+   clipped:[...root.querySelectorAll('.blk,.blk *')].filter(b=>{const o=getComputedStyle(b).overflowX;return (o==='hidden'||o==='clip')&&b.scrollWidth>b.clientWidth+2&&!b.closest('svg,math');}).map(b=>b.closest('[data-node]')?.dataset.node||b.className).slice(0,8),
+   scrollers:[...root.querySelectorAll('.step-do,.math-display,.tbl-wrap,.ccmm,.ccchain')].filter(b=>b.scrollWidth>b.clientWidth+2).map(b=>b.closest('[data-node]')?.dataset.node||b.className).slice(0,8),
+   lineStartPunct:(()=>{const bad=[];root.querySelectorAll('.cc-body p,.cc-body li,.cc-body dd,.cc-body .mm-node,.cc-body .ch-node').forEach(el=>{const w=document.createTreeWalker(el,NodeFilter.SHOW_TEXT);let lastTop=null;while(w.nextNode()){const t=w.currentNode;for(let i=0;i<t.length;i++){if(!'，。；：、）'.includes(t.data[i]))continue;const r=document.createRange();r.setStart(t,i);r.setEnd(t,i+1);const b=r.getBoundingClientRect();const prev=document.createRange();if(i>0){prev.setStart(t,i-1);prev.setEnd(t,i);const pb=prev.getBoundingClientRect();if(pb.top<b.top-4&&b.left<=el.getBoundingClientRect().left+24)bad.push(t.data.slice(Math.max(0,i-6),i+1));}}}});return bad.slice(0,6);})(),
+   fontsFailed:document.fonts?[...document.fonts].filter(f=>f.status==='error').map(f=>f.family):[],
+   mapOverlaps:overlaps.length+(window.CCMap?CCMap.audit(document).overlaps.length:0),maps:[...root.querySelectorAll('.mm')].map(m=>({layout:m.dataset.applied||m.dataset.layout,depth:+m.dataset.depth})),
    players:root.querySelectorAll('.speak').length,math:root.querySelectorAll('math').length,cues:cues.length,speed,encoded,pending};
  };
  window.ccptCleanup=()=>{cleaned=true;ctl.abort();try{audio.pause();audio.currentTime=0;}catch(e){}clearCue();if(window.ccptLayoutCleanup)window.ccptLayoutCleanup();if(window.ccptSingleCleanup)window.ccptSingleCleanup();};

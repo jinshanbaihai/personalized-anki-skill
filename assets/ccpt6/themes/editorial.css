@@ -1,29 +1,74 @@
-/* editorial — Economics, Business, social sciences. Broadsheet manners: warm paper,
-   serif headlines, hairline rules, claret kicker labels; diagrams and causes in ink and teal. */
+/* editorial — Economics, Business, Politics, Sociology.
+   Art reference: the broadsheet / weekly news-magazine page. FT core brand (Origami o-colors 6.7.1: paper #fff1e5,
+   claret #990f3d, oxford #0f5499, teal #0d7680; o-typography: Financier Display for headlines, Metric sans for UI,
+   Georgia serif for reading) and The Economist (design-system 7.42.1: economist-red #e3120b used only as text and rules).
+   Borrowed manners, not brands: serif for reading, sans for graphics and labels, hairline column rules, claret kicker,
+   teal for causal wiring. Why it serves understanding: Economics answers are argued prose plus diagrams; the page
+   separates "what you write" (serif) from "how it is wired" (sans + teal arrows). */
+@font-face{font-family:"CCPT6 Newsreader";src:url("_ccpt6-news-400.woff2") format("woff2");font-weight:400;font-style:normal;font-display:block;unicode-range:U+0000-00B6,U+00B8-00FF,U+0131,U+0152-0153,U+02C6,U+02DA,U+02DC,U+0300-03FF,U+2000-2013,U+2015-201B,U+201E-2025,U+2027-209F,U+20AC,U+2122,U+2190-21FF,U+2212,U+2264-2265}
+@font-face{font-family:"CCPT6 Newsreader";src:url("_ccpt6-news-400i.woff2") format("woff2");font-weight:400;font-style:italic;font-display:block;unicode-range:U+0000-00B6,U+00B8-00FF,U+0131,U+0152-0153,U+02C6,U+02DA,U+02DC,U+0300-03FF,U+2000-2013,U+2015-201B,U+201E-2025,U+2027-209F,U+20AC,U+2122,U+2190-21FF,U+2212,U+2264-2265}
+@font-face{font-family:"CCPT6 Newsreader";src:url("_ccpt6-news-700.woff2") format("woff2");font-weight:600 800;font-style:normal;font-display:block;unicode-range:U+0000-00B6,U+00B8-00FF,U+0131,U+0152-0153,U+02C6,U+02DA,U+02DC,U+0300-03FF,U+2000-2013,U+2015-201B,U+201E-2025,U+2027-209F,U+20AC,U+2122,U+2190-21FF,U+2212,U+2264-2265}
+@font-face{font-family:"CCPT6 Editorial Sans";src:url("_ccpt6-ssans-400.woff2") format("woff2");font-weight:400 500;font-display:block;unicode-range:U+0000-00B6,U+00B8-00FF,U+0131,U+0152-0153,U+02C6,U+02DA,U+02DC,U+0300-03FF,U+2000-2013,U+2015-201B,U+201E-2025,U+2027-209F,U+20AC,U+2122,U+2190-21FF,U+2212,U+2264-2265}
+@font-face{font-family:"CCPT6 Editorial Sans";src:url("_ccpt6-ssans-700.woff2") format("woff2");font-weight:600 800;font-display:block;unicode-range:U+0000-00B6,U+00B8-00FF,U+0131,U+0152-0153,U+02C6,U+02DA,U+02DC,U+0300-03FF,U+2000-2013,U+2015-201B,U+201E-2025,U+2027-209F,U+20AC,U+2122,U+2190-21FF,U+2212,U+2264-2265}
+
 .ccpt6[data-theme="editorial"]{
- --bg:#fbf4ec;--surface:#fffaf4;--surface-2:#f4e9dc;--ink:#2a2420;--ink-2:#6b5f55;--rule:#e2d3c2;
- --accent:#8c1d3a;--accent-ink:#fff;--accent-soft:#f6e1e2;--wire:#0d6e74;--kw:#f5d98a;
- --good:#2d6a4f;--good-soft:#e5f0e8;--bad:#a4302a;--bad-soft:#f8e3de;--mark-bg:#2a2420;--mark-ink:#fbf4ec;
- --focus:#0d6e74;--focus-soft:rgba(13,110,116,.12);
- --font-head:"Iowan Old Style","Charter","Georgia","Songti SC","Noto Serif CJK SC","Source Han Serif SC",serif;
+ --bg:#fcefe2;--surface:#fff8f0;--surface-2:#f5e3d1;--rule:#e2cbb6;--rule-strong:#8c7664;
+ --ink:#22252b;--ink-2:#5a504a;--accent:#990f3d;--accent-ink:#fff7ef;--accent-soft:#f6dcdc;
+ --wire:#0b6670;--kw:#f4cf92;--good:#2a6446;--good-soft:#e2eddd;--bad:#a3261e;--bad-soft:#f8dcd3;--pen:#b01e1e;
+ --mark-bg:#22252b;--mark-ink:#fff1e5;--focus:#0f5499;--focus-soft:rgba(15,84,153,.13);
+ --k-policy:#990f3d;--k-cause:#0b6670;--k-effect:#0b6670;--k-cond:#5a504a;--k-eval:#990f3d;--k-example:#2a6446;--k-limit:#a3261e;--k-def:#0f5499;
+ --c1:#990f3d;--c2:#0f5499;--c3:#0b6670;--c4:#b45309;--c-grid:#d6bea8;
+ --font-text:"CCPT6 Newsreader",var(--cjk-serif);
+ --font-head:"CCPT6 Newsreader",var(--cjk-serif);
+ --font-ui:"CCPT6 Editorial Sans",var(--cjk-sans);
+ --fs:18.5px;--lh:1.8;--radius:2px;--radius-sm:3px;--gap:26px;--col:800px;
 }
-.card:has(.ccpt6[data-theme="editorial"]){background:#fbf4ec}
-.ccpt6[data-theme="editorial"] .cc-titlebar h1{font-size:30px;font-weight:700;letter-spacing:-.005em}
-.ccpt6[data-theme="editorial"] .cc-genre{background:none;color:var(--accent);padding:0;border-radius:0;font-variant:small-caps;letter-spacing:.14em;font-size:14px;border-bottom:2px solid var(--accent)}
-.ccpt6[data-theme="editorial"] .cc-head{border-bottom:2px solid var(--ink)}
-.ccpt6[data-theme="editorial"] .blk{border:0;border-top:1px solid var(--ink);border-radius:0;background:transparent;padding:14px 2px 6px}
-.ccpt6[data-theme="editorial"] .blk-lead{border:0}
-.ccpt6[data-theme="editorial"] .lead{font-family:var(--font-head);font-size:23px;font-weight:600;border-left:0;padding:0 0 0 0;line-height:1.5}
-.ccpt6[data-theme="editorial"] .lead::before{content:"";display:block;width:56px;height:4px;background:var(--accent);margin-bottom:10px}
-.ccpt6[data-theme="editorial"] .blk-label{font-variant:small-caps;letter-spacing:.12em;font-size:15px}
-.ccpt6[data-theme="editorial"] .def-term{font-size:30px;font-weight:700}
-.ccpt6[data-theme="editorial"] .def-text{font-family:var(--font-head);font-size:21px}
-.ccpt6[data-theme="editorial"] .chain-node{background:var(--surface);border-left:3px solid var(--wire)}
-.ccpt6[data-theme="editorial"] .chain-rel{color:var(--wire)}
-.ccpt6[data-theme="editorial"] .tbl th{color:var(--ink);border-bottom:2px solid var(--ink);font-variant:small-caps;letter-spacing:.06em}
+.card:has(.ccpt6[data-theme="editorial"]){background:#fcefe2}
+.ccpt6[data-theme="editorial"] .cc-head{border-top:5px solid var(--ink);border-bottom:1px solid var(--ink);padding-top:14px}
+.ccpt6[data-theme="editorial"] .cc-genre{background:none;color:var(--accent);padding:0;border-radius:0;font-size:13.5px;letter-spacing:.16em;text-transform:uppercase}
+.ccpt6[data-theme="editorial"] .cc-genre::before{content:"";display:inline-block;width:10px;height:10px;background:var(--accent);margin-right:8px;vertical-align:-1px}
+.ccpt6[data-theme="editorial"] .cc-titlebar h1{font-size:31px;font-weight:700;letter-spacing:-.008em;line-height:1.25}
+.ccpt6[data-theme="editorial"] .speak{border-color:var(--ink);color:var(--ink)}
+.ccpt6[data-theme="editorial"] .speak[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+/* columns separated by rules, not boxes */
+.ccpt6[data-theme="editorial"] .blk{--blk-bg:var(--bg);background:transparent;border:0;border-top:1px solid var(--ink);border-radius:0;padding:16px 0 4px}
+.ccpt6[data-theme="editorial"] .cc-body>.blk-lead{border-top:0;padding-top:4px}
+.ccpt6[data-theme="editorial"] .blk-label{font-size:13.5px;letter-spacing:.14em;text-transform:uppercase}
+.ccpt6[data-theme="editorial"] .lead{font-size:23px;font-weight:500;line-height:1.55;border-left:0;padding-left:0}
+.ccpt6[data-theme="editorial"] .lead::before{content:"";display:block;width:44px;height:5px;background:var(--accent);margin-bottom:12px}
+/* the definition is the paper's boxed sidebar */
+.ccpt6[data-theme="editorial"] .blk-definition{--blk-bg:var(--surface-2);background:var(--surface-2);border-top:4px solid var(--accent);padding:16px 22px 18px}
+.ccpt6[data-theme="editorial"] .def-term{font-size:32px;font-weight:700;color:var(--ink)}
+.ccpt6[data-theme="editorial"] .def-zh{font-family:var(--font-ui)}
+.ccpt6[data-theme="editorial"] .def-text{font-size:21px;line-height:1.6}
+.ccpt6[data-theme="editorial"] .def-gloss{background:var(--surface);border-radius:0}
+.ccpt6[data-theme="editorial"] .def-label,.ccpt6[data-theme="editorial"] .tagline{color:var(--accent)}
+.ccpt6[data-theme="editorial"] .u-row dt{font-family:var(--font-head);font-style:italic;font-size:1.04em}
+.ccpt6[data-theme="editorial"] .ex-col{border-radius:0;border-top:3px solid var(--good)}
+.ccpt6[data-theme="editorial"] .ex-no{border-top-color:var(--bad)}
+.ccpt6[data-theme="editorial"] .tbl th{font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2)}
+.ccpt6[data-theme="editorial"] .tbl td:first-child{color:var(--ink)}
+/* causal wiring in teal, relations as italic serif captions */
+.ccpt6[data-theme="editorial"] .ch-node{border-radius:0}
+.ccpt6[data-theme="editorial"] .ch-node[data-ao="AO3"]{border-left:3px solid var(--accent)}
+.ccpt6[data-theme="editorial"] .ch-rel{font-family:var(--font-head);font-style:italic;letter-spacing:0}
+.ccpt6[data-theme="editorial"] .ao-badge{border-radius:0}
+.ccpt6[data-theme="editorial"] .mm-node{border-radius:0}
+.ccpt6[data-theme="editorial"] .blk-map{background:transparent}
+.ccpt6[data-theme="editorial"] .mm-box.has-inline{border-radius:0;background:var(--surface)}
+/* essay spine: large serif numerals in the margin */
+.ccpt6[data-theme="editorial"] .sec{padding-left:52px}
+.ccpt6[data-theme="editorial"] .sec::before{border:0;width:auto;height:auto;top:6px;font:700 30px/1 var(--font-head);color:var(--accent)}
+.ccpt6[data-theme="editorial"] .sec h4{font-family:var(--font-head);font-size:19px}
+.ccpt6[data-theme="editorial"] .fig figcaption{text-align:left;max-width:640px;margin:8px auto 0;border-top:1px solid var(--rule);padding-top:6px}
+.ccpt6[data-theme="editorial"] .steps-given,.ccpt6[data-theme="editorial"] .steps-goal,.ccpt6[data-theme="editorial"] .pf{border-radius:0}
+.ccpt6[data-theme="editorial"] .mark-badge{border-radius:2px}
+
 .nightMode .ccpt6[data-theme="editorial"],.night_mode .ccpt6[data-theme="editorial"]{
- --bg:#1d1916;--surface:#25201c;--surface-2:#2f2823;--ink:#efe6dc;--ink-2:#b5a89b;--rule:#4a4038;
- --accent:#e77d93;--accent-ink:#1d1916;--accent-soft:#3a2229;--wire:#5cc3c8;--kw:#7a6224;
- --good:#7cc79c;--good-soft:#1f3328;--bad:#f08c7d;--bad-soft:#3d2421;--mark-bg:#efe6dc;--mark-ink:#1d1916;--focus:#5cc3c8;--focus-soft:rgba(92,195,200,.16)}
-.nightMode.card:has(.ccpt6[data-theme="editorial"]),.nightMode .card:has(.ccpt6[data-theme="editorial"]){background:#1d1916}
-.ccpt6[data-theme="editorial"] .cc-body>.blk:first-child{border-top:0}
+ --bg:#1b1815;--surface:#24201c;--surface-2:#2e2822;--rule:#4a4037;--rule-strong:#8f8173;
+ --ink:#f3eae0;--ink-2:#c3b5a7;--accent:#f08fa5;--accent-ink:#1b1815;--accent-soft:#3b232a;
+ --wire:#63c5ca;--kw:#6e5420;--good:#8fd0a5;--good-soft:#1f3227;--bad:#ff9c8c;--bad-soft:#3e2420;--pen:#ff8f7d;
+ --mark-bg:#f3eae0;--mark-ink:#1b1815;--focus:#86b8f2;--focus-soft:rgba(134,184,242,.17);
+ --k-policy:#f08fa5;--k-cause:#63c5ca;--k-effect:#63c5ca;--k-cond:#c3b5a7;--k-eval:#f08fa5;--k-example:#8fd0a5;--k-limit:#ff9c8c;--k-def:#86b8f2;
+ --c1:#f08fa5;--c2:#86b8f2;--c3:#63c5ca;--c4:#f2b45c;--c-grid:#4a4037}
+.nightMode.card:has(.ccpt6[data-theme="editorial"]),.night_mode.card:has(.ccpt6[data-theme="editorial"]),.nightMode .card:has(.ccpt6[data-theme="editorial"]){background:#1b1815}

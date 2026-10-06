@@ -68,6 +68,8 @@ for (const file of pages) {
         if (audit.mapOverlaps) issues.push(`${audit.mapOverlaps} overlapping map nodes`);
         if (audit.clipped.length) issues.push(`clipped blocks ${audit.clipped.join(',')}`);
         if (audit.players !== 1) issues.push('page needs exactly one player');
+        if (audit.fontsFailed && audit.fontsFailed.length) issues.push('fonts failed to load: ' + [...new Set(audit.fontsFailed)].join(', '));
+        if (audit.lineStartPunct && audit.lineStartPunct.length) issues.push('punctuation starts a line: ' + audit.lineStartPunct.join(' | '));
       }
       if (errors.length) issues.push(...errors.map(e => 'script error: ' + e));
       problems += issues.length;

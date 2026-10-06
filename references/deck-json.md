@@ -100,8 +100,8 @@ python scripts/validate_package.py out/<牌组>.apkg --output out/validate.json 
 | `examples` | yes[{text, why}], no[{text, why}] | 例子与反例 |
 | `table` | head[], rows[[]], caption, label | 对比、分类、条件表 |
 | `steps` | given, items[{subgoal, do, why, basis, mark, mark_note, trivial}], goal, marks_basis, label | 理科推导：每步“做什么＋为什么＋依据”；`subgoal` 把 2–4 步归成一组并显示组名；`mark` 用 MS 记号（M1、dM1、A1、A1*、B1、ft…），`mark_note` 写容忍与扣分；纯算术步可 `trivial: true`；`marks_basis` 说明得分标注来自哪份 MS 或“按同类题推断” |
-| `chain` | items[{text, rel, note, ao}], direction, label | 箭头因果链，`rel` 写在箭头上（导致、因为、仅当、但是…），`ao` 可标 AO1–AO4 |
-| `map` | root{text, rel, kind, ao, children[]}, layout, label | 深层导图；`kind` 见下；`layout`: auto / logic / outline |
+| `chain` | items[{text, rel, cond, note, kind, ao, arrow, line} 或 {fork: [[…], […]]}], direction, label | 箭头因果链：`rel` 印在箭头上，`cond` 是挂在箭头下的条件旁注，`note` 是节点内的次要说明；`fork` 并列两条以上分支，分叉后的节点自动汇合（链不能以分叉开头，两个分叉之间要有节点）；`direction`: auto / row / column |
+| `map` | root{text, rel, kind, ao, arrow, line, children[]}, layout, edge, fold, label | 深层导图；`kind` 见下；`layout`: auto / logic / outline；`edge`: curve / elbow（默认按主题）；`fold: false` 不折叠分支 |
 | `figure` | svg, caption, points[] | 原创 SVG 图及逐点解读 |
 | `pitfall` | items[{wrong, right, why, lost, source}] | 易错：老师批注、examiner report、MS 拒收说法；`lost` 写丢的分（A1） |
 | `exam` | items[{text, mark}], label | 考法、command word、得分点 |
@@ -110,7 +110,7 @@ python scripts/validate_package.py out/<牌组>.apkg --output out/validate.json 
 | `note` | text, label, tone(plain/key/aside/warn) | 补充说明 |
 | `html` | html, speech | 特殊被动 HTML 的出口，必须自带 speech |
 
-`map` 的 `kind`：`root topic definition cause effect condition evaluation example step contrast policy limit note`，决定节点底色与边框；关系本身写在 `rel` 上，读者不靠颜色猜关系。
+`map`／`chain` 的 `kind`：`root topic definition cause effect condition evaluation example step contrast policy limit note`，决定节点小标签、边框与底色；关系本身写在 `rel` 上，读者不靠颜色猜关系。`rel` 是短连接词（不超过约 8 个汉字），它决定连线：导致／所以／因此 → 正向箭头；因为／由于／取决于 → 反向箭头；仅当／如果／若 → 虚线；但是／然而 → 点线；例如 → 细线（规则与 `assets/ccpt6/layout.js` 的 `REL_RULES` 一致）；需要时用 `arrow`（forward/back/none）与 `line`（solid/dashed/dotted/thin）覆盖。长条件写成 condition 节点或 `cond` 旁注。
 
 ### 文字、数学与朗读
 
