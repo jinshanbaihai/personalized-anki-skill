@@ -35,7 +35,10 @@ def deck():
         ],
         'board': [{'id': 'B01', 'where': 'p1', 'point': 'statistic definition', 'items': ['S-1']}],
         'demands': [{'id': 'D1', 'series': 'Jan 2025', 'q': 'Q2(a)', 'ask': 'Explain why X is a statistic', 'points': ['S-1'], 'cards': ['T01']}],
-        'coverage': {'scope': 'synthetic 4.2', 'status': 'complete', 'remaining': '', 'saturation': 'synthetic: 4 series, last 3 added nothing new', 'items': [
+        'coverage': {'scope': 'synthetic 4.2', 'status': 'complete', 'remaining': '', 'saturation': 'synthetic: 4 series, last 3 added nothing new',
+                     'backcheck': [{'paper': 'WST02/01', 'series': '2024-06', 'q': '3(a)', 'result': 'pass', 'fixed_by': []},
+                                   {'paper': 'WST02/01', 'series': '2023-01', 'q': '5(b)', 'result': 'gap', 'fixed_by': ['T01']}],
+                     'coldread': [{'card': 'T01', 'missing': [], 'fixed_by': []}], 'items': [
             {'id': 'S-1', 'spec': '4.2', 'point': 'statistic', 'class': 'core', 'level': 'MS keywords', 'kind': 'term',
              'evidence': ['WST02 Jan 2025 Q2 MS', 'WST02 Jun 2023 ER Q2']},
             {'id': 'X-1', 'spec': 'S3 3.6', 'point': 'CLT', 'class': 'excluded', 'reason': 'other unit'}]},
@@ -769,7 +772,7 @@ def test_paper_gap_next_to_chinese_text():
 def test_per_mark_board_ids_need_lost():
     d = deck()
     d['board'].append({'id': 'Q01A2', 'where': 'p1', 'point': '没乘回 2', 'note': '粗心'})
-    with pytest.raises(deck_rules.DeckError, match='per-mark score'):
+    with pytest.raises(deck_rules.DeckError, match='per-mark record'):
         deck_rules.check(d)
 
 
@@ -781,10 +784,28 @@ def test_term_ledger_skips_chrome_and_glosses():
     d = deck()
     pages = {'T01': ('<main><article><span class="def-label">Definition</span><p class="def-src">June 2024 MS</p>'
                      '<span class="ex-text">population mean</span><span class="ex-why">unknown parameter</span>'
-                     '<p>integrand（被积函数）与 exact 值，MPC 上移</p></article></main>')}
+                     '<p>integrand（被积函数）与 separable 方程，MPC 上移，MS（评分方案）给分</p></article></main>')}
     terms = [x['term'] for x in build_cards.term_ledger(d, pages)]
-    assert 'definition' not in terms and 'june' not in terms and 'integrand' not in terms
-    assert 'exact' in terms and 'MPC' in terms and not any('meanunknown' in t for t in terms)
+    assert 'definition' not in terms and 'june' not in terms and 'integrand' not in terms and 'MS' not in terms
+    assert 'separable' in terms and 'MPC' in terms and not any('meanunknown' in t for t in terms)
+    # The ledger is uncapped, plurals fold onto the singular, and taught terms_known / ignore_words are honoured.
+    many = {'T01': '<p>' + '，'.join(f'zork{chr(97 + i)}{chr(97 + j)}' for i in range(6) for j in range(6)) + '，integrands，residuals</p>'}
+    d['terms_known'] = [{'term': 'residual', 'taught_in': ['T01']}]
+    d['ignore_words'] = ['zorkaa']
+    terms = [x['term'] for x in build_cards.term_ledger(d, many)]
+    assert len(terms) == 36 and 'residual' not in terms and 'zorkaa' not in terms and 'integrand' in terms
+
+
+def test_untranslated_quotes_and_plain_math_are_flagged():
+    pages = {'A': '<p>Explain why the government might tax goods with a negative externality.</p>',
+             'B': '<p>Explain why the government might tax goods with a negative externality.</p><p>解释政府为何对负外部性商品征税。</p>'}
+    assert set(build_cards.untranslated(pages)) == {'A'}
+    card = {'id': 'x', 'genre': 'method', 'title': 't', 'blocks': [{'type': 'lead', 'text': '先算 P(X = 2)，再用 √n 与 3/8；只得 7/14 分，满分 14'},
+                                                               {'type': 'lead', 'text': '$\\frac{3}{8}$〔八分之三〕', 'source': 'MS p.3 3/8'}]}
+    hits = build_cards.plain_math(card)
+    assert len(hits) == 3, hits  # P(, √ and 3/8; the mark tally and the source citation are not maths
+    tally = {'id': 'y', 'genre': 'essay', 'title': 't', 'blocks': [{'type': 'lead', 'text': '只得 7/14 分；at least 4/6 marks'}]}
+    assert build_cards.plain_math(tally) == []
 
 
 def test_exam_registries_are_valid():
@@ -841,3 +862,78 @@ def test_exam_fingerprint_grades_follow_exam_lock():
     assert full['board_candidates'][0]['best_grade'] == 'B' and full['board_candidates'][0]['lockable']
     coded = exam_fingerprint.scan('Paper reference WMA14/01A')
     assert coded['board_candidates'][0]['best_grade'] == 'A'
+
+
+def test_privacy_blocks_personal_framing_ids_and_scores():
+    d = deck()
+    d['cards'][0]['blocks'][0]['text'] = '你丢了 A1：终点没写成最简形式'
+    with pytest.raises(deck_rules.DeckError, match='你'):
+        deck_rules.check(d)
+    d['personal'] = True  # a deck only for the learner themselves
+    deck_rules.check(d)
+    d = deck()
+    d['research'][0]['used_for'] = '总分 49/75，丢分集中在 A 分'
+    with pytest.raises(deck_rules.DeckError, match='total score'):
+        deck_rules.check(d)
+    d = deck()
+    d['research'][0]['read'] = 'cover page: candidate number 0123'
+    with pytest.raises(deck_rules.DeckError, match='candidate'):
+        deck_rules.check(d)
+    d = deck()
+    d['cards'][0]['blocks'][0]['text'] = '本卷批改记录：Q9(a) M1、A1 未得；P(X ≤ 3) 的 5/80 不是分数'
+    deck_rules.check(d)
+
+
+def test_backcheck_trail_and_planning_mode(tmp_path, capsys):
+    d = deck()
+    d['coverage']['backcheck'] = d['coverage']['backcheck'][:1]
+    with pytest.raises(deck_rules.DeckError, match='two past questions'):
+        deck_rules.check(d)
+    d['coverage']['backcheck'] = [{'paper': 'WST02/01', 'series': '2024-06', 'q': '3', 'result': 'gap', 'fixed_by': []},
+                                  {'paper': 'WST02/01', 'series': '2023-01', 'q': '5', 'result': 'pass', 'fixed_by': []}]
+    with pytest.raises(deck_rules.DeckError, match='fixed_by'):
+        deck_rules.check(d)
+    # Before any card exists the research and coverage plan can be checked on its own.
+    plan = deck()
+    plan['cards'] = []
+    plan['demands'][0]['cards'] = []
+    src = tmp_path / 'plan.json'
+    src.write_text(json.dumps(plan, ensure_ascii=False), encoding='utf-8')
+    build_cards.main([str(src), '--check-research'])
+    out = json.loads(capsys.readouterr().out)
+    assert out['cards'] == 0 and out['coverage']['missing'] == ['S-1']
+
+
+def test_genre_structure_and_legacy_voice():
+    d = deck()
+    d['cards'].append({'id': 'M01', 'genre': 'method', 'title': 'm', 'covers': ['S-1'], 'blocks': [{'type': 'lead', 'text': 'x'}]})
+    with pytest.raises(deck_rules.DeckError, match='method card'):
+        deck_rules.check(d)
+    d = deck()
+    d['cards'].append({'id': 'F01', 'genre': 'formula', 'title': 'f', 'covers': ['S-1'],
+                       'blocks': [{'type': 'unpack', 'items': [{'key': 'a', 'explain': 'b'}, {'key': 'c', 'explain': 'd'}]}]})
+    with pytest.raises(deck_rules.DeckError, match='formula_booklet'):
+        deck_rules.check(d)
+    d = deck()
+    d['style']['voice'] = 'yunxi'
+    with pytest.raises(deck_rules.DeckError, match='legacy_voice'):
+        deck_rules.check(d)
+    d['style']['legacy_voice'] = True
+    deck_rules.check(d)
+
+
+def test_audio_note_tag_and_package_name(tmp_path):
+    d = deck()
+    d['deck']['name'] = 'Pearson IAL Statistics 2 WST02 Populations samples and statistics extended edition'
+    d['exam']['code'], d['exam']['units'] = '9708', ['9708/3', '9708/4']
+    assert build_cards.card_tag(d, d['cards'][0]) == '9708 · P3 · P4'
+    src = tmp_path / 'deck.json'
+    src.write_text(json.dumps(d, ensure_ascii=False), encoding='utf-8')
+    build_cards.main([str(src), str(tmp_path / 'out'), '--audio-pending'])
+    note = (tmp_path / 'out' / '补语音.txt').read_text(encoding='utf-8')
+    for needed in ('Python 3.10', 'pip install -r scripts/requirements.txt', 'winget install Gyan.FFmpeg', 'brew install ffmpeg',
+                   'speech_backend.py --check', '--term-sampler', 'Claude Code'):
+        assert needed in note, needed
+    assert str(tmp_path) not in note and (tmp_path / 'out' / 'deck.json').is_file()
+    pkg = next((tmp_path / 'out').glob('*.apkg')).stem
+    assert len(pkg) <= 60 and not pkg.endswith('_') and pkg.split('_')[-1] in d['deck']['name'].split()

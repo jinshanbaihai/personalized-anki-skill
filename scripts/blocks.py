@@ -572,6 +572,19 @@ def ao_attr(node):
     return f' data-ao="{node["ao"]}"' if node.get('ao') in ('AO1', 'AO2', 'AO3', 'AO4') else ''
 
 
+ECHO = [(re.compile(r'^(如果|若|假如|倘若)$'), re.compile(r'^\s*(如果|若|假如|倘若)\s*[，,]?\s*')),
+        (re.compile(r'^(因为|由于)$'), re.compile(r'^\s*(因为|由于)\s*[，,]?\s*'))]
+
+
+def drop_echo(rel, text):
+    """A node whose relation already says 如果/因为 does not repeat it: "如果 → 若需求上升" would read "如果，若…"."""
+    rel = strip_tags(rel or '').strip()
+    for rel_rule, lead in ECHO:
+        if rel_rule.match(rel) and lead.match(text or '') and lead.sub('', text, count=1).strip():
+            return lead.sub('', text, count=1)
+    return text
+
+
 def r_chain(b, bid, where):
     """A causal chain with optional forks (parallel branches that rejoin) and condition notes."""
     items = need_list(b, 'items', where)
@@ -584,7 +597,7 @@ def r_chain(b, bid, where):
     def node_item(d, w, first):
         if not isinstance(d, dict):
             d = {'text': d}
-        text = inline(need_text(d, 'text', w), w)
+        text = inline(need_text(d, 'text', w) if first else drop_echo(d.get('rel'), need_text(d, 'text', w)), w)
         rel = inline(d.get('rel'), w)
         cond = inline(d.get('cond'), w)
         note = inline(d.get('note'), w)
@@ -667,7 +680,7 @@ def r_map(b, bid, where):
     def node(n, w, depth, branch):
         if not isinstance(n, dict):
             fail(w, 'map nodes are objects {text, rel?, kind?, ao?, children?}')
-        text = inline(need_text(n, 'text', w), w)
+        text = inline(drop_echo(n.get('rel'), need_text(n, 'text', w)), w)
         rel = inline(n.get('rel'), w)
         kind = n.get('kind', 'root' if depth == 0 else 'topic')
         if kind not in MAP_KINDS:
