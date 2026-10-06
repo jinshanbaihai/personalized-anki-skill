@@ -196,11 +196,15 @@ COMMON_EN = {w for line in Path(__file__).with_name('common_en.txt').read_text(e
              if not line.startswith('#') for w in line.split()}
 
 
+IRREGULAR = {'matrices': 'matrix', 'vertices': 'vertex', 'indices': 'index', 'appendices': 'appendix', 'data': 'data',
+             'criteria': 'criterion', 'phenomena': 'phenomenon', 'hypotheses': 'hypothesis', 'analyses': 'analysis', 'axes': 'axis'}
+
+
 def singular(word):
-    """units → unit, probabilities → probability, matrices → matrix (enough to match a term with its plural)."""
+    """units → unit, probabilities → probability, prices → price, matrices → matrix (enough to match a term with its plural)."""
     w = word.lower()
-    if w.endswith('ices') and len(w) > 5:
-        return w[:-4] + 'ix'
+    if w in IRREGULAR:
+        return IRREGULAR[w]
     if w.endswith('ies') and len(w) > 4:
         return w[:-3] + 'y'
     if re.search(r'(ss|x|ch|sh)es$', w):
@@ -434,6 +438,8 @@ def term_ledger(data, pages):
         visible = strip_tags(visible)
         # a gloss written right after the word counts as an explanation: integrand（被积函数）, MS（评分方案）
         defined_here |= {m.lower().strip() for m in GLOSS.findall(visible)} | {m.lower() for m in ABBR_GLOSS.findall(visible)}
+        # compare glossed phrases in the same reduced form as the keys ("youth club members" → "youth member")
+        defined_here |= {' '.join(singular(w) for w in d.split() if singular(w) not in stop and w not in stop) for d in list(defined_here)}
         for phrase in re.findall(r'\b[A-Za-z][a-z]{3,}(?: [a-z]{2,}){0,2}\b|\b[A-Z]{2,5}\b', visible):
             words = [w for w in phrase.split() if singular(w) not in stop and w.lower() not in stop]
             if not words:
