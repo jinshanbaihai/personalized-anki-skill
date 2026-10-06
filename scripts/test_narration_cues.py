@@ -71,6 +71,7 @@ const a=new Element(),b=new Element(),title=new Element(),root=new Element(),boa
 const audio=new Element();audio.paused=true;audio.ended=false;audio.currentTime=0;
 audio.play=function(){this.paused=false;this.ended=false;this.dispatchEvent(new Event('play'));return Promise.resolve()};
 audio.pause=function(){this.paused=true;this.dispatchEvent(new Event('pause'))};
+audio.load=function(){this.error=null};
 button.click=()=>button.dispatchEvent(new Event('click'));
 const data={edges:[],reading_order:['b','a'],narration:{timing:'decoded-pcm-samples',cues:[{node:null,start:0,end:.2},{node:'b',start:.2,end:.5},{node:'a',start:.5,end:1}]}};
 root.querySelector=s=>({'.map-board':board,'.map-viewport':vp,'.map-edges':svg,'.map-data':{textContent:JSON.stringify(data)},'audio':audio,'.speak':button,'.audio-status':status,'h1':title})[s];
@@ -86,8 +87,13 @@ button.click();assert(!audio.paused);assert(!root.classList.contains('narration-
 audio.currentTime=.6;audio.dispatchEvent(new Event('seeking'));assert(a.classList.contains('narrating'));assert(!b.classList.contains('narrating'));
 audio.ended=true;audio.paused=true;audio.dispatchEvent(new Event('ended'));assert(!a.classList.contains('narrating'));
 button.click();assert.strictEqual(audio.currentTime,0);assert(title.classList.contains('narrating'));
+audio.error={code:4};audio.dispatchEvent(new Event('error'));audio.pause();assert(status.textContent.includes('未能播放'));assert(!status.textContent.includes('继续'));assert(!title.classList.contains('narrating'));
+button.click();assert(!audio.paused);assert.strictEqual(audio.error,null);assert(title.classList.contains('narrating'));
 window.ccptCleanup();assert(audio.paused);assert(disconnected&&singleCleaned);assert(!title.classList.contains('narrating'));assert.strictEqual(audio.currentTime,0);
 audio.currentTime=.6;audio.dispatchEvent(new Event('timeupdate'));assert(!a.classList.contains('narrating'));button.click();assert(audio.paused);
+root.dataset.audioPending='1';root.dataset.audioMessage='图文预览，未生成语音';
+vm.runInNewContext(fs.readFileSync(process.argv[1],'utf8'),ctx);
+button.click();audio.pause();assert(audio.paused);assert(button.disabled);assert.strictEqual(status.textContent,'图文预览，未生成语音');window.ccptCleanup();
 '''
     subprocess.run(['node', '-e', harness, str(ASSETS / 'map-card.js')], check=True)
 

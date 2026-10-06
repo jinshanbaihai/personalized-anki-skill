@@ -11,8 +11,11 @@
  }
  const ro=new ResizeObserver(fit);ro.observe(vp);document.fonts.ready.then(fit);fit();
  const audio=root.querySelector('audio'),button=root.querySelector('.speak'),status=root.querySelector('.audio-status');
- const title=root.querySelector('h1'),cues=data.narration?.cues||[];
- let activeCue=null,cleaned=false;
+ const title=root.querySelector('h1'),cues=data.narration?.cues||[],pending=root.dataset.audioPending==='1';
+ const pendingMessage=root.dataset.audioMessage||'图文预览，未生成语音';
+ let activeCue=null,cleaned=false,playbackFailed=false;
+ function showAudioUnavailable(){button.textContent='▶';button.setAttribute('aria-pressed','false');status.textContent=pending?pendingMessage:'语音未能播放，请检查本地音频';}
+ if(pending){button.disabled=true;showAudioUnavailable();}
  // Measured clip boundaries guide attention; nothing is hidden or scrolled.
  function clearCue(){Object.values(nodes).forEach(n=>n.classList.remove('narrating'));title?.classList.remove('narrating');root.classList.remove('narration-paused');activeCue=null;}
  function followNarration(){
@@ -22,9 +25,10 @@
   if(cue!==activeCue){clearCue();activeCue=cue;if(cue)(cue.node===null?title:nodes[cue.node])?.classList.add('narrating');}
   root.classList.toggle('narration-paused',audio.paused&&!!activeCue);
  }
- button.addEventListener('click',async()=>{if(cleaned)return;if(!audio.paused){audio.pause();return;}if(audio.ended)audio.currentTime=0;try{audio.playbackRate=1;await audio.play();if(cleaned)audio.pause();}catch(e){if(!cleaned)status.textContent='语音未能播放，请检查本地音频';}},{signal:ctl.signal});
+ button.addEventListener('click',async()=>{if(cleaned||pending)return;if(!audio.paused){audio.pause();return;}if(audio.ended)audio.currentTime=0;try{if(audio.error)audio.load();playbackFailed=false;audio.playbackRate=1;await audio.play();if(cleaned)audio.pause();}catch(e){if(!cleaned){playbackFailed=true;showAudioUnavailable();}}},{signal:ctl.signal});
  audio.addEventListener('play',()=>{button.textContent='Ⅱ';button.setAttribute('aria-pressed','true');status.textContent='整页讲解 · 1.5×';followNarration();},{signal:ctl.signal});
- audio.addEventListener('pause',()=>{button.textContent=audio.ended?'↻':'▶';button.setAttribute('aria-pressed','false');status.textContent=audio.ended?'讲解结束 · 可重播':'已暂停 · Space 继续';followNarration();},{signal:ctl.signal});
+ audio.addEventListener('pause',()=>{if(pending||playbackFailed||audio.error){showAudioUnavailable();return;}button.textContent=audio.ended?'↻':'▶';button.setAttribute('aria-pressed','false');status.textContent=audio.ended?'讲解结束 · 可重播':'已暂停 · Space 继续';followNarration();},{signal:ctl.signal});
+ audio.addEventListener('error',()=>{playbackFailed=true;clearCue();showAudioUnavailable();},{signal:ctl.signal});
  audio.addEventListener('ended',()=>{button.textContent='↻';status.textContent='讲解结束 · 可重播';clearCue();},{signal:ctl.signal});
  for(const event of ['timeupdate','seeking','seeked'])audio.addEventListener(event,followNarration,{signal:ctl.signal});
  window.ccptAudit=()=>{

@@ -2,11 +2,11 @@
  if(window.ccptSingleCleanup)window.ccptSingleCleanup();
  const root=document.querySelector('[data-ccpt-single]');if(!root)return;
  const ctl=new AbortController(),button=root.querySelector('button[data-audio],button[data-control="play"]');
- if(button){button.title='Space：播音 / 暂停 / 继续';button.setAttribute('aria-keyshortcuts','Space');}
+ if(button&&!button.disabled){button.title='Space：播音 / 暂停 / 继续';button.setAttribute('aria-keyshortcuts','Space');}
  const editable=()=>{const e=document.activeElement;return e?.isContentEditable||/^(INPUT|TEXTAREA|SELECT)$/.test(e?.tagName||'');};
  window.ccptSingleAction=function(action){
   if(editable())return;
-  if(action==='audio'){button?.click();return;}
+  if(action==='audio'){if(button&&!button.disabled)button.click();return;}
   if((action==='good'||action==='again')&&typeof pycmd==='function')pycmd('ccpt-single:'+action);
  };
  document.addEventListener('keydown',e=>{

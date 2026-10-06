@@ -1,12 +1,13 @@
 """Isolated current-format import and media regression, not a learning-effect test."""
-import argparse, json, re, sys, tempfile, subprocess
+import argparse, json, sys, tempfile, subprocess
 from pathlib import Path
 from html.parser import HTMLParser
 class Page(HTMLParser):
     def __init__(self):
-        super().__init__();self.sides=[];self.players=[];self.audio=[];self.pending=False
+        super().__init__();self.sides=[];self.players=[];self.audio=[];self.pending=False;self.quiz_attributes=[]
     def handle_starttag(self,tag,attrs):
         a=dict(attrs)
+        self.quiz_attributes.extend(name for name in ('data-choice','data-correct') if name in a)
         if 'data-side' in a:self.sides.append(a['data-side'])
         if a.get('data-audio-pending')=='1':self.pending=True
         if tag=='button' and ('data-audio' in a or a.get('data-control')=='play'):self.players.append(a)
@@ -14,6 +15,7 @@ class Page(HTMLParser):
 
 def inspect_page(markup, allow_pending=False):
     page=Page();page.feed(markup)
+    assert not page.quiz_attributes, 'Default cards must not contain quiz attributes'
     assert page.sides==['read'] and len(page.players)==1, 'Single complete page and exactly one narration control required'
     assert len(page.audio)==1, 'Exactly one page audio element required'
     player=page.players[0];name=player.get('data-audio','').strip()
@@ -40,7 +42,6 @@ def main():
             card=col.get_card(cid);note=card.note();q=card.question();name=inspect_page(q,a.allow_text_only_test)
             assert note['FrontHTML']==note['BackHTML'],'Both templates must expose the same complete lesson'
             assert card.template()['qfmt']==card.template()['afmt']
-            assert not re.search(r'data-choice|data-correct',q),'Default cards must not be quizzes'
             if name is None:
                 pending+=1
             else:

@@ -1,35 +1,22 @@
-# 教学研究核查与适用边界
+# 学习设计研究：怎样使用这些证据
 
-这份参考是文献定向审查与工具审计，不是系统综述或真实学习效果实验。阅读原始研究的方法、结果和局限，区分研究结论、用户偏好和工程决策；下面没有任何研究直接验证“本生成器 + 中英混排 + Anki 快刷”组合，更不保证每位读者一次读懂。
+以下为2026-10-03重新核读的原始研究与作者报告。它们帮助选择表达方法；教材和考试依据另见 textbook-research.md 与 syllabus-coverage.md。没有一项研究直接验证“中文解释＋English术语＋单面Anki知识图＋1.5倍音频”整套产品；具体卡片仍通过实际制作、审查和用户体验改进。
 
-| 原始来源／研究类型 | 核实的结果及局限 | 对制作的含义（设计推论） |
+| 来源及实际阅读 | 证据与限制 | 对本技能的设计含义 |
 |---|---|---|
-| [Kintsch 1994](https://andymatuschak.org/files/papers/Kintsch%20-%201994%20-%20Text%20comprehension,%20memory,%20and%20learning.pdf)，理论及实验综述，pp.294–303，重点p.301 | 文字表层记忆与建立情境模型不同；补足连贯性对低先验知识读者有益，文中也报告高知识读者在部分任务上的相反模式。不是“越详细越好”的统一规律。 | 本任务按初学者补齐对象和因果；删掉无作用重复，但不删必要解释。用户无需被迫做自我解释练习。 |
-| [Rawson, Thomas & Jacoby 2015](https://www.larryjacoby.ca/images/Rawson2015.pdf)，3个概念学习实验，摘要、方法、General Discussion | 定义配例子优于重复定义，对学过及新案例分类有收益；效果随定义呈现与交错方式改变，高熟悉度结果也有边界。测量是分类能力，并非 CIE essay 得分。 | 优先用能映射到原理的具体案例；第二例可检验跨情境关系，不要求每个子支点固定两个。例子不是用来掩盖缺失定义。 |
-| [Krieglstein 等 2022](https://link.springer.com/article/10.1007/s11423-022-10083-2)，N=122，结构显著性×节点数量实验 | 未发现显著学习表现差异；结构不显著时迷失感更高。不能据此宣布节点越少或分支越多成绩越好。 | 导图是本用户的组织偏好；阅读路径需清晰。不能用“有树和连线”作教学合格证明。 |
-| [Prinz, Golke & Wittwer 2021](https://link.springer.com/article/10.1007/s11251-021-09535-8)，N=92，refutation text 与 think sheet 实验 | 研究报告了与误解相关的即时理解收益，refutation text 的组间交互部分仅达边缘显著；未支持预期的延迟理解和迁移效果。不能据此证明穷举误解有效。 | 依据反馈识别合理误读，解释为何有吸引力及哪里不成立；不凑警告，不要求用户填写研究中使用的练习表。 |
-| [IES Practice Guide 2007](https://ies.ed.gov/ncee/wwc/PracticeGuide/1)，官方证据综述 | 图形配语言、抽象配具体获 moderate evidence；深层解释性问题获 strong evidence。指南不同策略证据不同，并非全部叠加必然增益。 | 制作者用“为什么／怎样”检查解释，选择图文、案例等能补实际缺口的方法；不由此强制 quiz 或统一教学顺序。 |
+| [Novak & Cañas，IHMC 2008报告](https://cmap.ihmc.us/docs/theory-of-concept-maps)：Introduction、Constructing Good Concept Maps、Knowledge Models | Concept maps 用概念与有语义的连接形成命题，包含有意义的cross-links和反复修订；这是一份理论与方法报告 | 母图表达完整关系，卡图聚焦局部；重要连接可读成正确命题。报告中的概念数量不成为卡片配额 |
+| [Mayer & Chandler 2001原文](https://tecfa.unige.ch/tecfa/teaching/methodo/Mayer_Chandler01.pdf)：方法、结果及讨论，原扫描页视觉阅读 | 两项低先验知识大学生实验，合计59人，比较140秒lightning动画的整体／16段呈现；部分分段条件提高transfer，retention未显示相应显著优势 | 子机制拆分与自定节奏有研究依据；静态卡片的一屏限制、具体卡数或字数不是本实验结论 |
+| [Mayer, Heiser & Lonn 2001作者全文](https://www.researchgate.net/publication/232530555_Cognitive_Constraints_on_Multimedia_Learning_When_Presenting_More_Material_Results_in_Less_Understanding)：四项实验及General Discussion | 快速多媒体呈现中加入无关材料或某些重复文字可能损害理解。作者限制redundancy原则的适用情境，并未主张文字语音一律分离 | 每段内容承担理解任务；语音可选、可暂停，静态卡面保持必要解释。用精简无关负担提升轻松度 |
+| [Chi et al. 1994作者大学全文](https://education.asu.edu/sites/g/files/litvpz656/files/lcl/chideleeuwchiulavancher_3.pdf)：pp.443–453、460–475 | 24名八年级学生学circulatory system；自我解释组理解进步更多，但用时约2h05对1h06，后测允许回查材料 | 检查隐含因果与条件有价值；作者写好的解释不是学习者self-explanation，不能据该实验给长文长度背书 |
+| [Roediger & Karpicke 2006全文](https://learninglab.psych.purdue.edu/downloads/2006/2006_Roediger_Karpicke_PsychSci.pdf)：两项实验及讨论 | Prose材料下，重读短时表现可更好，retrieval在2天或1周延后测试更好；熟悉与自信不同于延后记忆 | 保留阅读卡产品，诚实区分“读过／Good”与独立recall；实际考试表现另用作答观察 |
+| [Karpicke & Blunt 2011全文](https://learninglab.psych.purdue.edu/downloads/2011/2011_Karpicke_Blunt_Science.pdf)及[methods supplement](https://learninglab.psych.purdue.edu/downloads/2011/2011_Karpicke_Blunt_ScienceSupportingMaterial.pdf)：两项实验与补充方法 | 学生边看文本边制作concept map与retrieval比较，后者一周后在知识和inference测试更好；也测试了以map作后测。并非教师制作中文静态知识卡的实验 | 导图是组织和解释工具，效果不能由外观宣称；研究不替用户决定产品操作方式 |
+| [Cepeda et al. 2008作者全文](https://www.yorku.ca/ncepeda/publications/CVRWP2008.pdf)：current study、method、results、discussion | 1354名完成实验者、32个trivia事实、26种间隔／保留期组合；复习含测试与反馈，最佳间隔随保留目标变化 | 分散复习有依据；1d、某个FSRS retention或最佳卡长不是论文给本产品的结论 |
+| [Kapler, Weston & Wiseheart 2015作者全文](https://www.yorku.ca/ncepeda/publications/KWW2015.pdf)：method、results、limitations | 169名大学生学45分钟meteorology课，1或8天后复习，含短答／反馈／MCQ；较长间隔条件在事实与application测试更好 | 复杂材料可分散复习；不能把8天移植为通用参数，也不能把application测验等同整篇Economics evaluation |
 
-## 解释路径的探索依据
+## 将证据转为可检验的设计
 
-[Gentner、Loewenstein 与 Thompson（2003）](https://groups.psych.northwestern.edu/gentner/papers/GentnerLoewensteinThompson03.pdf) 的三项 negotiation 新手研究发现，引导比较案例可帮助提炼共同关系与迁移。已核查摘要与 General Discussion。研究含主动比较任务，不能由此声称被动看两例有同等收益。本 skill 的设计推论是显性展示可比关系与关键差异，案例数量不固定。
+把单卡任务缩小，同时保留成立所需的局部因果；将章内连接交给母图与少量连接卡；让案例、图、文字各自提供理解价值。上述做法是结合研究与本用户学习用途的设计判断，不是某一实验逐项验证的成套配方。
 
-[Mapping principles and worked examples for structural learning（2023）](https://www.frontiersin.org/journals/psychology/articles/10.3389/fpsyg.2023.1241873/full) 的概率学习实验纳入 138 名大学生，比较 principle–example 与 example–example mapping；没有证明前者普遍更强，困难的关系可能被读者跳过。已核查方法、结果、讨论与限制。对本 skill 的启发是帮助读者完成情境、图与原理的对应，不假设并排呈现就会自动整合；不是 Anki 上的效果保证。
+制作时检查：关系是否准确，当前对象和条件是否清楚，图文是否能互相对应，随机复习是否可重新进入，静音时是否完整。用反例和不同情境检验解释，实际渲染检查负担。制作端充分研究，卡面保持精炼；研究深度与卡面信息量分别优化。
 
-由这些依据和用户反馈形成的创造性方向见 `reader-first-teaching.md`：先识别理解缺口，比较不同解释路径，再以实际卡面的可观察关系检验。同步语音定位属于减少视觉搜索的设计选择，其时序可以工程验证，理解增益仍需用户体验确认。
-
-## 不能从这些研究推出什么
-
-- 不能保证读完便永久记住，也不能保证任何读者都没有疑问；用户看不懂仍需返工。
-- 没有依据要求每分支恰好两个例子、所有词加粗、固定字数或固定颜色语义。
-- 不把研究中的 concept map、学生自己画图、传统 retrieval flashcard 与本用户单面阅读卡混为一谈。
-- “记忆点”是工作用语：能使人回到正确关系的线索。没有独立通用的“记忆点理论”可以一键套用。
-- 不把用户眼睛约20分钟不适或听数字不舒服，推成医学诊断或某种心理类型。界面减负不是干眼治疗。
-
-## 可被反驳的制作判断
-
-每次改版都保留：原缺口是什么；采用什么办法；为什么预计有帮助；它有什么代价；实际渲染、工程测试与用户反馈分别说了什么。若增加例子让主线难找，应重组而非坚持数量。若图只是摘要改画成方框，改用真正有信息的表达。若压成一页后太小，应改善组织、表达和版面，不能以“符合单页”压倒可读性；应按 `learning-unit.md` 收窄单卡、讲透局部，再检查整组目标覆盖与连接，不因拆卡降低整体作答要求。
-
-## 学科与考试依据的另一条证据链
-
-学习科学不能证明某知识属于考试或某段论证能得分，也不能代替人类教师关于具体学科困难的讲解。教学资料、评分证据与用户反馈分别核对，具体见 `exam-answer-first.md`。每批另读实际 syllabus 和官方评估材料，分开记录“内容范围证据”“考试用途证据”和“教学设例”。例如 CIE 9708 2026–2028 的7.2.4可确认 IC 模型局限属于范围；具体 rationality 的展开用途要读官方 specimen 9708/04 Q1(d)，不能凭该小问宣称所有20分 essay 都要求同样内容。
+区别三类证据：程序证明结构和操作通过了哪些检查；内容审查证明已发现和修补哪些缺口；实际用户阅读与独立作答说明体验及学习表现。它们互补，不互相替代。
