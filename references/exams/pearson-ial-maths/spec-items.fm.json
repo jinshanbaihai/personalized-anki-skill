@@ -1,0 +1,344 @@
+{
+ "WFM01": {
+  "1.1": {
+   "title": "Definition of complex numbers in the form a + ib and r cos θ + i r sin θ",
+   "page": 32,
+   "level": "AS"
+  },
+  "1.2": {
+   "title": "Sum, product and quotient of complex numbers",
+   "page": 32,
+   "level": "AS"
+  },
+  "1.3": {
+   "title": "Geometrical representation of complex numbers in the Argand diagram; geometrical representation of sums, products and quotients of complex numbers",
+   "page": 32,
+   "level": "AS"
+  },
+  "1.4": {
+   "title": "Complex solutions of quadratic equations with real coefficients",
+   "page": 32,
+   "level": "AS"
+  },
+  "1.5": {
+   "title": "Finding conjugate complex roots and a real root of a cubic equation with integer coefficients",
+   "page": 32,
+   "level": "AS"
+  },
+  "1.6": {
+   "title": "Finding conjugate complex roots and/or real roots of a quartic equation with real coefficients",
+   "page": 32,
+   "level": "AS"
+  },
+  "2.1": {
+   "title": "Sum of roots and product of roots of a quadratic equation",
+   "page": 33,
+   "level": "AS"
+  },
+  "2.2": {
+   "title": "Manipulation of expressions involving the sum of roots and product of roots",
+   "page": 33,
+   "level": "AS"
+  },
+  "2.3": {
+   "title": "Forming quadratic equations with new roots",
+   "page": 33,
+   "level": "AS"
+  },
+  "3.1": {
+   "title": "Equations of the form f(x) = 0 solved numerically by interval bisection, linear interpolation, the Newton-Raphson process",
+   "page": 33,
+   "level": "AS"
+  },
+  "4.1": {
+   "title": "Cartesian equations for the parabola and rectangular hyperbola",
+   "page": 33,
+   "level": "AS"
+  },
+  "4.2": {
+   "title": "Idea of parametric equation for parabola and rectangular hyperbola",
+   "page": 33,
+   "level": "AS"
+  },
+  "4.3": {
+   "title": "The focus-directrix property of the parabola",
+   "page": 33,
+   "level": "AS"
+  },
+  "4.4": {
+   "title": "Tangents and normals to these curves",
+   "page": 33,
+   "level": "AS"
+  },
+  "5.1": {
+   "title": "Addition and subtraction of matrices",
+   "page": 34,
+   "level": "AS"
+  },
+  "5.2": {
+   "title": "Multiplication of a matrix by a scalar",
+   "page": 34,
+   "level": "AS"
+  },
+  "5.3": {
+   "title": "Products of matrices",
+   "page": 34,
+   "level": "AS"
+  },
+  "5.4": {
+   "title": "Evaluation of 2 × 2 determinants",
+   "page": 34,
+   "level": "AS"
+  },
+  "5.5": {
+   "title": "Inverse of 2 × 2 matrices",
+   "page": 34,
+   "level": "AS"
+  },
+  "6.1": {
+   "title": "Linear transformations of column vectors in two dimensions and their matrix representation",
+   "page": 34,
+   "level": "AS"
+  },
+  "6.2": {
+   "title": "Applications of 2 × 2 matrices to represent geometrical transformations",
+   "page": 34,
+   "level": "AS"
+  },
+  "6.3": {
+   "title": "Combinations of transformations",
+   "page": 34,
+   "level": "AS"
+  },
+  "6.4": {
+   "title": "The inverse (when it exists) of a given transformation or combination of transformations",
+   "page": 34,
+   "level": "AS"
+  },
+  "7.1": {
+   "title": "Summation of simple finite series",
+   "page": 34,
+   "level": "AS"
+  },
+  "8.1": {
+   "title": "Proof by mathematical induction",
+   "page": 35,
+   "level": "AS"
+  }
+ },
+ "WFM02": {
+  "1.1": {
+   "title": "The manipulation and solution of algebraic inequalities and inequations, including those involving the modulus sign",
+   "page": 37,
+   "level": "A2"
+  },
+  "2.1": {
+   "title": "Summation of simple finite series using the method of differences",
+   "page": 37,
+   "level": "A2"
+  },
+  "3.1": {
+   "title": "Euler's relation e^{iθ} = cos θ + i sin θ",
+   "page": 37,
+   "level": "A2"
+  },
+  "3.2": {
+   "title": "De Moivre's theorem and its application to trigonometric identities and to roots of a complex number",
+   "page": 37,
+   "level": "A2"
+  },
+  "3.3": {
+   "title": "Loci and regions in the Argand diagram",
+   "page": 37,
+   "level": "A2"
+  },
+  "3.4": {
+   "title": "Elementary transformations from the z-plane to the w-plane",
+   "page": 37,
+   "level": "A2"
+  },
+  "4.1": {
+   "title": "Further solution of first order differential equations with separable variables",
+   "page": 38,
+   "level": "A2"
+  },
+  "4.2": {
+   "title": "First order linear differential equations of the form dy/dx + Py = Q where P and Q are functions of x",
+   "page": 38,
+   "level": "A2"
+  },
+  "4.3": {
+   "title": "Differential equations reducible to the above types by means of a given substitution",
+   "page": 38,
+   "level": "A2"
+  },
+  "5.1": {
+   "title": "The linear second order differential equation a d²y/dx² + b dy/dx + cy = f(x) where a, b and c are real constants and the particular integral can be found by inspection or trial",
+   "page": 38,
+   "level": "A2"
+  },
+  "5.2": {
+   "title": "Differential equations reducible to the above types by means of a given substitution",
+   "page": 38,
+   "level": "A2"
+  },
+  "6.1": {
+   "title": "Third and higher order derivatives",
+   "page": 38,
+   "level": "A2"
+  },
+  "6.2": {
+   "title": "Derivation and use of Maclaurin series",
+   "page": 38,
+   "level": "A2"
+  },
+  "6.3": {
+   "title": "Derivation and use of Taylor series",
+   "page": 38,
+   "level": "A2"
+  },
+  "6.4": {
+   "title": "Use of Taylor series method for series solutions of differential equations",
+   "page": 38,
+   "level": "A2"
+  },
+  "7.1": {
+   "title": "Polar coordinates (r, θ), r ≥ 0",
+   "page": 39,
+   "level": "A2"
+  },
+  "7.1#2": {
+   "title": "Use of the formula ½∫_α^β r² dθ for area",
+   "page": 39,
+   "level": "A2",
+   "note": "Printed as a second '7.1' in Issue 3 (printed p.39, checked on the rendered page); key suffixed '#2' to keep JSON keys unique. Its guidance row is about tangents parallel/perpendicular to the initial line."
+  }
+ },
+ "WFM03": {
+  "1.1": {
+   "title": "Definition of the six hyperbolic functions in terms of exponentials. Graphs and properties of the hyperbolic functions",
+   "page": 41,
+   "level": "A2"
+  },
+  "1.2": {
+   "title": "Inverse hyperbolic functions, their graphs, properties and logarithmic equivalents",
+   "page": 41,
+   "level": "A2"
+  },
+  "2.1": {
+   "title": "Cartesian and parametric equations for the ellipse and hyperbola",
+   "page": 41,
+   "level": "A2"
+  },
+  "2.2": {
+   "title": "The focus-directrix properties of the ellipse and hyperbola, including the eccentricity",
+   "page": 41,
+   "level": "A2"
+  },
+  "2.3": {
+   "title": "Tangents and normals to these curves",
+   "page": 41,
+   "level": "A2"
+  },
+  "2.4": {
+   "title": "Simple loci problems",
+   "page": 41,
+   "level": "A2"
+  },
+  "3.1": {
+   "title": "Differentiation of hyperbolic functions and expressions involving them",
+   "page": 41,
+   "level": "A2"
+  },
+  "3.2": {
+   "title": "Differentiation of inverse functions, including trigonometric and hyperbolic functions",
+   "page": 41,
+   "level": "A2"
+  },
+  "4.1": {
+   "title": "Integration of hyperbolic functions and expressions involving them",
+   "page": 42,
+   "level": "A2"
+  },
+  "4.2": {
+   "title": "Integration of inverse trigonometric and hyperbolic functions",
+   "page": 42,
+   "level": "A2"
+  },
+  "4.3": {
+   "title": "Integration using hyperbolic and trigonometric substitutions",
+   "page": 42,
+   "level": "A2"
+  },
+  "4.4": {
+   "title": "Use of substitution for integrals involving quadratic surds",
+   "page": 42,
+   "level": "A2"
+  },
+  "4.5": {
+   "title": "The derivation and use of simple reduction formulae",
+   "page": 42,
+   "level": "A2"
+  },
+  "4.6": {
+   "title": "The calculation of arc length and the area of a surface of revolution",
+   "page": 42,
+   "level": "A2"
+  },
+  "5.1": {
+   "title": "The vector product a × b and the triple scalar product a . b × c",
+   "page": 42,
+   "level": "A2"
+  },
+  "5.2": {
+   "title": "Use of vectors in problems involving points, lines and planes; the equation of a line in the form (r − a) × b = 0",
+   "page": 42,
+   "level": "A2"
+  },
+  "5.3": {
+   "title": "The equation of a plane in the forms r.n = p, r = a + sb + tc",
+   "page": 42,
+   "level": "A2"
+  },
+  "6.1": {
+   "title": "Linear transformations of column vectors in two and three dimensions and their matrix representation",
+   "page": 43,
+   "level": "A2"
+  },
+  "6.2": {
+   "title": "Combination of transformations. Products of matrices",
+   "page": 43,
+   "level": "A2"
+  },
+  "6.3": {
+   "title": "Transpose of a matrix",
+   "page": 43,
+   "level": "A2"
+  },
+  "6.4": {
+   "title": "Evaluation of 3 × 3 determinants",
+   "page": 43,
+   "level": "A2"
+  },
+  "6.5": {
+   "title": "Inverse of 3 × 3 matrices",
+   "page": 43,
+   "level": "A2"
+  },
+  "6.6": {
+   "title": "The inverse (when it exists) of a given transformation or combination of transformations",
+   "page": 43,
+   "level": "A2"
+  },
+  "6.7": {
+   "title": "Eigenvalues and eigenvectors of 2 × 2 and 3 × 3 matrices",
+   "page": 43,
+   "level": "A2"
+  },
+  "6.8": {
+   "title": "Reduction of symmetric matrices to diagonal form",
+   "page": 43,
+   "level": "A2"
+  }
+ }
+}

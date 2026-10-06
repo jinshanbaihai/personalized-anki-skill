@@ -115,7 +115,7 @@ python scripts/validate_package.py out/<牌组>.apkg --output out/validate.json 
 | `chain` | items[{text, rel, cond, note, kind, ao, arrow, line} 或 {fork: [[…], […]]}], direction, label | 箭头因果链：`rel` 印在箭头上，`cond` 是挂在箭头下的条件旁注，`note` 是节点内的次要说明；`fork` 并列两条以上分支，分叉后的节点自动汇合（链不能以分叉开头，两个分叉之间要有节点）；`direction`: auto / row / column |
 | `map` | root{text, rel, kind, ao, arrow, line, children[]}, layout, edge, fold, label | 深层导图；`kind` 见下；`layout`: auto / logic / outline；`edge`: curve / elbow（默认按主题）；`fold: false` 不折叠分支 |
 | `figure` | svg, caption, points[] | 原创 SVG 图及逐点解读 |
-| `pitfall` | items[{wrong, right, why, lost, source, source_type}] | 易错：老师批注、examiner report、MS 拒收说法、用户卷面；`lost` 写丢的分（A1）；`source_type`：er／ms／teacher／user-script／textbook／author，卡面印出种类 |
+| `pitfall` | items[{wrong, right, why, lost, source, source_type}] | 易错：老师批注、examiner report、MS 拒收说法、用户卷面；`lost` 写丢的分（A1）；`source_type`：er／ms／ecr／specimen／teacher／user-script／textbook／author，卡面印出种类 |
 | `exam` | items[{text, mark}], label | 考法、command word、得分点 |
 | `finish` | items[], label | 交卷前检查：exact、3 s.f.、指定形式、有效范围、`+c`、结论回指 |
 | `sections` | items[{head, text, mark}], label | essay 段落骨架、分点论述 |

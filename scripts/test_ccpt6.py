@@ -749,3 +749,43 @@ def test_term_ledger_skips_chrome_and_glosses():
     terms = [x['term'] for x in build_cards.term_ledger(d, pages)]
     assert 'definition' not in terms and 'june' not in terms and 'integrand' not in terms
     assert 'exact' in terms and 'MPC' in terms and not any('meanunknown' in t for t in terms)
+
+
+def test_exam_registries_are_valid():
+    """Every registry in references/exams validates (marks add up, spec ids exist, ids unique)."""
+    import exam_index
+    assert exam_index.check() == []
+
+
+def test_exam_index_queries(tmp_path):
+    import exam_index
+    board = tmp_path / 'demo'
+    (board / 'units').mkdir(parents=True)
+    (board / 'spec-items.json').write_text(json.dumps({'WMA14': {'4.1': {'title': 'binomial series', 'page': 27, 'level': 'unit'},
+                                                                 '6.4': {'title': 'separable DE', 'page': 28, 'level': 'unit'}}}), encoding='utf-8')
+    entry = {'id': 'WMA14-2406-01-Q1', 'unit': 'WMA14', 'paper': 'WMA14/01', 'series': '2024-06', 'q': '1', 'marks': 5,
+             'parts': [{'part': 'a', 'marks': 4, 'spec': ['4.1'], 'command': 'Find', 'ask': 'first four terms', 'final_form': 'simplest form',
+                        'ms': 'M1 B1 A1 A1', 'er': 'coefficient slips'},
+                       {'part': 'b', 'marks': 1, 'spec': ['4.1'], 'command': 'State', 'ask': 'validity', 'final_form': '|x|<1/4', 'ms': 'B1', 'er': ''}],
+             'sources': {'qp': 'drive:x', 'ms': 'drive:y', 'er': ''}}
+    (board / 'units' / 'WMA14.questions.json').write_text(json.dumps([entry]), encoding='utf-8')
+    assert exam_index.check(tmp_path) == []
+    regs = exam_index.registries(tmp_path)
+    qs = regs['demo']['questions']
+    assert len(exam_index.select(qs, 'WMA14', spec='4.1')) == 1 and exam_index.select(qs, 'WMA14', spec='6.4') == []
+    assert exam_index.select(qs, 'WMA14', grep='VALIDITY')[0]['parts'][0]['part'] == 'b'
+    assert exam_index.as_demands(exam_index.select(qs, 'WMA14'))[0]['q'] == 'Q1a'
+    assert dict((s, n) for s, _, n in exam_index.coverage(qs, regs['demo']['items'], 'WMA14')) == {'4.1': 2, '6.4': 0}
+    entry['parts'][0]['spec'] = ['9.9']
+    entry['marks'] = 6
+    (board / 'units' / 'WMA14.questions.json').write_text(json.dumps([entry]), encoding='utf-8')
+    problems = exam_index.check(tmp_path)
+    assert any('unknown spec item 9.9' in p for p in problems) and any('part marks 5 != total 6' in p for p in problems)
+
+
+def test_skill_package_is_uploadable(tmp_path):
+    import package_skill
+    out, count = package_skill.package(tmp_path)
+    names = zipfile.ZipFile(out).namelist()
+    assert 'anki-ccpt-skill/SKILL.md' in names and any(n.startswith('anki-ccpt-skill/assets/ccpt6/fonts/') for n in names)
+    assert not any('test_ccpt6' in n or '__pycache__' in n for n in names)

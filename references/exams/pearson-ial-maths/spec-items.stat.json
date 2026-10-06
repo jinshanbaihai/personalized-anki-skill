@@ -1,0 +1,326 @@
+{
+ "WST01": {
+  "1.1": {
+   "title": "The basic ideas of mathematical modelling as applied in probability and statistics",
+   "page": 55,
+   "level": "AS"
+  },
+  "2.1": {
+   "title": "Histograms, stem and leaf diagrams, box plots",
+   "page": 55,
+   "level": "AS"
+  },
+  "2.2": {
+   "title": "Measures of location – mean, median, mode",
+   "page": 55,
+   "level": "AS"
+  },
+  "2.3": {
+   "title": "Measures of dispersion – variance, standard deviation, range and interpercentile ranges",
+   "page": 55,
+   "level": "AS"
+  },
+  "2.4": {
+   "title": "Skewness. Concepts of outliers",
+   "page": 55,
+   "level": "AS"
+  },
+  "3.1": {
+   "title": "Elementary probability",
+   "page": 55,
+   "level": "AS"
+  },
+  "3.2": {
+   "title": "Sample space. Exclusive and complementary events. Conditional probability",
+   "page": 55,
+   "level": "AS"
+  },
+  "3.3": {
+   "title": "Independence of two events",
+   "page": 55,
+   "level": "AS"
+  },
+  "3.4": {
+   "title": "Sum and product laws",
+   "page": 55,
+   "level": "AS"
+  },
+  "4.1": {
+   "title": "Scatter diagrams. Linear regression",
+   "page": 56,
+   "level": "AS"
+  },
+  "4.2": {
+   "title": "Explanatory (independent) and response (dependent) variables. Applications and interpretations",
+   "page": 56,
+   "level": "AS"
+  },
+  "4.3": {
+   "title": "The product moment correlation coefficient, its use, interpretation and limitations",
+   "page": 56,
+   "level": "AS"
+  },
+  "5.1": {
+   "title": "The concept of a discrete random variable",
+   "page": 56,
+   "level": "AS"
+  },
+  "5.2": {
+   "title": "The probability function and the cumulative distribution function for a discrete random variable",
+   "page": 56,
+   "level": "AS"
+  },
+  "5.3": {
+   "title": "Mean and variance of a discrete random variable",
+   "page": 56,
+   "level": "AS"
+  },
+  "5.4": {
+   "title": "The discrete uniform distribution",
+   "page": 56,
+   "level": "AS"
+  },
+  "5.1#2": {
+   "title": "The Normal distribution including the mean, variance and use of tables of the cumulative distribution function",
+   "page": 56,
+   "level": "AS",
+   "note": "Printed as a second '5.1' in Issue 3, under the heading '6. The Normal distribution' (printed p.56, checked on the rendered page); the intended number is 6.1. Key suffixed '#2' to keep JSON keys unique, following WFM02 '7.1#2' in spec-items.fm.json."
+  }
+ },
+ "WST02": {
+  "1.1": {
+   "title": "The binomial and Poisson distributions",
+   "page": 58,
+   "level": "A2"
+  },
+  "1.2": {
+   "title": "The mean and variance of the binomial and Poisson distributions",
+   "page": 58,
+   "level": "A2"
+  },
+  "1.3": {
+   "title": "The use of the Poisson distribution as an approximation to the binomial distribution",
+   "page": 58,
+   "level": "A2"
+  },
+  "2.1": {
+   "title": "The concept of a continuous random variable",
+   "page": 58,
+   "level": "A2"
+  },
+  "2.2": {
+   "title": "The probability density function and the cumulative distribution function for a continuous random variable",
+   "page": 58,
+   "level": "A2"
+  },
+  "2.3": {
+   "title": "Relationship between density and distribution functions",
+   "page": 58,
+   "level": "A2"
+  },
+  "2.4": {
+   "title": "Mean and variance of continuous random variables",
+   "page": 58,
+   "level": "A2"
+  },
+  "2.5": {
+   "title": "Mode, median and quartiles of continuous random variables",
+   "page": 58,
+   "level": "A2"
+  },
+  "3.1": {
+   "title": "The continuous uniform (rectangular) distribution",
+   "page": 58,
+   "level": "A2"
+  },
+  "3.2": {
+   "title": "Use of the Normal distribution as an approximation to the binomial distribution and the Poisson distribution, with the application of the continuity correction",
+   "page": 58,
+   "level": "A2"
+  },
+  "4.1": {
+   "title": "Population, census and sample. Sampling unit, sampling frame",
+   "page": 59,
+   "level": "A2"
+  },
+  "4.2": {
+   "title": "Concepts of a statistic and its sampling distribution",
+   "page": 59,
+   "level": "A2"
+  },
+  "4.3": {
+   "title": "Concept and interpretation of a hypothesis test. Null and alternative hypotheses",
+   "page": 59,
+   "level": "A2"
+  },
+  "4.4": {
+   "title": "Critical region",
+   "page": 59,
+   "level": "A2"
+  },
+  "4.5": {
+   "title": "One-tailed and two-tailed tests",
+   "page": 59,
+   "level": "A2"
+  },
+  "4.6": {
+   "title": "Hypothesis tests for the parameter p of a binomial distribution and for the mean of a Poisson distribution",
+   "page": 59,
+   "level": "A2"
+  }
+ },
+ "WST03": {
+  "1.1": {
+   "title": "Distribution of linear combinations of independent Normal random variables",
+   "page": 61,
+   "level": "A2"
+  },
+  "2.1": {
+   "title": "Methods for collecting data. Simple random sampling. Use of random numbers for sampling",
+   "page": 61,
+   "level": "A2"
+  },
+  "2.2": {
+   "title": "Other methods of sampling: stratified, systematic, quota",
+   "page": 61,
+   "level": "A2"
+  },
+  "3.1": {
+   "title": "Concepts of standard error, estimator, bias",
+   "page": 61,
+   "level": "A2"
+  },
+  "3.2": {
+   "title": "The distribution of the sample mean X̄",
+   "page": 61,
+   "level": "A2"
+  },
+  "3.3": {
+   "title": "Concept of a confidence interval and its interpretation",
+   "page": 61,
+   "level": "A2"
+  },
+  "3.4": {
+   "title": "Confidence limits for a Normal mean, with variance known",
+   "page": 61,
+   "level": "A2"
+  },
+  "3.5": {
+   "title": "Hypothesis tests for the mean of a Normal distribution with variance known",
+   "page": 61,
+   "level": "A2"
+  },
+  "3.6": {
+   "title": "Use of Central Limit theorem to extend hypothesis tests and confidence intervals to samples from non-Normal distributions. Use of large sample results to extend to the case in which the variance is unknown",
+   "page": 61,
+   "level": "A2"
+  },
+  "3.7": {
+   "title": "Hypothesis test for the difference between the means of two Normal distributions with variances known",
+   "page": 62,
+   "level": "A2"
+  },
+  "3.8": {
+   "title": "Use of large sample results to extend to the case in which the population variances are unknown",
+   "page": 62,
+   "level": "A2"
+  },
+  "4.1": {
+   "title": "The null and alternative hypotheses. The use of Σ(Oᵢ − Eᵢ)²/Eᵢ as an approximate χ² statistic",
+   "page": 62,
+   "level": "A2"
+  },
+  "4.2": {
+   "title": "Degrees of freedom",
+   "page": 62,
+   "level": "A2"
+  },
+  "5.1": {
+   "title": "Spearman’s rank correlation coefficient, its use, interpretation and limitations",
+   "page": 62,
+   "level": "A2"
+  },
+  "5.2": {
+   "title": "Testing the hypothesis that a correlation is zero",
+   "page": 62,
+   "level": "A2"
+  }
+ },
+ "WDM11": {
+  "1.1": {
+   "title": "The general ideas of algorithms and the implementation of an algorithm given by a flow chart or text",
+   "page": 64,
+   "level": "AS"
+  },
+  "1.2": {
+   "title": "Students should be familiar with bin packing, bubble sort, quick sort, binary search",
+   "page": 64,
+   "level": "AS"
+  },
+  "2.1": {
+   "title": "The minimum spanning tree (minimum connector) problem. Prim’s and Kruskal’s algorithm",
+   "page": 64,
+   "level": "AS"
+  },
+  "2.2": {
+   "title": "Dijkstra’s algorithm for finding the shortest path",
+   "page": 64,
+   "level": "AS"
+  },
+  "3.1": {
+   "title": "Algorithm for finding the shortest route around a network, travelling along every edge at least once and ending at the start vertex. The network will have up to four odd nodes",
+   "page": 64,
+   "level": "AS"
+  },
+  "3.2": {
+   "title": "The practical and classical Travelling Salesman problems. The classical problem for complete graphs satisfying the triangle inequality",
+   "page": 64,
+   "level": "AS"
+  },
+  "3.3": {
+   "title": "Determination of upper and lower bounds using minimum spanning tree methods",
+   "page": 64,
+   "level": "AS"
+  },
+  "3.4": {
+   "title": "The nearest neighbour algorithm",
+   "page": 64,
+   "level": "AS"
+  },
+  "4.1": {
+   "title": "Modelling of a project by an activity network, from a precedence table",
+   "page": 65,
+   "level": "AS"
+  },
+  "4.2": {
+   "title": "Completion of the precedence table for a given activity network",
+   "page": 65,
+   "level": "AS"
+  },
+  "4.3": {
+   "title": "Algorithm for finding the critical path. Earliest and latest event times. Earliest and latest start and finish times for activities",
+   "page": 65,
+   "level": "AS"
+  },
+  "4.4": {
+   "title": "Total float. Gantt (cascade) charts. Scheduling",
+   "page": 65,
+   "level": "AS"
+  },
+  "5.1": {
+   "title": "Formulation of problems as linear programs",
+   "page": 65,
+   "level": "AS"
+  },
+  "5.2": {
+   "title": "Graphical solution of two variable problems using ruler and vertex methods",
+   "page": 65,
+   "level": "AS"
+  },
+  "5.3": {
+   "title": "Consideration of problems where solutions must have integer values",
+   "page": 65,
+   "level": "AS"
+  }
+ }
+}

@@ -1,0 +1,919 @@
+{
+ "checked": "2026-10-06",
+ "ial": {
+  "spec": {
+   "title": "Pearson Edexcel International Advanced Subsidiary/Advanced Level in Mathematics, Further Mathematics and Pure Mathematics",
+   "issue": "Issue 3",
+   "issue_date": "April 2019",
+   "isbn": "978 1 446 94981 8",
+   "qualification_codes": {
+    "IAS": [
+     "XMA01",
+     "XFM01",
+     "XPM01"
+    ],
+    "IAL": [
+     "YMA01",
+     "YFM01",
+     "YPM01"
+    ]
+   },
+   "first_teaching": "2018-09",
+   "first_examination": "2019-01",
+   "first_certification": {
+    "IAS": "2019-08",
+    "IAL": "2020-08"
+   },
+   "issue3_changes": [
+    "Notation and formulae: integral of a^x corrected (printed p.22)",
+    "P4 6.5 added: area under a curve given parametrically (printed p.28)"
+   ],
+   "legacy_statement": "Further, Mechanics and Statistics units have not changed from the legacy (2013) qualification; D1 updated; Core split into P1-P4 (printed p.1)",
+   "unit_format": "each unit 1h30, 75 marks, externally assessed (printed p.7)",
+   "pdf": {
+    "local": "scratchpad/research/dl/ial-maths-spec.pdf",
+    "md5": "06d01a11b53e1e03d25a0df0a265510d",
+    "pdf_created": "2019-04-11",
+    "pdf_modified": "2025-04-07",
+    "printed_page_offset": "printed = PDF page - 6"
+   },
+   "official_url": "https://qualifications.pearson.com/content/dam/pdf/International%20Advanced%20Level/Mathematics/2018/Specification-and-Sample-Assessment/international-a-level-maths-spec.pdf",
+   "warning": "2013 legacy IAL Maths spec is also \"Issue 3\" (9781446925201_IAL_Maths_Iss3.pdf); check ISBN and first-exam date",
+   "newer_spec": {
+    "found": false,
+    "confidence": "medium",
+    "note": "No IAL Mathematics redevelopment found by WebSearch (2026-10-06). IAL Biology/Chemistry/Physics redeveloped for first teaching Sept 2027, first certification Aug 2028 (pointer). Jan 2027 final and Summer 2027 provisional IAL timetables exist (pointer)."
+   },
+   "confidence": "high"
+  },
+  "formula_booklet": {
+   "title": "Mathematical Formulae and Statistical Tables",
+   "issue": "Issue 2",
+   "issue_date": "January 2021",
+   "code": "P59773RA",
+   "isbn": "978 1 4469 4983 2",
+   "first_examination": "2019-01",
+   "covers_units": "P1-P4, FP1-FP3, M1-M3, S1-S3 (not D1)",
+   "qp_cover_reference": "Mathematical Formulae and Statistical Tables (Yellow)",
+   "issue2_changes": [
+    "FP1 note on theta multiple of 45 removed",
+    "ellipse formula corrected",
+    "integration lines 6-9 corrected",
+    "M1 note extended to P1 and P2 formulae"
+   ],
+   "newer_issue_found": false,
+   "md5": "a1c61b665dcae1af155e289c78b74019",
+   "local": "scratchpad/boards/B-S2/src/ial_formulae_booklet.pdf",
+   "drive_id": "15sPDu75A0NElxpZoGu4aQayK0804RG1e",
+   "confidence": "high"
+  },
+  "series_rules": {
+   "from_2020_06": "All units January and June; October only P1, P2, P3, P4, M1, M2, S1, S2 (SPEC p.70)",
+   "exceptions": {
+    "2020-06": "cancelled worldwide; no papers",
+    "2020-10": "autumn series, all 14 units",
+    "2021-06": "exams not sat (teacher-assessed grades); QP, provisional MS (~2021-05-17) and final MS (2021-06-04) published; no PEF",
+    "2021-10": "all 14 units"
+   },
+   "validated_against": "moon-papers ial.json (Pearson URLs) 2019-01..2025-01: no expected series missing; extra series are legacy same-code only"
+  },
+  "units": {
+   "WMA11": {
+    "unit": "P1",
+    "title": "Pure Mathematics 1",
+    "spec_unit_start_printed_page": 12,
+    "first_series": "2019-01",
+    "first_series_source": "SPEC printed pp.7-9 and unit page p.12; availability table p.70",
+    "series_offered": [
+     "January",
+     "June",
+     "October"
+    ],
+    "series_offered_note": "From June 2020 per SPEC p.70; October 2020 and October 2021 offered all units (COVID autumn series)",
+    "pre_june_2020_availability_2018_spec": [
+     "2019-01",
+     "2019-06",
+     "2019-10",
+     "2020-01"
+    ],
+    "first_sat_series": "2019-01",
+    "code_reused_from_2013_spec": false,
+    "legacy_same_code_last_series": null,
+    "exclude_series_on_or_before": null,
+    "expected_series_through_2026_06": [
+     "2019-01",
+     "2019-06",
+     "2019-10",
+     "2020-01",
+     "2020-10",
+     "2021-01",
+     "2021-06",
+     "2021-10",
+     "2022-01",
+     "2022-06",
+     "2022-10",
+     "2023-01",
+     "2023-06",
+     "2023-10",
+     "2024-01",
+     "2024-06",
+     "2024-10",
+     "2025-01",
+     "2025-06",
+     "2025-10",
+     "2026-01",
+     "2026-06"
+    ],
+    "confidence": "high"
+   },
+   "WMA12": {
+    "unit": "P2",
+    "title": "Pure Mathematics 2",
+    "spec_unit_start_printed_page": 17,
+    "first_series": "2019-06",
+    "first_series_source": "SPEC printed pp.7-9 and unit page p.17; availability table p.70",
+    "series_offered": [
+     "January",
+     "June",
+     "October"
+    ],
+    "series_offered_note": "From June 2020 per SPEC p.70; October 2020 and October 2021 offered all units (COVID autumn series)",
+    "pre_june_2020_availability_2018_spec": [
+     "2019-06",
+     "2019-10",
+     "2020-01"
+    ],
+    "first_sat_series": "2019-06",
+    "code_reused_from_2013_spec": false,
+    "legacy_same_code_last_series": null,
+    "exclude_series_on_or_before": null,
+    "expected_series_through_2026_06": [
+     "2019-06",
+     "2019-10",
+     "2020-01",
+     "2020-10",
+     "2021-01",
+     "2021-06",
+     "2021-10",
+     "2022-01",
+     "2022-06",
+     "2022-10",
+     "2023-01",
+     "2023-06",
+     "2023-10",
+     "2024-01",
+     "2024-06",
+     "2024-10",
+     "2025-01",
+     "2025-06",
+     "2025-10",
+     "2026-01",
+     "2026-06"
+    ],
+    "confidence": "high"
+   },
+   "WMA13": {
+    "unit": "P3",
+    "title": "Pure Mathematics 3",
+    "spec_unit_start_printed_page": 21,
+    "first_series": "2020-01",
+    "first_series_source": "SPEC printed pp.7-9 and unit page p.21; availability table p.70",
+    "series_offered": [
+     "January",
+     "June",
+     "October"
+    ],
+    "series_offered_note": "From June 2020 per SPEC p.70; October 2020 and October 2021 offered all units (COVID autumn series)",
+    "pre_june_2020_availability_2018_spec": [
+     "2020-01"
+    ],
+    "first_sat_series": "2020-01",
+    "code_reused_from_2013_spec": false,
+    "legacy_same_code_last_series": null,
+    "exclude_series_on_or_before": null,
+    "expected_series_through_2026_06": [
+     "2020-01",
+     "2020-10",
+     "2021-01",
+     "2021-06",
+     "2021-10",
+     "2022-01",
+     "2022-06",
+     "2022-10",
+     "2023-01",
+     "2023-06",
+     "2023-10",
+     "2024-01",
+     "2024-06",
+     "2024-10",
+     "2025-01",
+     "2025-06",
+     "2025-10",
+     "2026-01",
+     "2026-06"
+    ],
+    "confidence": "high"
+   },
+   "WMA14": {
+    "unit": "P4",
+    "title": "Pure Mathematics 4",
+    "spec_unit_start_printed_page": 26,
+    "first_series": "2020-06",
+    "first_series_source": "SPEC printed pp.7-9 and unit page p.26; availability table p.70",
+    "series_offered": [
+     "January",
+     "June",
+     "October"
+    ],
+    "series_offered_note": "From June 2020 per SPEC p.70; October 2020 and October 2021 offered all units (COVID autumn series)",
+    "pre_june_2020_availability_2018_spec": [],
+    "first_sat_series": "2020-10",
+    "code_reused_from_2013_spec": false,
+    "legacy_same_code_last_series": null,
+    "exclude_series_on_or_before": null,
+    "expected_series_through_2026_06": [
+     "2020-10",
+     "2021-01",
+     "2021-06",
+     "2021-10",
+     "2022-01",
+     "2022-06",
+     "2022-10",
+     "2023-01",
+     "2023-06",
+     "2023-10",
+     "2024-01",
+     "2024-06",
+     "2024-10",
+     "2025-01",
+     "2025-06",
+     "2025-10",
+     "2026-01",
+     "2026-06"
+    ],
+    "confidence": "high"
+   },
+   "WFM01": {
+    "unit": "FP1",
+    "title": "Further Pure Mathematics 1",
+    "spec_unit_start_printed_page": 30,
+    "first_series": "2019-06",
+    "first_series_source": "SPEC printed pp.7-9 and unit page p.30; availability table p.70",
+    "series_offered": [
+     "January",
+     "June"
+    ],
+    "series_offered_note": "From June 2020 per SPEC p.70; October 2020 and October 2021 offered all units (COVID autumn series)",
+    "pre_june_2020_availability_2018_spec": [
+     "2019-06",
+     "2020-01"
+    ],
+    "first_sat_series": "2019-06",
+    "code_reused_from_2013_spec": true,
+    "legacy_same_code_last_series": "2019-01",
+    "exclude_series_on_or_before": "2019-01",
+    "expected_series_through_2026_06": [
+     "2019-06",
+     "2020-01",
+     "2020-10",
+     "2021-01",
+     "2021-06",
+     "2021-10",
+     "2022-01",
+     "2022-06",
+     "2023-01",
+     "2023-06",
+     "2024-01",
+     "2024-06",
+     "2025-01",
+     "2025-06",
+     "2026-01",
+     "2026-06"
+    ],
+    "confidence": "high",
+    "pearson_folder_note": "Pearson hosts 2019-06 and 2020-01 papers under Mathematics/2013 although they are 2018-spec first-assessment series (single paper per code); 2018 folder from 2020-10."
+   },
+   "WFM02": {
+    "unit": "FP2",
+    "title": "Further Pure Mathematics 2",
+    "spec_unit_start_printed_page": 36,
+    "first_series": "2020-06",
+    "first_series_source": "SPEC printed pp.7-9 and unit page p.36; availability table p.70",
+    "series_offered": [
+     "January",
+     "June"
+    ],
+    "series_offered_note": "From June 2020 per SPEC p.70; October 2020 and October 2021 offered all units (COVID autumn series)",
+    "pre_june_2020_availability_2018_spec": [],
+    "first_sat_series": "2020-10",
+    "code_reused_from_2013_spec": true,
+    "legacy_same_code_last_series": "2019-06",
+    "exclude_series_on_or_before": "2019-06",
+    "expected_series_through_2026_06": [
+     "2020-10",
+     "2021-01",
+     "2021-06",
+     "2021-10",
+     "2022-01",
+     "2022-06",
+     "2023-01",
+     "2023-06",
+     "2024-01",
+     "2024-06",
+     "2025-01",
+     "2025-06",
+     "2026-01",
+     "2026-06"
+    ],
+    "confidence": "high"
+   },
+   "WFM03": {
+    "unit": "FP3",
+    "title": "Further Pure Mathematics 3",
+    "spec_unit_start_printed_page": 40,
+    "first_series": "2020-06",
+    "first_series_source": "SPEC printed pp.7-9 and unit page p.40; availability table p.70",
+    "series_offered": [
+     "January",
+     "June"
+    ],
+    "series_offered_note": "From June 2020 per SPEC p.70; October 2020 and October 2021 offered all units (COVID autumn series)",
+    "pre_june_2020_availability_2018_spec": [],
+    "first_sat_series": "2020-10",
+    "code_reused_from_2013_spec": true,
+    "legacy_same_code_last_series": "2019-06",
+    "exclude_series_on_or_before": "2019-06",
+    "expected_series_through_2026_06": [
+     "2020-10",
+     "2021-01",
+     "2021-06",
+     "2021-10",
+     "2022-01",
+     "2022-06",
+     "2023-01",
+     "2023-06",
+     "2024-01",
+     "2024-06",
+     "2025-01",
+     "2025-06",
+     "2026-01",
+     "2026-06"
+    ],
+    "confidence": "high"
+   },
+   "WME01": {
+    "unit": "M1",
+    "title": "Mechanics 1",
+    "spec_unit_start_printed_page": 44,
+    "first_series": "2019-06",
+    "first_series_source": "SPEC printed pp.7-9 and unit page p.44; availability table p.70",
+    "series_offered": [
+     "January",
+     "June",
+     "October"
+    ],
+    "series_offered_note": "From June 2020 per SPEC p.70; October 2020 and October 2021 offered all units (COVID autumn series)",
+    "pre_june_2020_availability_2018_spec": [
+     "2019-06",
+     "2019-10",
+     "2020-01"
+    ],
+    "first_sat_series": "2019-06",
+    "code_reused_from_2013_spec": true,
+    "legacy_same_code_last_series": "2019-01",
+    "exclude_series_on_or_before": "2019-01",
+    "expected_series_through_2026_06": [
+     "2019-06",
+     "2019-10",
+     "2020-01",
+     "2020-10",
+     "2021-01",
+     "2021-06",
+     "2021-10",
+     "2022-01",
+     "2022-06",
+     "2022-10",
+     "2023-01",
+     "2023-06",
+     "2023-10",
+     "2024-01",
+     "2024-06",
+     "2024-10",
+     "2025-01",
+     "2025-06",
+     "2025-10",
+     "2026-01",
+     "2026-06"
+    ],
+    "confidence": "high",
+    "pearson_folder_note": "Pearson hosts 2019-06 and 2019-10 under Mathematics/2013; 2020-01 under 2018."
+   },
+   "WME02": {
+    "unit": "M2",
+    "title": "Mechanics 2",
+    "spec_unit_start_printed_page": 47,
+    "first_series": "2020-06",
+    "first_series_source": "SPEC printed pp.7-9 and unit page p.47; availability table p.70",
+    "series_offered": [
+     "January",
+     "June",
+     "October"
+    ],
+    "series_offered_note": "From June 2020 per SPEC p.70; October 2020 and October 2021 offered all units (COVID autumn series)",
+    "pre_june_2020_availability_2018_spec": [],
+    "first_sat_series": "2020-10",
+    "code_reused_from_2013_spec": true,
+    "legacy_same_code_last_series": "2020-01",
+    "exclude_series_on_or_before": "2020-01",
+    "expected_series_through_2026_06": [
+     "2020-10",
+     "2021-01",
+     "2021-06",
+     "2021-10",
+     "2022-01",
+     "2022-06",
+     "2022-10",
+     "2023-01",
+     "2023-06",
+     "2023-10",
+     "2024-01",
+     "2024-06",
+     "2024-10",
+     "2025-01",
+     "2025-06",
+     "2025-10",
+     "2026-01",
+     "2026-06"
+    ],
+    "confidence": "high",
+    "pearson_folder_note": "Pearson hosts 2020-01 under Mathematics/2018 although M2 2018-spec first assessment is 2020-06 (treat 2020-01 as legacy)."
+   },
+   "WME03": {
+    "unit": "M3",
+    "title": "Mechanics 3",
+    "spec_unit_start_printed_page": 50,
+    "first_series": "2020-06",
+    "first_series_source": "SPEC printed pp.7-9 and unit page p.50; availability table p.70",
+    "series_offered": [
+     "January",
+     "June"
+    ],
+    "series_offered_note": "From June 2020 per SPEC p.70; October 2020 and October 2021 offered all units (COVID autumn series)",
+    "pre_june_2020_availability_2018_spec": [],
+    "first_sat_series": "2020-10",
+    "code_reused_from_2013_spec": true,
+    "legacy_same_code_last_series": "2020-01",
+    "exclude_series_on_or_before": "2020-01",
+    "expected_series_through_2026_06": [
+     "2020-10",
+     "2021-01",
+     "2021-06",
+     "2021-10",
+     "2022-01",
+     "2022-06",
+     "2023-01",
+     "2023-06",
+     "2024-01",
+     "2024-06",
+     "2025-01",
+     "2025-06",
+     "2026-01",
+     "2026-06"
+    ],
+    "confidence": "high",
+    "pearson_folder_note": "2020-01 paper hosted under both 2013 and 2018 folders; by spec 2020-01 is legacy."
+   },
+   "WST01": {
+    "unit": "S1",
+    "title": "Statistics 1",
+    "spec_unit_start_printed_page": 53,
+    "first_series": "2019-06",
+    "first_series_source": "SPEC printed pp.7-9 and unit page p.53; availability table p.70",
+    "series_offered": [
+     "January",
+     "June",
+     "October"
+    ],
+    "series_offered_note": "From June 2020 per SPEC p.70; October 2020 and October 2021 offered all units (COVID autumn series)",
+    "pre_june_2020_availability_2018_spec": [
+     "2019-06",
+     "2019-10",
+     "2020-01"
+    ],
+    "first_sat_series": "2019-06",
+    "code_reused_from_2013_spec": true,
+    "legacy_same_code_last_series": "2019-01",
+    "exclude_series_on_or_before": "2019-01",
+    "expected_series_through_2026_06": [
+     "2019-06",
+     "2019-10",
+     "2020-01",
+     "2020-10",
+     "2021-01",
+     "2021-06",
+     "2021-10",
+     "2022-01",
+     "2022-06",
+     "2022-10",
+     "2023-01",
+     "2023-06",
+     "2023-10",
+     "2024-01",
+     "2024-06",
+     "2024-10",
+     "2025-01",
+     "2025-06",
+     "2025-10",
+     "2026-01",
+     "2026-06"
+    ],
+    "confidence": "high",
+    "pearson_folder_note": "Pearson hosts 2019-06, 2019-10, 2020-01 under Mathematics/2013; 2018 folder from 2020-10."
+   },
+   "WST02": {
+    "unit": "S2",
+    "title": "Statistics 2",
+    "spec_unit_start_printed_page": 57,
+    "first_series": "2020-06",
+    "first_series_source": "SPEC printed pp.7-9 and unit page p.57; availability table p.70",
+    "series_offered": [
+     "January",
+     "June",
+     "October"
+    ],
+    "series_offered_note": "From June 2020 per SPEC p.70; October 2020 and October 2021 offered all units (COVID autumn series)",
+    "pre_june_2020_availability_2018_spec": [],
+    "first_sat_series": "2020-10",
+    "code_reused_from_2013_spec": true,
+    "legacy_same_code_last_series": "2020-01",
+    "exclude_series_on_or_before": "2020-01",
+    "expected_series_through_2026_06": [
+     "2020-10",
+     "2021-01",
+     "2021-06",
+     "2021-10",
+     "2022-01",
+     "2022-06",
+     "2022-10",
+     "2023-01",
+     "2023-06",
+     "2023-10",
+     "2024-01",
+     "2024-06",
+     "2024-10",
+     "2025-01",
+     "2025-06",
+     "2025-10",
+     "2026-01",
+     "2026-06"
+    ],
+    "confidence": "high"
+   },
+   "WST03": {
+    "unit": "S3",
+    "title": "Statistics 3",
+    "spec_unit_start_printed_page": 60,
+    "first_series": "2020-06",
+    "first_series_source": "SPEC printed pp.7-9 and unit page p.60; availability table p.70",
+    "series_offered": [
+     "January",
+     "June"
+    ],
+    "series_offered_note": "From June 2020 per SPEC p.70; October 2020 and October 2021 offered all units (COVID autumn series)",
+    "pre_june_2020_availability_2018_spec": [],
+    "first_sat_series": "2020-10",
+    "code_reused_from_2013_spec": true,
+    "legacy_same_code_last_series": "2019-06",
+    "exclude_series_on_or_before": "2019-06",
+    "expected_series_through_2026_06": [
+     "2020-10",
+     "2021-01",
+     "2021-06",
+     "2021-10",
+     "2022-01",
+     "2022-06",
+     "2023-01",
+     "2023-06",
+     "2024-01",
+     "2024-06",
+     "2025-01",
+     "2025-06",
+     "2026-01",
+     "2026-06"
+    ],
+    "confidence": "high"
+   },
+   "WDM11": {
+    "unit": "D1",
+    "title": "Decision Mathematics 1",
+    "spec_unit_start_printed_page": 63,
+    "first_series": "2019-06",
+    "first_series_source": "SPEC printed pp.7-9 and unit page p.63; availability table p.70",
+    "series_offered": [
+     "January",
+     "June"
+    ],
+    "series_offered_note": "From June 2020 per SPEC p.70; October 2020 and October 2021 offered all units (COVID autumn series)",
+    "pre_june_2020_availability_2018_spec": [
+     "2019-06",
+     "2020-01"
+    ],
+    "first_sat_series": "2019-06",
+    "code_reused_from_2013_spec": false,
+    "legacy_same_code_last_series": null,
+    "exclude_series_on_or_before": null,
+    "expected_series_through_2026_06": [
+     "2019-06",
+     "2020-01",
+     "2020-10",
+     "2021-01",
+     "2021-06",
+     "2021-10",
+     "2022-01",
+     "2022-06",
+     "2023-01",
+     "2023-06",
+     "2024-01",
+     "2024-06",
+     "2025-01",
+     "2025-06",
+     "2026-01",
+     "2026-06"
+    ],
+    "confidence": "high"
+   }
+  },
+  "regional_01A": {
+   "what": "Regional variant of each unit paper (paper reference e.g. WMA14/01A) with its own P-number and its own mark scheme; not in the specification (Appendix 1 lists only /01); questions differ from /01 (e.g. June 2025 WMA14/01 P76391A vs /01A P78911A, different Q1)",
+   "entry_codes_china": {
+    "October": [
+     "WMA11A",
+     "WMA12A",
+     "WMA13A",
+     "WMA14A",
+     "WME01A",
+     "WME02A",
+     "WST01A",
+     "WST02A"
+    ],
+    "January_and_June": "all 14 units with A suffix (Jan 2026, Jun 2026 Shanghai centre timetables)"
+   },
+   "earliest_series_observed": "2025-06",
+   "first_series_confirmed": false,
+   "evidence_earliest": [
+    "WMA13/01A QP Thursday 29 May 2025 P81352A",
+    "WMA14/01A QP Thursday 5 June 2025 P78911A",
+    "WMA11/01A June 2025 MS",
+    "WFM02/01A June 2025 QP"
+   ],
+   "not_seen_before": "January 2025 WMA14 exists only as /01 (Tuesday 21 January 2025); no /01A in moon-papers or Edexcel-Finder up to January 2025",
+   "format": {
+    "2025-06": "combined question-and-answer booklet (32 pp) like /01",
+    "from_2025-10": "separate Question paper + Answer book (sent separately)"
+   },
+   "format_evidence": [
+    "WMA13/01A Tuesday 21 October 2025 P87435A",
+    "WMA14/01A Thursday 22 January 2026 P87595A",
+    "WMA14/01A Tuesday 9 June 2026 P84806A"
+   ],
+   "confidence": "high for observed series; medium for start date",
+   "series_by_unit_per_grademax": {
+    "2025-06": [
+     "WMA11",
+     "WMA12",
+     "WMA13",
+     "WMA14",
+     "WFM02",
+     "WME02"
+    ],
+    "2025-10": [
+     "WMA11",
+     "WMA12",
+     "WMA13",
+     "WMA14",
+     "WME01",
+     "WME02",
+     "WST01",
+     "WST02"
+    ],
+    "2026-01": "all 14 units",
+    "2026-06": "all 14 units",
+    "confidence": "medium (scraped index of Pearson URLs, finder/gh/grademax_maths_index.json)"
+   }
+  },
+  "latest_series_reachable": {
+   "indexes": "2025-01 (all units)",
+   "drive": "2025-10 (/01 QPs P1-P4, M1, M2, S1, S2; MSs M1, M2, S1, S2; some /01A), 2026-01 (P4 /01 and /01A QP, S1 /01 and /01A QP+MS), 2026-06 (P4 /01A QP)",
+   "github": "2026-01 QP for WMA11, WMA12, WME01 (elite-igcse-math@05b0320d); 2026-06 WMA11/01 question crops",
+   "gated_from": "2025-10: Pearson QP/MS under content/dam/secure/silver (gated) per grademax index (pointer)"
+  }
+ },
+ "cie9708": {
+  "syllabus": {
+   "title": "Cambridge International AS & A Level Economics 9708 syllabus for examination in 2026, 2027 and 2028",
+   "years": [
+    2026,
+    2027,
+    2028
+   ],
+   "version": "Version 2",
+   "version_date": "December 2025",
+   "v2_change": "weblink on p.38 updated; no significant changes which affect teaching (pp.3, 43)",
+   "v1_date_inferred": "September 2023 (back-page copyright line)",
+   "series": "June and November; March series in India only (cover; p.38)",
+   "pdf": {
+    "local": "scratchpad/research/dl/cie9708-2026-2028.pdf",
+    "md5": "36981a13a95397a443c80fb22ad394d0",
+    "pages": 44,
+    "pdf_created": "2025-12-08",
+    "printed_page_offset": "printed = PDF page"
+   },
+   "drive_id": "1coC6Yup6p2Hv_pzwqYMj3eCtA4TCynWf",
+   "official_url": "https://www.cambridgeinternational.org/Images/697423-2026-2028-syllabus.pdf",
+   "a_level_topics": {
+    "7": {
+     "title": "The price system and the microeconomy (A Level)",
+     "pages": "24-27"
+    },
+    "8": {
+     "title": "Government microeconomic intervention (A Level)",
+     "pages": "27-28"
+    },
+    "9": {
+     "title": "The macroeconomy (A Level)",
+     "pages": "29-31"
+    },
+    "10": {
+     "title": "Government macroeconomic intervention (A Level)",
+     "pages": "31-32"
+    },
+    "11": {
+     "title": "International economic issues (A Level)",
+     "pages": "32-34"
+    }
+   },
+   "paper3": {
+    "name": "A Level Multiple Choice",
+    "duration": "1h15",
+    "marks": 30,
+    "weighting_A_level": "17%",
+    "pages": "11, 36"
+   },
+   "paper4": {
+    "name": "A Level Data Response and Essays",
+    "duration": "2h",
+    "marks": 60,
+    "structure": "Section A data response 20 marks (four parts); Section B (micro) and Section C (macro): one 20-mark unstructured essay each from a choice of two",
+    "weighting_A_level": "33%",
+    "pages": "11, 36"
+   },
+   "routes": "AS only; staged A Level (Year 2 = Papers 3+4 with AS carried forward); all four papers in one series (p.12)",
+   "confidence": "high"
+  },
+  "later_syllabus": {
+   "exists": "probably",
+   "label": "2029 Syllabus (PDF 649KB) listed on official 9708 page per WebSearch summaries",
+   "read": false,
+   "changes": "unknown",
+   "confidence": "medium (existence) / gap (content)"
+  },
+  "current_content_first_exam": {
+   "year": 2023,
+   "first_series": "2023-03 (F/M, India)",
+   "first_global_series": "2023-06",
+   "evidence": [
+    "March 2023 ER Paper 42 (PDF p.8): March 2023 paper based on the new 9708 A Level syllabus; essays now out of 20 instead of 25",
+    "March 2023 ER Paper 22 (PDF p.3): first examination in the new format",
+    "Specimen papers for examination from 2023 (Drive 9708_y23_sm_4.pdf)",
+    "SYL pp.3, 43: textbooks endorsed for examination from 2023 still suitable"
+   ],
+   "previous_syllabus_2023_2025": {
+    "url": "https://www.cambridgeinternational.org/Images/595463-2023-2025-syllabus.pdf",
+    "read": false
+   },
+   "confidence": "high"
+  },
+  "variants": {
+   "F/M": {
+    "paper3": [
+     "32"
+    ],
+    "paper4": [
+     "42"
+    ],
+    "series_checked": [
+     "2023",
+     "2024",
+     "2025"
+    ],
+    "confidence": "high"
+   },
+   "M/J": {
+    "2023": {
+     "paper3": [
+      "31",
+      "32",
+      "33"
+     ],
+     "paper4": [
+      "41",
+      "42",
+      "43"
+     ]
+    },
+    "2024": {
+     "paper3": [
+      "31",
+      "32",
+      "33"
+     ],
+     "paper4": [
+      "41",
+      "42",
+      "43"
+     ]
+    },
+    "2025": {
+     "paper3": [
+      "31",
+      "32",
+      "33",
+      "34"
+     ],
+     "paper4": [
+      "41",
+      "42",
+      "43",
+      "44"
+     ]
+    },
+    "2026": {
+     "paper3_china": "34 (05 June 2026)",
+     "paper4_china": "44 (19 May 2026)",
+     "others": "not verified"
+    }
+   },
+   "O/N": {
+    "2023": {
+     "paper3": [
+      "31",
+      "32",
+      "33"
+     ],
+     "paper4": [
+      "41",
+      "42",
+      "43"
+     ]
+    },
+    "2024": {
+     "paper3": [
+      "31",
+      "32",
+      "33"
+     ],
+     "paper4": [
+      "41",
+      "42",
+      "43"
+     ]
+    },
+    "2025": {
+     "paper3": [
+      "31",
+      "32",
+      "33",
+      "34"
+     ],
+     "paper4": [
+      "41",
+      "42",
+      "43",
+      "44"
+     ],
+     "note": "all eight QP+MS read from Drive by the index builders (critic update 2026-10-06); BC China sat 34 and 44"
+    }
+   },
+   "variant4_note": "Variant 4 (14/24/34/44) first appears M/J 2025; British Council China moved from 12/22 (O/N 2024) to 14/24/34/44 (from June 2025)",
+   "sources": "moon-papers cie.csv (xtremepape file names, to s25); Drive copies of s25 34/44, w25 31/34/42; BC China CIE guides ON2025 and MJ26"
+  },
+  "latest_public_series": {
+   "latest_read_here": "2025-11 (O/N 2025)",
+   "latest_er_read": "2025-03 (F/M 2025). Also held: 2023-03, 2023-06, 2023-11, 2024-06 (Drive s24-er.pdf). Not held: 2024-03, 2024-11, 2025-06, 2025-11 (Drive 9708_s24_er/9708_w24_er/9708_s25_er are PapaCambridge HTML pages, not reports). Corrected by critic 2026-10-06.",
+   "probably_released": [
+    "2026-03 (F/M 2026)",
+    "2026-06 (M/J 2026)"
+   ],
+   "probably_released_evidence": "WebSearch pointers to pastpapers.co 2026 March and June 2026 MS 42 pages (host blocked; not read)",
+   "gap": "F/M 2026 and M/J 2026 QP/MS/ER not obtained"
+  },
+  "file_naming": "9708_<m|s|w><yy>_<qp|ms|er|gt|in>_<component>; one ER per series"
+ },
+ "gaps": [
+  "Pearson site blocked: IAL maths redevelopment news, official /01A start, 2025-26 release status unverified",
+  "CIE 2029 syllabus not read; 2026-2028 V1 change list not read",
+  "9708 2023-2025 syllabus not read (no line diff)",
+  "CIE variant table 2025-26 not read; M/J 2026 full variant set unverified (O/N 2025 31-34/41-44 now all read)",
+  "COVID-series reasons from secondary notices (papers existence verified)"
+ ]
+}
