@@ -9,7 +9,7 @@ from pathlib import Path
 
 SOURCE = Path(__file__).resolve().parent / 'single_face_addon.py'
 MANIFEST = {'package': 'ccpt_single_face', 'name': 'CCPT 单面阅读卡（Space 播音 · Enter 继续 · 1 隔天再看）',
-            'conflicts': [], 'mod': 1790000000}
+            'conflicts': [], 'mod': 1790000000, 'min_point_version': 50}  # 2.1.50+: deck-config and shortcut APIs used
 
 
 def write_addon(folder):
@@ -17,7 +17,7 @@ def write_addon(folder):
     folder.mkdir(parents=True, exist_ok=True)
     target = folder / 'ccpt_single_face.ankiaddon'
     with zipfile.ZipFile(target, 'w', zipfile.ZIP_DEFLATED) as z:
-        z.writestr('__init__.py', SOURCE.read_text())
+        z.write(SOURCE, '__init__.py')  # bytes unchanged (UTF-8 source with Chinese UI text)
         z.writestr('manifest.json', json.dumps(MANIFEST, ensure_ascii=False, indent=1))
     return target
 

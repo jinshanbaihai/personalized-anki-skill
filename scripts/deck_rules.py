@@ -82,9 +82,10 @@ def check_exam(data):
     if identified == 'exclusive-content':
         need(ruled_out and all(isinstance(r, dict) and text(r.get('candidate')) and text(r.get('why_not')) for r in ruled_out),
              'exam.ruled_out: name each near-miss exam and the evidence that excludes it')
-    papers = exam.get('papers', [])
-    need(isinstance(papers, list) and all(isinstance(p, dict) and text(p.get('code')) and p.get('format') in PAPER_FORMATS for p in papers),
-         f'exam.papers: list each paper that examines this content as {{code, format}}, format one of {sorted(PAPER_FORMATS)}')
+    papers = exam.get('papers')
+    need(isinstance(papers, list) and papers and all(isinstance(p, dict) and text(p.get('code')) and p.get('format') in PAPER_FORMATS for p in papers),
+         f'exam.papers: list each paper that examines this content as {{code, format}}, format one of {sorted(PAPER_FORMATS)} '
+         '(e.g. 9708 externalities: [{"code": "9708/3", "format": "mcq"}, {"code": "9708/4", "format": "essay"}])')
 
 
 def check_research(data):
@@ -108,7 +109,8 @@ def check_research(data):
         value = r.get('paper', [])
         read_papers |= {value} if isinstance(value, str) else set(value) if isinstance(value, list) else set()
     for p in (data.get('exam') or {}).get('papers', []):
-        need(p['code'] in read_papers or p['code'] in gaps,
+        named_in_gaps = re.search(r'(?<![\w/])' + re.escape(p['code']) + r'(?![\w/])', gaps)
+        need(p['code'] in read_papers or named_in_gaps,
              f'research: no source tagged paper "{p["code"]}" ({p["format"]}); read its mark scheme or examiner report, or name the gap in research_gaps')
 
 
@@ -135,7 +137,8 @@ def check_coverage(data, card_ids, card_covers):
             need(text(item.get('level')), f'coverage.items[{i}].level: state what the mark schemes require (wording, method, diagram, evaluation)')
             need(item.get('kind') in ITEM_KINDS, f'coverage.items[{i}].kind: one of {sorted(ITEM_KINDS)} (what kind of mastery the point needs)')
             evidence = item.get('evidence', [])
-            need((isinstance(evidence, list) and len([e for e in evidence if text(e)]) >= 2) or text(item.get('evidence_gap')),
+            distinct = {re.sub(r'\W+', '', e).lower() for e in evidence if text(e)} if isinstance(evidence, list) else set()
+            need(len(distinct) >= 2 or text(item.get('evidence_gap')),
                  f'coverage.items[{i}].evidence: cite at least two past-paper mark schemes or examiner reports from different series, or explain evidence_gap')
         else:
             need(text(item.get('reason')), f'coverage.items[{i}].reason: justify why this is a prerequisite or excluded')
@@ -150,9 +153,14 @@ def check_coverage(data, card_ids, card_covers):
             taught.setdefault(item_id, []).append(cid)
     # A point already taught well by an existing card counts when that card is named.
     missing = [k for k, v in by_id.items() if v['class'] in ('core', 'prerequisite') and k not in taught and not text(v.get('existing'))]
+    structure = {c['id']: {b.get('type') for b in c['blocks'] if isinstance(b, dict)} for c in data['cards']}
     for k, v in by_id.items():
-        if v.get('kind') == 'term' and k in taught and not text(v.get('existing')):
-            need(any(genres[c] == 'term' for c in taught[k]), f'coverage item {k} is a term: give it its own term card, not only a mention inside another card')
+        if k not in taught or text(v.get('existing')):
+            continue
+        if v.get('kind') in ('term', 'command'):
+            need(any(genres[c] == 'term' for c in taught[k]), f'coverage item {k} is a {v["kind"]}: give it its own term card, not only a mention inside another card')
+        if v.get('kind') == 'chain':
+            need(any(structure[c] & {'chain', 'map'} for c in taught[k]), f'coverage item {k} is a causal chain: teach it with a chain or map block (arrows), not paragraphs')
     if status == 'complete':
         need(not missing, f'coverage is complete but these points have no card: {missing}')
     board = data.get('board', [])
@@ -164,6 +172,11 @@ def check_coverage(data, card_ids, card_covers):
         need(isinstance(mapped, list) and all(m in by_id for m in mapped), f'board[{i}].items must reference coverage item ids')
         need(mapped or text(point.get('note')), f'board[{i}] maps to no syllabus point; explain in note (correction, digression or out of scope)')
         need(point.get('legibility', 'ok') in ('ok', 'low'), f'board[{i}].legibility: ok or low')
+        if 'lost' in point:  # a mark the learner lost on their own script (e.g. Q01A2 = 0)
+            need(text(point['lost']), f'board[{i}].lost names the lost mark, e.g. "A1"')
+            linked = point.get('cards', [])
+            need(isinstance(linked, list) and all(c in set(genres) for c in linked), f'board[{i}].cards must list card ids')
+            need(linked or text(point.get('not_carded')), f'board[{i}] records a lost mark: name the card that fixes it (M0 → method/derivation card, A0 → pitfall and finish item, B0 → term card) or explain not_carded')
         if point.get('legibility') == 'low':
             need(text(point.get('confirmed_by')), f'board[{i}] is hard to read: say which source confirmed the content (confirmed_by); never fill in guessed words')
     undemanded = check_demands(data, by_id, set(genres))
@@ -216,6 +229,13 @@ def check_cards(data):
              f'card {c["id"]}: formula_booklet is given (printed in the exam formula booklet), memorise or derive')
         need(c.get('theme', 'editorial') in THEMES, f'card {c["id"]}: theme must be one of {sorted(THEMES)}')
         check_genre(c, data.get('academic', True))
+    genres = {c['id']: c['genre'] for c in cards}
+    for c in cards:
+        links = c.get('links', [])
+        need(isinstance(links, list) and all(l in ids for l in links), f'card {c["id"]}: links must list card ids')
+        if c['genre'] == 'essay':
+            arrows = blocks_of(c, 'chain') or blocks_of(c, 'map') or any(genres[l] in ('chain', 'map', 'overview') for l in links)
+            need(arrows, f'card {c["id"]}: an essay card shows its argument as arrows: add a chain or map block, or link the chain/map cards in "links"')
     return ids
 
 
@@ -230,8 +250,14 @@ def check_genre(c, academic=True):
         defs = blocks_of(c, 'definition')
         need(defs, f'card {cid}: a term card states the exam definition in a definition block')
         need(not academic or text(defs[0].get('source')), f'card {cid}: say where the exam definition comes from (mark scheme, examiner report, syllabus or an endorsed textbook glossary) in definition.source')
-        idea_units = len(defs[0].get('keywords', [])) >= 2 or blocks_of(c, 'unpack')
-        need(idea_units, f'card {cid}: split the definition into idea units (≥2 keywords or an unpack block)')
+        if academic:
+            unpack = blocks_of(c, 'unpack')
+            need(unpack and len(unpack[0].get('items', [])) >= 2,
+                 f'card {cid}: explain why each key part of the definition is there (an unpack block with at least 2 items; highlighting keywords is not an explanation)')
+            need(blocks_of(c, 'exam') or text(c.get('exam_waived')), f'card {cid}: say how the term is examined (an exam block: command word, marks, accepted wording) or explain exam_waived')
+        else:
+            idea_units = len(defs[0].get('keywords', [])) >= 2 or blocks_of(c, 'unpack')
+            need(idea_units, f'card {cid}: split the definition into idea units (≥2 keywords or an unpack block)')
         if not text(c.get('examples_waived')):
             ex = blocks_of(c, 'examples')
             yes = sum(len(b.get('yes', [])) for b in ex)
@@ -239,12 +265,21 @@ def check_genre(c, academic=True):
             need(yes >= 1 and no, f'card {cid}: give at least one example and one non-example (or explain in examples_waived)')
             need(all(isinstance(n, dict) and text(n.get('why')) for n in no),
                  f'card {cid}: each non-example says which part of the definition it fails (why)')
+    if c['genre'] == 'chain':
+        need(blocks_of(c, 'chain'), f'card {cid}: a causal card draws its chain with a chain block (arrows with relation words)')
+    if c['genre'] in ('map', 'overview'):
+        need(blocks_of(c, 'map'), f'card {cid}: a {c["genre"]} card needs a map block')
+    if c['genre'] == 'essay':
+        need(blocks_of(c, 'sections'), f'card {cid}: an essay card gives the paragraph skeleton in a sections block')
     if c['genre'] == 'derivation':
         need(blocks_of(c, 'steps'), f'card {cid}: a derivation card works through steps')
         need(blocks_of(c, 'finish'), f'card {cid}: end a derivation with a finish block (exact form, accuracy, range, conclusion)')
 
 
 def check(data):
+    if data.get('academic', True) is False:
+        need(not data.get('exam') and not any(c.get('covers') for c in data.get('cards', []) if isinstance(c, dict)),
+             'academic: false is only for non-exam material; a deck with an exam target needs research, coverage and demands')
     check_deck(data)
     ids = check_cards(data)
     summary = {'cards': len(ids)}

@@ -66,6 +66,6 @@ def main():
         missing=list(col.media.check().missing);assert not missing,missing
         result={'anki_backend':buildinfo.version,'cards':col.card_count(),'notes':col.note_count(),'decoded_audio':len(set(decoded)),'audio_pending_cards':pending,'repeat_import_preserved_card_identity_schedule_and_review_log':True,'scope':'Isolated backend only; real rendering, sound and shortcuts require native checks.'}
         col.close()
-    a.output.parent.mkdir(parents=True,exist_ok=True);a.output.write_text(json.dumps(result,ensure_ascii=False,indent=2));print(json.dumps(result,ensure_ascii=False))
+    a.output.parent.mkdir(parents=True,exist_ok=True);a.output.write_text(json.dumps(result,ensure_ascii=False,indent=2), encoding='utf-8');print(json.dumps(result,ensure_ascii=False))
 
 if __name__=="__main__":main()

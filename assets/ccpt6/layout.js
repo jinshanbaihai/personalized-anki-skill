@@ -55,7 +55,7 @@ const DEF = {
 const REL_RULES = [
   [/^(当且仅当|仅当|只有|如果|假如|若|只要|前提|条件|假设|当|only if|if|when|provided|unless)/i, {arrow: 'none', line: 'dashed', tone: 'cond'}],
   [/^(因为|由于|源于|取决于|来自|基于|because|since|due to|depends on)/i, {arrow: 'back', line: 'solid', tone: 'cause'}],
-  [/^(导致|引起|造成|使得|使|所以|因此|从而|进而|于是|推出|得到|带来|意味着|则|→|⇒|leads? to|causes?|so|therefore|hence|thus|results? in)/i, {arrow: 'forward', line: 'solid', tone: 'cause'}],
+  [/^(导致|引起|造成|使得|使|所以|因此|从而|进而|于是|推出|得到|带来|意味着|则|因而|结果|以致|引发|诱发|促进|推动|产生|加剧|抑制|提高|降低|增加|减少|形成|刺激|迫使|→|⇒|leads? to|causes?|so|therefore|hence|thus|results? in|raises?|reduces?|increases?|decreases?)/i, {arrow: 'forward', line: 'solid', tone: 'cause'}],
   [/^(但是|但|然而|不过|却|反之|可是|局限|评价|however|but|yet|although)/i, {arrow: 'none', line: 'dotted', tone: 'eval'}],
   [/^(例如|比如|譬如|如|例|e\.g\.|for example|such as)/i, {arrow: 'none', line: 'thin', tone: 'example'}]
 ];
@@ -620,7 +620,7 @@ function layoutChain(st) {
 
 function paintChain(st, size) {
   const o = st.opts, svg = st.canvas.querySelector('svg');
-  let out = '';
+  let out = '', maxX = size.width;   // merge curves and row-return connectors may reach past the widest node
   const wire = (d, tone) => '<path class="mm-wire l-solid t-' + (tone || 'plain') + '" d="' + d + '"/>';
   const run = (xs, e) => labelledRun(o, xs, e.ay, e.x, e, 'mm-wire l-' + e.line + ' t-' + e.tone, 'mm-head t-' + e.tone);
   const bend = (x1, y1, x2, y2) => { if (Math.abs(y2 - y1) < 0.5) return 'M' + x1 + ' ' + y1 + 'H' + x2; const c = (x2 - x1) * 0.55; return 'M' + x1 + ' ' + y1 + 'C' + (x1 + c) + ' ' + y1 + ',' + (x2 - c) + ' ' + y2 + ',' + x2 + ' ' + y2; };
@@ -632,6 +632,7 @@ function paintChain(st, size) {
     for (const q of ends) if (q.x + q.w < xm - 0.5) out += wire('M' + (q.x + q.w) + ' ' + q.ay + 'H' + xm);
     const ys = ends.map(q => q.ay), y = ty == null ? (Math.min(...ys) + Math.max(...ys)) / 2 : ty;
     ends.forEach(q => { out += wire(bend(xm, q.ay, xm + o.curveW, y)); });
+    maxX = Math.max(maxX, xm + o.curveW + 2);
     return {x: xm + o.curveW, y, merged: true};
   };
   function draw(s) {
@@ -642,6 +643,7 @@ function paintChain(st, size) {
         const ex = exitOf(s[i - 1], e.wrap ? null : e.ay);
         if (e.wrap) {   // return connector: right, down to the gap between rows, back to the left margin, down, then in
           out += wire(roundPoly([[ex.x, ex.y], [ex.x + 10, ex.y], [ex.x + 10, e.wrap.yGap], [6, e.wrap.yGap], [6, e.ay], [7, e.ay]], 9), e.tone);
+          maxX = Math.max(maxX, ex.x + 12);
           out += run(7, e);
         } else out += run(ex.x, e);
       } else {
@@ -653,9 +655,10 @@ function paintChain(st, size) {
     });
   }
   draw(st.seq);
-  st.canvas.style.width = size.width + 'px'; st.canvas.style.height = size.height + 'px';
-  svg.setAttribute('width', size.width); svg.setAttribute('height', size.height);
-  svg.setAttribute('viewBox', '0 0 ' + size.width + ' ' + size.height);
+  const width = Math.ceil(maxX);
+  st.canvas.style.width = width + 'px'; st.canvas.style.height = size.height + 'px';
+  svg.setAttribute('width', width); svg.setAttribute('height', size.height);
+  svg.setAttribute('viewBox', '0 0 ' + width + ' ' + size.height);
   svg.innerHTML = out;
 }
 

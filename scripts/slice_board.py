@@ -22,7 +22,7 @@ import subprocess
 import tempfile
 from pathlib import Path
 
-from PIL import Image
+from PIL import Image, ImageOps
 
 Image.MAX_IMAGE_PIXELS = None
 
@@ -56,14 +56,25 @@ def legibility(image, rendered_pdf=False):
     return {'width': image.width, 'verdict': 'low' if low else 'ok', 'why': why}
 
 
+def upright_rgb(image):
+    """Phone photos carry their rotation in EXIF; transparent exports need a white page behind the ink."""
+    image = ImageOps.exif_transpose(image)
+    if image.mode in ('RGBA', 'LA') or (image.mode == 'P' and 'transparency' in image.info):
+        rgba = image.convert('RGBA')
+        page = Image.new('RGB', rgba.size, 'white')
+        page.paste(rgba, mask=rgba.getchannel('A'))
+        return page
+    return image.convert('RGB')
+
+
 def pages(path, dpi):
     if path.suffix.lower() != '.pdf':
-        yield path.stem, Image.open(path).convert('RGB')
+        yield path.stem, upright_rgb(Image.open(path))
         return
     with tempfile.TemporaryDirectory() as tmp:
         subprocess.run(['pdftoppm', '-r', str(dpi), '-png', str(path), f'{tmp}/p'], check=True)
         for page in sorted(Path(tmp).glob('p*.png')):
-            yield f'{path.stem}-{page.stem}', Image.open(page).convert('RGB')
+            yield f'{path.stem}-{page.stem}', upright_rgb(Image.open(page))
 
 
 def main():
@@ -82,7 +93,7 @@ def main():
                 file = a.output / f'{name}-s{i:02d}.png'
                 crop.save(file)
                 index.append({'source': str(path), 'page': name, 'slice': i, 'rows': [top, bottom], 'original_size': list(image.size), 'file': str(file)})
-    (a.output / 'index.json').write_text(json.dumps({'quality': quality, 'slices': index}, ensure_ascii=False, indent=1))
+    (a.output / 'index.json').write_text(json.dumps({'quality': quality, 'slices': index}, ensure_ascii=False, indent=1), encoding='utf-8')
     low = {k: v['why'] for k, v in quality.items() if v['verdict'] == 'low'}
     print(json.dumps({'slices': len(index), 'index': str(a.output / 'index.json'), 'quality': quality}, ensure_ascii=False))
     if low:

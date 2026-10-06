@@ -8,6 +8,7 @@ its own "speech". Narration never reads LaTeX source aloud.
 """
 import html
 import re
+from html.parser import HTMLParser
 from latex2mathml.converter import convert as latex_to_mathml
 
 from html_integrity import validate_markup, check_svg
@@ -48,7 +49,63 @@ def tidy_latex(source):
     source = re.sub(r'(?<!\\left)(?<!\\right)(?<!\\)\|([^|()]+?)(?<!\\right)\|', r'\\left|\1\\right|', source)
     # A minus that opens a group is unary, not binary.
     source = re.sub(r'(\(|\[|\{|=|,)\s*-(?=[\w\\{(])', r'\1{-}', source)
+    # \bar gives a short unstretched tick in MathML; \overline spans the symbol (x̄, X̄).
+    source = re.sub(r'\\bar(?![A-Za-z])', r'\\overline', source)
     return source
+
+
+FUNCTIONS = r'(?:arcsin|arccos|arctan|sinh|cosh|tanh|sin|cos|tan|sec|csc|cosec|cot|ln|log|lg|exp)'
+OPEN_PAREN = r'<mo stretchy="false">&#x00028;</mo>'
+RELATION = re.compile(r'\\(?:approx|leq?|geq?|neq?|equiv|Rightarrow|Leftrightarrow)(?![A-Za-z])')
+
+
+def polish_mathml(mathml, display):
+    """Textbook spacing that latex2mathml leaves out."""
+    # unary minus written {-}: a prefix operator with no surrounding space, "(−2/3)" not "( − 2/3)"
+    mathml = mathml.replace('<mrow><mo>&#x02212;</mo></mrow>', '<mo form="prefix" lspace="0" rspace="0">&#x02212;</mo>')
+    # function names: a thin space before the argument ("ln x", "sin² x"), none before a bracket
+    mathml = re.sub(rf'(?<!<msup>)(?<!<msub>)(?<!<msubsup>)(<mi>{FUNCTIONS}</mi>)(?!{OPEN_PAREN})(?=<m)', r'\1<mspace width="0.1667em" />', mathml)
+    mathml = re.sub(rf'(<(msup|msub|msubsup)><mi>{FUNCTIONS}</mi>(?:(?!</\2>)[\s\S])*</\2>)(?!{OPEN_PAREN})(?=<m)', r'\1<mspace width="0.1667em" />', mathml)
+    if not display:  # text-style big operators inside a sentence, as in a printed textbook
+        mathml = re.sub(r'<mo>(&#x0222B;|&#x0222C;|&#x0222E;|&#x02211;|&#x0220F;)</mo>', r'<mo largeop="false">\1</mo>', mathml)
+    return mathml
+
+
+def split_relations(tex):
+    """Break opportunities for long inline formulas, so they wrap on a phone instead of hiding their end:
+    before each top-level relation of an equality chain (A | = B | = C), or, in a long sum without such
+    a chain, before each top-level binary + or −."""
+    if len(tex) < 30:
+        return [tex]
+    depth, fence, relations, sums, i = 0, 0, [], [], 0
+    while i < len(tex):
+        ch = tex[i]
+        if ch == '\\':
+            m = re.match(r'\\(left|right|[A-Za-z]+|.)', tex[i:])
+            name = m.group(1)
+            if name == 'left':
+                fence += 1
+            elif name == 'right':
+                fence -= 1
+            elif depth == 0 and fence == 0 and RELATION.match(tex, i):
+                relations.append(i)
+            i += len(m.group(0))
+            continue
+        if ch == '{':
+            depth += 1
+        elif ch == '}':
+            depth -= 1
+        elif depth == 0 and fence == 0:
+            if ch in '=<>':
+                relations.append(i)
+            elif ch in '+-' and re.search(r'[A-Za-z0-9)}\]!]\s*$', tex[:i]) and not re.search(r'[\^_]\s*$', tex[:i]):
+                sums.append(i)
+        i += 1
+    cuts = relations if len(relations) >= 2 else sums if len(tex) >= 50 and len(sums) >= 2 else []
+    if not cuts:
+        return [tex]
+    pieces = [tex[a:b] for a, b in zip([0] + cuts, cuts + [len(tex)])]
+    return [p for p in pieces if p.strip()]
 
 
 class Inline:
@@ -62,10 +119,52 @@ class Inline:
         return bool(self.html.strip())
 
 
-def strip_tags(markup):
-    text = re.sub(r'<br\s*/?>', '，', markup)
-    text = re.sub(r'<[^>]+>', '', text)
-    return re.sub(r'\s+', ' ', html.unescape(text)).strip()
+class _Visible(HTMLParser):
+    BLOCKS = {'div', 'p', 'li', 'section', 'td', 'th', 'h1', 'h2', 'h3', 'h4', 'dt', 'dd', 'tr', 'figcaption', 'header', 'footer'}
+
+    def __init__(self, spaced):
+        super().__init__(convert_charrefs=True)
+        self.parts, self.spaced, self.hidden = [], spaced, 0
+
+    def handle_starttag(self, tag, attrs):
+        if self.hidden or ('hidden', None) in attrs:
+            self.hidden += tag not in ('br', 'wbr')
+            return
+        if tag == 'br':
+            self.parts.append('\n')
+        elif self.spaced and tag in self.BLOCKS:
+            self.parts.append(' ')
+
+    def handle_startendtag(self, tag, attrs):
+        if tag == 'br' and not self.hidden:
+            self.parts.append('\n')
+
+    def handle_endtag(self, tag):
+        if self.hidden:
+            self.hidden -= 1
+        elif self.spaced and tag in self.BLOCKS:
+            self.parts.append(' ')
+
+    def handle_data(self, data):
+        if not self.hidden:
+            self.parts.append(data)
+
+
+def strip_tags(markup, spaced=False):
+    """Visible text. A line break reads as a pause (，) unless punctuation already ends the line;
+    spaced=True also separates block elements (for word extraction, not for speech)."""
+    parser = _Visible(spaced)
+    parser.feed(markup)
+    parser.close()
+    text = ''.join(parser.parts).replace('\u200b', '')
+    text = re.sub(r'([。！？；：，,.!?;:])\s*\n', r'\1', text).replace('\n', '，')
+    return re.sub(r'\s+', ' ', text).strip()
+
+
+def dollars(speech):
+    """An escaped dollar is currency: \\$2 is read as 2 美元."""
+    speech = re.sub(r'\\\$\s*(\d[\d,.]*)', r'\1 美元', speech)
+    return speech.replace('\\$', '美元')
 
 
 def inline(text, where, *, allow_block_html=False):
@@ -75,19 +174,25 @@ def inline(text, where, *, allow_block_html=False):
     if not isinstance(text, str):
         fail(where, 'expected text')
     out_html, out_speech, unspoken, pos = [], [], 0, 0
+    # A comparison sign followed by a space or digit is text, not a tag: show it and read it as 小于.
+    stray = re.compile(r'<(?![A-Za-z/!])')
     for match in MATH.finditer(text):
-        before = text[pos:match.start()]
+        before = stray.sub('&lt;', text[pos:match.start()])
         out_html.append(before)
         out_speech.append(before)
         display = match.group(2) is not None
         source = tidy_latex((match.group(2) if display else match.group(3)).strip())
-        try:
-            mathml = latex_to_mathml(source, display='block' if display else 'inline')
-            if not display:  # text-style big operators inside a sentence, as in a printed textbook
-                mathml = re.sub(r'<mo>(&#x0222B;|&#x0222C;|&#x0222E;|&#x02211;|&#x0220F;)</mo>', r'<mo largeop="false">\1</mo>', mathml)
-        except Exception as error:  # noqa: BLE001
-            fail(where, f'LaTeX could not be converted: {source!r} ({error})')
-        out_html.append(f'<span class="math{" math-display" if display else ""}" data-tex="{html.escape(source, quote=True)}">{mathml}</span>')
+        pieces = [source] if display else split_relations(source)
+        rendered = []
+        for n, piece in enumerate(pieces):
+            try:
+                mathml = polish_mathml(latex_to_mathml(piece, display='block' if display else 'inline'), display)
+            except Exception as error:  # noqa: BLE001
+                fail(where, f'LaTeX could not be converted: {piece!r} ({error})')
+            if n:  # a continuation piece starts with a binary operator: keep its infix spacing
+                mathml = re.sub(r'^(<math[^>]*><mrow>)<mo>', r'\1<mo form="infix">', mathml)
+            rendered.append(f'<span class="math{" math-display" if display else ""}" data-tex="{html.escape(piece, quote=True)}">{mathml}</span>')
+        out_html.append('\u200b'.join(rendered))
         spoken = match.group(4)
         if spoken is None or not spoken.strip():
             unspoken += 1
@@ -95,8 +200,9 @@ def inline(text, where, *, allow_block_html=False):
         else:
             out_speech.append(spoken.strip())
         pos = match.end()
-    out_html.append(text[pos:])
-    out_speech.append(text[pos:])
+    tail = stray.sub('&lt;', text[pos:])
+    out_html.append(tail)
+    out_speech.append(tail)
     markup = ''.join(out_html).replace('\\$', '$')
     # A formula and the CJK punctuation after it stay on one line (no "，" at a line start).
     markup = re.sub(r'(<span class="math"[^>]*>(?:(?!<span class="math")[\s\S])*?</math></span>)([，。；：、）”！？])', r'<span class="nw">\1\2</span>', markup)
@@ -105,7 +211,7 @@ def inline(text, where, *, allow_block_html=False):
             if tag.lower() not in INLINE_TAGS:
                 fail(where, f'<{tag}> is not inline text markup; use a block type or an "html" block')
     passive(markup, where)
-    return Inline(markup, strip_tags(''.join(out_speech).replace('\\$', '$')), unspoken)
+    return Inline(markup, strip_tags(dollars(''.join(out_speech))), unspoken)
 
 
 def esc(value):
@@ -132,7 +238,13 @@ def joined(*pieces):
     return out
 
 
+def need_object(block, where):
+    if not isinstance(block, dict):
+        fail(where, 'each item must be an object with named fields, e.g. {"do": "…", "why": "…"}')
+
+
 def need_list(block, key, where, *, nonempty=True):
+    need_object(block, where)
     value = block.get(key)
     if not isinstance(value, list) or (nonempty and not value):
         fail(where, f'"{key}" must be a non-empty list')
@@ -140,27 +252,63 @@ def need_list(block, key, where, *, nonempty=True):
 
 
 def need_text(block, key, where):
+    need_object(block, where)
     value = block.get(key)
     if not isinstance(value, str) or not value.strip():
         fail(where, f'"{key}" must be non-empty text')
     return value
 
 
+# Mark-scheme notation: M1 dM1 ddM1 A1 A1* B1 C1 (Cambridge DM1), with ft cso cao ag oe isw awrt; SC1.
+MARK_TOKEN = r'(?:(?:dd|d|D)?[MABC]\d+\*?(?:\s*(?:ft|cso|cao|ag|oe|isw|awrt))*|SC\d*|ft|cso|cao|ag|oe|isw|awrt)'
+MARK = re.compile(rf'{MARK_TOKEN}(?:[ ,]*{MARK_TOKEN})*')
+
+
 def mark_type(mark):
-    first = str(mark).lstrip('d')[:1].upper()
-    return {'M': 'M', 'A': 'A', 'B': 'B'}.get(first, 'other') if not str(mark).startswith('AO') else 'AO'
+    if str(mark).startswith('AO'):
+        return 'AO'
+    first = re.sub(r'^[dD]+', '', str(mark))[:1].upper()
+    return {'M': 'M', 'A': 'A', 'B': 'B'}.get(first, 'other')
+
+
+def mark_speech(mark):
+    """How a mark badge is read aloud: letters spelled out, * as 星 (B1 → B 1, A1* → A 1 星)."""
+    if not mark:
+        return ''
+    text = re.sub(r'(\d\*?)(?=[A-Za-z])', r'\1 ', str(mark))  # M1A1 → M1 A1
+    for word in ('cso', 'cao', 'awrt', 'isw', 'ft', 'oe', 'ag'):
+        text = re.sub(rf'(?<![A-Za-z]){word}(?![A-Za-z])', ' ' + ' '.join(word) + ' ', text)
+    text = re.sub(r'(AO|SC|dd|d|D)?([MABC])?(\d+)', lambda m: ' '.join(filter(None, [' '.join(m.group(1)) if m.group(1) else '', m.group(2), m.group(3)])), text)
+    return re.sub(r'\s+', ' ', text.replace('*', ' 星')).strip()
 
 
 def highlight_keywords(markup, keywords, where):
-    """Mark the exact wording a mark scheme rewards; each keyword must appear."""
+    """Mark the exact wording a mark scheme rewards; each keyword must appear in the visible text.
+    Only text between tags is touched (never tag names, attributes or MathML), longest keyword first."""
+    words = []
     for word in keywords:
         if not isinstance(word, str) or not word.strip():
             fail(where, 'keywords must be non-empty strings')
-        escaped = html.escape(word, quote=False)
-        if escaped not in markup:
+        words.append(word)
+    math_span = r'<span class="math"[^>]*>[\s\S]*?</math></span>'
+    visible = strip_tags(re.sub(math_span, ' ', markup))
+    for word in words:
+        if html.unescape(word) not in visible:
             fail(where, f'keyword {word!r} does not appear verbatim in the definition text')
-        markup = markup.replace(escaped, f'<mark class="kw">{escaped}</mark>')
-    return markup
+    forms = sorted({f for w in words for f in (w, html.escape(w, quote=False))}, key=len, reverse=True)
+    pattern = re.compile('|'.join(re.escape(f) for f in forms))
+    pieces = re.split(rf'({math_span}|<[^>]+>)', markup)
+    found = set()
+
+    def mark(m):
+        found.add(html.unescape(m.group(0)))
+        return f'<mark class="kw">{m.group(0)}</mark>'
+    out = ''.join(piece if i % 2 else pattern.sub(mark, piece) for i, piece in enumerate(pieces))
+    missing = [w for w in words if html.unescape(w) not in found and not any(html.unescape(w) in f for f in found)]
+    if missing:
+        fail(where, f'keyword {missing[0]!r} is split by formatting tags; keep each keyword inside one run of text')
+    validate_markup(out)
+    return out
 
 
 # ---------------------------------------------------------------- renderers
@@ -168,7 +316,8 @@ def highlight_keywords(markup, keywords, where):
 
 def r_lead(b, bid, where):
     t = inline(need_text(b, 'text', where), where)
-    return f'<p class="lead">{t.html}</p>', [Part(bid, t.speech, t.unspoken)]
+    latin = ' lead-latin' if re.match(r'[A-Za-z]', strip_tags(t.html)) else ''
+    return f'<p class="lead{latin}">{t.html}</p>', [Part(bid, t.speech, t.unspoken)]
 
 
 def r_note(b, bid, where):
@@ -284,13 +433,14 @@ def r_table(b, bid, where):
         cells = [inline(c, w) for c in row]
         nid = f'{bid}-r{i}'
         out += f'<tr data-node="{nid}">' + ''.join(f'<td>{c.html}</td>' for c in cells) + '</tr>'
-        spoken = '；'.join(f'{h.speech}：{c.speech}' for h, c in zip(hcells[1:], cells[1:]))
+        spoken = '；'.join(f'{h.speech}：{c.speech}' for h, c in zip(hcells[1:], cells[1:]) if c.speech.strip())
         parts.append(Part(nid, joined(cells[0].speech, spoken), sum(c.unspoken for c in cells)))
     out += '</tbody></table></div>'
     caption = inline(b.get('caption'), where)
     label = inline(b.get('label'), where)
     if caption:
         out += f'<p class="tbl-cap">{caption.html}</p>'
+        parts[-1].text = joined(parts[-1].text, caption.speech)
     if label:
         out = f'<h3 class="blk-label">{label.html}</h3>' + out
         parts[0].text = joined(label.speech, parts[0].text)
@@ -325,12 +475,12 @@ def r_steps(b, bid, where):
             current_goal = subgoal.html
             out += f'<li class="subgoal" aria-hidden="false"><span class="subgoal-mark">▸</span>{subgoal.html}</li>'
             goal_speech = subgoal.speech
-        if mark is not None and not re.fullmatch(r'(?:d?[MAB]\d|M\d A\d|B\d B\d|SC|ft|cso|awrt)(?:[ ,]+(?:d?[MAB]\d|ft|cso|awrt))*', str(mark)):
-            fail(w, f'mark {mark!r} should use mark-scheme notation such as M1, A1, B1, dM1 or "M1 A1"')
+        if mark is not None and not MARK.fullmatch(str(mark).strip()):
+            fail(w, f'mark {mark!r} should use mark-scheme notation: M1, dM1, ddM1, A1, A1*, A1ft, B1, B1ft, C1, SC1, "M1 A1", "A1 cso"')
         trivial = item.get('trivial') is True
-        if not why and not basis and not trivial:
-            fail(w, 'explain each step: give "why" (the reasoning) and/or "basis" (the rule used); pure arithmetic may set "trivial": true')
         note = inline(item.get('mark_note'), w)
+        if not why and not basis and not note and not trivial:
+            fail(w, 'explain each step: give "why" (the reasoning) and/or "basis" (the rule used); pure arithmetic may set "trivial": true')
         nid = f'{bid}-s{i}'
         out += (f'<li class="step{" trivial" if trivial else ""}" data-node="{nid}"><span class="step-n">{i + 1}</span><div class="step-body">'
                 f'<div class="step-do">{do.html}</div>'
@@ -338,12 +488,13 @@ def r_steps(b, bid, where):
                 + (f'<div class="step-basis"><span class="tagline">依据</span>{basis.html}</div>' if basis else '')
                 + (f'<div class="step-mark-note">{note.html}</div>' if note else '')
                 + '</div>' + (f'<span class="mark-badge" data-type="{mark_type(mark)}">{esc(mark)}</span>' if mark else '') + '</li>')
-        speech = joined(goal_speech, f'第{i + 1}步，{do.speech}', ('为什么？' + why.speech) if why else '', ('依据：' + basis.speech) if basis else '')
+        speech = joined(goal_speech, f'第{i + 1}步，{do.speech}', ('为什么？' + why.speech) if why else '', ('依据：' + basis.speech) if basis else '',
+                        ('这一步记 ' + mark_speech(mark)) if mark else '', ('评分注意：' + note.speech) if note else '')
         first_extra = 0
         if not given and i == 0 and intro:
             speech = joined(intro, speech)
             first_extra = when.unspoken
-        parts.append(Part(nid, speech, do.unspoken + why.unspoken + basis.unspoken + subgoal.unspoken + first_extra))
+        parts.append(Part(nid, speech, do.unspoken + why.unspoken + basis.unspoken + subgoal.unspoken + note.unspoken + first_extra))
     out += '</ol>'
     basis_note = inline(b.get('marks_basis'), where)
     if basis_note:
@@ -358,7 +509,7 @@ def r_steps(b, bid, where):
 REL_RULES = [
     (re.compile(r'^(当且仅当|仅当|只有|如果|假如|若|只要|前提|条件|假设|当|only if|if|when|provided|unless)', re.I), ('none', 'dashed', 'cond')),
     (re.compile(r'^(因为|由于|源于|取决于|来自|基于|because|since|due to|depends on)', re.I), ('back', 'solid', 'cause')),
-    (re.compile(r'^(导致|引起|造成|使得|使|所以|因此|从而|进而|于是|推出|得到|带来|意味着|则|→|⇒|leads? to|causes?|so|therefore|hence|thus|results? in)', re.I), ('forward', 'solid', 'cause')),
+    (re.compile(r'^(导致|引起|造成|使得|使|所以|因此|从而|进而|于是|推出|得到|带来|意味着|则|因而|结果|以致|引发|诱发|促进|推动|产生|加剧|抑制|提高|降低|增加|减少|形成|刺激|迫使|→|⇒|leads? to|causes?|so|therefore|hence|thus|results? in|raises?|reduces?|increases?|decreases?)', re.I), ('forward', 'solid', 'cause')),
     (re.compile(r'^(但是|但|然而|不过|却|反之|可是|局限|评价|however|but|yet|although)', re.I), ('none', 'dotted', 'eval')),
     (re.compile(r'^(例如|比如|譬如|如|例|e\.g\.|for example|such as)', re.I), ('none', 'thin', 'example')),
 ]
@@ -507,12 +658,8 @@ def r_map(b, bid, where):
         if not isinstance(children, list):
             fail(w, '"children" must be a list')
         spoken = joined((rel.speech + '，') + text.speech if rel else text.speech)
-        # Narrate per first-level branch so highlighting follows the branch being explained.
-        if depth <= 1:
-            parts.append(Part(nid, spoken, text.unspoken + rel.unspoken))
-        else:
-            parts[-1].text = joined(parts[-1].text, spoken)
-            parts[-1].unspoken += text.unspoken + rel.unspoken
+        # One segment per node, depth first, so the highlight and follow-scroll reach deep nodes too.
+        parts.append(Part(nid, spoken, text.unspoken + rel.unspoken))
         kids = ''.join(node(c, f'{w}.children[{i}]', depth + 1, i if depth == 0 else branch) for i, c in enumerate(children))
         b_attr = 'root' if depth == 0 else str(branch % 6)
         return (f'<li class="mm-item{" has-rel" if rel else ""}" data-kind="{kind}" data-depth="{depth}" data-branch="{b_attr}" '
@@ -551,8 +698,10 @@ def r_figure(b, bid, where):
             parts.append(Part(nid, t.speech, t.unspoken))
         out += '</ol>'
     if not parts[0].text:
-        parts = parts[1:] or [Part(bid, '', 1)]
-    return out, parts
+        parts = parts[1:]
+    if not parts and not (isinstance(b.get('speech'), str) and b['speech'].strip()):
+        fail(where, 'a figure needs a caption, points or a block "speech" so the narration can describe it')
+    return out, parts or [Part(bid, '', 0)]
 
 
 # Where a pitfall comes from; a teacher's note is never presented as an examiner's report.
@@ -577,13 +726,14 @@ def r_pitfall(b, bid, where):
             fail(w, 'source_type needs a source (which report, mark scheme, script or annotation)')
         lost = item.get('lost')
         nid = f'{bid}-f{i}'
-        out += (f'<div class="pf" data-node="{nid}">' + (f'<span class="mark-badge pf-lost" title="丢的分">−{esc(lost)}</span>' if lost else '')
-                + f'<div class="pf-wrong"><span class="pf-mark">✗</span>{wrong.html}</div>'
-                f'<div class="pf-right"><span class="pf-mark">✓</span>{right.html}</div>'
+        out += (f'<div class="pf{" has-lost" if lost else ""}" data-node="{nid}">' + (f'<span class="mark-badge pf-lost" title="丢的分">−{esc(lost)}</span>' if lost else '')
+                + f'<div class="pf-wrong"><span class="pf-mark">✗</span><span class="pf-text">{wrong.html}</span></div>'
+                f'<div class="pf-right"><span class="pf-mark">✓</span><span class="pf-text">{right.html}</span></div>'
                 + (f'<div class="pf-why">{why.html}</div>' if why else '')
                 + (f'<div class="pf-src" data-type="{kind or ""}">' + (f'<span class="pf-src-type">{SOURCE_TYPES[kind]}</span>' if kind else '') + f'{src.html}</div>' if src else '') + '</div>')
         lead = label.speech + '。' if i == 0 else ''
-        parts.append(Part(nid, joined(lead + '错误写法：' + wrong.speech, '正确：' + right.speech, why.speech), wrong.unspoken + right.unspoken + why.unspoken))
+        parts.append(Part(nid, joined(lead + '错误写法：' + wrong.speech, '正确：' + right.speech, why.speech, ('会丢 ' + mark_speech(lost)) if lost else ''),
+                          wrong.unspoken + right.unspoken + why.unspoken))
     return out + '</div>', parts
 
 
@@ -599,7 +749,7 @@ def r_exam(b, bid, where):
         mark = item.get('mark')
         nid = f'{bid}-e{i}'
         out += f'<li data-node="{nid}">' + (f'<span class="mark-badge" data-type="{mark_type(mark)}">{esc(mark)}</span>' if mark else '') + f'<span>{t.html}</span></li>'
-        parts.append(Part(nid, joined((label.speech + '。') if i == 0 else '', t.speech), t.unspoken))
+        parts.append(Part(nid, joined((label.speech + '。') if i == 0 else '', (mark_speech(mark) + '，' if mark else '') + t.speech), t.unspoken))
     return out + '</ul>', parts
 
 
@@ -630,7 +780,8 @@ def r_sections(b, bid, where):
         nid = f'{bid}-x{i}'
         out += (f'<section class="sec" data-node="{nid}"><h4>{head.html}' + (f'<span class="mark-badge" data-type="{mark_type(mark)}">{esc(mark)}</span>' if mark else '')
                 + f'</h4><p>{text.html}</p></section>')
-        parts.append(Part(nid, joined((label.speech + '。') if i == 0 and label else '', head.speech, text.speech), head.unspoken + text.unspoken))
+        parts.append(Part(nid, joined((label.speech + '。') if i == 0 and label else '', head.speech + (f'，{mark_speech(mark)}' if mark else ''), text.speech),
+                          head.unspoken + text.unspoken))
     return out + '</div>', parts
 
 
@@ -656,7 +807,7 @@ def render_block(block, bid, where):
     body, parts = RENDERERS[kind](block, bid, where)
     if isinstance(block.get('speech'), str) and block['speech'].strip() and kind != 'html':
         parts = [Part(bid, block['speech'].strip(), 0)]
-    missing = sum(p.unspoken for p in parts)
+    missing = max(sum(p.unspoken for p in parts), sum(p.text.count('⟦公式⟧') for p in parts))
     if missing:
         fail(where, f'{missing} formula(s) have no spoken form; add 〔读法〕 after each $...$ or give the block a "speech"')
     parts = [p for p in parts if p.text.strip()]

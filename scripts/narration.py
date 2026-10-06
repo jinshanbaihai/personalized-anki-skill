@@ -26,29 +26,40 @@ TRIM = ('silenceremove=start_periods=1:start_threshold=-45dB:start_silence=0.04,
         'silenceremove=start_periods=1:start_threshold=-45dB:start_silence=0.06,areverse')
 PAUSE_SAME_BLOCK = 0.30   # between steps, rows or branches of one block (final timeline)
 PAUSE_NEW_BLOCK = 0.50    # between blocks, and after the title
-SYMBOLS = re.compile(r'[\\^_{}$→⇒⟹≥≤≠×÷√∑∫∞±≈∝]|[A-Za-z]{2,}/[A-Za-z]+')
-TEX_REMNANT = re.compile(r'\\[A-Za-z]+|[\^_{}$]')
+SYMBOLS = re.compile(r'[\\^_{}$→⇒⟹√∑∫∞±∝]|[A-Za-z]{2,}/[A-Za-z]+')
+# Anything outside Chinese, Latin letters, digits and ordinary punctuation is read badly or skipped by the voice.
+PLAIN = re.compile(r'[\u4e00-\u9fff\u3400-\u4dbfA-Za-z0-9\s，。、；：？！“”‘’（）《》【】—…·,.;:?!\'"()%+\-=/&#@~]')
+TEX_REMNANT = re.compile(r'\\[A-Za-z]+|[\^_{}$⟦]')
 DEFAULT_LEXICON = {'λ': 'lambda', 'μ': 'mu', 'σ': 'sigma', 'θ': 'theta', 'π': 'pi', 'α': 'alpha', 'β': 'beta',
+                   'γ': 'gamma', 'δ': 'delta', 'ε': 'epsilon', 'ρ': 'rho', 'φ': 'phi', 'χ': 'chi', 'ω': 'omega',
                    'Σ': 'sigma 求和', 'Δ': 'delta', '≥': '大于等于', '≤': '小于等于', '≠': '不等于', '≈': '约等于',
-                   'e.g.': '例如', 'i.e.': '也就是', 'vs': '对比', '<': '小于', '>': '大于', '−': '减', '×': '乘以', '÷': '除以'}
+                   '↑': '上升', '↓': '下降', '∴': '所以', '∵': '因为', '∈': '属于', '°': '度', '²': '的平方', '³': '的立方', '½': '二分之一',
+                   'e.g.': '例如', 'i.e.': '也就是', 'vs': '对比', '<': '小于', '>': '大于', '×': '乘以', '÷': '除以'}
 
 
 def cache_root():
     return Path(os.environ.get('CCPT_TTS_CACHE') or Path(os.environ.get('XDG_CACHE_HOME') or Path.home() / '.cache') / 'ccpt-tts' / 'v1')
 
 
-def speech_lint(text):
+def speech_lint(text, lexicon=None):
     """Symbols a voice reads badly or not at all; write them as words in 〔读法〕 or speech."""
-    return sorted(set(m.group(0) for m in SYMBOLS.finditer(text)))
+    odd = set(m.group(0) for m in SYMBOLS.finditer(text))
+    spoken = apply_lexicon(text, lexicon)
+    odd |= {ch for ch in spoken if not PLAIN.match(ch)}
+    return sorted(odd)
 
 
 def apply_lexicon(text, lexicon):
     """Edge accepts plain text only (no <sub>/<phoneme>), so readings are substituted before synthesis."""
-    text = re.sub(r'(^|[=(（\s，,：:])[−-](?=\d)', r'\1负', text)  # a minus before a number is "负", not "减"
+    # U+2212 is "减" after an operand (x − 2, MPC − s) and "负" anywhere else (斜率为 −2、(−1, 1)、= −x).
+    text = re.sub(r'−(?=\s*[\dA-Za-z(（])', lambda m: '减' if re.search(r'[A-Za-z0-9)\]}）]$', text[:m.start()].rstrip()) else '负', text)
+    text = re.sub(r'(^|[=(（\s，,：:、；\[])-(?=\d)', r'\1负', text)  # an ASCII hyphen only in clear negative positions
+    text = re.sub(r'(?<=[A-Za-z])\*', ' 星', text)  # Q* → Q 星, as in the formula readings
     merged = dict(DEFAULT_LEXICON, **(lexicon or {}))
+    merged.setdefault('−', '减')
     for written in sorted(merged, key=len, reverse=True):
-        if re.fullmatch(r'[A-Za-z.]+', written):
-            text = re.sub(r'(?<![A-Za-z])' + re.escape(written) + r'(?![A-Za-z])', merged[written], text)
+        if re.fullmatch(r'[A-Za-z0-9.]+', written):
+            text = re.sub(r'(?<![A-Za-z0-9])' + re.escape(written) + r'(?![A-Za-z0-9])', merged[written], text)
         else:
             text = text.replace(written, merged[written])
     return text
@@ -182,7 +193,7 @@ def assemble(p, media):
     hashes = [hashlib.sha256((media / s['file']).read_bytes()).hexdigest() for s in p['segments']]
     if decodes(dest) and sidecar.exists():
         try:
-            cached = json.loads(sidecar.read_text())
+            cached = json.loads(sidecar.read_text(encoding='utf-8'))
             if cached['clip_hashes'] == hashes and cached['audio_sha256'] == hashlib.sha256(dest.read_bytes()).hexdigest():
                 return cached['narration']
         except (KeyError, ValueError, OSError):
@@ -213,14 +224,13 @@ def assemble(p, media):
         pending.replace(dest)
     narration = {'timing': 'decoded-pcm-samples', 'pipeline': PIPELINE, 'speed': p['speed'], 'voice': p['voice'],
                  'duration': round(cursor / SAMPLE_RATE, 3), 'cues': cues}
-    sidecar.write_text(json.dumps({'clip_hashes': hashes, 'audio_sha256': hashlib.sha256(dest.read_bytes()).hexdigest(), 'narration': narration}, ensure_ascii=False, indent=2))
+    sidecar.write_text(json.dumps({'clip_hashes': hashes, 'audio_sha256': hashlib.sha256(dest.read_bytes()).hexdigest(), 'narration': narration}, ensure_ascii=False, indent=2), encoding='utf-8')
     return narration
 
 
 # ---------------------------------------------------------------- speed rule
 # Default 2×. 1.5× only when a card is genuinely dense (references/narration.md):
 # hard triggers H1–H4, or a soft score of 3+. Length or map depth alone never slows a card.
-SPOKEN_MATH = re.compile(r'\$[^$]+\$〔([^〕]*)〕')
 NUMBER = re.compile(r'(?<![\w.])(\d+(?:\.\d+)?(?:/\d+)?)(?![\w.])')
 PROOF = re.compile(r'contradiction|induction|反证|归纳|show that|证明', re.I)
 
@@ -236,16 +246,28 @@ def strings(value):
             yield from strings(v)
 
 
+def block_speech(block):
+    """What the listener actually hears for one block (citations, sources and badges excluded)."""
+    from blocks import render_block, BlockError  # local import: blocks does not depend on narration
+    try:
+        return ' '.join(p.text for p in render_block(block, 'm', 'metrics')[1])
+    except BlockError:
+        return ''
+
+
 def speed_metrics(card, narration_text, seen_terms):
+    from blocks import MATH
     source = '\n'.join(strings(card.get('blocks', []))) + '\n' + card.get('title', '')
-    spoken = SPOKEN_MATH.findall(source)
+    spoken = [m.group(4) for m in MATH.finditer(source) if m.group(4) and m.group(4).strip()]  # inline $…$ and display $$…$$
     explicit = sum(b.get('speech', '') != '' and '$' in json.dumps(b, ensure_ascii=False) for b in card['blocks'] if isinstance(b, dict))
     # Only dependent derivation steps count; causal chains and maps carry their structure visibly.
-    steps = sum(len([i for i in b.get('items', []) if not i.get('trivial')]) for b in card['blocks'] if b.get('type') == 'steps')
-    # Numbers the listener must hold: tables and figures are on screen, so they do not count.
-    heard = [b for b in card['blocks'] if b.get('type') not in ('table', 'figure', 'chain', 'map')]
-    numbers = max([len({n for n in NUMBER.findall('\n'.join(strings(b))) if n not in ('0', '1', '2', '3')}) for b in heard] or [0])
-    conditional = sum(len(re.findall(r'仅当|除非|前提是|取决于', s)) for b in heard for s in strings(b))
+    steps = sum(len([i for i in b.get('items', []) if isinstance(i, dict) and not i.get('trivial')]) for b in card['blocks'] if b.get('type') == 'steps')
+    # Numbers the listener must hold, from the narration only: tables, figures, chains and maps are on screen,
+    # exam blocks list where a point was examined, and step numbers, mark badges and years are not values.
+    heard = [block_speech(b) for b in card['blocks'] if b.get('type') not in ('table', 'figure', 'chain', 'map', 'exam')]
+    values = [re.sub(r'第\d+步|(?<![A-Za-z])[MABCD] \d+|(?<!\d)(?:19|20)\d\d(?!\d)', ' ', t) for t in heard]
+    numbers = max([len({n for n in NUMBER.findall(t) if n not in ('0', '1', '2', '3')}) for t in values] or [0])
+    conditional = sum(len(re.findall(r'仅当|除非|前提是|取决于', t)) for t in heard)
     terms = [t for b in card['blocks'] if b.get('type') == 'definition' for t in [b.get('term', '')] if t and t not in seen_terms]
     seen_terms.update(terms)
     han = len(re.findall(r'[\u4e00-\u9fff]', narration_text)) or 1
@@ -253,7 +275,7 @@ def speed_metrics(card, narration_text, seen_terms):
     m_share = sum(len(s) for s in spoken) / max(1, len(narration_text))
     proof = bool(PROOF.search(source)) and card['genre'] in ('derivation', 'method')
     return {'S': steps, 'M': len(spoken) + explicit, 'm_share': round(m_share, 3), 'T': len(terms), 'E': round(english * 100 / han, 1),
-            'N': numbers, 'C': conditional, 'proof': proof}
+            'N': numbers, 'C': conditional, 'proof': proof, 'worked': card['genre'] in ('derivation', 'method', 'formula')}
 
 
 def decide_speed(m):
@@ -264,11 +286,12 @@ def decide_speed(m):
         reasons.append(f'公式读法占 {round(m["m_share"] * 100)}%')
     if m['proof'] and m['S'] >= 3:
         reasons.append('证明结构')
-    if m['N'] >= 4:
+    if m['N'] >= 4 and m.get('worked', True):  # values to hold matter in worked problems, not in term or essay cards
         reasons.append(f'需同时记住 {m["N"]} 个数值')
     if reasons:
         return 1.5, '；'.join(reasons)
-    score = (2 if m['S'] >= 3 else 0) + (m['M'] >= 3) + (m['T'] >= 3) + (m['E'] >= 8) + (m['C'] >= 2)
+    # Steps weigh 2 only when they carry spoken formulas; a formula-free procedure needs more traits to slow down.
+    score = ((2 if m['M'] >= 1 else 1) if m['S'] >= 3 else 0) + (m['M'] >= 3) + (m['T'] >= 3) + (m['E'] >= 8) + (m['C'] >= 2)
     if score >= 3:
         return 1.5, f'密度分 {score}（步骤 {m["S"]}、公式 {m["M"]}、新术语 {m["T"]}、English 密度 {m["E"]}、条件 {m["C"]}）'
     return 2.0, ''

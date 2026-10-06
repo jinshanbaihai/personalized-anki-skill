@@ -53,7 +53,7 @@
 .ccpt6[data-theme="paper"] .tbl td{border-bottom:0}
 .ccpt6[data-theme="paper"] .tbl tbody tr:last-child td{border-bottom:2px solid var(--ink)}
 /* derivation: numbers set like equation tags, reasons like marginal glosses */
-.ccpt6[data-theme="paper"] .step{grid-template-columns:44px minmax(0,1fr) auto;border-top:1px dotted var(--rule-strong)}
+.ccpt6[data-theme="paper"] .step{--step-n-w:44px;grid-template-columns:var(--step-n-w) minmax(0,1fr) auto;border-top:1px dotted var(--rule-strong)}
 .ccpt6[data-theme="paper"] .step:first-child,.ccpt6[data-theme="paper"] .subgoal+.step{border-top:0}
 .ccpt6[data-theme="paper"] .step-n{display:block;white-space:nowrap;background:none;color:var(--accent);width:auto;height:auto;border-radius:0;font:600 19px/1.6 var(--font-head);margin-top:2px}
 .ccpt6[data-theme="paper"] .step-n::before{content:"("}

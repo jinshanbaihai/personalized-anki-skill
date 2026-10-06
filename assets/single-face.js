@@ -7,12 +7,13 @@
  window.ccptSingleAction=function(action){
   if(editable())return;
   if(action==='audio'){if(button&&!button.disabled)button.click();return;}
-  if((action==='good'||action==='again')&&typeof pycmd==='function')pycmd('ccpt-single:'+action);
  };
+ // Only Space is handled in the page. Enter and 1 belong to the host: the desktop add-on grades in the reviewer,
+ // and other views (browser previewer, mobile) keep their own meaning for those keys.
  document.addEventListener('keydown',e=>{
   if(e.repeat||e.isComposing||e.ctrlKey||e.metaKey||e.altKey||e.shiftKey||editable())return;
-  let action=e.code==='Space'||e.key===' '?'audio':e.key==='Enter'?'good':e.key==='1'?'again':null;
-  if(!action)return;e.preventDefault();e.stopImmediatePropagation();window.ccptSingleAction(action);
+  if(!(e.code==='Space'||e.key===' '))return;
+  e.preventDefault();e.stopImmediatePropagation();window.ccptSingleAction('audio');
  },{capture:true,signal:ctl.signal});
  window.ccptSingleCleanup=()=>{ctl.abort();delete window.ccptSingleAction;};
 })();

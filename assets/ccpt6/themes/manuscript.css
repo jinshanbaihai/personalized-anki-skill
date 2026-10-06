@@ -36,7 +36,9 @@
 .ccpt6[data-theme="manuscript"] .blk-label::before{content:"¶ ";font-weight:400}
 /* opening paragraph with a rubricated initial */
 .ccpt6[data-theme="manuscript"] .lead{border-left:0;padding-left:0;font-size:21px;font-weight:400;line-height:1.75}
-.ccpt6[data-theme="manuscript"] .lead::first-letter{float:left;font-size:3.1em;line-height:.9;margin:.06em .1em 0 0;color:var(--accent);font-weight:700}
+/* drop cap only for a Latin first letter; a Chinese lead keeps its first character in the sentence */
+.ccpt6[data-theme="manuscript"] .lead:not(.lead-latin)::before{content:"¶ ";color:var(--accent);font-weight:700}
+.ccpt6[data-theme="manuscript"] .lead.lead-latin::first-letter{float:left;font-size:3.1em;line-height:.9;margin:.06em .1em 0 0;color:var(--accent);font-weight:700}
 .ccpt6[data-theme="manuscript"] .def-label{font-variant:small-caps;text-transform:none;letter-spacing:.12em;font-size:15px;color:var(--accent)}
 .ccpt6[data-theme="manuscript"] .def-term{font-size:30px;font-weight:700;color:var(--ink)}
 .ccpt6[data-theme="manuscript"] .def-text{font-style:italic}
@@ -54,8 +56,9 @@
 .ccpt6[data-theme="manuscript"] .mm-box.has-inline{border-radius:2px}
 .ccpt6[data-theme="manuscript"] .mm-label,.ccpt6[data-theme="manuscript"] .mm-rel{font-style:italic;font-weight:600;font-size:14.5px}
 /* essay: chapters numbered in roman capitals */
-.ccpt6[data-theme="manuscript"] .sec{padding-left:54px}
-.ccpt6[data-theme="manuscript"] .sec::before{content:counter(sec,upper-roman) ".";border:0;border-radius:0;width:40px;height:auto;top:12px;display:block;text-align:right;font:700 18px/1.4 var(--font-head);color:var(--accent)}
+.ccpt6[data-theme="manuscript"] .sections{--sec-num-w:44px}
+.ccpt6[data-theme="manuscript"] .sec{padding-left:58px}
+.ccpt6[data-theme="manuscript"] .sec::before{content:counter(sec,upper-roman) ".";border:0;border-radius:0;width:var(--sec-num-w);height:auto;top:12px;display:block;text-align:right;font:700 18px/1.4 var(--font-head);color:var(--accent)}
 .ccpt6[data-theme="manuscript"] .sec h4{font-size:19px}
 .ccpt6[data-theme="manuscript"] .tbl{font-family:var(--font-text)}
 .ccpt6[data-theme="manuscript"] .tbl th{font-variant:small-caps;letter-spacing:.06em;font-size:16px;border-top:1px solid var(--ink);border-bottom:1px solid var(--ink)}

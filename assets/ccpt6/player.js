@@ -42,10 +42,18 @@
   if(!audio.paused){audio.pause();return;}
   if(audio.ended)audio.currentTime=0;
   try{if(audio.error)audio.load();failed=false;audio.preservesPitch=true;audio.webkitPreservesPitch=true;audio.playbackRate=speed/encoded;await audio.play();if(cleaned)audio.pause();}
-  catch(e){if(!cleaned){failed=true;unavailable();}}
+  catch(e){if(cleaned)return;
+   // A host that requires a user gesture for audio (Anki: "Don't play audio automatically") rejects play() from a key
+   // routed through the add-on; the file is fine, so ask for a click instead of reporting broken audio.
+   if(e&&e.name==='NotAllowedError'){button.textContent='▶';button.setAttribute('aria-pressed','false');setStatus('点 ▶ 播放（这台设备要求先点一下）');return;}
+   failed=true;unavailable();}
  });
- on(speedBtn,'click',()=>{if(pending)return;speed=speed===2?1.5:2;label();audio.playbackRate=speed/encoded;if(!audio.paused)setStatus(`${voiceLabel} · ${speed}×${remaining()}`);});
- on(audio,'play',()=>{button.textContent='Ⅱ';button.setAttribute('aria-pressed','true');setStatus(`${voiceLabel} · ${speed}×${remaining()}`);follow();});
+ const playing=()=>`${voiceLabel} · ${speed}×${remaining()}`;
+ on(speedBtn,'click',()=>{if(pending)return;speed=speed===2?1.5:2;label();audio.playbackRate=speed/encoded;
+  if(!audio.paused)setStatus(playing());else if(!audio.ended&&audio.currentTime>0)setStatus('已暂停'+remaining()+' · Space 继续');});
+ let shownSecond=-1;
+ on(audio,'timeupdate',()=>{if(audio.paused)return;const sec=Math.round(audio.currentTime*encoded/speed);if(sec!==shownSecond){shownSecond=sec;setStatus(playing());}});
+ on(audio,'play',()=>{button.textContent='Ⅱ';button.setAttribute('aria-pressed','true');setStatus(playing());follow();});
  on(audio,'pause',()=>{if(pending||failed||audio.error){unavailable();return;}button.textContent=audio.ended?'↻':'▶';button.setAttribute('aria-pressed','false');setStatus(audio.ended?'讲解结束 · Space 重播':'已暂停'+remaining()+' · Space 继续');follow();});
  on(audio,'error',()=>{failed=true;clearCue();unavailable();});
  on(audio,'ended',()=>{button.textContent='↻';setStatus('讲解结束 · Space 重播');clearCue();});
@@ -78,7 +86,7 @@
   return {viewport:[vw,window.innerHeight],pageHeight:document.documentElement.scrollHeight,minFont:min('content'),minChrome:min('chrome'),minMath:min('math'),
    smallText:runs.filter(r=>r.font<floor[r.kind]).slice(0,10),horizontalOverflow:document.documentElement.scrollWidth>vw+1,
    clipped:[...root.querySelectorAll('.blk,.blk *')].filter(b=>{const o=getComputedStyle(b).overflowX;return (o==='hidden'||o==='clip')&&b.scrollWidth>b.clientWidth+2&&!b.closest('svg,math');}).map(b=>b.closest('[data-node]')?.dataset.node||b.className).slice(0,8),
-   scrollers:[...root.querySelectorAll('.step-do,.math-display,.tbl-wrap,.ccmm,.ccchain')].filter(b=>b.scrollWidth>b.clientWidth+2).map(b=>b.closest('[data-node]')?.dataset.node||b.className).slice(0,8),
+   scrollers:[...root.querySelectorAll('.step-do,.math-display,.tbl-wrap,.ccmm,.ccchain')].filter(b=>b.scrollWidth>b.clientWidth+2).map(b=>(b.matches('.step-do,.math-display')?'math:':'wide:')+(b.closest('[data-node]')?.dataset.node||b.className)).slice(0,8),
    lineStartPunct:(()=>{const bad=[];root.querySelectorAll('.cc-body p,.cc-body li,.cc-body dd,.cc-body .mm-node,.cc-body .ch-node').forEach(el=>{const w=document.createTreeWalker(el,NodeFilter.SHOW_TEXT);let lastTop=null;while(w.nextNode()){const t=w.currentNode;for(let i=0;i<t.length;i++){if(!'，。；：、）'.includes(t.data[i]))continue;const r=document.createRange();r.setStart(t,i);r.setEnd(t,i+1);const b=r.getBoundingClientRect();const prev=document.createRange();if(i>0){prev.setStart(t,i-1);prev.setEnd(t,i);const pb=prev.getBoundingClientRect();if(pb.top<b.top-4&&b.left<=el.getBoundingClientRect().left+24)bad.push(t.data.slice(Math.max(0,i-6),i+1));}}}});return bad.slice(0,6);})(),
    fontsFailed:document.fonts?[...document.fonts].filter(f=>f.status==='error').map(f=>f.family):[],
    mapOverlaps:overlaps.length+(window.CCMap?CCMap.audit(document).overlaps.length:0),maps:[...root.querySelectorAll('.mm')].map(m=>({layout:m.dataset.applied||m.dataset.layout,depth:+m.dataset.depth})),

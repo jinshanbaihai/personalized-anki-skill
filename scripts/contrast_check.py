@@ -43,7 +43,7 @@ def tokens(block):
 
 rows, fails = [], []
 for theme in ['editorial', 'paper', 'lab', 'blueprint', 'manuscript']:
-    css = (THEMES / f'{theme}.css').read_text()
+    css = (THEMES / f'{theme}.css').read_text(encoding='utf-8')
     light = re.search(r'\.ccpt6\[data-theme="%s"\]\{([^}]*)\}' % theme, css).group(1)
     dark = re.search(r'\.nightMode \.ccpt6\[data-theme="%s"\],\.night_mode \.ccpt6\[data-theme="%s"\]\{([^}]*)\}' % (theme, theme), css).group(1)
     for mode, block in (('light', light), ('night', dark)):

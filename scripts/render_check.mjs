@@ -39,7 +39,8 @@ for (const file of pages) {
       if (scheme === 'dark') await page.evaluate(() => { document.body.classList.add('nightMode', 'night_mode'); window.dispatchEvent(new Event('resize')); });
       await page.evaluate(() => document.fonts.ready);
       // Full-page captures: sticky header/footer would otherwise cover content mid-image.
-      await page.addStyleTag({ content: '.cc-head,.cc-foot{position:static!important}' });
+      // relative (not static) keeps the header as the phone player's containing block, as in Anki.
+      await page.addStyleTag({ content: '.cc-head,.cc-foot{position:relative!important;top:auto!important;bottom:auto!important}' });
       await page.waitForTimeout(250);
       const audit = await page.evaluate(() => window.ccptAudit ? window.ccptAudit() : null);
       const key = `${file.replace(/\.html$/, '')}-${mode.name}-${scheme}`;
@@ -67,6 +68,8 @@ for (const file of pages) {
         if (audit.horizontalOverflow) issues.push('page scrolls horizontally');
         if (audit.mapOverlaps) issues.push(`${audit.mapOverlaps} overlapping map nodes`);
         if (audit.clipped.length) issues.push(`clipped blocks ${audit.clipped.join(',')}`);
+        const hiddenMath = (audit.scrollers || []).filter(s => s.startsWith('math:'));
+        if (mode.name === 'phone' && hiddenMath.length) issues.push('formula wider than the phone (end hidden): ' + hiddenMath.join(', ') + ' — break the chain with <br> or shorter steps');
         if (audit.players !== 1) issues.push('page needs exactly one player');
         if (audit.fontsFailed && audit.fontsFailed.length) issues.push('fonts failed to load: ' + [...new Set(audit.fontsFailed)].join(', '));
         if (audit.lineStartPunct && audit.lineStartPunct.length) issues.push('punctuation starts a line: ' + audit.lineStartPunct.join(' | '));

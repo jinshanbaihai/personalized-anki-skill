@@ -39,9 +39,9 @@ python scripts/validate_package.py out/<牌组>.apkg --output out/validate.json 
 
 用户只看一页完整内容，没有题目面、翻面、输入答案或选择题。**Space** 播放／暂停／继续／重播语音，不评分；**Enter** 记 Good 并进入下一张；**1** 记 Again，下一个 Anki 学习日再看。
 
-实现：question 与 answer 模板显示同一页；每次构建都在输出目录写出 `ccpt_single_face.ankiaddon`（也可 `python scripts/package_addon.py 目录/`），用户双击即安装（重启 Anki）。插件只对模板含 `data-ccpt-single` 的卡生效：首次显示后自动切到可评分状态，接管 Space／Enter／1，长按不连发，其他卡与编辑器不受影响，不改调度参数。插件通过公开钩子 `gui_hooks.state_shortcuts_will_change` 改写 reviewer 的 Space／Enter／1（旧版 Anki 回退到 `Reviewer._shortcutKeys`）；`_answerCard`、`_showAnswer` 不存在时只提示“需要更新插件”，不让 Anki 报错。已核对 Anki 26.09.3（aqt 26.9.3）源码中这些接口与钩子均存在；26.x 的作答键来自可配置的 `get_answer_key`，插件在 `1` 被改键时会补回。Anki 升级后先在测试 profile 复核。
+实现：question 与 answer 模板显示同一页；每次构建都在输出目录写出 `ccpt_single_face.ankiaddon`（也可 `python scripts/package_addon.py 目录/`），用户双击即安装（重启 Anki）。插件只对模板含 `data-ccpt-single` 的卡生效：首次显示后自动切到可评分状态，接管 Space／Enter／1，长按不连发，其他卡与编辑器不受影响，不改调度参数。插件通过公开钩子 `gui_hooks.state_shortcuts_will_change` 改写 reviewer 的 Space／Enter／1；需要 Anki 2.1.50 或更新（manifest `min_point_version`），接口缺失时只提示、不接管按键。牌组设了“不自动播放音频”时 Anki 会要求点击才能出声，插件只对 CCPT 卡解除这一限制（CCPT 音频从不自动播放），所以 Space 照常播音；页面里只处理 Space，Enter 与 1 交给宿主（浏览器预览窗等不受影响）。已核对 Anki 26.09.3（aqt 26.9.3）源码中这些接口与钩子均存在；26.x 的作答键来自可配置的 `get_answer_key`，插件在 `1` 被改键时会补回。Anki 升级后先在测试 profile 复核。
 
-**“1 = 下一学习日再看”依赖牌组的学习步长**：Anki 默认步长（1m、10m）下，按 1 的卡和 Enter 的新卡会在当天几分钟后再出现。插件在工具菜单提供“CCPT：当前牌组使用阅读预设”，确认后克隆当前预设，只把新卡与遗忘卡的步长改成 1 天、leech 只加标签，其余设置（每日数量、FSRS、retention）不变；当牌组步长短于 1 天时，第一次按 1 会弹出一句提示。交付时告诉用户这一步（一次性）。AnkiMobile／AnkiDroid 不加载桌面插件：卡片仍是同一张完整页面，点页面上的播放键听讲解（2×／1.5× 键同样可用），先点 Show Answer 再点 Good／Again（AnkiDroid 可在设置里把手势或音量键映射到这两个按钮）；“Again = 下一学习日”同样取决于牌组预设，预设在桌面改一次即同步到手机。
+**“1 = 下一学习日再看”依赖牌组的学习步长**：Anki 默认步长（1m、10m）下，按 1 的卡和 Enter 的新卡会在当天几分钟后再出现。第一次在某个牌组看到 CCPT 卡、而它的学习步长短于 1 天时，插件问一次是否改用阅读预设；工具菜单里也有“CCPT：当前牌组使用阅读预设”。确认后克隆当前预设（已是 CCPT 阅读预设则直接沿用），只把新卡与遗忘卡的步长改成 1 天、leech 只加标签，其余设置（每日数量、FSRS、retention）不变；只给与该牌组共用同一预设的子牌组换上，有自己预设的子牌组保持不变并在对话框里列出；筛选牌组不处理。交付时告诉用户这一步（一次性）。AnkiMobile／AnkiDroid 不加载桌面插件：卡片仍是同一张完整页面，点页面上的播放键听讲解（2×／1.5× 键同样可用），先点 Show Answer 再点 Good／Again（AnkiDroid 可在设置里把手势或音量键映射到这两个按钮）；“Again = 下一学习日”同样取决于牌组预设，预设在桌面改一次即同步到手机。
 
 实测项：打开卡即见完整内容；Space 只控制语音；Enter 一次 Good；1 一次 Again 且 due = 下一学习日；切卡停止旧音频。评分测试在测试 profile 或测试后立即撤销，并核对原卡状态与 revlog，不污染学习历史。
 

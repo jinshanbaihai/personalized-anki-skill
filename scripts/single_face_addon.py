@@ -3,19 +3,27 @@
 
 Install by double-clicking ccpt_single_face.ankiaddon (written next to every built deck by
 scripts/build_cards.py, or by scripts/package_addon.py). No scheduling setting is changed unless
-the user picks Tools → "CCPT：当前牌组使用阅读预设".
-Checked against aqt 26.9.3: Reviewer.state/_showAnswer/_answerCard/_shortcutKeys,
-gui_hooks.state_shortcuts_will_change, reviewer_did_show_question, webview_did_receive_js_message.
+the user accepts the one-time prompt (shown when a deck's learning steps are shorter than a day) or picks
+Tools → "CCPT：当前牌组使用阅读预设".
+Checked against aqt 26.9.3: Reviewer.state/_showAnswer/_answerCard, AnkiWebView.setPlaybackRequiresGesture,
+gui_hooks.state_shortcuts_will_change, reviewer_did_show_question,
+DeckManager.config_dict_for_deck_id/add_config_returning_id/set_config_id_for_deck_dict/deck_and_child_ids/is_filtered.
+Needs Anki 2.1.50 or newer (manifest min_point_version).
 """
+from anki.decks import DeckManager
 from aqt import mw, gui_hooks
-from aqt.qt import Qt, QTimer, QApplication, QObject, QEvent, QAction
+from aqt.qt import Qt, QTimer, QAction
 from aqt.reviewer import Reviewer
 from aqt.utils import tooltip, askUser
 
 MARKER = 'data-ccpt-single'
 ONE_DAY = 1440.0
-_hinted = set()
-_api_ok = all(hasattr(Reviewer, name) for name in ('_answerCard', '_showAnswer'))
+PRESET_PREFIX = 'CCPT 阅读'
+_checked_decks = set()
+_api_ok = (all(hasattr(Reviewer, name) for name in ('_answerCard', '_showAnswer'))
+           and all(hasattr(DeckManager, name) for name in ('config_dict_for_deck_id', 'add_config_returning_id',
+                                                             'set_config_id_for_deck_dict', 'deck_and_child_ids'))
+           and hasattr(gui_hooks, 'state_shortcuts_will_change'))
 
 
 def is_reading(reviewer):
@@ -24,18 +32,30 @@ def is_reading(reviewer):
     return MARKER in reviewer.card.template().get('qfmt', '')
 
 
-def steps_are_daily(card):
-    conf = mw.col.decks.config_dict_for_deck_id(card.odid or card.did)
+def steps_are_daily(did):
+    conf = mw.col.decks.config_dict_for_deck_id(did)
     return all(d >= ONE_DAY for d in conf['new']['delays']) and all(d >= ONE_DAY for d in conf['lapse']['delays'])
+
+
+def check_steps_once(card):
+    """First CCPT card from a deck this session: with Anki's default steps (1m 10m), Enter and 1 bring the
+    same long card back within minutes. Offer the reading preset once, before the user wonders why."""
+    did = card.odid or card.did
+    if did in _checked_decks:
+        return
+    _checked_decks.add(did)
+    try:
+        daily = steps_are_daily(did)
+    except Exception:  # noqa: BLE001 - a hint must never get in the way of reviewing
+        return
+    if not daily and askUser(f'“{mw.col.decks.name(did)}”的学习步长短于 1 天：按 Enter 的新卡和按 1 的卡今天几分钟后还会再出现。\n\n'
+                             '要改成 CCPT 阅读预设吗？（只改学习步长为 1 天、leech 只加标签；其余设置不变。也可以之后在“工具”菜单里改。）'):
+        apply_reading_preset(did)
 
 
 def grade(reviewer, ease):
     if not is_reading(reviewer) or reviewer.state != 'answer':
         return
-    card = reviewer.card
-    if ease == 1 and card.did not in _hinted and not steps_are_daily(card):
-        _hinted.add(card.did)
-        tooltip('这个牌组的学习步长短于 1 天，按 1 的卡今天还会再出现。<br>工具 → CCPT：当前牌组使用阅读预设，可改成隔天再看。', period=6000)
     reviewer.web.eval('if(window.ccptCleanup)window.ccptCleanup();')
     reviewer._answerCard(ease)
 
@@ -81,14 +101,13 @@ def route(shortcuts):
     return shortcuts
 
 
+def on_shortcuts(state, shortcuts):
+    if state == 'review' and _api_ok:
+        route(shortcuts)
+
+
 if hasattr(gui_hooks, 'state_shortcuts_will_change'):
-    def on_shortcuts(state, shortcuts):
-        if state == 'review':
-            route(shortcuts)
     gui_hooks.state_shortcuts_will_change.append(on_shortcuts)
-elif hasattr(Reviewer, '_shortcutKeys'):  # older Anki: patch the private table instead
-    _original = Reviewer._shortcutKeys
-    Reviewer._shortcutKeys = lambda self: route(list(_original(self)))
 
 
 def show_complete(card):
@@ -96,68 +115,65 @@ def show_complete(card):
     if not is_reading(reviewer):
         return
     card_id = card.id
+    # Space reaches the page through the add-on, not as a click; Anki requires a gesture for audio when the
+    # deck says "Don't play audio automatically". CCPT audio never autoplays, so lifting it is safe, and Anki
+    # resets the flag for the next card in _showQuestion.
+    if hasattr(reviewer.web, 'setPlaybackRequiresGesture'):
+        reviewer.web.setPlaybackRequiresGesture(False)
 
     def ready():
         if is_reading(reviewer) and reviewer.card.id == card_id and reviewer.state == 'question':
             reviewer._showAnswer()
+            QTimer.singleShot(0, lambda: check_steps_once(card))
     QTimer.singleShot(0, ready)
 
 
 gui_hooks.reviewer_did_show_question.append(show_complete)
 
 
-def message(handled, msg, context):
-    if handled[0] or msg not in ('ccpt-single:good', 'ccpt-single:again'):
-        return handled
-    if context is mw.reviewer and is_reading(mw.reviewer):
-        grade(mw.reviewer, 3 if msg.endswith('good') else 1)
-        return (True, None)
-    return handled
 
 
-gui_hooks.webview_did_receive_js_message.append(message)
+# Holding a key does not grade a stream of cards: Anki registers reviewer shortcuts without auto-repeat,
+# and the page ignores repeated Space (assets/single-face.js).
 
 
-class RepeatGuard(QObject):
-    """Holding a key must not grade a stream of cards."""
-    def eventFilter(self, obj, event):
-        if event.type() in (QEvent.Type.ShortcutOverride, QEvent.Type.KeyPress) and event.isAutoRepeat():
-            if event.key() in (Qt.Key.Key_Space, Qt.Key.Key_Return, Qt.Key.Key_Enter, Qt.Key.Key_1) and is_reading(mw.reviewer):
-                event.accept()
-                return True
-        return False
-
-
-_repeat_guard = RepeatGuard(mw)
-QApplication.instance().installEventFilter(_repeat_guard)
-
-
-def apply_reading_preset():
-    """Clone the current deck's options, change only the learning steps to 1 day, assign to the deck tree."""
-    if not mw.col:
+def apply_reading_preset(did=None):
+    """Give the deck (and the subdecks that share its options) a copy of its preset whose learning steps are 1 day.
+    Subdecks with their own preset keep it; a preset that is already a CCPT reading preset is reused, not cloned again."""
+    if not mw.col or not _api_ok:
         return
-    deck = mw.col.decks.current()
-    current = mw.col.decks.config_dict_for_deck_id(deck['id'])
-    names = '、'.join(mw.col.decks.name(d) for d in mw.col.decks.deck_and_child_ids(deck['id'])[:4])
-    if not askUser(f'把“{deck["name"]}”（含子牌组：{names}…）设为 CCPT 阅读预设？\n\n只改两项：新卡与遗忘卡的学习步长都设为 1 天（按 1 = 下一个学习日再看，Enter 的新卡也隔天出现）；'
-                   'leech 只加标签不暂停。其余选项（每日数量、FSRS、retention）沿用当前预设。'):
+    decks = mw.col.decks
+    deck = decks.get(did) if did else decks.current()
+    if deck.get('dyn'):
+        tooltip('这是筛选牌组：请在卡片原来的牌组上使用阅读预设。', period=5000)
         return
-    conf_id = mw.col.decks.add_config_returning_id(f'CCPT 阅读（{current["name"]}）', clone_from=current)
-    conf = mw.col.decks.get_config(conf_id)
+    current = decks.config_dict_for_deck_id(deck['id'])
+    family = [d for d in decks.deck_and_child_ids(deck['id']) if not decks.get(d).get('dyn')]
+    same = [d for d in family if decks.config_dict_for_deck_id(d)['id'] == current['id']]
+    skipped = [decks.name(d) for d in family if d not in same]
+    note = ('\n\n这些子牌组有自己的预设，保持不变：' + '、'.join(skipped[:6])) if skipped else ''
+    if did is None and not askUser(f'把“{deck["name"]}”（及共用同一预设的子牌组，共 {len(same)} 个）设为 CCPT 阅读预设？\n\n'
+                                   '只改两项：新卡与遗忘卡的学习步长都设为 1 天（按 1 = 下一个学习日再看，Enter 的新卡也隔天出现）；'
+                                   'leech 只加标签不暂停。其余选项（每日数量、FSRS、retention）沿用当前预设。' + note):
+        return
+    if current['name'].startswith(PRESET_PREFIX):
+        conf = current
+    else:
+        conf = decks.get_config(decks.add_config_returning_id(f'{PRESET_PREFIX}（{current["name"]}）', clone_from=current))
     conf['new']['delays'] = [ONE_DAY]
     conf['lapse']['delays'] = [ONE_DAY]
     conf['lapse']['leechAction'] = 1
-    mw.col.decks.update_config(conf)
-    for did in mw.col.decks.deck_and_child_ids(deck['id']):
-        d = mw.col.decks.get(did)
-        mw.col.decks.set_config_id_for_deck_dict(d, conf_id)
-        mw.col.decks.save(d)
+    decks.update_config(conf)
+    for d_id in same:
+        d = decks.get(d_id)
+        decks.set_config_id_for_deck_dict(d, conf['id'])
+        decks.save(d)
     tooltip('已应用 CCPT 阅读预设：之后按 1 的卡在下一个学习日出现。已在今天队列里的卡不会被移动。', period=6000)
 
 
 _menu = QAction('CCPT：当前牌组使用阅读预设（1 = 隔天再看）', mw)
-_menu.triggered.connect(apply_reading_preset)
+_menu.triggered.connect(lambda: apply_reading_preset())
 mw.form.menuTools.addAction(_menu)
 
 if not _api_ok:
-    gui_hooks.main_window_did_init.append(lambda: tooltip('CCPT 单面卡插件：这个 Anki 版本的 reviewer 接口已变化，请更新插件。', period=8000))
+    gui_hooks.main_window_did_init.append(lambda: tooltip('CCPT 单面卡插件：这个 Anki 版本缺少需要的接口（需要 2.1.50 或更新），插件未接管按键。', period=8000))

@@ -20,7 +20,7 @@ from pathlib import Path
 
 import genanki
 
-from blocks import inline, render_block, esc, BlockError, strip_tags
+from blocks import inline, render_block, esc, BlockError, strip_tags, REL_RULES
 from deck_rules import check, GENRES, DeckError
 from speech_backend import resolve_voice, inspect_voice, DEFAULT_VOICE
 import narration
@@ -37,17 +37,19 @@ ELBOW_THEMES = {'paper', 'lab', 'blueprint'}
 
 
 def asset_css(extra=''):
-    parts = [(ASSETS / 'base.css').read_text()]
-    parts += [p.read_text() for p in sorted((ASSETS / 'themes').glob('*.css'))]
+    # Card-type motifs load after the subject themes so a theme's block styling never cancels them.
+    parts = [(ASSETS / 'base.css').read_text(encoding='utf-8')]
+    parts += [p.read_text(encoding='utf-8') for p in sorted((ASSETS / 'themes').glob('*.css'))]
+    parts.append((ASSETS / 'motifs.css').read_text(encoding='utf-8'))
     return '\n'.join(parts) + ('\n' + extra if extra else '')
 
 
 def bundle_fonts(css, themes):
     """Content-hashed font names: Anki never overwrites an existing "_" media file on import,
     so a changed subset under an old name would silently keep stale glyphs."""
-    needed = set(FONT_URL.findall((ASSETS / 'base.css').read_text()))
+    needed = set(FONT_URL.findall((ASSETS / 'base.css').read_text(encoding='utf-8')))
     for theme in themes:
-        needed |= set(FONT_URL.findall((ASSETS / 'themes' / f'{theme}.css').read_text()))
+        needed |= set(FONT_URL.findall((ASSETS / 'themes' / f'{theme}.css').read_text(encoding='utf-8')))
     files = []
     for name in sorted(needed):
         source = ASSETS / 'fonts' / name
@@ -62,7 +64,7 @@ def bundle_fonts(css, themes):
 
 def asset_js():
     # Layout first: the player calls window.ccptLayout once the page is wired.
-    return '\n'.join((ASSETS / name).read_text() for name in ('layout.js', 'player.js')) + '\n' + (ROOT / 'assets' / 'single-face.js').read_text()
+    return '\n'.join((ASSETS / name).read_text(encoding='utf-8') for name in ('layout.js', 'player.js')) + '\n' + (ROOT / 'assets' / 'single-face.js').read_text(encoding='utf-8')
 
 
 def card_tag(data, card):
@@ -94,6 +96,7 @@ def choose_speed(card, style, narration_text, seen_terms):
     """Card speed: explicit card value, else a deck-wide number, else the computed rule."""
     metrics = narration.speed_metrics(card, narration_text, seen_terms)
     auto_speed, auto_reason = narration.decide_speed(metrics)
+    metrics['auto_reason'] = auto_reason
     if 'speed' in card:
         return float(card['speed']), card.get('speed_reason', ''), metrics, auto_speed
     deck_speed = style.get('speed', 'auto')
@@ -154,46 +157,70 @@ def subdeck_id(base, name):
 
 def write_term_sampler(data, out, media, lexicon):
     """Edge cannot take phoneme hints, so the user hears every term once and fixes speech_lexicon if needed."""
-    terms = []
+    style = data['style']
+    by_voice = {}
     for card in data['cards']:
+        voice = resolve_voice(style.get('voice_by_subdeck', {}).get(card.get('subdeck', ''), style.get('voice') or DEFAULT_VOICE))
         for b in card['blocks']:
             if b.get('type') == 'definition':
-                terms.append(strip_tags(inline(b['term'], 'sampler').html))
-    terms += [k for k in lexicon if re_latin(k)]
-    terms = list(dict.fromkeys(t for t in terms if t))
-    if not terms:
-        return
-    voice = resolve_voice(data['style'].get('voice') or DEFAULT_VOICE)
-    speed = 2.0 if data['style'].get('speed', 'auto') == 'auto' else float(data['style']['speed'])
-    p = narration.plan('term-sampler', [(f't{i}', f'下面这个词是：{t}。') for i, t in enumerate(terms)], voice, speed, lexicon)
-    asyncio.run(narration.synthesize_clips([p], media))
-    narration.assemble(p, media)
-    (out / 'term-sampler.mp3').write_bytes((media / p['file']).read_bytes())
-    (out / 'term-sampler.txt').write_text('\n'.join(terms))
+                by_voice.setdefault(voice, []).append(strip_tags(inline(b['term'], 'sampler').html))
+    deck_voice = resolve_voice(style.get('voice') or DEFAULT_VOICE)
+    by_voice.setdefault(deck_voice, []).extend(k for k in lexicon if re_latin(k))
+    speed = 2.0 if style.get('speed', 'auto') == 'auto' else float(style['speed'])
+    for voice, terms in by_voice.items():
+        terms = list(dict.fromkeys(t for t in terms if t))
+        if not terms:
+            continue
+        suffix = '' if voice == deck_voice else '-' + voice.split('-')[-1].replace('Neural', '').lower()
+        p = narration.plan('term-sampler', [(f't{i}', f'下面这个词是：{t}。') for i, t in enumerate(terms)], voice, speed, lexicon)
+        asyncio.run(narration.synthesize_clips([p], media))
+        narration.assemble(p, media)
+        (out / f'term-sampler{suffix}.mp3').write_bytes((media / p['file']).read_bytes())
+        (out / f'term-sampler{suffix}.txt').write_text('\n'.join(terms), encoding='utf-8')
 
 
 def re_latin(value):
     return bool(re.search(r'[A-Za-z]', value))
 
 
-COMMON_EN = set('a an the of to in on for and or is are be by with from as at it its this that than then not no can may must which who what when where how per each all any one two'.split())
+COMMON_EN = set('''a an the of to in on for and or is are be by with from as at it its this that these those than then not no can may must
+which who what when where how per each all any one two three four five first second third more most less least very only also
+both either neither such same other into onto over under above below between about after before during while because since
+there here their they them then thus hence therefore however although though if else unless whether so do does did done
+have has had having get gets got give given gives make makes made take takes taken use used uses using show shows shown write
+written find found work works answer answers question questions value values number numbers part parts total marks mark
+state states explain explains give gives calculate hence otherwise form forms exact correct simplest following below above
+example examples note notes level levels card cards page step steps reason reasons true false yes'''.split())
 
 
-CAUSAL = r'^(导致|引起|造成|使得|使|所以|因此|从而|进而|于是|带来|leads? to|causes?|so|therefore)'
-DIRECTION = (r'上升|下降|增加|增大|减少|减小|扩大|缩小|提高|降低|升高|升至|升到|降至|降到|涨|跌|右移|左移|上移|下移|外移|内移|移动|'
+CAUSAL = r'^(导致|引起|造成|使得|使|所以|因此|从而|进而|于是|带来|因而|结果|以致|引发|促进|推动|产生|加剧|抑制|提高|降低|增加|减少|刺激|leads? to|causes?|so|therefore|raises?|reduces?)'
+DIRECTION = (r'上升|下降|增加|增大|减少|减小|扩大|缩小|提高|降低|升高|升至|升到|降至|降到|涨|跌|右移|左移|上移|下移|外移|内移|移动|↑|↓|'
              r'高于|低于|大于|小于|超过|不足|多于|少于|等于|回到|变为|变成|偏离|消除|消失|出现|形成|过度|过少|过多|→|rise|fall|increase|decrease|shift|exceed|'
              r'失灵|短缺|过剩|损失|浪费|低效|无效|有效|效率|均衡|最优|failure|shortage|surplus|loss|efficien|equilibrium|optimum')
 CONDITION = r'取决于|如果|假如|若|当|只有|除非|前提|条件|视|depends|unless|only if|provided'
-REASONING = r'为了|因为|由于|所以|使|才能|需要|要|否则|根据|满足|成立|保证|目的|以便|这样|定理|法则|公式|定义|条件|规则|性质|等价|代入|消去|抵消|得到'
+REASONING = r'为了|因为|由于|所以|使|才能|需要|要|否则|根据|满足|成立|保证|目的|以便|定理|法则|公式|定义|条件|规则|性质|等价'
+HAN = re.compile(r'[一-鿿]')
 
 
-def chain_nodes(items):
+def chain_nodes(items, first=True):
+    """Chain nodes in reading order; a plain string is a node, and a node without rel reads as 导致."""
     for e in items:
         if isinstance(e, dict) and 'fork' in e:
             for branch in e['fork']:
-                yield from chain_nodes(branch)
-        elif isinstance(e, dict):
-            yield e
+                yield from chain_nodes(branch, first=False)
+        else:
+            node = e if isinstance(e, dict) else {'text': str(e)}
+            if not first and not node.get('rel'):
+                node = dict(node, rel='导致')
+            yield node
+        first = False
+
+
+def map_nodes(node, depth=0):
+    if isinstance(node, dict):
+        yield node, depth
+        for child in node.get('children', []) or []:
+            yield from map_nodes(child, depth + 1)
 
 
 def why_echoes(why, do):
@@ -206,12 +233,38 @@ def why_echoes(why, do):
     return shared / len(w) > 0.7
 
 
-def lint_card(card):
+def causal_lint(nodes, out, where):
+    """Arrows must say which variable moves which way; evaluation must name its condition."""
+    vague, unjudged, long_nodes = [], [], []
+    for node, depth in nodes:
+        text = strip_tags(node.get('text', ''))
+        rel = strip_tags(node.get('rel', '') or '')
+        if node.get('kind', 'topic') in ('topic', 'cause', 'effect', 'policy') and re.match(CAUSAL, rel) and not re.search(DIRECTION + '|' + CONDITION, text):
+            vague.append(text[:12])
+        if (node.get('ao') == 'AO3' or node.get('kind') == 'evaluation') and not (
+                node.get('cond') or node.get('note') or re.search(CONDITION, text)
+                or any(isinstance(c, dict) and c.get('kind') == 'condition' for c in node.get('children', []) or [])):
+            unjudged.append(text[:12])
+        limit = 20 if where == 'map' and depth <= 1 else 25
+        if len(HAN.findall(text)) > limit:
+            long_nodes.append(text[:12])
+    if vague:
+        out.append(f'{where} 的因果箭头没写变量往哪个方向变（如“Q 由 Qm 降到 Q*”“MPC 上移”）：' + '｜'.join(vague[:4]))
+    if unjudged:
+        out.append(f'{where} 的评价节点缺条件或对结论的影响（cond、note 或条件子节点）：' + '｜'.join(unjudged[:4]))
+    if long_nodes:
+        out.append(f'{where} 节点超过约 25 个汉字（导图前两层约 20 个）：机制细节放到下一层或下一个节点：' + '｜'.join(long_nodes[:4]))
+
+
+def lint_card(card, academic=True):
     """Advisory checks that keep cards explained, readable and in the user's preferred shape."""
     out = []
+    worked = card.get('genre') in ('derivation', 'method', 'formula')
     for b in card['blocks']:
+        if not isinstance(b, dict):
+            continue
         if b.get('type') == 'steps':
-            items = b.get('items', [])
+            items = [i for i in b.get('items', []) if isinstance(i, dict)]
             trivial = [i for i in items if i.get('trivial')]
             for i in trivial:
                 if re.search(r'\^|\\frac|\d\s*[x(]|[+-]\s*\d', i.get('do', '')):
@@ -219,27 +272,32 @@ def lint_card(card):
                     break
             if items and len(trivial) > len(items) * 0.25:
                 out.append('trivial 步超过四分之一，检查是否跳过了需要讲的步骤')
+            if worked:
+                bare = [n + 1 for n, i in enumerate(items) if not i.get('trivial') and not i.get('why')]
+                if bare:
+                    out.append(f'第 {"、".join(map(str, bare))} 步没有“为什么”：推导卡每一步都讲目的、条件或原理')
+                if academic and not any(i.get('mark') for i in items) and not b.get('marks_basis'):
+                    out.append('推导步骤没有标得分点（mark）也没有 marks_basis：按 MS 标出每一步值什么分')
             if any(i.get('why') and len(strip_tags(i['why'])) < 6 for i in items):
                 out.append('有的“为什么”少于 6 个字，可能没讲出原理')
             echo = [n + 1 for n, i in enumerate(items) if i.get('why') and why_echoes(i['why'], i.get('do', ''))]
             if echo:
                 out.append(f'第 {"、".join(map(str, echo))} 步的“为什么”像在复述做法：写目的（为了…）、条件（因为…成立）或原理名')
-        if b.get('type') == 'sections' and any(len(strip_tags(i.get('text', ''))) > 60 for i in b.get('items', [])):
+        if b.get('type') == 'sections' and any(isinstance(i, dict) and len(strip_tags(i.get('text', ''))) > 60 for i in b.get('items', [])):
             out.append('sections 有超过 60 字的长段：文科展开改用 chain 或 map 的箭头结构')
+        if b.get('type') in ('lead', 'note') and card.get('genre') in ('chain', 'map', 'essay', 'overview') and len(strip_tags(b.get('text', ''))) > 80:
+            out.append(f'{b["type"]} 超过 80 字：因果展开写进 chain 或 map 的节点，不写成段落')
         if b.get('type') == 'chain':
-            vague, unjudged = [], []
-            for node in chain_nodes(b.get('items', [])):
-                states_change = node.get('kind', 'topic') in ('topic', 'cause', 'effect', 'policy')
-                if states_change and re.match(CAUSAL, strip_tags(node.get('rel', ''))) and not re.search(DIRECTION + '|' + CONDITION, strip_tags(node.get('text', ''))):
-                    vague.append(strip_tags(node['text'])[:12])
-                if (node.get('ao') == 'AO3' or node.get('kind') == 'evaluation') and not (node.get('cond') or node.get('note') or re.search(CONDITION, strip_tags(node.get('text', '')))):
-                    unjudged.append(strip_tags(node['text'])[:12])
-            if vague:
-                out.append('因果箭头的结果没写变量往哪个方向变（如“Q 由 Qm 降到 Q*”“MPC 上移”）：' + '｜'.join(vague[:4]))
-            if unjudged:
-                out.append('评价节点缺条件或对结论的影响（cond 或 note）：' + '｜'.join(unjudged[:4]))
+            causal_lint(((n, 0) for n in chain_nodes(b.get('items', []))), out, 'chain')
         if b.get('type') == 'map':
-            branches = b.get('root', {}).get('children', [])
+            root = b.get('root', {})
+            nodes = list(map_nodes(root))
+            causal_lint(nodes[1:], out, 'map')
+            unknown = sorted({strip_tags(n['rel']) for n, _ in nodes if n.get('rel') and not n.get('arrow')
+                              and not any(rule.match(strip_tags(n['rel'])) for rule, _ in REL_RULES)})
+            if unknown:
+                out.append('这些导图关系词不在规则表里，连线画成无箭头的普通线：' + '、'.join(unknown[:6]) + '（若表示因果，改用规则表中的词或给节点写 arrow）')
+            branches = root.get('children', [])
             def count(n):
                 return 1 + sum(count(c) for c in n.get('children', []))
             if len(branches) > 7:
@@ -251,25 +309,30 @@ def lint_card(card):
 
 
 def term_ledger(data, pages):
-    """English subject words used on cards that no term card, abbr or lexicon entry explains."""
+    """English subject words on the cards that no term card, <abbr>, gloss or terms_known explains.
+    Single words count too (externality, integrand, separable); words inside a definition's own sentence do not."""
     defined = set(k.lower() for k in data.get('terms_known', []))
     for c in data['cards']:
         for b in c['blocks']:
             if b.get('type') == 'definition':
                 defined.add(strip_tags(inline(b['term'], 'ledger').html).lower())
+    defined_words = {w for d in defined for w in re.findall(r'[a-z]+', d)}
     seen = {}
     for cid, body in pages.items():
-        visible = strip_tags(re.sub(r'<math[\s\S]*?</math>', ' ', body))
-        defined |= {m.lower() for m in re.findall(r'<abbr[^>]*>(.*?)</abbr>', body)}
-        for phrase in re.findall(r'\b[A-Za-z][a-z]+(?: [a-z]+){1,3}\b|\b[A-Z]{2,5}\b', visible):
-            words = phrase.lower().split()
-            if all(w in COMMON_EN for w in words) or phrase.lower() in defined:
+        body = re.sub(r'<header[\s\S]*?</header>|<footer[\s\S]*?</footer>|<div hidden[\s\S]*?</div>', ' ', body)
+        body = re.sub(r'<p class="def-text">[\s\S]*?</p>', ' ', body)  # the definition sentence explains itself
+        defined_here = {m.lower() for m in re.findall(r'<abbr[^>]*>(.*?)</abbr>', body)}
+        visible = strip_tags(re.sub(r'<math[\s\S]*?</math>', ' ', body), spaced=True)
+        for phrase in re.findall(r'\b[A-Za-z][a-z]{3,}(?: [a-z]{2,}){0,2}\b|\b[A-Z]{2,5}\b', visible):
+            words = [w for w in phrase.lower().split() if w not in COMMON_EN]
+            if not words:
                 continue
-            if any(phrase.lower() in d or d in phrase.lower() for d in defined if len(d) > 3):
+            key = ' '.join(words)
+            if key in defined or key in defined_here or all(w in defined_words for w in words):
                 continue
-            seen.setdefault(phrase, set()).add(cid)
-    ranked = sorted(seen.items(), key=lambda kv: -len(kv[1]))
-    return [{'term': t, 'cards': sorted(c)} for t, c in ranked if len(c) >= 2][:20]
+            seen.setdefault(key, set()).add(cid)
+    ranked = sorted(seen.items(), key=lambda kv: (-len(kv[1]), kv[0]))
+    return [{'term': t, 'cards': sorted(c)} for t, c in ranked][:30]
 
 
 def preflight(voice):
@@ -294,10 +357,17 @@ def main(argv=None):
     ap.add_argument('--term-sampler', action='store_true', help='also write term-sampler.mp3: every English term in a carrier sentence, for a one-minute pronunciation check')
     a = ap.parse_args(argv)
 
-    data = json.loads(a.input.read_text())
+    data = json.loads(a.input.read_text(encoding='utf-8'))
     try:
         summary = check(data)
-        rendered = {c['id']: render_card(data, c, data['style']) for c in data['cards']}
+        rendered = {}
+        for c in data['cards']:
+            try:
+                rendered[c['id']] = render_card(data, c, data['style'])
+            except (DeckError, BlockError):
+                raise
+            except Exception as error:  # noqa: BLE001 - name the card instead of a bare traceback
+                raise BlockError(f'card {c["id"]}: {type(error).__name__}: {error}') from error
     except (DeckError, BlockError) as error:
         sys.exit(f'✗ {error}')
 
@@ -310,9 +380,10 @@ def main(argv=None):
     for card in data['cards']:
         r = rendered[card['id']]
         spoken = narration.apply_lexicon('\n'.join(t for _, t in r['parts']), lexicon)
-        leaked = narration.TEX_REMNANT.findall(spoken)
+        leaked = sorted(set(narration.TEX_REMNANT.findall(spoken)))
         if leaked:
-            sys.exit(f'✗ card {card["id"]}: narration still contains LaTeX ({" ".join(sorted(set(leaked)))}); write the reading in 〔…〕 or speech')
+            hint = 'write \\$ for a currency amount (read as 美元), or ' if leaked == ['$'] else ''
+            sys.exit(f'✗ card {card["id"]}: narration still contains LaTeX ({" ".join(leaked)}); {hint}write the reading in 〔…〕 or give the block a speech')
         r['speed'], r['speed_reason'], metrics[card['id']], auto_speeds[card['id']] = choose_speed(card, data['style'], spoken, seen_terms)
         plans[card['id']] = narration.plan(card['id'], r['parts'], r['voice'], r['speed'], lexicon)
     cues, audio_report = {}, {}
@@ -347,7 +418,7 @@ def main(argv=None):
         if a.preview:
             message = '图文预览 · 语音未生成'
         elif a.audio_pending:
-            message = '语音待补 · 本机运行生成器即可补齐'
+            message = '语音待补 · 见交付文件夹里的 补语音.txt'
         body = page(data, card, r, p['file'], cues.get(card['id']), message)
         pages[card['id']] = body
         name = deck_info['name'] + ('::' + card['subdeck'] if card.get('subdeck') else '')
@@ -360,25 +431,27 @@ def main(argv=None):
         preview = body.replace(f'data-audio="{p["file"]}"', f'data-audio="media/{p["file"]}"').replace(f'src="{p["file"]}"', f'src="media/{p["file"]}"')
         (out / f'{card["id"]}.html').write_text(
             '<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
-            f'<title>{esc(title_text)}</title><style>{css}</style><body class="card">{preview}<script>{js}</script></body></html>')
+            f'<title>{esc(title_text)}</title><style>{css}</style><body class="card">{preview}<script>{js}</script></body></html>', encoding='utf-8')
         warn = []
         if 'speed' in card and float(card['speed']) != auto_speeds[card['id']]:
             warn.append(f'手动速度 {card["speed"]}× 与计算规则 {auto_speeds[card["id"]]}× 不同，确认理由')
+        elif 'speed' not in card and data['style'].get('speed', 'auto') != 'auto' and r['speed'] != auto_speeds[card['id']]:
+            warn.append(f'牌组固定 {r["speed"]:g}×，但规则判为 {auto_speeds[card["id"]]:g}×（{metrics[card["id"]]["auto_reason"] or "不够复杂"}）；默认请用 style.speed "auto"')
         nodes = len(re.findall(r'class="mm-node"', body))
         if nodes > 60:
             warn.append(f'导图 {nodes} 个节点，超过 60 个：拆成全景图加分支子图')
-        warn += lint_card(card)
-        odd = narration.speech_lint(p['text'])
+        warn += lint_card(card, data.get('academic', True))
+        odd = narration.speech_lint(p['text'], lexicon)
         if odd:
             warn.append('朗读文本含难读符号 ' + ' '.join(odd) + '：改写成文字读法')
         report_cards.append({'id': card['id'], 'genre': card['genre'], 'title': title_text, 'speed': r['speed'], 'speed_reason': r['speed_reason'],
                              'voice': r['voice'], 'theme': r['theme'], 'segments': len(p['segments']), 'narration_chars': len(p['text']),
                              'duration': (cues.get(card['id']) or {}).get('duration'), 'metrics': metrics[card['id']], 'warnings': warn})
 
-    (out / 'pages.json').write_text(json.dumps(pages, ensure_ascii=False, indent=1))
+    (out / 'pages.json').write_text(json.dumps(pages, ensure_ascii=False, indent=1), encoding='utf-8')
     manifest = [{'card': cid, 'file': p['file'], 'voice': p['voice'], 'speed': p['speed'], 'tempo_filter': narration.tempo_chain(p['speed']),
                  'segments': p['segments'], 'available': cid in cues, 'narration': cues.get(cid)} for cid, p in plans.items()]
-    (out / 'speech-manifest.json').write_text(json.dumps(manifest, ensure_ascii=False, indent=1))
+    (out / 'speech-manifest.json').write_text(json.dumps(manifest, ensure_ascii=False, indent=1), encoding='utf-8')
     package = None
     if not a.preview:
         pkg = genanki.Package(list(decks.values()))
@@ -387,12 +460,14 @@ def main(argv=None):
         package = out / f'{safe}.apkg'
         pkg.write_to_file(str(package))
     write_addon(out)
+    if not pending:
+        (out / '补语音.txt').unlink(missing_ok=True)  # audio is complete now; the old note would mislead
     if a.audio_pending:
-        (out / 'deck.json').write_text(json.dumps(data, ensure_ascii=False, indent=1))
+        (out / 'deck.json').write_text(json.dumps(data, ensure_ascii=False, indent=1), encoding='utf-8')
         (out / '补语音.txt').write_text(
             '这个包先交付了图文，语音待补。在能访问 speech.platform.bing.com 的电脑上，进入本 skill 目录运行：\n\n'
             '  python scripts/build_cards.py <本文件夹>/deck.json <本文件夹>\n\n'
-            '生成的新 .apkg 导入 Anki 即可原位补上语音（同一张卡，复习记录保留）。\n')
+            '生成的新 .apkg 导入 Anki 即可原位补上语音（同一张卡，复习记录保留）。\n', encoding='utf-8')
     slow = [c for c in report_cards if c['speed'] < 2]
     deck_warnings = []
     if len(report_cards) >= 5 and len(slow) > 0.3 * len(report_cards):
@@ -407,7 +482,7 @@ def main(argv=None):
         deck_warnings.append('这些 English 词出现在多张卡上，但没有术语卡、<abbr> 或 terms_known 解释：' + '、'.join(x['term'] for x in ledger[:10]))
     report = {'deck_warnings': deck_warnings, 'term_ledger': ledger, 'cards': report_cards, 'summary': summary, 'audio': 'preview' if a.preview else 'pending' if a.audio_pending else 'complete',
               'package': str(package) if package else None}
-    (out / 'report.json').write_text(json.dumps(report, ensure_ascii=False, indent=1))
+    (out / 'report.json').write_text(json.dumps(report, ensure_ascii=False, indent=1), encoding='utf-8')
     warnings = deck_warnings + [f'{c["id"]}: {w}' for c in report_cards for w in c['warnings']]
     print(json.dumps({'cards': len(report_cards), 'audio': report['audio'], 'package': report['package'], 'coverage': summary.get('coverage'),
                       'warnings': warnings}, ensure_ascii=False, indent=1))

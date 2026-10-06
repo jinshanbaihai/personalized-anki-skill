@@ -6,6 +6,7 @@ https://www.w3.org/TR/SVG2/eltindex.html
 https://www.w3.org/TR/MathML3/appendixi.html
 This is a content-loss guard, not a complete HTML conformance or rendering check.
 """
+import re
 from html.parser import HTMLParser
 
 HTML_TAGS = set("""
@@ -70,15 +71,24 @@ class MarkupIntegrity(HTMLParser):
             elif char == '<':
                 raise AssertionError("Unquoted '<' inside a start tag may swallow teaching text. Escape text '<' as '&lt;' (or use MathML).")
 
+    def check_attributes(self, attrs):
+        # "q<p 且 p>0.5" parses as a <p> tag with attributes "且" and "p": real attribute names are ASCII tokens.
+        for name, _ in attrs:
+            assert re.fullmatch(r'[A-Za-z_:][-A-Za-z0-9_:.]*', name or ''), (
+                f"'{name}' is not an attribute name; a comparison such as 'q<p' may have swallowed teaching text. Escape text '<' as '&lt;'."
+            )
+
     def handle_starttag(self, tag, attrs):
         self.check_tag(tag)
         self.check_start_token()
+        self.check_attributes(attrs)
         if tag not in VOID_TAGS | OPTIONAL_END_TAGS:
             self.required_closings.append(tag)
 
     def handle_startendtag(self, tag, attrs):
         self.check_tag(tag)
         self.check_start_token()
+        self.check_attributes(attrs)
 
     def handle_endtag(self, tag):
         self.check_tag(tag)

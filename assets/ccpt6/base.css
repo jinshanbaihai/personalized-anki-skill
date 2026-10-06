@@ -200,7 +200,9 @@
 /* pitfalls: teacher annotations are set in Kai, like red-pen marginalia */
 .pitfalls{display:grid;gap:12px}
 .pf{position:relative;border:1px solid var(--rule);border-radius:var(--radius-sm);padding:12px 16px 12px 16px;background:var(--surface)}
-.pf-wrong,.pf-right{display:flex;gap:10px;align-items:baseline;padding-right:56px}
+.pf-wrong,.pf-right{display:flex;gap:10px;align-items:baseline}
+.pf-text{flex:1;min-width:0}
+.pf.has-lost .pf-wrong{padding-right:56px}
 .pf-wrong{color:var(--bad)}
 .pf-right{color:var(--good);font-weight:620;margin-top:4px}
 /* ✓ ✗ are missing from most bundled Latin faces; the bundled Kai face has both, so marks look the same on every device */
@@ -317,6 +319,7 @@
 .ccmm .mm-node[data-kind="root"]{background:var(--mm-accent);color:var(--mm-accent-ink);border-color:transparent;font-weight:650;font-size:18px;padding:10px 16px}
 .ccmm .mm-node[data-kind="root"] :is(strong,b){color:inherit}
 .ccmm .mm-node[data-kind="root"] .ao-badge{color:inherit;border-color:currentColor}
+.ccchain .ch-node{background:var(--mm-panel)}  /* before the kind rules, so evaluation/limit/example fills still apply in chains */
 :is(.mm-node,.ch-node)[data-kind="definition"]{border-left:4px solid var(--mm-accent);background:var(--mm-panel)}
 :is(.mm-node,.ch-node)[data-kind="definition"]::before{content:"定义";color:var(--mm-accent)}
 :is(.mm-node,.ch-node)[data-kind="policy"]{background:var(--mm-panel);border:1.5px solid var(--b,var(--mm-accent));font-weight:620}
@@ -366,7 +369,7 @@
 /* ---------- logic chart ---------- */
 .ccmm.is-logic{padding:8px 2px 12px}
 .ccmm .mm-canvas{position:relative;margin:0}
-.ccmm .mm-wires{position:absolute;left:0;top:0;overflow:visible;pointer-events:none}
+:is(.ccmm,.ccchain) .mm-wires{position:absolute;left:0;top:0;overflow:visible;pointer-events:none}
 .mm-wire{fill:none;stroke:var(--b,var(--mm-ink-2));stroke-width:1.8;stroke-linecap:round;opacity:.9}
 .mm-wire.l-dashed{stroke-dasharray:6 5}
 .mm-wire.l-dotted{stroke-dasharray:1.5 4.5;stroke-width:2.2}
@@ -388,7 +391,7 @@
 .ccchain{position:relative;overflow-x:auto;padding:6px 2px 8px;font-size:var(--mm-font);line-height:1.6;--b:var(--mm-cause)}
 .ccchain :is(.ch-seq){list-style:none;margin:0;padding:0;display:flex;flex-direction:column;align-items:flex-start}
 .ccchain .ch-item{display:flex;flex-direction:column;align-items:flex-start;max-width:100%}
-.ccchain .ch-node{background:var(--mm-panel);max-width:100%}
+.ccchain .ch-node{max-width:100%}
 .ccchain .ch-note{font-size:15px;color:var(--mm-ink-2);margin-top:3px;line-height:1.5}
 .ccchain .ch-item>.ch-rel{display:flex;align-items:center;gap:8px;padding:5px 0 5px 16px}
 .ccchain .ch-item>.ch-rel::before{content:"↓";font-size:20px;line-height:1;font-weight:400}
@@ -413,23 +416,3 @@
 /* narration focus (player.js adds .narrating) */
 :is(.ccmm,.ccchain) .narrating{outline:2px solid var(--mm-focus);outline-offset:2px;box-shadow:0 0 0 6px var(--focus-soft,rgba(13,110,116,.14))}
 @media (prefers-reduced-motion:no-preference){:is(.ccmm,.ccchain) .mm-node,.ch-node{transition:outline-color .15s ease}}
-
-/* ---------- 8. Card-type motifs: one visual idea per card type, drawn only with theme tokens ---------- */
-/* term = dictionary entry: the definition is an open entry between a double and a single rule, not a boxed panel */
-.ccpt6[data-genre="term"] .blk-definition{background:transparent;border:0;border-top:3px double var(--rule-strong);border-bottom:1px solid var(--rule-strong);border-radius:0;box-shadow:none;padding-left:2px;padding-right:2px}
-.ccpt6[data-genre="term"] .def-term{font-size:calc(var(--fs-term) + 4px)}
-/* derivation/method = marked script: a margin rule separates the working from the marks column (desktop) */
-@media (min-width:641px){
- .ccpt6:is([data-genre="derivation"],[data-genre="method"],[data-genre="formula"]) .step{grid-template-columns:36px minmax(0,1fr) 84px;
-  background:linear-gradient(var(--rule-strong),var(--rule-strong)) no-repeat right 92px top 0/1px 100%}
- .ccpt6:is([data-genre="derivation"],[data-genre="method"],[data-genre="formula"]) .step>.mark-badge{justify-self:center;white-space:normal;text-align:center;line-height:1.45;max-width:84px}
-}
-/* chain/map/overview = drafting sheet: a faint dot grid behind the diagram, so the arrows read as a drawn figure */
-.ccpt6:is([data-genre="chain"],[data-genre="map"],[data-genre="overview"]) :is(.blk-chain,.blk-map){background-image:radial-gradient(var(--rule) 1.1px,transparent 1.3px);background-size:18px 18px}
-/* essay = answer booklet: paragraph numbers sit in a red margin, like the ruled margin of an exam script */
-.ccpt6[data-genre="essay"] .sections{background:linear-gradient(var(--pen),var(--pen)) no-repeat 36px 0/1.5px 100%}
-.ccpt6[data-genre="essay"] .sec{padding-left:52px}
-/* pitfall = corrected script: each item carries a red-pen margin */
-.ccpt6[data-genre="pitfall"] .pf{border-left:4px solid var(--pen)}
-/* diagram = plate: the caption sits under a rule like a figure plate */
-.ccpt6[data-genre="diagram"] .fig figcaption{border-top:1px solid var(--rule);padding-top:8px;max-width:640px;margin-left:auto;margin-right:auto}

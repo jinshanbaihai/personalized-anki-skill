@@ -27,10 +27,10 @@ def deck():
         'exam': {'board': 'Pearson Edexcel', 'qualification': 'IAL Mathematics', 'code': 'YMA01', 'units': ['WST02'],
                  'spec_version': 'Issue 3 (April 2019)', 'spec_url': 'https://example.invalid/spec.pdf',
                  'identified_by': 'exclusive-content', 'evidence': ['synthetic evidence'], 'session': 'January 2027',
-                 'ruled_out': [{'candidate': 'UK 9MA0', 'why_not': 'synthetic reason'}]},
+                 'ruled_out': [{'candidate': 'UK 9MA0', 'why_not': 'synthetic reason'}], 'papers': [{'code': 'WST02', 'format': 'structured'}]},
         'research': [
             {'type': 'spec', 'ref': 'synthetic spec', 'read': 'p.59', 'used_for': 'scope'},
-            {'type': 'ms', 'ref': 'synthetic MS', 'read': 'Q2', 'used_for': 'keywords'},
+            {'type': 'ms', 'ref': 'synthetic MS', 'read': 'Q2', 'used_for': 'keywords', 'paper': 'WST02'},
             {'type': 'er', 'ref': 'synthetic ER', 'read': 'Q2', 'used_for': 'pitfalls'},
         ],
         'board': [{'id': 'B01', 'where': 'p1', 'point': 'statistic definition', 'items': ['S-1']}],
@@ -45,7 +45,9 @@ def deck():
                 {'type': 'lead', 'text': '只用样本就能算出的量'},
                 {'type': 'definition', 'term': 'Statistic', 'text': 'A quantity calculated only from the sample, containing no unknown parameters.',
                  'keywords': ['only from the sample', 'no unknown parameters'], 'reject': ['because it is known'], 'source': 'synthetic MS'},
+                {'type': 'unpack', 'items': [{'key': 'only from the sample', 'explain': '只用样本观测值计算'}, {'key': 'no unknown parameters', 'explain': '不含未知的总体参数'}]},
                 {'type': 'examples', 'yes': [{'text': 'sample mean', 'why': 'only sample values'}], 'no': [{'text': 'population mean', 'why': 'unknown parameter'}]},
+                {'type': 'exam', 'items': [{'text': 'State whether … is a statistic. Give a reason.', 'mark': 'B1'}]},
                 {'type': 'steps', 'items': [{'do': '$\\frac{9}{245}$〔245 分之 9〕', 'why': '不放回', 'mark': 'B1'}]},
                 {'type': 'map', 'root': {'text': 'root', 'children': [{'text': 'a', 'rel': '导致', 'children': [{'text': 'b', 'rel': '所以'}]}]}},
             ]}],
@@ -92,7 +94,8 @@ def test_active_content_is_rejected():
 def test_map_depth_and_parts():
     root = {'text': 'r', 'children': [{'text': f'c{i}', 'rel': '导致', 'children': [{'text': 'g', 'children': [{'text': 'gg', 'kind': 'evaluation'}]}]} for i in range(3)]}
     html, parts = blocks.render_block({'type': 'map', 'root': root}, 'b0', 'w')
-    assert 'data-depth="3"' in html and len(parts) == 4  # root + one part per first-level branch
+    assert 'data-depth="3"' in html and len(parts) == 10  # one narration segment per node, depth first
+    assert [p.target for p in parts[:4]] == ['b0-n0', 'b0-n1', 'b0-n2', 'b0-n3']
 
 
 def test_deck_rules_accept_valid_deck():
@@ -163,16 +166,16 @@ def test_assemble_measures_cues(tmp_path):
 
 def test_preview_and_pending_package(tmp_path):
     src = tmp_path / 'deck.json'
-    src.write_text(json.dumps(deck(), ensure_ascii=False))
+    src.write_text(json.dumps(deck(), ensure_ascii=False), encoding='utf-8')
     build_cards.main([str(src), str(tmp_path / 'preview'), '--preview'])
-    page = (tmp_path / 'preview' / 'T01.html').read_text()
+    page = (tmp_path / 'preview' / 'T01.html').read_text(encoding='utf-8')
     assert 'data-theme="lab"' in page and '<math' in page and 'mark class="kw"' in page
     build_cards.main([str(src), str(tmp_path / 'pending'), '--audio-pending'])
-    pages = json.loads((tmp_path / 'pending' / 'pages.json').read_text())
+    pages = json.loads((tmp_path / 'pending' / 'pages.json').read_text(encoding='utf-8'))
     assert inspect_page(pages['T01'], allow_pending=True) is None
     with pytest.raises(AssertionError, match='Audio pending'):
         inspect_page(pages['T01'])
-    report = json.loads((tmp_path / 'pending' / 'report.json').read_text())
+    report = json.loads((tmp_path / 'pending' / 'report.json').read_text(encoding='utf-8'))
     assert report['audio'] == 'pending' and list((tmp_path / 'pending').glob('*.apkg'))
 
 
@@ -191,7 +194,7 @@ def test_note_fields_are_frozen():
 
 def test_themes_define_light_and_night_tokens():
     for css in (ROOT / 'assets/ccpt6/themes').glob('*.css'):
-        text = css.read_text()
+        text = css.read_text(encoding='utf-8')
         name = css.stem
         assert f'.ccpt6[data-theme="{name}"]' in text and f'.nightMode .ccpt6[data-theme="{name}"]' in text
         assert name in deck_rules.THEMES
@@ -232,13 +235,13 @@ def test_full_audio_pipeline_offline(tmp_path, monkeypatch):
     d['cards'][0]['speed'] = 1.5
     d['cards'][0]['speed_reason'] = 'test'
     src = tmp_path / 'deck.json'
-    src.write_text(json.dumps(d, ensure_ascii=False))
+    src.write_text(json.dumps(d, ensure_ascii=False), encoding='utf-8')
     build_cards.main([str(src), str(tmp_path / 'out')])
-    manifest = json.loads((tmp_path / 'out' / 'speech-manifest.json').read_text())[0]
+    manifest = json.loads((tmp_path / 'out' / 'speech-manifest.json').read_text(encoding='utf-8'))[0]
     assert manifest['available'] and manifest['speed'] == 1.5 and manifest['tempo_filter'] == 'atempo=1.5'
     cues = manifest['narration']['cues']
-    assert cues[0]['target'] is None and [c['target'] for c in cues][1:5] == ['b0', 'b1', 'b2-yes0', 'b2-no0']
-    page = json.loads((tmp_path / 'out' / 'pages.json').read_text())['T01']
+    assert cues[0]['target'] is None and [c['target'] for c in cues][1:7] == ['b0', 'b1', 'b2-0', 'b2-1', 'b3-yes0', 'b3-no0']
+    page = json.loads((tmp_path / 'out' / 'pages.json').read_text(encoding='utf-8'))['T01']
     assert inspect_page(page) == manifest['file'] and 'data-encoded="1.5"' in page
     # Designed pauses: 0.5 s after the title and between blocks, 0.3 s inside a block.
     gaps = [round(b['start'] - a['end'], 2) for a, b in zip(cues, cues[1:])]
@@ -250,9 +253,9 @@ def test_full_audio_pipeline_offline(tmp_path, monkeypatch):
         return await fake_voice(text, voice, output)
     monkeypatch.setattr(narration, 'synthesize_original', counting_voice)
     d['cards'][0]['speed'] = 2.0
-    src.write_text(json.dumps(d, ensure_ascii=False))
+    src.write_text(json.dumps(d, ensure_ascii=False), encoding='utf-8')
     build_cards.main([str(src), str(tmp_path / 'out2')])
-    assert calls == [] and json.loads((tmp_path / 'out2' / 'speech-manifest.json').read_text())[0]['speed'] == 2.0
+    assert calls == [] and json.loads((tmp_path / 'out2' / 'speech-manifest.json').read_text(encoding='utf-8'))[0]['speed'] == 2.0
 
 
 def test_speed_rule_ignores_visible_structure():
@@ -341,18 +344,18 @@ def test_theme_contrast_meets_wcag():
 def test_css_stays_within_anki_engines():
     """Anki 25.02 ships Chromium 112: no CSS nesting, light-dark(), color-mix() or container queries."""
     for css in [ROOT / 'assets/ccpt6/base.css', *(ROOT / 'assets/ccpt6/themes').glob('*.css')]:
-        text = re.sub(r'/\*[\s\S]*?\*/', '', css.read_text())
+        text = re.sub(r'/\*[\s\S]*?\*/', '', css.read_text(encoding='utf-8'))
         for banned in ('light-dark(', 'color-mix(', '@container'):
             assert banned not in text, f'{css.name} uses {banned}'
         assert not re.search(r'{[^{}]*&', text), f'{css.name} uses CSS nesting'
     for css in (ROOT / 'assets/ccpt6/themes').glob('*.css'):
-        text = css.read_text()
+        text = css.read_text(encoding='utf-8')
         assert f'.night_mode .ccpt6[data-theme="{css.stem}"]' in text and f'.nightMode.card:has(.ccpt6[data-theme="{css.stem}"])' in text
 
 
 def test_fonts_are_bundled_with_content_hashes(tmp_path):
     src = tmp_path / 'deck.json'
-    src.write_text(json.dumps(deck(), ensure_ascii=False))
+    src.write_text(json.dumps(deck(), ensure_ascii=False), encoding='utf-8')
     build_cards.main([str(src), str(tmp_path / 'out'), '--audio-pending'])
     fonts = sorted(p.name for p in (tmp_path / 'out').glob('_ccpt6-*.woff2'))
     assert fonts and all(re.fullmatch(r'_ccpt6-[\w-]+\.[0-9a-f]{8}\.woff2', f) for f in fonts)
@@ -368,7 +371,7 @@ def test_in_place_update_keeps_history(tmp_path):
     from anki.scheduler.v3 import CardAnswer
     d = deck()
     src = tmp_path / 'deck.json'
-    src.write_text(json.dumps(d, ensure_ascii=False))
+    src.write_text(json.dumps(d, ensure_ascii=False), encoding='utf-8')
     build_cards.main([str(src), str(tmp_path / 'v1'), '--audio-pending'])
     path = str(tmp_path / 'c.anki2')
     col = anki.Collection(path)
@@ -391,7 +394,7 @@ def test_in_place_update_keeps_history(tmp_path):
     time.sleep(1.1)  # Anki's default "update if newer" compares note modification seconds
     d['cards'][0]['blocks'][0]['text'] = '改写后的主干句'
     d['css'] = '.ccpt6 .lead{letter-spacing:.01em}'
-    src.write_text(json.dumps(d, ensure_ascii=False))
+    src.write_text(json.dumps(d, ensure_ascii=False), encoding='utf-8')
     build_cards.main([str(src), str(tmp_path / 'v2'), '--audio-pending'])
     col = anki.Collection(path)
     load('v2')
@@ -508,3 +511,177 @@ def test_inline_integrals_are_text_style():
     assert 'largeop="false"' in html
     display = blocks.inline('$$\\int_0^1 x\\,dx$$〔x 从 0 到 1 的积分〕', 'w').html
     assert 'largeop="false"' not in display
+
+
+def test_text_files_are_read_and_written_as_utf8():
+    """Windows defaults to cp936/cp1252; every text read or write must name UTF-8."""
+    import ast
+    for path in (ROOT / 'scripts').glob('*.py'):
+        for node in ast.walk(ast.parse(path.read_text(encoding='utf-8'))):
+            if isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute) and node.func.attr in ('read_text', 'write_text'):
+                assert any(k.arg == 'encoding' for k in node.keywords), f'{path.name}:{node.lineno} {node.func.attr} without encoding'
+
+
+@pytest.mark.parametrize('mark', ['M1', 'dM1', 'ddM1', 'DM1', 'A1', 'A1*', 'A1ft', 'B1ft', 'A1cso', 'A1 cso', 'M1 A1*', 'M1A1', 'B1 oe', 'SC1', 'C1', 'A1 isw', 'M1 A1 A1'])
+def test_mark_scheme_notation_is_accepted(mark):
+    html, parts = blocks.render_block({'type': 'steps', 'items': [{'do': 'x', 'why': '为了消去 x', 'mark': mark}]}, 'b0', 'w')
+    assert '这一步记' in parts[0].text
+
+
+@pytest.mark.parametrize('mark', ['two marks', 'AO2', 'M', '1'])
+def test_non_mark_scheme_labels_are_rejected(mark):
+    with pytest.raises(blocks.BlockError, match='mark-scheme notation'):
+        blocks.render_block({'type': 'steps', 'items': [{'do': 'x', 'why': 'y', 'mark': mark}]}, 'b0', 'w')
+
+
+def test_keywords_never_touch_markup_or_math():
+    html, _ = blocks.render_block({'type': 'definition', 'term': 'span', 'keywords': ['class', 'span', 'span of'],
+                                   'text': 'A span of $\\text{span}$〔span〕 is the class of vectors'}, 'b0', 'w')
+    assert 'class="math"' in html and '<mark class="kw">span of</mark>' in html and 'data-tex="\\text{span}"' in html
+    assert '<mark class="kw">class</mark> of vectors' in html
+    with pytest.raises(blocks.BlockError, match='split by formatting'):
+        blocks.render_block({'type': 'definition', 'term': 'x', 'keywords': ['only from'], 'text': '<b>only</b> from the sample'}, 'b0', 'w')
+
+
+def test_spaced_comparison_is_shown_and_spoken():
+    t = blocks.inline('当 x < 2 时，P(X < 3) 成立', 'w')
+    assert '&lt; 2' in t.html and t.speech == '当 x < 2 时，P(X < 3) 成立'
+    assert '小于 2' in narration.apply_lexicon(t.speech, {})
+
+
+def test_unspoken_formula_in_a_label_is_caught():
+    with pytest.raises(blocks.BlockError, match='spoken form'):
+        blocks.render_block({'type': 'steps', 'label': '求 $\\int x e^x dx$', 'items': [{'do': 'x', 'why': '为了 y'}]}, 'b0', 'w')
+    with pytest.raises(blocks.BlockError, match='spoken form'):
+        blocks.render_block({'type': 'finish', 'label': '$x$ 的范围', 'items': ['a']}, 'b0', 'w')
+
+
+def test_currency_reads_as_dollars():
+    t = blocks.inline('每单位征税 \\$2，补贴 \\$1.5', 'w')
+    assert '$2' in t.html and t.speech == '每单位征税 2 美元，补贴 1.5 美元' and '$' not in t.speech
+
+
+def test_item_shorthand_gets_a_clear_error():
+    with pytest.raises(blocks.BlockError, match='object with named fields'):
+        blocks.render_block({'type': 'steps', 'items': ['x = 2']}, 'b0', 'w')
+    with pytest.raises(blocks.BlockError, match='caption, points'):
+        blocks.render_block({'type': 'figure', 'svg': '<svg viewBox="0 0 10 10"></svg>'}, 'b0', 'w')
+
+
+def test_scoring_information_is_narrated():
+    _, parts = blocks.render_block({'type': 'steps', 'items': [{'do': 'x', 'why': '为了消去 y', 'mark': 'A1*', 'mark_note': '漏写结论丢 A1'}]}, 'b0', 'w')
+    assert 'A 1 星' in parts[0].text and '评分注意：漏写结论丢 A1' in parts[0].text
+    _, parts = blocks.render_block({'type': 'pitfall', 'items': [{'wrong': 'a', 'right': 'b', 'lost': 'A1'}]}, 'b0', 'w')
+    assert '会丢 A 1' in parts[0].text
+    _, parts = blocks.render_block({'type': 'table', 'head': ['a', 'b'], 'rows': [['x', ''], ['y', 'z']], 'caption': '表注'}, 'b0', 'w')
+    assert parts[0].text == 'x' and parts[-1].text.endswith('表注')
+
+
+def test_math_spacing_and_bars():
+    html = blocks.inline('$\\bar{X}$〔X 拔〕 与 $({-}\\frac23)$〔负三分之二〕 与 $\\ln x$〔ln x〕', 'w').html
+    assert '&#x02015;' in html and 'form="prefix"' in html and '<mi>ln</mi><mspace' in html
+
+
+def test_long_equality_chain_can_wrap():
+    html = blocks.inline('$(8+32x)^{\\frac13}=8^{\\frac13}(1+4x)^{\\frac13}=2(1+4x)^{\\frac13}$〔读法〕', 'w').html
+    assert html.count('class="math"') == 3 and '​' in html
+
+
+def test_relation_rules_match_layout_js():
+    js = (ROOT / 'assets' / 'ccpt6' / 'layout.js').read_text(encoding='utf-8')
+    for rule, _ in blocks.REL_RULES:
+        assert rule.pattern in js, rule.pattern[:40]
+
+
+def test_speed_rule_ignores_citations_and_mark_bands():
+    seen = set()
+    pitfall = {'id': 'p', 'genre': 'pitfall', 'title': 't', 'blocks': [{'type': 'pitfall', 'items': [
+        {'wrong': '写 n ≥ 51', 'right': 'n = 51', 'source': 'WMA14 Jan 2024 ER pp.3、6', 'lost': 'A1'},
+        {'wrong': 'a', 'right': 'b', 'source': 'WST02 Jun 2024 MS pp.8–9'}]}]}
+    ladder = {'id': 'e', 'genre': 'essay', 'title': 't', 'blocks': [{'type': 'sections', 'items': [
+        {'head': 'Level 1（1–5 分）', 'text': '只点名'}, {'head': 'Level 3（11–14 分）', 'text': '多环因果'}, {'head': 'AO3 Level 2（4–6 分）', 'text': '有理由的判断'}]}]}
+    for card in (pitfall, ladder):
+        m = narration.speed_metrics(card, 'x', seen)
+        assert narration.decide_speed(m)[0] == 2.0, (card['id'], m)
+
+
+def test_display_math_counts_like_inline_math():
+    def deriv(d):
+        return {'id': 'd', 'genre': 'derivation', 'title': 't', 'blocks': [{'type': 'steps', 'items': [
+            {'do': f'{d}x^{i}{d}〔x 的 {i} 次方〕', 'why': '为了化简'} for i in range(4, 9)]}]}
+    a = narration.speed_metrics(deriv('$'), 'x 的 4 次方', set())
+    b = narration.speed_metrics(deriv('$$'), 'x 的 4 次方', set())
+    assert a['M'] == b['M'] == 5
+
+
+def test_minus_signs_and_symbols_are_read():
+    assert narration.apply_lexicon('斜率为−2，取值 −2、−3，[−1, 1]，3 −2，MPC − s', {}) == '斜率为负2，取值 负2、负3，[负1, 1]，3 减2，MPC 减 s'
+    assert narration.apply_lexicon('Q* 处价格↑', {}) == 'Q 星 处价格上升'
+    assert '⟦' in narration.speech_lint('⟦公式⟧')
+
+
+def test_board_images_are_turned_upright_and_flattened():
+    from PIL import Image
+    from slice_board import upright_rgb
+    rotated = Image.new('RGB', (300, 100), 'white')
+    exif = rotated.getexif()
+    exif[0x0112] = 6
+    path = ROOT / 'scripts' / '__rot_test.jpg'
+    rotated.save(path, exif=exif)
+    try:
+        assert upright_rgb(Image.open(path)).size == (100, 300)
+    finally:
+        path.unlink()
+    clear = Image.new('RGBA', (10, 10), (0, 0, 0, 0))
+    assert upright_rgb(clear).getpixel((5, 5)) == (255, 255, 255)
+
+
+def test_genre_structure_and_academic_flag():
+    d = deck()
+    d['cards'].append({'id': 'C01', 'genre': 'chain', 'title': '因果', 'covers': ['S-1'], 'blocks': [{'type': 'lead', 'text': '一段话'}]})
+    with pytest.raises(deck_rules.DeckError, match='chain block'):
+        deck_rules.check(d)
+    d = deck()
+    d['academic'] = False
+    with pytest.raises(deck_rules.DeckError, match='academic: false'):
+        deck_rules.check(d)
+    d = deck()
+    d['exam']['papers'] = []
+    with pytest.raises(deck_rules.DeckError, match='exam.papers'):
+        deck_rules.check(d)
+    d = deck()
+    d['cards'][0]['blocks'] = [b for b in d['cards'][0]['blocks'] if b['type'] != 'unpack']
+    with pytest.raises(deck_rules.DeckError, match='unpack'):
+        deck_rules.check(d)
+
+
+def test_lost_marks_on_the_board_need_a_card():
+    d = deck()
+    d['board'].append({'id': 'Q01A2', 'where': 'p1 右栏', 'point': '系数没乘回 2', 'items': ['S-1'], 'lost': 'A1'})
+    with pytest.raises(deck_rules.DeckError, match='lost mark'):
+        deck_rules.check(d)
+    d['board'][-1]['cards'] = ['T01']
+    deck_rules.check(d)
+
+
+def test_lint_reads_chains_and_maps_like_the_renderer():
+    card = {'genre': 'chain', 'blocks': [
+        {'type': 'chain', 'items': ['政府征税', '生产者成本']},
+        {'type': 'map', 'root': {'text': 'r', 'children': [{'text': '补贴', 'rel': '导致', 'children': [{'text': '好处', 'rel': '包括'}]},
+                                                             {'text': '政府干预总是有效的', 'kind': 'evaluation'}]}}]}
+    warnings = build_cards.lint_card(card)
+    assert any(w.startswith('chain 的因果箭头') for w in warnings)
+    assert any(w.startswith('map 的因果箭头') for w in warnings) and any('评价节点' in w for w in warnings)
+    assert any('包括' in w for w in warnings)
+
+
+def test_term_ledger_sees_single_words():
+    d = deck()
+    pages = {'T01': '<main><header>x</header><article><p>当 externality 存在时，sample mean 可算</p></article></main>'}
+    terms = [x['term'] for x in build_cards.term_ledger(d, pages)]
+    assert 'externality' in terms and 'statistic' not in terms
+
+
+def test_comparison_swallowed_by_an_optional_end_tag_is_rejected():
+    with pytest.raises(blocks.BlockError, match='attribute name'):
+        blocks.render_block({'type': 'html', 'html': '<div>q<p 且 p>0.5 时拒绝</div>', 'speech': 'x'}, 'b0', 'w')
