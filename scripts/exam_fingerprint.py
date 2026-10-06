@@ -4,11 +4,13 @@ Usage:
   python scripts/exam_fingerprint.py board.pdf page.png notes.txt   # PDFs/images are OCR'd when they lack text
   pdftotext -layout paper.pdf - | python scripts/exam_fingerprint.py -
 
-The output is a set of graded clues for references/exam-lock.md, not a decision:
-grade A = printed board/unit code, B = layout fingerprint or exclusive topic,
-C = course labels. Handwriting and images still need to be read by eye; OCR text
-from them can be piped in the same way.
+The output is a set of graded clues for references/exam-lock.md, not a decision. Grades follow
+exam-lock.md: A = printed board/unit code; B = a layout fingerprint PLUS two or more independent
+exclusive topics of the same board; a fingerprint alone is "B-partial"; course labels and single
+non-exclusive topics are C. `lockable` is true only for A, or for a complete B. Handwriting and images
+still need to be read by eye: when OCR returns almost nothing, transcribe the slices and pipe the text in.
 """
+import argparse
 import json
 import re
 import shutil
@@ -18,7 +20,7 @@ import tempfile
 from pathlib import Path
 
 LAYOUT = [
-    # (board, grade, label, regex)
+    # (board, grade, label, regex); grade "B" here marks a layout fingerprint, which alone is only B-partial
     ('Pearson Edexcel', 'B', 'Pearson question total', r'\(Total for Question \d+ is \d+ marks?\)'),
     ('Pearson Edexcel', 'B', 'Pearson answer book page header', r'Write the answer to Question \d+ on these \d+ pages'),
     ('Pearson Edexcel', 'B', 'Pearson paper total', r'TOTAL FOR PAPER IS \d+ MARKS'),
@@ -42,23 +44,26 @@ LABELS = [
     ('Cambridge International', 'C', 'course label CIE/CAIE', r'\b(?:CIE|CAIE)\b'),
 ]
 
-# Topic → where it is examined. Each entry is a pointer to verify in the spec text,
-# recorded with the spec clause in exam.evidence; it is not proof by itself.
+# Topic → where it is examined, and the boards it can point to. Each entry is a pointer to verify in the spec
+# text, recorded with the spec clause in exam.evidence; it is not proof by itself. exclusive=False topics appear in
+# most syllabuses of the subject and can never count towards a B lock.
+PEARSON, CAMBRIDGE = 'Pearson Edexcel', 'Cambridge International'
 EXCLUSIVE = [
     (r'r\s*=\s*a\s*\+\s*[λt]\s*b|vector equation of (?:a|the) line', 'vector equation of a line',
-     'Pearson IAL P4 (WMA14) 7.6; CIE 9709 P3; UK 9FM0 Core Pure — not UK 9MA0'),
+     'Pearson IAL P4 (WMA14) 7.6; CIE 9709 P3; UK 9FM0 Core Pure — not UK 9MA0', True, (PEARSON, CAMBRIDGE)),
     (r'sampling frame|sampling unit|sampling distribution|\bstatistic\b', 'population, sampling frame, statistic',
-     'Pearson IAL S2 (WST02) 4.1–4.2 (enumerate all samples); S3 3.2 if σ²/n or CLT appears'),
-    (r'central limit|σ\s*\^?2\s*/\s*n', 'distribution of the sample mean / CLT', 'Pearson IAL S3 (WST03) 3.2, 3.6'),
-    (r'Poisson|Po\(', 'Poisson distribution', 'Pearson IAL S2 1.1–1.3; CIE 9709 P6; UK 9FM0 — not UK 9MA0'),
-    (r'permutation|arrangements? of', 'permutations and combinations', 'CIE 9709 P5; absent from Pearson IAL'),
-    (r'geometric distribution|Geo\(', 'geometric distribution', 'CIE 9709 P5; absent from Pearson IAL'),
-    (r'Argand|complex number', 'complex numbers', 'CIE 9709 P3; Pearson IAL FP1/FP2 (not P1–P4)'),
-    (r'large data set', 'large data set', 'UK 9MA0 statistics; absent from Pearson IAL'),
-    (r'proof by contradiction', 'proof by contradiction', 'Pearson IAL P4 1.1; UK 9MA0 Paper 1/2'),
-    (r'partial fraction', 'partial fractions', 'Pearson IAL P4 2.1 (incl. improper); CIE 9709 P3'),
-    (r'property rights|nudge|pollution permit', 'property rights / nudge / permits', 'CIE 9708 A Level 8.1.1 (Paper 3/4), not AS'),
-    (r'externalit', 'externalities', 'CIE 9708 AS 3.2 tools; A Level 7.4 and 8.1 evaluation'),
+     'Pearson IAL S2 (WST02) 4.1–4.2 (enumerate all samples); S3 3.2 if σ²/n or CLT appears', True, (PEARSON,)),
+    (r'central limit|σ\s*\^?2\s*/\s*n', 'distribution of the sample mean / CLT', 'Pearson IAL S3 (WST03) 3.2, 3.6; CIE 9709 P6', True, (PEARSON, CAMBRIDGE)),
+    (r'Poisson|Po\(', 'Poisson distribution', 'Pearson IAL S2 1.1–1.3; CIE 9709 P6; UK 9FM0 — not UK 9MA0', True, (PEARSON, CAMBRIDGE)),
+    (r'permutation|arrangements? of', 'permutations and combinations', 'CIE 9709 P5; absent from Pearson IAL', True, (CAMBRIDGE,)),
+    (r'geometric distribution|Geo\(', 'geometric distribution', 'CIE 9709 P5; absent from Pearson IAL', True, (CAMBRIDGE,)),
+    (r'Argand|complex number', 'complex numbers', 'CIE 9709 P3; Pearson IAL FP1/FP2 (not P1–P4)', True, (PEARSON, CAMBRIDGE)),
+    (r'large data set', 'large data set', 'UK 9MA0 statistics; absent from Pearson IAL', True, (PEARSON,)),
+    (r'proof by contradiction', 'proof by contradiction', 'Pearson IAL P4 1.1; UK 9MA0 Paper 1/2', True, (PEARSON,)),
+    (r'partial fraction', 'partial fractions', 'Pearson IAL P4 2.1 (incl. improper); CIE 9709 P3', True, (PEARSON, CAMBRIDGE)),
+    (r'property rights|nudge|pollution permit', 'property rights / nudge / permits',
+     'CIE 9708 A Level 8.1.1 (Paper 3/4), not AS; also in other A Level economics syllabuses', False, ()),
+    (r'externalit', 'externalities', 'every economics syllabus; CIE 9708 AS 3.2 tools, A Level 7.4 and 8.1 evaluation', False, ()),
 ]
 
 
@@ -69,21 +74,41 @@ def scan(text):
         if found:
             clues.append({'board': board, 'grade': grade, 'clue': label, 'matches': found[:6]})
     topics = []
-    for pattern, topic, where in EXCLUSIVE:
+    for pattern, topic, where, exclusive, boards in EXCLUSIVE:
         if re.search(pattern, text, re.I):
-            topics.append({'topic': topic, 'examined_in': where, 'grade': 'B (verify in spec text)'})
-    boards = {}
-    for c in clues:
-        boards.setdefault(c['board'], set()).add(c['grade'])
-    ranking = sorted(boards.items(), key=lambda kv: min(kv[1]))
-    return {'board_candidates': [{'board': b, 'best_grade': min(g)} for b, g in ranking], 'clues': clues, 'topics': topics,
-            'next': 'Map every board topic to a clause of each candidate spec; record ruled_out with reasons (references/exam-lock.md).'}
+            topics.append({'topic': topic, 'examined_in': where, 'exclusive': exclusive, 'boards': list(boards),
+                           'grade': 'B-topic (verify in spec text)' if exclusive else 'C (not exclusive)'})
+    candidates = []
+    for board in dict.fromkeys(c['board'] for c in clues):
+        grades = {c['grade'] for c in clues if c['board'] == board}
+        support = [t['topic'] for t in topics if t['exclusive'] and board in t['boards']]
+        if 'A' in grades:
+            grade = 'A'
+        elif 'B' in grades and len(support) >= 2:
+            grade = 'B'
+        elif 'B' in grades:
+            grade = 'B-partial (fingerprint; needs 2+ independent exclusive topics)'
+        else:
+            grade = 'C'
+        candidates.append({'board': board, 'best_grade': grade, 'exclusive_topics': support, 'lockable': grade in ('A', 'B')})
+    candidates.sort(key=lambda c: (not c['lockable'], c['best_grade']))
+    return {'board_candidates': candidates, 'clues': clues, 'topics': topics,
+            'next': 'Map every board topic to a clause of each candidate spec; record ruled_out with reasons (references/exam-lock.md). '
+                    'Only A or B evidence locks; with C or B-partial keep collecting evidence.'}
+
+
+POPPLER = 'pdftotext/pdftoppm (poppler) are needed for PDFs: brew install poppler / sudo apt install poppler-utils; or read the pages by eye and pipe your transcription in with -'
+THIN = []  # sources whose machine-read text was too short to judge
 
 
 def ocr(image):
     if not shutil.which('tesseract'):
-        raise SystemExit('tesseract is needed to read images (apt install tesseract-ocr tesseract-ocr-chi-sim / brew install tesseract)')
-    return subprocess.run(['tesseract', str(image), '-', '-l', 'eng+chi_sim'], capture_output=True, text=True).stdout
+        raise SystemExit('tesseract is needed to read images (apt install tesseract-ocr tesseract-ocr-chi-sim / brew install tesseract); '
+                         'or read the slices by eye and pipe your transcription in with -')
+    text = subprocess.run(['tesseract', str(image), '-', '-l', 'eng+chi_sim'], capture_output=True, text=True, encoding='utf-8', errors='replace').stdout
+    if len(text.strip()) < 200:
+        THIN.append((str(image), len(text.strip())))
+    return text
 
 
 def read(path):
@@ -91,7 +116,9 @@ def read(path):
         return sys.stdin.read()
     p = Path(path)
     if p.suffix.lower() == '.pdf':
-        text = subprocess.run(['pdftotext', '-layout', str(p), '-'], capture_output=True, text=True).stdout
+        if not (shutil.which('pdftotext') and shutil.which('pdftoppm')):
+            raise SystemExit(POPPLER)
+        text = subprocess.run(['pdftotext', '-layout', str(p), '-'], capture_output=True, text=True, encoding='utf-8', errors='replace').stdout
         if len(text.strip()) > 200:
             return text
         with tempfile.TemporaryDirectory() as tmp:
@@ -102,9 +129,19 @@ def read(path):
     return p.read_text(encoding='utf-8', errors='replace')
 
 
-def main():
-    paths = sys.argv[1:] or ['-']
-    print(json.dumps(scan('\n'.join(read(p) for p in paths)), ensure_ascii=False, indent=1))
+def main(argv=None):
+    if hasattr(sys.stdout, 'reconfigure'):
+        sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument('paths', nargs='*', default=['-'], help='PDFs, images, text files, or - for stdin')
+    a = ap.parse_args(argv)
+    result = scan('\n'.join(read(p) for p in a.paths))
+    print(json.dumps(result, ensure_ascii=False, indent=1))
+    for source, n in THIN:
+        print(f'⚠ OCR text near-empty ({n} chars) for {source}: handwriting or a dark, compressed board defeats OCR. '
+              'Read the slices from slice_board.py by eye and pipe your transcription in with -', file=sys.stderr)
+    if not result['clues'] and not result['topics'] and not THIN:
+        print('⚠ no clue matched: read headers, footers and topics by eye (references/exam-lock.md)', file=sys.stderr)
 
 
 if __name__ == '__main__':

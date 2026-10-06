@@ -172,9 +172,9 @@ def test_preview_and_pending_package(tmp_path):
     assert 'data-theme="lab"' in page and '<math' in page and 'mark class="kw"' in page
     build_cards.main([str(src), str(tmp_path / 'pending'), '--audio-pending'])
     pages = json.loads((tmp_path / 'pending' / 'pages.json').read_text(encoding='utf-8'))
-    assert inspect_page(pages['T01'], allow_pending=True) is None
+    assert inspect_page(pages['T01']) is None  # pending pages are recognised by default
     with pytest.raises(AssertionError, match='Audio pending'):
-        inspect_page(pages['T01'])
+        inspect_page(pages['T01'], allow_pending=False)  # --require-audio
     report = json.loads((tmp_path / 'pending' / 'report.json').read_text(encoding='utf-8'))
     assert report['audio'] == 'pending' and list((tmp_path / 'pending').glob('*.apkg'))
 
@@ -273,8 +273,30 @@ def test_speed_rule():
     assert narration.decide_speed(m)[0] == 1.5 and '5 步推导' in narration.decide_speed(m)[1]
     term = {'genre': 'term', 'title': 'Statistic', 'blocks': [{'type': 'definition', 'term': 'Statistic', 'text': 'A quantity'}]}
     assert narration.decide_speed(narration.speed_metrics(term, '一个只用样本算出来的量' * 30, set()))[0] == 2.0
+    # One signal alone keeps 2×: a three-step proof with no spoken formulas is a structure, not a dense page.
     proof = {'genre': 'derivation', 'title': 'Proof by contradiction', 'blocks': [{'type': 'steps', 'items': [{'do': 'a', 'why': 'b'}] * 3}]}
-    assert narration.decide_speed(narration.speed_metrics(proof, '证明', set()))[1] == '证明结构'
+    m = narration.speed_metrics(proof, '证明', set())
+    assert m['signals'] == ['证明结构'] and narration.decide_speed(m) == (2.0, '')
+    # "show that" is a command word, not a proof.
+    shown = {'genre': 'derivation', 'title': 'Show that x = 2', 'blocks': [{'type': 'steps', 'items': [{'do': 'a', 'why': 'b'}] * 3}]}
+    assert not narration.speed_metrics(shown, 'x', set())['proof']
+
+
+def test_speed_rule_needs_two_signals():
+    def steps(dos):
+        return {'genre': 'method', 'title': 't', 'blocks': [{'type': 'steps', 'items': [{'do': d, 'why': '为了把未知量单独留下'} for d in dos]}]}
+    # Four formula steps with long Chinese reasoning and few values: one signal (steps) → 2×.
+    plain = steps([f'$x_{i}$〔x {i}〕，然后两边同时除以系数，留意符号与定义域的限制条件' for i in range(4)])
+    m = narration.speed_metrics(plain, '讲解' * 60, set())
+    assert len(m['signals']) == 1 and narration.decide_speed(m)[0] == 2.0, m
+    # The same steps carrying many values to hold → two signals → 1.5×.
+    values = steps([f'$x = {a}$〔x 等于 {a}〕，代入 {b} 与 {c}' for a, b, c in ((14, 25, 36), (47, 58, 69), (71, 82, 93), (104, 115, 126))])
+    m = narration.speed_metrics(values, '讲解' * 60, set())
+    assert narration.decide_speed(m)[0] == 1.5 and '需同时记住' in narration.decide_speed(m)[1], m
+    # Formulas inside a table are read on screen, not by ear: they do not raise the formula share.
+    table = {'genre': 'formula', 'title': 't', 'blocks': [{'type': 'lead', 'text': '下表列出常用结果，讲解只读标题。'},
+             {'type': 'table', 'head': ['f', 'F'], 'rows': [[f'$x^{i}$〔x 的 {i} 次方〕', f'$x^{i+1}$〔x 的 {i+1} 次方〕'] for i in range(6)]}]}
+    assert narration.speed_metrics(table, 'x', set())['m_share'] < 0.35
 
 
 def test_lexicon_and_lint():
@@ -503,7 +525,21 @@ def test_board_legibility_gate_flags_recompressed_images():
     from slice_board import legibility
     assert legibility(Image.new('RGB', (259, 2000), 'white'))['verdict'] == 'low'
     assert legibility(Image.new('RGB', (1600, 2000), 'white'))['verdict'] == 'ok'
-    assert legibility(Image.new('RGB', (600, 800), 'white'), rendered_pdf=True)['verdict'] == 'ok'
+    # A PDF is judged by its embedded image, not by the page rendered at a high dpi; vector pages pass.
+    assert legibility(Image.new('RGB', (1680, 2000), 'white'), embedded_width=420, pdf=True)['verdict'] == 'low'
+    assert legibility(Image.new('RGB', (1680, 2000), 'white'), embedded_width=None, pdf=True)['verdict'] == 'ok'
+
+
+def test_slice_board_reads_embedded_pdf_image_width(tmp_path):
+    import shutil, subprocess, sys
+    if not (shutil.which('pdftoppm') and shutil.which('pdfimages')):
+        pytest.skip('poppler not installed')
+    from PIL import Image
+    pdf = tmp_path / 'board.pdf'
+    Image.new('RGB', (420, 900), 'white').save(pdf, 'PDF', resolution=50)  # a chat-recompressed board wrapped in a PDF
+    out = subprocess.run([sys.executable, str(ROOT / 'scripts' / 'slice_board.py'), str(pdf), str(tmp_path / 's')], capture_output=True, text=True, encoding='utf-8')
+    quality = json.loads((tmp_path / 's' / 'index.json').read_text(encoding='utf-8'))['quality']
+    assert [v['verdict'] for v in quality.values()] == ['low'] and quality[next(iter(quality))]['width'] == 420, out.stdout + out.stderr
 
 
 def test_inline_integrals_are_text_style():
@@ -785,7 +821,23 @@ def test_exam_index_queries(tmp_path):
 
 def test_skill_package_is_uploadable(tmp_path):
     import package_skill
-    out, count = package_skill.package(tmp_path)
+    out, count = package_skill.package(tmp_path, files=package_skill.tracked_files(strict=False))
     names = zipfile.ZipFile(out).namelist()
     assert 'anki-ccpt-skill/SKILL.md' in names and any(n.startswith('anki-ccpt-skill/assets/ccpt6/fonts/') for n in names)
-    assert not any('test_ccpt6' in n or '__pycache__' in n for n in names)
+    assert not any('/test_' in n or '__pycache__' in n or n.endswith('.env') for n in names)
+    # Personal data and secrets stop the packer.
+    assert package_skill.leaks('references/x.md', b'contact someone@example.com')
+    assert package_skill.leaks('references/x.md', b'see https://drive.google.com/file/d/abc')
+    assert package_skill.leaks('scripts/x.txt', b'AZURE_SPEECH_KEY=3f9c2a7be1d04c55a0')
+    assert not package_skill.leaks('scripts/x.py', b"key = os.environ.get('AZURE_SPEECH_KEY')")
+
+
+def test_exam_fingerprint_grades_follow_exam_lock():
+    import exam_fingerprint
+    lone = exam_fingerprint.scan('Negative externalities (Total for Question 3 is 8 marks)')
+    assert lone['board_candidates'][0]['best_grade'].startswith('B-partial') and not lone['board_candidates'][0]['lockable']
+    assert lone['topics'][0]['grade'].startswith('C')
+    full = exam_fingerprint.scan('(Total for Question 3 is 8 marks) r = a + λb, partial fractions')
+    assert full['board_candidates'][0]['best_grade'] == 'B' and full['board_candidates'][0]['lockable']
+    coded = exam_fingerprint.scan('Paper reference WMA14/01A')
+    assert coded['board_candidates'][0]['best_grade'] == 'A'
