@@ -28,12 +28,14 @@ description: 把老师板书、课堂截图、讲评 PDF、讲义做成为考试
 
 从内容判断是哪场考试，精确到**考试局 + 资格 + 单元／试卷代码 + 考纲版本 + 目标考季**（考季决定适用版本，不知道时写推定并标明），写出证据和被排除的近似考试。课程名只是弱线索，要靠印刷代码、版式指纹和排他知识点。`python scripts/exam_fingerprint.py 板书.pdf` 可先列出线索。同时确定这批内容出现在哪些试卷与卷型（`exam.papers`，如 9708 的选择题与 essay），各自标定。证据仍无法区分、且区分结果会改变卡片内容时：用户在场就用选项问一次；要求一次做完时按最强证据制作，并在交付说明第一行写出假设。方法、代码体系、排他知识点表与资料入口见 [exam-lock.md](references/exam-lock.md)。
 
-**已登记的考试先查登记**：[references/exams/](references/exams/README.md) 收录了 CIE 9708 A Level（A2）与 Pearson IAL 数学全部单元（P1–P4、FP1–FP3、M1–M3、S1–S3、D1）的最新考纲条目（编号与印刷页码）和新考纲实施以来全部可得真题的逐题索引（对应考纲条目、分值、终点要求、MS 要点、考官报告要点、原件出处）。登记省掉的是例行调研，**不免除调研纪律**：先核对考纲版本与目标考季仍然适用，补查登记日期之后的新考季，登记里写明的缺口照样去找；登记外的考试、单元或陌生材料，按本节与下一节完整调研。
+**已登记的考试先查登记**：[references/exams/](references/exams/README.md) 收录了 CIE 9708 A Level（A2）与 Pearson IAL 数学全部单元（P1–P4、FP1–FP3、M1–M3、S1–S3、D1）的最新考纲条目（编号与印刷页码）和新考纲实施以来全部可得真题的逐题索引（对应考纲条目、分值、终点要求、MS 要点、考官报告要点、原件出处）。登记省掉的是例行调研，**不免除调研纪律**：先核对考纲版本与目标考季仍然适用，补查登记日期之后的新考季，缺口（以 `python scripts/exam_index.py <单元> --gaps` 的输出为准）照样去找；登记外的考试、单元或陌生材料，按本节与下一节完整调研。
 
 ### 3. 取证与标定掌握水平
 
 - 读锁定版本的**考纲原文**，把本批范围的每一条拆成考点（定义、关系、方法、图、计算、评价角度），连指导栏一起读。
-- 已登记的考试先用 `python scripts/exam_index.py <单元> --spec <条目> --demands` 拉出真题需求清单的初稿，再回到原 MS／ER 核对要用的每一条；未登记的考试从零开始。
+- 已登记的考试先跑 `python scripts/exam_index.py <单元> --gaps`：stderr 第一行是快照提示（快照日期、最新收录考季、未收录的预期考季数），stdout 列出应有而未收录的卷、没有 MS／考官报告的卷、只有抽取文本或只有 Drive 副本的原件。这些缺口与快照日期之后的新考季照样调研，仍缺的写进 `research_gaps`。再用 `python scripts/exam_index.py <单元> --spec <条目> --demands` 拉出真题需求清单初稿：`ms_source: registry summary` 的要点引用前回到原 MS 核对，`ms_source: not held` 的要自己找 MS。未登记的考试从零开始。
+- 登记条目的 `sources` 依次是中性出处、公开地址（examsolutions S3 镜像、raw.githubusercontent.com，可直接下载）、Drive 标题与 id（id 只在构建登记的账号里有效，换账号按标题搜）、构建记录；`local:src/…` 等是构建溯源，不随包发布。取法见 [references/exams/README.md](references/exams/README.md)“原件怎么取”。
+- 调研中找到登记里没有的题、MS 或考官报告：在仓库里工作就补进 `references/exams/`，跑 `--check` 与 `--completeness`；技能以上传的 zip 运行、没有仓库时，写进交付文件夹的 `registry-additions/<单元>.questions.json`（与 `units/<单元>.questions.json` 同格式，补全已有条目沿用原 `id`），用 `python scripts/exam_index.py --check-file registry-additions/<单元>.questions.json` 校验，并在交付说明里请用户把它合并进仓库、更新 `versions.json` 的 `gaps`、重新打包技能。
 - 按考季倒序读真题，把考到本批内容的每个小问记进**真题需求清单**（`demands`：考季、题号、命令词、问什么、终点要求、MS 注释、对应考点与卡），读到连续三季没有新问法为止（`coverage.saturation`）。
 - 每个考点读**至少两个不同考季**、问法不同的真题与对应 **mark scheme**；每个单元至少读一份 **examiner report**；essay 类科目找**真实考生的高中低档作答**（Cambridge ECR、Pearson exemplar responses），也可参考官方示范答案（标明不是真实考生）。
 - 从这些材料读出每个考点的掌握水平：定义必含词与拒收说法、单独给分的步骤、终点要求、需要的图、essay 分析要展开到几环、评价写到什么程度。写进考点的 `level`，并在 `evidence` 挂上至少两条不同考季的 MS／ER 出处。**MS 认可的写法优先**：教材的等价说法只作补充，只有 MS 明确拒收的写法才标“不给分”。
@@ -116,4 +118,4 @@ python scripts/validate_package.py out/<牌组>.apkg --output out/validate.json 
 
 ## 维护本技能
 
-以下只适用于**源码仓库**（上传的 zip 不含测试与 git 历史）：改规则时同步主文、references、生成器与测试；运行 `pip install -r scripts/requirements-dev.txt` 后 `python -m pytest scripts -q`（含 `exam_index.py --check` 对全部考试登记的校验），再用一个真实小样做预览和截图检查；打包用 `python scripts/package_skill.py`，它只收 git 跟踪的文件，遇到未提交的文件、邮箱、云盘链接或密钥会拒绝打包。在上传的 zip 里补充考试登记后，至少运行 `python scripts/exam_index.py --check`。新增考试登记时沿用 `references/exams/README.md` 的格式。修改规则不等于授权重写用户已有的全部卡片。旧版生成器（v5 导图卡、teaching、quiz 等）已从当前版本移除，需要时到源码仓库的 git 历史里取。
+以下只适用于**源码仓库**（上传的 zip 不含测试与 git 历史）：改规则时同步主文、references、生成器与测试；运行 `pip install -r scripts/requirements-dev.txt` 后 `python -m pytest scripts -q`（含 `exam_index.py --check` 与 `--completeness` 对全部考试登记的校验），再用一个真实小样做预览和截图检查；打包用 `python scripts/package_skill.py`，它只收 git 跟踪的文件，遇到未提交的文件、邮箱、云盘链接或密钥会拒绝打包。在上传的 zip 里补充考试登记后，至少运行 `python scripts/exam_index.py --check` 与 `--completeness`。新增考试登记时沿用 `references/exams/README.md` 的格式。修改规则不等于授权重写用户已有的全部卡片。旧版生成器（v5 导图卡、teaching、quiz 等）已从当前版本移除，需要时到源码仓库的 git 历史里取。
