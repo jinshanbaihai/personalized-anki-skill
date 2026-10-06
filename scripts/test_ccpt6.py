@@ -279,27 +279,39 @@ def test_speed_rule():
     # One signal alone keeps 2×: a three-step proof with no spoken formulas is a structure, not a dense page.
     proof = {'genre': 'derivation', 'title': 'Proof by contradiction', 'blocks': [{'type': 'steps', 'items': [{'do': 'a', 'why': 'b'}] * 3}]}
     m = narration.speed_metrics(proof, '证明', set())
-    assert m['signals'] == ['证明结构'] and narration.decide_speed(m) == (2.0, '')
+    assert m['signals'] == {'structure': ['证明结构'], 'load': []} and narration.decide_speed(m) == (2.0, '')
     # "show that" is a command word, not a proof.
     shown = {'genre': 'derivation', 'title': 'Show that x = 2', 'blocks': [{'type': 'steps', 'items': [{'do': 'a', 'why': 'b'}] * 3}]}
     assert not narration.speed_metrics(shown, 'x', set())['proof']
 
 
 def test_speed_rule_needs_two_signals():
-    def steps(dos):
-        return {'genre': 'method', 'title': 't', 'blocks': [{'type': 'steps', 'items': [{'do': d, 'why': '为了把未知量单独留下'} for d in dos]}]}
-    # Four formula steps with long Chinese reasoning and few values: one signal (steps) → 2×.
+    def steps(dos, genre='method'):
+        return {'genre': genre, 'title': 't', 'blocks': [{'type': 'steps', 'items': [{'do': d, 'why': '为了把未知量单独留下'} for d in dos]}]}
+    # Structure without load: four formula steps, long Chinese reasoning, few values → 2×.
     plain = steps([f'$x_{i}$〔x {i}〕，然后两边同时除以系数，留意符号与定义域的限制条件' for i in range(4)])
     m = narration.speed_metrics(plain, '讲解' * 60, set())
-    assert len(m['signals']) == 1 and narration.decide_speed(m)[0] == 2.0, m
-    # The same steps carrying many values to hold → two signals → 1.5×.
+    assert m['signals']['structure'] and not m['signals']['load'] and narration.decide_speed(m)[0] == 2.0, m
+    # The same steps carrying many values to hold → structure + load → 1.5×.
     values = steps([f'$x = {a}$〔x 等于 {a}〕，代入 {b} 与 {c}' for a, b, c in ((14, 25, 36), (47, 58, 69), (71, 82, 93), (104, 115, 126))])
     m = narration.speed_metrics(values, '讲解' * 60, set())
     assert narration.decide_speed(m)[0] == 1.5 and '需同时记住' in narration.decide_speed(m)[1], m
-    # Formulas inside a table are read on screen, not by ear: they do not raise the formula share.
+    # Symbolic algebra with many readings per step is heavy too, without any numbers (the reviewer's M-binomial case).
+    algebra = steps([' '.join(f'$a_{j}$〔a {j}〕' for j in range(7)) + '，整理' for _ in range(5)])
+    m = narration.speed_metrics(algebra, '讲解' * 60, set())
+    assert narration.decide_speed(m)[0] == 1.5 and '每步约' in narration.decide_speed(m)[1], m
+    # Load without structure: a formula-heavy three-step page stays 2×.
+    short = steps([' '.join(f'$b_{j}$〔b 的 {j} 次项〕' for j in range(9)) for _ in range(3)])
+    m = narration.speed_metrics(short, 'x', set())
+    assert m['signals']['load'] and not m['signals']['structure'] and narration.decide_speed(m)[0] == 2.0, m
+    # Formulas inside a table are read on screen, and a block whose own speech replaces its readings adds none.
     table = {'genre': 'formula', 'title': 't', 'blocks': [{'type': 'lead', 'text': '下表列出常用结果，讲解只读标题。'},
              {'type': 'table', 'head': ['f', 'F'], 'rows': [[f'$x^{i}$〔x 的 {i} 次方〕', f'$x^{i+1}$〔x 的 {i+1} 次方〕'] for i in range(6)]}]}
     assert narration.speed_metrics(table, 'x', set())['m_share'] < 0.35
+    spoken = {'genre': 'formula', 'title': 't', 'blocks': [{'type': 'lead', 'speech': '看图。',
+              'text': '$x^2$〔x 的平方，也就是 x 乘以 x 的这个很长的读法〕 和 $y^2$〔y 的平方，也是一段很长的读法〕'}]}
+    assert narration.speed_metrics(spoken, 'x', set())['m_share'] <= 1.0
+
 
 
 def test_lexicon_and_lint():
@@ -866,9 +878,13 @@ def test_exam_fingerprint_grades_follow_exam_lock():
 
 def test_privacy_blocks_personal_framing_ids_and_scores():
     d = deck()
-    d['cards'][0]['blocks'][0]['text'] = '你丢了 A1：终点没写成最简形式'
+    d['cards'][0]['blocks'][0]['text'] = '你的卷面 Q4 丢了 A1：终点没写成最简形式'
     with pytest.raises(deck_rules.DeckError, match='你'):
         deck_rules.check(d)
+    # One reviewed false positive is listed by path instead of switching the whole gate off.
+    d['privacy_reviewed'] = ['cards[0].blocks[0].text']
+    deck_rules.check(d)
+    del d['privacy_reviewed']
     d['personal'] = True  # a deck only for the learner themselves
     deck_rules.check(d)
     d = deck()
@@ -880,8 +896,16 @@ def test_privacy_blocks_personal_framing_ids_and_scores():
     with pytest.raises(deck_rules.DeckError, match='candidate'):
         deck_rules.check(d)
     d = deck()
-    d['cards'][0]['blocks'][0]['text'] = '本卷批改记录：Q9(a) M1、A1 未得；P(X ≤ 3) 的 5/80 不是分数'
+    # Neutral records, generic teaching phrases and probabilities pass.
+    d['cards'][0]['blocks'][0]['text'] = ('本卷批改记录：Q9(a) M1、A1 未得；如果不写 +c，你丢 A1；Expected score E(S) = 13/125；'
+                                          'a total of 3/100 of the output is defective；只得 7 分（满分 14）')
     deck_rules.check(d)
+    for personal in ('卷面总分 49／75', '本卷得分 49 分（满分 75）', 'Total: 49 out of 75', '你在 Q5 丢了 1 分', 'On your script you lost the A1',
+                     'Candidate No. 0123'):
+        d = deck()
+        d['research'][0]['read'] = personal
+        with pytest.raises(deck_rules.DeckError):
+            deck_rules.check(d)
 
 
 def test_backcheck_trail_and_planning_mode(tmp_path, capsys):
@@ -931,9 +955,54 @@ def test_audio_note_tag_and_package_name(tmp_path):
     src.write_text(json.dumps(d, ensure_ascii=False), encoding='utf-8')
     build_cards.main([str(src), str(tmp_path / 'out'), '--audio-pending'])
     note = (tmp_path / 'out' / '补语音.txt').read_text(encoding='utf-8')
-    for needed in ('Python 3.10', 'pip install -r scripts/requirements.txt', 'winget install Gyan.FFmpeg', 'brew install ffmpeg',
-                   'speech_backend.py --check', '--term-sampler', 'Claude Code'):
+    for needed in ('Python 3.10', 'python3 -m venv .venv', '.venv/bin/python -m pip install -r skill/scripts/requirements.txt',
+                   r'.\.venv\Scripts\python', 'winget install Gyan.FFmpeg', 'brew install ffmpeg', 'sudo apt install ffmpeg',
+                   'speech_backend.py --check', 'build_cards.py deck.json . --term-sampler', 'Claude Code'):
         assert needed in note, needed
     assert str(tmp_path) not in note and (tmp_path / 'out' / 'deck.json').is_file()
+    # The delivered folder alone can rebuild: its bundled skill copy builds the bundled deck.json.
+    bundled = tmp_path / 'out' / 'skill' / 'scripts' / 'build_cards.py'
+    assert bundled.is_file() and (tmp_path / 'out' / 'skill' / 'assets' / 'ccpt6' / 'base.css').is_file()
+    import subprocess, sys
+    run = subprocess.run([sys.executable, str(bundled), 'deck.json', 'rebuilt', '--audio-pending'], cwd=tmp_path / 'out',
+                         capture_output=True, text=True, encoding='utf-8')
+    assert run.returncode == 0, run.stderr
+    assert list((tmp_path / 'out' / 'rebuilt').glob('*.apkg'))
     pkg = next((tmp_path / 'out').glob('*.apkg')).stem
     assert len(pkg) <= 60 and not pkg.endswith('_') and pkg.split('_')[-1] in d['deck']['name'].split()
+
+
+def test_review_round_regressions(tmp_path):
+    # A lost mark written with brackets is still a per-mark record that needs its card.
+    d = deck()
+    d['board'].append({'id': 'Q9(a)M1', 'where': 'p2', 'point': 'Q9(a) M1 未得', 'items': ['S-1'], 'score': 0})
+    with pytest.raises(deck_rules.DeckError, match='lost'):
+        deck_rules.check(d)
+    # Preview of a complete deck without the trail warns instead of failing; a package still requires it.
+    d = deck()
+    d['coverage']['backcheck'] = []
+    assert any('回查' in w for w in deck_rules.check(d, preview=True)['warnings'])
+    with pytest.raises(deck_rules.DeckError, match='two past questions'):
+        deck_rules.check(d)
+    # Planning mode accepts planned card ids that do not exist yet.
+    plan = deck()
+    plan['cards'] = []
+    assert deck_rules.check_plan(plan)['coverage']['items'] == 2
+    # Exemplar pages must be real page numbers; "only images" is not a gap, a real absence is.
+    d = deck()
+    d['exam']['papers'] = [{'code': 'WST02', 'format': 'essay'}]
+    d['research'].append({'type': 'exemplar', 'ref': 'ECR', 'read': '封面页与目录', 'used_for': 'x', 'paper': 'WST02'})
+    assert deck_rules.check(d)['warnings']
+    d['research'][-1]['read'] = 'script pp.15–21 read: high, middle, low'
+    assert not deck_rules.check(d)['warnings']
+    d['research'][-1]['read'] = '封面页与目录'
+    d['research_gaps'] = 'ECR 原件网上连扫描图片版也找不到'
+    assert not deck_rules.check(d)['warnings']
+    d['research_gaps'] = 'ECR 只有扫描图片，无 OCR'
+    assert deck_rules.check(d)['warnings']
+    # Reports carry no absolute build paths.
+    src = tmp_path / 'deck.json'
+    src.write_text(json.dumps(deck(), ensure_ascii=False), encoding='utf-8')
+    build_cards.main([str(src), str(tmp_path / 'out'), '--audio-pending'])
+    report = json.loads((tmp_path / 'out' / 'report.json').read_text(encoding='utf-8'))
+    assert str(tmp_path) not in json.dumps(report, ensure_ascii=False)

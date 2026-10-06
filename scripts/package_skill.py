@@ -5,8 +5,8 @@ Usage: python scripts/package_skill.py [out_dir]     → <out_dir>/anki-ccpt-ski
 
 The zip holds one folder, anki-ccpt-skill/, with SKILL.md, references/, scripts/ and assets/. Only files
 tracked by git are packed (a stray .env, collection or marked scan in the working tree never ships), tests,
-caches and build outputs are left out, and the packer refuses to write when it finds untracked files in those
-folders or anything that looks like an e-mail address, a Google Drive link or a secret. The SKILL.md front
+caches and build outputs are left out, and the packer refuses to write when those folders have untracked or
+uncommitted changes, or anything that looks like an e-mail address, a Google Drive link or a secret. The SKILL.md front
 matter is checked against the upload limits (name: lowercase letters, digits and hyphens, at most 64
 characters; description at most 1024 characters).
 """
@@ -52,10 +52,12 @@ def tracked_files(strict=True):
     try:
         files = git('ls-files', '--', *INCLUDE)
         untracked = [f for f in git('ls-files', '--others', '--exclude-standard', '--', *INCLUDE) if not SKIP.search(f)]
+        modified = [line[3:] for line in git('status', '--porcelain', '--untracked-files=no', '--', *INCLUDE) if line.strip()]
     except (OSError, subprocess.CalledProcessError):
         raise SystemExit('package from a git checkout of the skill: only tracked files are packed')
-    if untracked and strict:
-        raise SystemExit('untracked files in the skill folders (commit or remove them first):\n  ' + '\n  '.join(untracked[:20]))
+    if strict and (untracked or modified):
+        raise SystemExit('the skill folders have uncommitted changes; commit (after review) or remove them first, so the zip is exactly a commit:\n  '
+                         + '\n  '.join((['untracked: ' + f for f in untracked] + ['modified: ' + f for f in modified])[:20]))
     return [f for f in files if (ROOT / f).is_file() and not SKIP.search(f)]
 
 

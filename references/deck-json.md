@@ -12,7 +12,7 @@ python scripts/build_cards.py deck.json --check-research       # 卡还没写时
 python scripts/validate_package.py out/<牌组>.apkg --output out/validate.json   # 隔离 collection 导入、解码、重复导入保历史（需 requirements-validate.txt）
 ```
 
-`--audio-pending` 的包可以先导入学习；输出目录里同时写出 `deck.json` 与按步骤编号的 `补语音.txt`（每次打包都会写出 `deck.json`，新对话续做时把它交给 Claude）。之后在能访问语音服务的机器上照 `补语音.txt` 用这份 deck.json 去掉该参数重跑、再导入，同 GUID 的 note 原位更新（Anki 默认“较新时更新”），复习历史保留。Note 字段 `StableID, Title, Page, Source, Narration` 永远不改，改了旧卡就无法原位更新（测试锁定）。
+`--audio-pending` 的包可以先导入学习；输出目录里同时写出 `deck.json`、按步骤编号的 `补语音.txt` 和补语音要用的 `skill/` 程序副本（scripts 与 assets，约 6 MB）（每次打包都会写出 `deck.json`，新对话续做时把它交给 Claude）。之后在能访问语音服务的机器上照 `补语音.txt` 用这份 deck.json 去掉该参数重跑、再导入，同 GUID 的 note 原位更新（Anki 默认“较新时更新”），复习历史保留。Note 字段 `StableID, Title, Page, Source, Narration` 永远不改，改了旧卡就无法原位更新（测试锁定）。
 
 ## 顶层结构
 
@@ -38,8 +38,8 @@ python scripts/validate_package.py out/<牌组>.apkg --output out/validate.json 
 - `deck_id`、`model_id` 取一次后固定；`namespace` + 卡 `id` 决定 GUID，原位更新时两者都不能改。
 - `style.theme`：`editorial`（经济、商科、社科）、`paper`（纯数）、`lab`（统计、数据）、`blueprint`（物理、化学、工程）、`manuscript`（历史、文学、哲学）。同一资格跨学科时用 `style.theme_by_subdeck`（如 `{"S2": "lab", "P4": "paper"}`）；单卡可用 `theme` 覆盖。
 - `style.voice`：`xiaoxiao`（默认）或 `yunyang`；`style.voice_by_subdeck` 只用于**单独学习**的子牌组（如 `{"Essay": "yunyang"}`），因为从父牌组一起复习时声音会逐卡交替；`--term-sampler` 按每种声音各出一份试听；`style.speed`：`"auto"`（默认：逐卡按规则判定 2× 或 1.5×），或整副牌组固定 `2.0`／`1.5`（1.5 需写 `style.speed_reason`）。`speech_lexicon` 是读音替换表。规则见 [narration.md](narration.md)。
-- `style.speed_review`：一副卡组超过三成判为 1.5× 时必填，写为什么这副卡确实这么密（会印进报告，也要写进交付说明）。`style.legacy_voice: true` 才允许云希（只用于维护旧卡）。`deck.tag` 可指定页眉考试标签（默认由考试代码与单元生成，如“9708 · P3 · P4”）。
-- `personal`：默认不写（false）。生成器拒绝“你的卷面／你丢”式写法、考生号与中心号、邮箱，以及卷面总分（如“总分 49/75”）；只有学习者明确要一副只给自己看的个人化讲评时才写 `"personal": true`，这类卡组不外传。姓名生成器认不出，制作者自己保证不写。
+- `style.speed_review`：一副卡组超过三成判为 1.5× 时打包前必填（`--preview` 只警告），写为什么这副卡确实这么密（会印进报告，也要写进交付说明）。`style.legacy_voice: true` 才允许云希（只用于维护旧卡）。`deck.tag` 可指定页眉考试标签（默认由考试代码与单元生成，如“9708 · P3 · P4”）。
+- `personal`：默认不写（false）。生成器拒绝“你的卷面／你丢”式写法、考生号与中心号、邮箱，以及卷面总分（如“总分 49/75”）；只有学习者明确要一副只给自己看的个人化讲评时才写 `"personal": true`，这类卡组不外传。单条误拦（例如概率 13/125 旁边恰好有“试卷”二字）把报错里的路径写进 `privacy_reviewed`（如 `["cards[3].blocks[1].text"]`），其余照常检查。姓名生成器认不出，制作者自己保证不写。
 - 非考试材料设 `"academic": false`，可省略 `exam`、`research`、`coverage`；有 `exam` 或任何卡写了 `covers` 时生成器拒绝 `academic: false`，不能用它绕过取证。
 
 ## exam：锁定考试
@@ -63,7 +63,7 @@ python scripts/validate_package.py out/<牌组>.apkg --output out/validate.json 
 
 ## board：板书点
 
-`[{id:"B07", where:"p3 左下", point:"proof by contradiction 三步", items:["P4-1.1"], note:"…", source_paper:"WMA14 Jan 2026 Q7", legibility:"ok"}]`。每个板书点要么映射到考点，要么在 `note` 说明为什么不进卡（老师口误已更正、离题、超纲）。`source_paper` 写印刷题的官方出处（找不到写“未找到官方出处”）；批改卷上丢的分（如 `Q01A2 0`，也可写 `Q9a(ii)A1` 这类带小问的 id）也记成板书点，写 `lost`（“A1”）与 `cards`（补救它的卡）或 `not_carded`；只记题号、分点与是否得分，不写姓名、日期和总分。可选 `score`（这一分点得了几分），`score` 大于 0 时不需要 `lost`：M0 → 方法卡与完整推导卡，A0 → 易错卡与 finish 检查项，B0 → 术语或结论句卡；看不清的板书点写 `"legibility": "low"` 和 `confirmed_by`（用哪份官方材料确认了内容），不猜字。卡组不是从板书做的（例如只按考纲某节制作）时，`board` 可为空，但要写 `board_waived` 说明。
+`[{id:"B07", where:"p3 左下", point:"proof by contradiction 三步", items:["P4-1.1"], note:"…", source_paper:"WMA14 Jan 2026 Q7", legibility:"ok"}]`。每个板书点要么映射到考点，要么在 `note` 说明为什么不进卡（老师口误已更正、离题、超纲）。`source_paper` 写印刷题的官方出处（找不到写“未找到官方出处”）；批改卷上丢的分（如 `Q01A2 0`，也可写 `Q9(a)M1`、`Q9(a)(ii)A1` 这类带小问的 id）也记成板书点，写 `lost`（“A1”）与 `cards`（补救它的卡）或 `not_carded`；只记题号、分点与是否得分，不写姓名、日期和总分。可选 `score`（这一分点得了几分），`score` 大于 0 时不需要 `lost`：M0 → 方法卡与完整推导卡，A0 → 易错卡与 finish 检查项，B0 → 术语或结论句卡；看不清的板书点写 `"legibility": "low"` 和 `confirmed_by`（用哪份官方材料确认了内容），不猜字。卡组不是从板书做的（例如只按考纲某节制作）时，`board` 可为空，但要写 `board_waived` 说明。
 
 ## demands：真题需求清单
 
@@ -92,7 +92,7 @@ python scripts/validate_package.py out/<牌组>.apkg --output out/validate.json 
 }
 ```
 
-`class`：`core`（本卷考点，必须写 `level`：MS 要求的措辞、步骤、图或评价深度；`kind`：`term`／`method`／`formula`／`diagram`／`chain`／`essay`／`command`／`fact`，`term` 类考点必须有自己的术语卡；`evidence`：至少两条不同考季的 MS 或 ER 出处，取不到就写 `evidence_gap`；已由其他牌组的卡讲透时写 `existing` 指明那张卡）、`prerequisite`（理解或解题必需的先修，写 `reason`）、`adjacent`（同一考纲大节、留给下一批，写 `reason`；卡片不能覆盖它，报告会列出）、`excluded`（教材或板书出现但不属于本卷，写 `reason`，任何卡不得覆盖）。`status: complete` 时每个 core／prerequisite 至少有一张卡；`partial` 时 `remaining` 写清还差什么。卡片用 `covers` 反向声明自己教哪些考点，生成器双向核对。`backcheck` 记录“只凭卡组作答真题”的结果（`result` 为 `pass` 或 `gap`，`gap` 必须写 `fixed_by`）；`status: complete` 至少要有两条不同考季的回查。`coldread` 记录冷读关键词测试里写不出的词（`missing`）和补上它们的卡。方法见 [coverage-ledger.md](coverage-ledger.md) 与 [review-and-delivery.md](review-and-delivery.md) §一。
+`class`：`core`（本卷考点，必须写 `level`：MS 要求的措辞、步骤、图或评价深度；`kind`：`term`／`method`／`formula`／`diagram`／`chain`／`essay`／`command`／`fact`，`term` 类考点必须有自己的术语卡；`evidence`：至少两条不同考季的 MS 或 ER 出处，取不到就写 `evidence_gap`；已由其他牌组的卡讲透时写 `existing` 指明那张卡）、`prerequisite`（理解或解题必需的先修，写 `reason`）、`adjacent`（同一考纲大节、留给下一批，写 `reason`；卡片不能覆盖它，报告会列出）、`excluded`（教材或板书出现但不属于本卷，写 `reason`，任何卡不得覆盖）。`status: complete` 时每个 core／prerequisite 至少有一张卡；`partial` 时 `remaining` 写清还差什么。卡片用 `covers` 反向声明自己教哪些考点，生成器双向核对。`backcheck` 记录“只凭卡组作答真题”的结果（`result` 为 `pass` 或 `gap`，`gap` 必须写 `fixed_by`）；`status: complete` 至少要有两条不同考季的回查。`coldread` 记录冷读关键词测试里写不出的词（`missing`）和补上它们的卡。`--preview` 时缺回查只警告，打包时必须有。方法见 [coverage-ledger.md](coverage-ledger.md) 与 [review-and-delivery.md](review-and-delivery.md) §一。
 
 ## cards：卡片
 

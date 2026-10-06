@@ -26,13 +26,21 @@ class DeckError(ValueError):
 
 # Deliverables leave the learner's machine: marked scripts are recorded as question + mark + scored or not,
 # never as one identified person's script (SKILL.md step 1). Names cannot be detected; these patterns can.
+SCRIPT = r'(?:答卷|卷面|试卷|卷子|本卷|模考|mock|script|paper)'
 PRIVATE = [
-    (re.compile(r'你的卷面|你丢|你在其中丢|你在这(?:里|题|一问|一步)丢'), 'addresses the author of the marked script as 你'),
-    (re.compile(r'考生号|准考证号|中心号|candidate number|centre number|center number', re.I), 'a candidate or centre number'),
+    (re.compile(r'你的(?:卷面|答卷|试卷|卷子)|你(?:在|这)[^。；\n]{0,8}(?:丢|被扣|扣了|漏了)|你丢了?\s*\d+\s*分|你被扣'),
+     'addresses the author of a marked script as 你'),
+    (re.compile(r'\byour (?:script|exam paper|answer sheet|answer booklet|mock)\b|\byou (?:lost|dropped) (?:the |a |an )?(?:\d+ marks?|[BMA]\d)', re.I),
+     'addresses the author of a marked script as "you"'),
+    (re.compile(r'考生号|准考证号|中心号|candidate (?:no\.?|number)|cand\.\s*no\b|cent(?:re|er) (?:no\.?|number)|(?:centre|center|candidate)\s*[:：#]\s*\d{3,}', re.I),
+     'a candidate or centre number'),
     (re.compile(r'[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}'), 'an e-mail address'),
+    # a total on a script: "总分 49/75", "卷面 49／75", "本卷得分 49 分（满分 75）", "Total: 49 out of 75"
+    (re.compile(SCRIPT + r'[^。；\n]{0,8}?\d{1,3}\s*(?:/|／|out of)\s*\d{2,3}(?![\d/])|总分[^。；\n]{0,6}?\d{1,3}\s*(?:分|/|／)'
+                r'|' + SCRIPT + r'[^。；\n]{0,6}?得分?\s*\d{1,3}\s*分\s*[（(]\s*满分|\b(?:total(?: score)?|scored)\s*[:：]?\s*\d{1,3}\s*(?:/|／|out of)\s*\d{2,3}\b'
+                r'|\d{1,3}\s*[/／]\s*\d{2,3}(?![\d/])[^。\n]{0,6}?(?:丢\s*[MABC]?\s*\d|失分|扣\s*[MABC]?\s*\d|lost)|\d{1,3}\s*[/／]\s*\d{2,3}(?![\d/])[^。\n]{0,12}?(?:模考|卷面|答卷|本卷)', re.I),
+     'a total score on a script'),
 ]
-SCORE = re.compile(r'(?<![\d/.])\d{1,3}\s*/\s*(?:75|80|100|125)(?![\d/])')
-SCORE_CONTEXT = re.compile(r'答卷|卷面|总分|得分|成绩|score|total|mark(?:ed|s)? (?:out of|on the paper)', re.I)
 
 
 def walk_strings(value, path=''):
@@ -47,17 +55,20 @@ def walk_strings(value, path=''):
 
 
 def check_privacy(data):
-    """Personal framing, IDs, e-mails and total scores stop the build unless the deck is marked personal."""
+    """Personal framing, IDs, e-mails and script totals stop the build. A deck only for the learner themselves may set
+    "personal": true; a single reviewed false positive is listed by path in privacy_reviewed instead."""
     if data.get('personal') is True:
         return
+    reviewed = data.get('privacy_reviewed', [])
+    need(texts(reviewed, nonempty=False), 'privacy_reviewed lists the paths (as printed by the error) of strings checked by hand and found not personal')
     for path, value in walk_strings(data):
+        if path in reviewed or path.startswith('privacy_reviewed'):
+            continue
         for pattern, what in PRIVATE:
             m = pattern.search(value)
-            need(not m, f'{path}: "{m.group(0) if m else ""}" is {what}. Record a marked script neutrally — question, mark, scored or not '
-                        '(e.g. "本卷批改记录：Q9(a) M1、A1 未得") — never "你", never a name or ID; a deck only for the learner themselves may set "personal": true')
-        for m in SCORE.finditer(value):
-            around = value[max(0, m.start() - 14):m.end() + 14]
-            need(not SCORE_CONTEXT.search(around), f'{path}: "{around.strip()}" looks like a total score on a script; delivered files carry no personal scores')
+            need(not m, f'{path}: "{m.group(0) if m else ""}" looks like {what}. Record a marked script neutrally — question, mark, scored or not '
+                        '(e.g. "本卷批改记录：Q9(a) M1、A1 未得") — never "你", never a name, ID or total. If this string is not personal '
+                        f'(e.g. a probability), add "{path}" to privacy_reviewed; a deck only for the learner themselves may set "personal": true')
 
 
 def need(cond, message):
@@ -162,8 +173,9 @@ def check_research(data):
     return research_warnings(data, records, gaps)
 
 
-SCRIPT_PAGES = re.compile(r'\bpp?\.\s*\d|页|script|scan', re.I)
-NOT_A_GAP = re.compile(r'no ocr|ocr|image[- ]only|scanned|图片|扫描|没有文字', re.I)
+SCRIPT_PAGES = re.compile(r'\bpp?\.\s*\d|第\s*\d+\s*(?:[–—-]\s*\d+\s*)?页|\d+\s*[–—-]\s*\d+\s*页|script\s*pp?\.?\s*\d', re.I)
+# "it is only an image" is not a reason the scripts could not be read
+NOT_A_GAP = re.compile(r'no ocr|without ocr|无\s*OCR|没有\s*OCR|image[- ]only|only (?:as )?images?|(?:只有|只是|是|仅有)(?:扫描)?图片|没有文字层', re.I)
 
 
 def research_warnings(data, records, gaps):
@@ -179,7 +191,7 @@ def research_warnings(data, records, gaps):
     return out
 
 
-def check_coverage(data, card_ids, card_covers, planning=False):
+def check_coverage(data, card_ids, card_covers, planning=False, preview=False):
     cov = data.get('coverage')
     need(isinstance(cov, dict), 'coverage: list the syllabus points in scope and how they are taught')
     need(text(cov.get('scope')), 'coverage.scope must name the syllabus boundary of this deck')
@@ -220,7 +232,7 @@ def check_coverage(data, card_ids, card_covers, planning=False):
     missing = [k for k, v in by_id.items() if v['class'] in ('core', 'prerequisite') and k not in taught and not text(v.get('existing'))]
     structure = {c['id']: {b.get('type') for b in c['blocks'] if isinstance(b, dict)} for c in data['cards']}
     for k, v in by_id.items():
-        if k not in taught or text(v.get('existing')):
+        if planning or k not in taught or text(v.get('existing')):
             continue
         if v.get('kind') in ('term', 'command'):
             need(any(genres[c] == 'term' for c in taught[k]), f'coverage item {k} is a {v["kind"]}: give it its own term card, not only a mention inside another card')
@@ -239,12 +251,12 @@ def check_coverage(data, card_ids, card_covers, planning=False):
         need(point.get('legibility', 'ok') in ('ok', 'low'), f'board[{i}].legibility: ok or low')
         score = point.get('score')
         need(score is None or (isinstance(score, int) and not isinstance(score, bool) and score >= 0), f'board[{i}].score is a whole number of marks scored')
-        if PER_MARK.fullmatch(point['id']) and score in (None, 0):
+        if (PER_MARK.fullmatch(point['id']) and score is None) or score == 0:
             need('lost' in point, f'board[{i}] {point["id"]} is a per-mark record from a marked script: add "lost" (e.g. "A1") for a 0, and the card that fixes it')
         if 'lost' in point:  # a mark the learner lost on their own script (e.g. Q01A2 = 0)
             need(text(point['lost']), f'board[{i}].lost names the lost mark, e.g. "A1"')
             linked = point.get('cards', [])
-            need(isinstance(linked, list) and all(c in set(genres) for c in linked), f'board[{i}].cards must list card ids')
+            need(isinstance(linked, list) and (planning or all(c in set(genres) for c in linked)), f'board[{i}].cards must list card ids')
             need(planning or linked or text(point.get('not_carded')), f'board[{i}] records a lost mark: name the card that fixes it (M0 → method/derivation card, A0 → pitfall and finish item, B0 → term card) or explain not_carded')
         if point.get('legibility') == 'low':
             need(text(point.get('confirmed_by')), f'board[{i}] is hard to read: say which source confirmed the content (confirmed_by); never fill in guessed words')
@@ -252,12 +264,12 @@ def check_coverage(data, card_ids, card_covers, planning=False):
     undemanded = check_demands(data, by_id, set(genres), planning)
     adjacent = [k for k, v in by_id.items() if v['class'] == 'adjacent']
     # The omission tests are run on finished cards, so a plan is not asked for them yet.
-    backcheck, coldread = (None, None) if planning else check_trail(cov, status, set(genres))
+    backcheck, coldread = (None, None) if planning else check_trail(cov, status, set(genres), preview)
     return {'items': len(by_id), 'taught': len(taught), 'missing': missing, 'undemanded': undemanded, 'adjacent': adjacent,
             'backcheck': backcheck, 'coldread': coldread}
 
 
-def check_trail(cov, status, card_ids):
+def check_trail(cov, status, card_ids, preview=False):
     """Omission tests leave a record: past questions answered only from the cards, and the cold-read keyword test."""
     backcheck = cov.get('backcheck', [])
     need(isinstance(backcheck, list), 'coverage.backcheck must be a list')
@@ -270,7 +282,7 @@ def check_trail(cov, status, card_ids):
         need(isinstance(fixed, list) and all(c in card_ids for c in fixed), f'{w}.fixed_by must list card ids')
         if b['result'] == 'gap':
             need(fixed, f'{w}: a gap names the cards added or changed to close it (fixed_by)')
-    if status == 'complete':
+    if status == 'complete' and not preview:
         need(len({b['series'] for b in backcheck}) >= 2,
              'coverage.backcheck: a complete deck records at least two past questions from different series answered using only the cards '
              '(paper, series, q, result pass/gap, fixed_by); see references/review-and-delivery.md §一')
@@ -288,7 +300,7 @@ def check_trail(cov, status, card_ids):
             {'records': len(coldread), 'missing': sum(len(c.get('missing', [])) for c in coldread)})
 
 
-PER_MARK = re.compile(r'Q\d+[a-z]*(\([ivx]+\))?[BMAC]\d*\*?')
+PER_MARK = re.compile(r'Q\d+(?:[a-z]|\([a-z]+\)|\([ivx]+\))*\s*[BMAC]\d*\*?')
 
 
 def check_demands(data, by_id, card_ids, planning=False):
@@ -308,7 +320,7 @@ def check_demands(data, by_id, card_ids, planning=False):
         points = d.get('points')
         need(texts(points) and all(p in by_id for p in points), f'demands[{i}].points must list coverage item ids')
         cards = d.get('cards', [])
-        need(isinstance(cards, list) and all(c in card_ids for c in cards), f'demands[{i}].cards must list card ids')
+        need(isinstance(cards, list) and (planning or all(c in card_ids for c in cards)), f'demands[{i}].cards must list card ids')
         need(planning or cards or text(d.get('not_carded')), f'demands[{i}] has no card: name the card that prepares it, or explain not_carded')
         used |= set(points)
     return [k for k, v in by_id.items() if v['class'] == 'core' and k not in used]
@@ -414,7 +426,7 @@ def check_plan(data):
     return {'cards': len(cards), 'coverage': check_coverage(plan, set(covers), covers, planning=True), 'warnings': warnings}
 
 
-def check(data):
+def check(data, preview=False):
     check_privacy(data)
     if data.get('academic', True) is False:
         need(not data.get('exam') and not any(c.get('covers') for c in data.get('cards', []) if isinstance(c, dict)),
@@ -429,5 +441,7 @@ def check(data):
         for c in data['cards']:
             need(texts(c.get('covers')), f'card {c["id"]}: covers must list the coverage item ids it teaches')
             covers[c['id']] = c['covers']
-        summary['coverage'] = check_coverage(data, ids, covers)
+        summary['coverage'] = check_coverage(data, ids, covers, preview=preview)
+        if preview and (data.get('coverage') or {}).get('status') == 'complete' and summary['coverage']['backcheck']['records'] < 2:
+            summary['warnings'].append('预览：complete 卡组打包前要有两道不同考季的真题回查（coverage.backcheck），见 review-and-delivery.md §一')
     return summary

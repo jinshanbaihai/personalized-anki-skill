@@ -18,17 +18,16 @@
 | T | 本卡首次引入的术语数（按牌组顺序） |
 | E | 每 100 个汉字对应的 English 词数 |
 | N | 同一块**朗读文本**中需同时记住的不同数值（不计 0–3、步号、得分记号与年份；表格、图、因果链、导图、考法块不计；只对推导、方法、公式卡生效） |
-| C | 听觉块里的条件型说法（仅当、除非、前提是、取决于）个数；因果链与导图不计 |
+| C | 听觉块里的条件型说法（仅当、除非、前提是、取决于）个数；因果链与导图不计（只写进报告，不参与判定） |
 
-**两类信号同时成立才降到 1.5×**（`narration.speed_signals`）。单独一项（步骤多、公式多、证明、数值多）都不降速：
+**要跟住的结构与耳朵的重负荷同时成立才降到 1.5×**（`narration.speed_signals`）。只有一类（步骤多但每步都短而清楚，或公式很多但只有两三步）都不降速：
 
-| 信号 | 条件 |
+| 维度 | 信号（满足任一即算这一类） |
 |---|---|
-| 多步推导 | `S ≥ 4 且 M ≥ 4` |
-| 公式读法占比高 | `m% ≥ 35%`（分子分母都只算听得到的块：表格、图、因果链、导图、考法块在屏幕上看，不计） |
-| 证明结构 | 含 contradiction、induction、反证、归纳、证明，且 `S ≥ 3`（“show that”是命令词，不算证明） |
-| 需同时记住多个数值 | `N ≥ 4`，且 `S ≥ 4`、卡型是推导／方法／公式（数值要跨几步记住才算负担） |
-| 密度分（短页面上代替“多步推导”） | `S ≥ 3` 时，步骤带公式读法（M ≥ 1）加 2、不带公式加 1；`M ≥ 3`、`T ≥ 3`、`E ≥ 8`、`C ≥ 2` 各加 1；≥ 3 计一项信号；已满足“多步推导”时不重复计 |
+| 结构 | `S ≥ 4`（有依赖的推导步）；或证明结构（contradiction、induction、反证、归纳、证明，且 `S ≥ 3`；“show that”是命令词，不算证明） |
+| 负荷 | 公式读法占朗读 `m% ≥ 35%`；每步约 6 处以上公式读法（`M ≥ 6S`，符号代数也算重）；推导／方法／公式卡里同一块朗读要同时记住 `N ≥ 4` 个数值；新术语 `T ≥ 3` 且 English 密度 `E ≥ 8` |
+
+`m%`、`M` 与 `N` 只算听得到的部分：表格、图、因果链、导图、考法块在屏幕上看；块自带 `speech` 时只算这段 speech，不算被它替换掉的读法；出处不读也不算。
 
 M 同时统计行内 `$…$` 与独立 `$$…$$` 的读法。每张卡的信号列在 `report.json` 的 `metrics.signals`；结果与理由写进 `report.json` 与卡片 Source；1.5× 卡的播放器旁显示简短理由（如“6 步推导”）。整副牌组固定速度（`style.speed: 2.0`）时，规则判为 1.5× 的卡会在报告里警告；默认请用 `"auto"`。一副卡组超过三成判为 1.5× 时，报告逐卡列出原因，作者要在 `style.speed_review` 写明为什么这副卡确实这么密（例如整副都是完整的真题解答），并把理由写进交付说明。手动 `speed` 必须写 `speed_reason`。
 
@@ -62,7 +61,8 @@ Edge 只接受纯文本（不能用 SSML 的 `<lang>`、`<phoneme>`、`<say-as>`
 - `python scripts/speech_backend.py --check` 检查声音目录与配置，`--probe 文件.mp3` 实际合成一句。Edge read-aloud 是非公开端点，2025 年 8 月与 12 月都曾变动导致失效；持续 `NoAudioReceived` 时先 `pip install -U edge-tts`。Edge 的 zh-CN 只有晓晓、晓伊、云健、云希、云夏、云扬 6 个标准声（另有两个方言声），没有 zh-CN multilingual；`XiaoxiaoMultilingual`、DragonHD 等只在 Azure。
 - 构建前若有原音需要合成，生成器先做预检：服务不可达时以退出码 2（`network_blocked`）立即停止，声音不在列表时退出码 3（`voice_missing`），都不改动任何文件，也不换声音。
 - 缺 ffmpeg／ffprobe 时构建以退出码 4（`ffmpeg_missing`）停止并给出三平台安装命令；`speech_backend.py --check` 也会报告，不会误报成语音服务的问题。
-- 语音服务不可达时：`--audio-pending` 先交付图文包（页面明示“语音待补”、播放器禁用），交付文件夹里同时写出 `deck.json` 和 `补语音.txt`。`补语音.txt` 是学习者照着做就能补完的编号步骤：取得同一个 skill 包并解压 → 安装 Python 3.10+ → `pip install -r scripts/requirements.txt` → 安装 ffmpeg（Windows `winget install Gyan.FFmpeg`，macOS `brew install ffmpeg`，Linux `sudo apt install ffmpeg`）→ `python scripts/speech_backend.py --check` → `python scripts/build_cards.py "<交付文件夹>/deck.json" "<交付文件夹>" --term-sampler` → 导入新 .apkg（同 GUID 原位更新，复习历史保留）→ 听一遍 term-sampler.mp3。也可以在自己电脑上的 Claude Code 里让 Claude 照着执行。
+- 没装 edge-tts 时预检以 `edge_tts_missing`（退出码 5）停止，说明这不是网络问题。
+- 语音服务不可达时：`--audio-pending` 先交付图文包（页面明示“语音待补”、播放器禁用），交付文件夹里同时写出 `deck.json`、`补语音.txt` 和补语音要用的 `skill/` 程序副本，所以学习者不需要另找 skill 包。`补语音.txt` 是在这个文件夹里照着做就能补完的编号步骤：安装 Python 3.10+ 与 ffmpeg（Windows `winget install Gyan.FFmpeg`，macOS `brew install ffmpeg`，Linux `sudo apt install ffmpeg`）→ 建虚拟环境（新版 macOS 与 Ubuntu 的系统 Python 不允许直接 pip 安装）并 `pip install -r skill/scripts/requirements.txt` → `speech_backend.py --check` → `build_cards.py deck.json . --term-sampler` → 导入新 .apkg（同 GUID 原位更新，复习历史保留）→ 听一遍 term-sampler.mp3。Windows 与 macOS／Linux 的命令分别写好。也可以在自己电脑上的 Claude Code 里让 Claude 照着执行。
 - 已授权的 Azure Speech（`AZURE_SPEECH_KEY`、`AZURE_SPEECH_REGION`）只作为**同一声音**的备选；凭据不进 skill、日志或仓库。换成别的声音只在用户明确同意后改 `style.voice` 并全牌组重合成。
 
 ## 验收

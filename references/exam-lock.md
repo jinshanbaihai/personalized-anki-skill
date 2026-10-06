@@ -53,7 +53,7 @@
 | permutations／combinations、geometric distribution | 9709 P5；IAL 全无 | CIE vs Pearson IAL |
 | complex numbers | 9709 P3；IAL 只在 FP1／FP2 | 纯数卷出现即 CIE P3 或 Pearson FP |
 | large data set | UK 9MA0 统计；IAL 全无 | UK vs IAL |
-| property rights、pollution permits、nudge、regulation／deregulation | 9708 A Level 8.1.1（p.27） | 9708 A Level vs AS（AS 3.2 只有 subsidies、direct provision、information 等） |
+| property rights、pollution permits、nudge、regulation／deregulation | 9708 A Level 8.1.1（p.27） | 只区分同局单元：9708 A Level vs AS（AS 3.2 只有 subsidies、direct provision、information 等）；其他考试局的经济学考纲也有这些内容，不能用来区分考试局（`exam_fingerprint.py` 因此不把它算作考试局级排他点） |
 
 搜索摘要得来的条目（9MA0 Topic 10、9709 条目号）在正式锁定前要读到考纲原文页码。
 

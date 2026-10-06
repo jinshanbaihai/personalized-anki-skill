@@ -16,6 +16,7 @@ import hashlib
 import html
 import json
 import re
+import shutil
 import sys
 from pathlib import Path
 
@@ -23,7 +24,7 @@ import genanki
 
 from blocks import inline, render_block, esc, BlockError, strip_tags, REL_RULES, MATH, RENDERERS
 from deck_rules import check, check_plan, GENRES, DeckError
-from speech_backend import resolve_voice, inspect_voice, DEFAULT_VOICE
+from speech_backend import resolve_voice, inspect_voice, configured_azure, DEFAULT_VOICE
 import narration
 from package_addon import write_addon
 
@@ -76,9 +77,13 @@ def card_tag(data, card):
     code = exam.get('code') or ''
     units = []
     for unit in exam.get('units', []):
-        short = unit[len(code) + 1:] if code and unit.startswith(code + '/') else unit
-        units.append(f'P{short}' if short.isdigit() else short)
-    return ' · '.join(dict.fromkeys(x for x in [code] + units if x))
+        base, _, suffix = unit.partition('/')
+        if code and base == code and suffix:  # 9708/3 → P3
+            units.append(f'P{suffix}' if suffix.isdigit() else suffix)
+        else:                                # WMA14/01 and WMA14/01A → WMA14
+            units.append(base)
+    parts = list(dict.fromkeys(x for x in [code] + units if x))
+    return ' · '.join(parts[:4]) + (' …' if len(parts) > 4 else '')
 
 
 def render_card(data, card, style):
@@ -290,7 +295,9 @@ PROSE_THEMES = {'editorial', 'manuscript'}  # humanities themes: paragraphs beco
 SKIP_KEYS = {'source', 'sources', 'marks_basis', 'ref', 'speech', 'type', 'id', 'kind', 'rel', 'arrow', 'ao', 'mark', 'marks', 'lost',
              'cards', 'covers', 'src', 'alt', 'svg', 'html', 'source_type', 'layout', 'edge', 'direction', 'theme', 'cond_speech'}
 PLAIN_MATH = re.compile(r'[Σ∑√∫∏]|[⁰¹²³⁴⁵⁶⁷⁸⁹⁻]|(?<![A-Za-z])(?:P|E|Var|Cov)\s*\(|\d\s*×\s*\d|(?<![\d./A-Za-z])(\d{1,3})\s*/\s*(\d{1,3})(?![\d/])')
-MARK_CONTEXT = re.compile(r'^\s*(?:分|marks?\b|个?得分点)|(?:得|满分|score|scored|only|仅)\s*$', re.I)
+MARK_AFTER = re.compile(r'^\s*(?:分|marks?\b|个?得分点)', re.I)
+# a tally or page reference, not maths: "Level 2（10/14）", "ECR 低档 4/14", "AO3 至少 4/6", "p. 12/13", "只得 7/14"
+MARK_BEFORE = re.compile(r'(?:Level\s*\d|L\d|档|AO\d|ECR|band|得|满分|score[sd]?|only|仅|至少|at least|pp?\.|marks?)[^/／\d]{0,6}$', re.I)
 
 
 def plain_math(card):
@@ -309,7 +316,7 @@ def plain_math(card):
             visible = re.sub(r'〔[^〕]*〕', ' ', MATH.sub(' ', value))
             visible = re.sub(r'<[^>]+>', ' ', visible)
             for m in PLAIN_MATH.finditer(visible):
-                if m.group(1) and (MARK_CONTEXT.search(visible[m.end():m.end() + 6]) or MARK_CONTEXT.search(visible[max(0, m.start() - 6):m.start()])):
+                if m.group(1) and (MARK_AFTER.search(visible[m.end():m.end() + 6]) or MARK_BEFORE.search(visible[max(0, m.start() - 14):m.start()])):
                     continue
                 hits.append(visible[max(0, m.start() - 8):m.end() + 8].strip())
     scan(card.get('blocks', []))
@@ -398,17 +405,18 @@ def known_terms(data):
     return [t['term'] if isinstance(t, dict) else t for t in data.get('terms_known', [])]
 
 
+FUNCTION_WORDS = set(Path(__file__).with_name('common_en.txt').read_text(encoding='utf-8').split('\n# exam instructions')[0].split())
+
+
 def protected_words(data):
-    """Subject words never treated as common English: definition terms and in-scope coverage points of kind term/command."""
+    """Words of the deck's own definition terms are never treated as common English (a deck about "Evaluate" checks it),
+    except plain function words such as "that", "with", "over"."""
     words = set()
     for c in data['cards']:
         for b in c['blocks']:
             if b.get('type') == 'definition':
                 words |= {singular(w) for w in re.findall(r'[A-Za-z]{4,}', strip_tags(inline(b['term'], 'ledger').html))}
-    for item in (data.get('coverage') or {}).get('items', []):
-        if item.get('kind') in ('term', 'command') and item.get('class') in ('core', 'prerequisite'):
-            words |= {singular(w) for w in re.findall(r'[A-Za-z]{4,}', item.get('point', ''))}
-    return words
+    return words - {singular(w) for w in FUNCTION_WORDS}
 
 
 GLOSS = re.compile(r'([A-Za-z][A-Za-z -]{2,40}?)\s*[（(][^）)]*[\u4e00-\u9fff][^）)]*[）)]')
@@ -473,34 +481,69 @@ def untranslated(pages):
         segments = [strip_tags(x).strip() for x in re.split(r'</?(?:p|li|div|td|th|dd|dt|h1|h2|h3|section|tr)\b[^>]*>', body)]
         segments = [x for x in segments if x]
         for i, seg in enumerate(segments):
-            if len(re.findall(r'[A-Za-z]+', seg)) >= 8 and not HAN.search(seg) and not (i + 1 < len(segments) and HAN.search(segments[i + 1])):
+            beside = [segments[j] for j in (i - 1, i + 1) if 0 <= j < len(segments)]
+            if len(re.findall(r'[A-Za-z]+', seg)) >= 8 and not HAN.search(seg) and not any(HAN.search(x) for x in beside):
                 out.setdefault(cid, []).append(seg[:50])
     return out
 
 
-AUDIO_NOTE = """这个包先交付了图文，语音待补。照下面的步骤做一次，就能给同一副卡原位补上语音（卡片不变，复习记录保留）。
+AUDIO_NOTE = """这个包先交付了图文，语音待补。照下面做一次，就能给同一副卡原位补上语音（卡片不变，复习记录保留）。
+补语音需要的程序已经放在本文件夹的 skill 子文件夹里，不需要另外下载 skill 包。
 
-1. 取得 anki-ccpt-skill.zip（上传给 Claude 的同一个 skill 包）并解压，在终端里进入解压出的 skill 文件夹。
-2. 安装 Python 3.10 或更新版本（python.org，Windows 安装时勾选 "Add python.exe to PATH"）。
-3. 在 skill 文件夹运行：
-     pip install -r scripts/requirements.txt
-4. 安装 ffmpeg，装完重开终端：
+一、准备（每台电脑做一次）
+1. 安装 Python 3.10 或更新版本（python.org 下载；Windows 安装时勾选 "Add python.exe to PATH"）。
+   Linux 另装：sudo apt install python3-venv
+2. 安装 ffmpeg，装完关掉再重开终端：
      Windows：winget install Gyan.FFmpeg
      macOS：  brew install ffmpeg
      Linux：  sudo apt install ffmpeg
-5. 检查语音服务（电脑要能访问 speech.platform.bing.com）：
-     python scripts/speech_backend.py --check
-6. 生成带语音的新包（把 <本文件夹> 换成这个交付文件夹的完整路径，保留引号）：
-     python scripts/build_cards.py "<本文件夹>/deck.json" "<本文件夹>" --term-sampler
-7. 把新生成的 .apkg 导入 Anki：同一张卡原位更新，复习记录保留。
-8. 听一遍 term-sampler.mp3（约一分钟），把读错的词告诉 Claude，写进 speech_lexicon 后重建。
+3. 打开终端，进入这个交付文件夹（cd 到 补语音.txt 所在的文件夹）。
 
-也可以在自己电脑上的 Claude Code 里说“按 补语音.txt 给这副卡补语音”，让 Claude 代为执行这些步骤。
+二、补语音（电脑要能访问 speech.platform.bing.com）
+Windows（PowerShell 或命令提示符）：
+  py -m venv .venv
+  .\\.venv\\Scripts\\python -m pip install -r skill\\scripts\\requirements.txt
+  .\\.venv\\Scripts\\python skill\\scripts\\speech_backend.py --check
+  .\\.venv\\Scripts\\python skill\\scripts\\build_cards.py deck.json . --term-sampler
+
+macOS 或 Linux（终端）：
+  python3 -m venv .venv
+  .venv/bin/python -m pip install -r skill/scripts/requirements.txt
+  .venv/bin/python skill/scripts/speech_backend.py --check
+  .venv/bin/python skill/scripts/build_cards.py deck.json . --term-sampler
+
+--check 显示 "route": "edge" 才说明语音服务可用；显示 ffmpeg_missing 就回到第 2 步。
+
+三、导入与试听
+1. 把本文件夹里新生成的 .apkg 导入 Anki：同一张卡原位更新，复习记录保留。
+2. 听一遍 term-sampler.mp3（约一分钟），把读错的词告诉 Claude（新对话里附上本文件夹的 deck.json），写进 speech_lexicon 后重建。
+
+也可以在自己电脑上的 Claude Code 里说“按 补语音.txt 给这副卡补语音”，让 Claude 代为执行。
 """
+RUNTIME = ('build_cards.py', 'blocks.py', 'deck_rules.py', 'narration.py', 'speech_backend.py', 'package_addon.py',
+           'single_face_addon.py', 'html_integrity.py', 'common_en.txt', 'requirements.txt')
+
+
+def bundle_runtime(out):
+    """Copy what a rebuild needs into <out>/skill/, so the delivered folder alone can fill in the audio."""
+    dest = (out / 'skill').resolve()
+    if dest == ROOT.resolve():
+        return  # already running from the bundled copy in this folder
+    (dest / 'scripts').mkdir(parents=True, exist_ok=True)
+    for name in RUNTIME:
+        shutil.copy2(ROOT / 'scripts' / name, dest / 'scripts' / name)
+    shutil.copytree(ROOT / 'assets', dest / 'assets', dirs_exist_ok=True, ignore=shutil.ignore_patterns('.DS_Store', '__pycache__'))
 
 
 def preflight(voice):
     """Fail fast with a clear class instead of hanging on a blocked network."""
+    try:
+        import edge_tts  # noqa: F401 - only checking that the package is installed
+    except ImportError:
+        if not configured_azure():
+            print('✗ edge_tts_missing: the edge-tts package is not installed (it is not a network problem).\n'
+                  '  Run: python -m pip install -r scripts/requirements.txt   (inside the same Python or virtual environment)', file=sys.stderr)
+            sys.exit(5)
     report = asyncio.run(inspect_voice(voice))
     if report['route'] != 'unavailable':
         return
@@ -535,7 +578,7 @@ def main(argv=None):
     if a.output is None:
         ap.error('give an output folder (or --check-research)')
     try:
-        summary = check(data)
+        summary = check(data, preview=a.preview)
         rendered = {}
         for c in data['cards']:
             try:
@@ -562,6 +605,10 @@ def main(argv=None):
             sys.exit(f'✗ card {card["id"]}: narration still contains LaTeX ({" ".join(leaked)}); {hint}write the reading in 〔…〕 or give the block a speech')
         r['speed'], r['speed_reason'], metrics[card['id']], auto_speeds[card['id']] = choose_speed(card, data['style'], spoken, seen_terms)
         plans[card['id']] = narration.plan(card['id'], r['parts'], r['voice'], r['speed'], lexicon)
+    slowed = [cid for cid in plans if rendered[cid]['speed'] < 2]
+    if not a.preview and len(plans) >= 5 and len(slowed) > 0.3 * len(plans) and not data['style'].get('speed_review'):
+        sys.exit(f'✗ {len(slowed)}/{len(plans)} cards are 1.5× (over 30%): run --preview, review them (report.json lists each reason) and, if this '
+                 'deck really is that dense, say why in style.speed_review; otherwise set speed 2.0 with speed_reason on the cards that are not')
     cues, audio_report = {}, {}
     pending = a.preview or a.audio_pending
     if not pending:
@@ -652,6 +699,7 @@ def main(argv=None):
         (out / 'deck.json').write_text(json.dumps(data, ensure_ascii=False, indent=1), encoding='utf-8')
     if a.audio_pending:
         (out / '补语音.txt').write_text(AUDIO_NOTE, encoding='utf-8')
+        bundle_runtime(out)
     slow = [c for c in report_cards if c['speed'] < 2]
     deck_warnings = list(summary.get('warnings', []))
     speed_review = data['style'].get('speed_review', '')
@@ -684,7 +732,7 @@ def main(argv=None):
               'speed': {'slow': len(slow), 'cards': len(report_cards), 'speed_review': speed_review},
               'plain_math_total': sum(c['plain_math'] for c in report_cards), 'backcheck': cov.get('backcheck'), 'coldread': cov.get('coldread'),
               'cards': report_cards, 'summary': summary, 'audio': 'preview' if a.preview else 'pending' if a.audio_pending else 'complete',
-              'package': str(package) if package else None}
+              'package': package.name if package else None}
     (out / 'report.json').write_text(json.dumps(report, ensure_ascii=False, indent=1), encoding='utf-8')
     warnings = deck_warnings + [f'{c["id"]}: {w}' for c in report_cards for w in c['warnings']]
     print(json.dumps({'cards': len(report_cards), 'audio': report['audio'], 'package': report['package'], 'coverage': summary.get('coverage'),

@@ -56,10 +56,10 @@ def legibility(image, embedded_width=None, pdf=False):
     and below ~800 px that leaves fewer than ~20 px per character. For a PDF page the source pixels are
     those of its largest embedded image, not the rendered page."""
     if pdf and embedded_width is None:
-        return {'width': image.width, 'verdict': 'ok', 'why': 'vector PDF page (no embedded image)'}
+        return {'width': image.width, 'verdict': 'ok', 'why': 'vector PDF page (no large embedded image)'}
     width = embedded_width if pdf else image.width
     low = width < MIN_WIDTH
-    source = 'embedded image' if pdf else 'image'
+    source = 'embedded image (effective)' if pdf else 'image'
     why = f'{source} width {width}px < {MIN_WIDTH}px: probably recompressed by a chat app or a low-resolution scan' if low else ''
     return {'width': width, 'verdict': 'low' if low else 'ok', 'why': why}
 
@@ -69,22 +69,55 @@ INSTALL_POPPLER = ('  macOS: brew install poppler    Linux: sudo apt install pop
                    '  Without either, read the PDF pages directly by eye and say so in the delivery note.')
 
 
+SIGNIFICANT = 0.15  # an image covering less of the page (a logo, an icon) says nothing about the board's legibility
+
+
+def page_sizes(path):
+    """{page: (width_in, height_in)} from pdfinfo."""
+    out = subprocess.run(['pdfinfo', '-f', '1', '-l', '100000', str(path)], capture_output=True, text=True, encoding='utf-8', errors='replace').stdout
+    return {int(m.group(1)): (float(m.group(2)) / 72, float(m.group(3)) / 72)
+            for m in re.finditer(r'Page\s+(\d+) size:\s*([\d.]+) x ([\d.]+) pts', out)}
+
+
 def embedded_widths(path):
-    """{page number: width of the largest embedded image} from pdfimages, or PyMuPDF when poppler is absent."""
-    if shutil.which('pdfimages'):
+    """{page: effective pixels across the page width} for pages whose content is a raster (a scan, an exported board).
+    The effective width is the image's resolution (ppi) times the page width, so a board split into tiles counts as
+    one board and a small logo on a typed handout is ignored. Pages that are vector only are absent (legible).
+    pdfimages/pdfinfo (poppler) first, PyMuPDF when poppler is missing; None when neither is installed."""
+    if shutil.which('pdfimages') and shutil.which('pdfinfo'):
+        sizes = page_sizes(path)
         out = subprocess.run(['pdfimages', '-list', str(path)], capture_output=True, text=True, encoding='utf-8', errors='replace').stdout
         widths = {}
         for line in out.splitlines()[2:]:
             cols = line.split()
-            if len(cols) > 4 and cols[0].isdigit() and cols[3].isdigit() and cols[2] in ('image', 'stencil'):
-                widths[int(cols[0])] = max(widths.get(int(cols[0]), 0), int(cols[3]))
+            if len(cols) < 14 or not cols[0].isdigit() or cols[2] not in ('image', 'stencil'):
+                continue
+            page, w, h = int(cols[0]), int(cols[3]), int(cols[4])
+            try:
+                xppi, yppi = float(cols[12]), float(cols[13])
+            except ValueError:
+                continue
+            pw, ph = sizes.get(page, (8.27, 11.69))
+            if not (xppi and yppi) or (w / xppi) * (h / yppi) < SIGNIFICANT * pw * ph:
+                continue
+            effective = round(xppi * pw)
+            widths[page] = min(widths.get(page, effective), effective)
         return widths
     try:
         import fitz  # PyMuPDF
     except ImportError:
         return None
+    widths = {}
     with fitz.open(str(path)) as doc:
-        return {i + 1: max(img[2] for img in page.get_images(full=True)) for i, page in enumerate(doc) if page.get_images(full=True)}
+        for i, page in enumerate(doc, 1):
+            area = page.rect.width * page.rect.height
+            for info in page.get_image_info():
+                box = fitz.Rect(info['bbox'])
+                if box.width <= 0 or box.width * box.height < SIGNIFICANT * area:
+                    continue
+                effective = round(info['width'] / box.width * page.rect.width)
+                widths[i] = min(widths.get(i, effective), effective)
+    return widths
 
 
 def upright_rgb(image):
