@@ -193,3 +193,12 @@
 .finish-box{flex:0 0 14px;height:14px;border:2px solid var(--accent);border-radius:3px;transform:translateY(2px)}
 .ao-badge{display:inline-block;font:700 12.5px/1 var(--font-latin);letter-spacing:.06em;color:var(--accent);border:1px solid var(--accent);border-radius:4px;padding:3px 5px;margin-right:8px;vertical-align:2px}
 .mm-item[data-kind="root"]>.mm-node .ao-badge,.mm-box[data-kind="root"]>.mm-node .ao-badge{color:inherit;border-color:currentColor}
+.subgoal{list-style:none;display:flex;gap:8px;align-items:baseline;margin:14px 0 2px;padding:4px 0 0;font-weight:700;color:var(--accent);font-size:16px;letter-spacing:.02em;border-top:2px solid var(--accent-soft)}
+.subgoal:first-child{margin-top:0;border-top:0}
+.subgoal-mark{font-size:13px}
+.step.trivial{padding:6px 0}
+.step.trivial .step-do{font-size:17px;color:var(--ink-2)}
+.step.trivial .step-n{width:22px;height:22px;font-size:12px;opacity:.7;margin:4px}
+.def-everyday{margin-top:8px;padding:8px 12px;border-left:3px solid var(--ink-2);background:var(--surface);font-size:.95em}
+.ccpt6 .speed-reason{font-size:12.5px;color:var(--ink-2);background:var(--surface-2);border-radius:999px;padding:3px 9px;white-space:nowrap;max-width:14em;overflow:hidden;text-overflow:ellipsis}
+@media (max-width:640px){.ccpt6 .speed-reason{display:none}}

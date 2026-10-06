@@ -8,7 +8,9 @@
  const cues=(data.narration&&data.narration.cues)||[],pending=root.dataset.audioPending==='1';
  const reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
  const encoded=parseFloat(speedBtn?.dataset.encoded||'2')||2;let speed=encoded;
- const voiceLabel=(status?.textContent||'').split('·')[0].trim();
+ const voiceLabel=(status?.textContent||'').split('·')[0].trim(),total=(data.narration&&data.narration.duration)||0;
+ const clock=s=>{s=Math.max(0,Math.round(s));return Math.floor(s/60)+':'+String(s%60).padStart(2,'0');};
+ const remaining=()=>total?' · 剩 '+clock((total-audio.currentTime)*encoded/speed):'';
  let cleaned=false,failed=false,active=null,lastUserScroll=0;
  const target=id=>id===null||id==='title'?root.querySelector('h1'):root.querySelector(`[data-node="${CSS.escape(id)}"]`);
  function label(){if(speedBtn){speedBtn.textContent=speed+'×';speedBtn.dataset.speed=String(speed);}}
@@ -39,12 +41,12 @@
   if(cleaned||pending||button.disabled)return;
   if(!audio.paused){audio.pause();return;}
   if(audio.ended)audio.currentTime=0;
-  try{if(audio.error)audio.load();failed=false;audio.preservesPitch=true;audio.playbackRate=speed/encoded;await audio.play();if(cleaned)audio.pause();}
+  try{if(audio.error)audio.load();failed=false;audio.preservesPitch=true;audio.webkitPreservesPitch=true;audio.playbackRate=speed/encoded;await audio.play();if(cleaned)audio.pause();}
   catch(e){if(!cleaned){failed=true;unavailable();}}
  });
- on(speedBtn,'click',()=>{if(pending)return;speed=speed===2?1.5:2;label();audio.playbackRate=speed/encoded;if(!audio.paused)setStatus(`${voiceLabel} · ${speed}×`);});
- on(audio,'play',()=>{button.textContent='Ⅱ';button.setAttribute('aria-pressed','true');setStatus(`${voiceLabel} · ${speed}×`);follow();});
- on(audio,'pause',()=>{if(pending||failed||audio.error){unavailable();return;}button.textContent=audio.ended?'↻':'▶';button.setAttribute('aria-pressed','false');setStatus(audio.ended?'讲解结束 · Space 重播':'已暂停 · Space 继续');follow();});
+ on(speedBtn,'click',()=>{if(pending)return;speed=speed===2?1.5:2;label();audio.playbackRate=speed/encoded;if(!audio.paused)setStatus(`${voiceLabel} · ${speed}×${remaining()}`);});
+ on(audio,'play',()=>{button.textContent='Ⅱ';button.setAttribute('aria-pressed','true');setStatus(`${voiceLabel} · ${speed}×${remaining()}`);follow();});
+ on(audio,'pause',()=>{if(pending||failed||audio.error){unavailable();return;}button.textContent=audio.ended?'↻':'▶';button.setAttribute('aria-pressed','false');setStatus(audio.ended?'讲解结束 · Space 重播':'已暂停'+remaining()+' · Space 继续');follow();});
  on(audio,'error',()=>{failed=true;clearCue();unavailable();});
  on(audio,'ended',()=>{button.textContent='↻';setStatus('讲解结束 · Space 重播');clearCue();});
  for(const ev of ['timeupdate','seeking','seeked'])on(audio,ev,follow);

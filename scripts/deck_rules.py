@@ -46,8 +46,16 @@ def check_deck(data):
     style = data.setdefault('style', {})
     need(isinstance(style, dict), 'style must be an object')
     need(style.get('theme', 'editorial') in THEMES, f'style.theme must be one of {sorted(THEMES)}')
-    speed = float(style.get('speed', 2.0))
-    need(speed in SPEEDS, 'style.speed is 2.0 (default listening speed) or 1.5')
+    speed = style.get('speed', 'auto')
+    need(speed == 'auto' or (isinstance(speed, (int, float)) and float(speed) in SPEEDS),
+         'style.speed: "auto" (default: 2× unless the card is genuinely dense), or 2.0 / 1.5 for the whole deck')
+    if speed != 'auto' and float(speed) == 1.5:
+        need(text(style.get('speed_reason')), 'style.speed 1.5 for a whole deck needs style.speed_reason')
+    need(style.get('voice', 'xiaoxiao') in ('xiaoxiao', 'yunyang', 'zh-CN-XiaoxiaoNeural', 'zh-CN-YunyangNeural', 'yunxi', 'zh-CN-YunxiNeural'),
+         'style.voice: xiaoxiao (default) or yunyang; one voice per deck (yunxi only for maintaining old cards)')
+    lexicon = data.get('speech_lexicon', {})
+    need(isinstance(lexicon, dict) and all(text(k) and isinstance(v, str) for k, v in lexicon.items()),
+         'speech_lexicon maps written forms to how they should be read, e.g. {"λ": "lambda"}')
 
 
 def check_exam(data):
@@ -145,7 +153,33 @@ def check_cards(data):
             if float(c['speed']) == 1.5:
                 need(text(c.get('speed_reason')), f'card {c["id"]}: say why this card is complex enough for 1.5×')
         need(texts(c.get('sources', []), nonempty=False), f'card {c["id"]}: sources must be a list of text locations')
+        need('voice' not in c, f'card {c["id"]}: voice is set once per deck in style.voice; switching voices mid-deck costs listening effort')
+        check_genre(c)
     return ids
+
+
+def blocks_of(card, kind):
+    return [b for b in card['blocks'] if isinstance(b, dict) and b.get('type') == kind]
+
+
+def check_genre(c):
+    """Minimum teaching structure per card type (evidence: references/learning-science.md)."""
+    cid = c['id']
+    if c['genre'] == 'term':
+        defs = blocks_of(c, 'definition')
+        need(defs, f'card {cid}: a term card states the exam definition in a definition block')
+        idea_units = len(defs[0].get('keywords', [])) >= 2 or blocks_of(c, 'unpack')
+        need(idea_units, f'card {cid}: split the definition into idea units (≥2 keywords or an unpack block)')
+        if not text(c.get('examples_waived')):
+            ex = blocks_of(c, 'examples')
+            yes = sum(len(b.get('yes', [])) for b in ex)
+            no = [n for b in ex for n in b.get('no', [])]
+            need(yes >= 1 and no, f'card {cid}: give at least one example and one non-example (or explain in examples_waived)')
+            need(all(isinstance(n, dict) and text(n.get('why')) for n in no),
+                 f'card {cid}: each non-example says which part of the definition it fails (why)')
+    if c['genre'] == 'derivation':
+        need(blocks_of(c, 'steps'), f'card {cid}: a derivation card works through steps')
+        need(blocks_of(c, 'finish'), f'card {cid}: end a derivation with a finish block (exact form, accuracy, range, conclusion)')
 
 
 def check(data):

@@ -17,6 +17,21 @@
 - 一律写 LaTeX，构建时转成 MathML，卡面显示真正的分式、上下标、根号、向量和矩阵：`$\frac{MU_x}{P_x}=\frac{MU_y}{P_y}$`，不写 `MUx/Px`、`MU/price` 这类纯文本。
 - 变量用本学科通行符号；公式旁用中文交代每个符号的含义与对应的 English 术语（“$P_x$ 表示 good X 的 price”）。
 - 每个公式后写中文读法 `〔…〕`，语音按含义读（“X 的 marginal utility 除以 X 的 price”“245 分之 9”“1 加 4x 的三分之一次方”），不念排版代码，不逐个字母拆读。
+- 读法示例（读“含义＋结构”）：
+
+  | 卡面 LaTeX | 〔读法〕 |
+  |---|---|
+  | `(8+32x)^{\frac13}` | 8 加 32x，这个整体的三分之一次方 |
+  | `\frac{9}{245}` | 245 分之 9 |
+  | `X\sim B(n,\frac{9}{245})` | X 服从二项分布，参数是 n 和 245 分之 9 |
+  | `P(X\ge 1)>0.95` | X 大于等于 1 的概率大于 0.95 |
+  | `\frac{dV}{dt}=\frac{dV}{dx}\times\frac{dx}{dt}` | dV dt 等于 dV dx 乘以 dx dt |
+  | `\pi\int y^2\,dx` | pi 乘以，y 平方对 x 的积分 |
+  | `\mathbf r=\mathbf a+\lambda\mathbf b` | 向量 r 等于向量 a，加上 lambda 倍的向量 b |
+  | `\sin^2 x` | sin x 的平方 |
+  | `\binom{n}{r}` | n choose r，也就是组合数 |
+
+  式子很长时先说一句“这一步把…化成…”，再读式子。希腊字母用英文名；读音不确定的缩写放进 `speech_lexicon`（见 [narration.md](narration.md)）。
 - 数值计算、展开系数、概率、最小 n 等结果在写卡前用工具实际算一遍（Python、Wolfram），把核算方式记进 `research` 或卡的 `sources`。
 - 字面小于号写 `&lt;`；生成器会拒绝可能吞掉后文的未闭合标签。
 

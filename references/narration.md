@@ -1,17 +1,53 @@
-# 新制卡的语音默认值
+# 语音：声音、速度与读法
 
-默认声音为微软云希 `zh-CN-YunxiNeural`，最终音频 **1.5×**。术语 English、解释中文；整页一个播放器，Space 开始／暂停／继续／重播。
+## 默认值
 
-优先使用当前可用的免费 Edge read-aloud 服务。它与 Azure Speech 的声音目录不同，不能用 Azure 官方列表证明 Edge 可用。每批先检测目标voice并合成短样本，不能仅见列表或 HTTP 成功就称播放通过。
+- **声音**：一副牌组一个声音，写在 `style.voice`。默认**晓晓** `zh-CN-XiaoxiaoNeural`（微软旗舰中文女声，Edge 元数据 News／Novel、Warm）；男声选**云扬** `zh-CN-YunyangNeural`——Edge 可用的中文男声里只有它标为 News／Professional, Reliable，Azure 里的 style 也全是播报类（narration-professional、newscast-casual），最符合“男 AI 播音员”。云希只用于维护旧卡。同一牌组不混用声音：2× 下换声会增加适应成本。
+- **何时选云扬**：文科长因果链、essay 骨架这类连续陈述、要反复听的牌组，用户想要播报感时；或常在嘈杂环境（通勤）听时——Johnson & Ferguson（2020，JSLHR）发现噪声中压缩语音对女声可懂度伤害更大，这是弱证据。用户偏好一经确定写进 `style.voice`，之后不再问。`python scripts/speech_backend.py --sampler 目录/` 生成晓晓与云扬各自 2× 与 1.5× 的同一段中英数混读样音，供首次挑选。
+- **速度**：默认 **2×**，真正复杂的卡 **1.5×**，不超过 2×。`style.speed` 默认 `"auto"`，由生成器逐卡判定（见下）；作者可在单卡写 `speed` 覆盖，1.5× 必须写 `speed_reason`。播放时点速度按钮可在 2× 与 1.5× 之间临时切换，只对当前卡有效，下一张回到它自己的速度。
 
-`scripts/speech_backend.py --check` 检查目录与配置；`--probe /本机临时目录/probe.mp3` 实际合成。报告区分网络失败、声音缺失、Azure缺配置和真实合成成功。免费路径失败时先诊断重试；已配置且获授权的 Azure Speech 可作为同一voice的备选，环境变量 `AZURE_SPEECH_KEY` 与 `AZURE_SPEECH_REGION`，凭据不进 skill、日志或仓库。不静默换声，也不擅自开通收费资源。
+## 1.5× 的判定规则
 
-合成原速音频，执行 `atempo=1.5` 后离线随卡携带，页面 `playbackRate=1`，仅加速一次。缓存与manifest包含真实voice、完整正文、速度、provider及实际时长。接口失败不保留空文件冒充缓存；已有缓存不能解码就重建。
+篇幅长、导图深、术语卡、文科因果链卡和 essay 骨架卡**都不构成**降速理由——它们靠可见结构承载，适合 2× 反复听；太长就拆卡。生成器从卡片数据计算：
 
-讲图脚本与可见卡面共用图名和对象标签，按 `reader-first-teaching.md` 先定位再解释。切换图或从非讲图分支返回时重新说清目标；留出自然停顿供读者移动视线，不连续念坐标和字母代替讲解。朗读应覆盖内容含义，不必逐字念重复标签；卡面本身也必须有足够指向，不能只在语音补上。
+| 记号 | 含义 |
+|---|---|
+| S | 有依赖的推导步数（非 trivial 的 steps，加上因果链中“所以／因此／从而”） |
+| M | 口头公式数（〔读法〕个数，含自带 speech 的数学块） |
+| m% | 公式读法字数占本卡朗读字数的比例 |
+| T | 本卡首次引入的术语数（按牌组顺序） |
+| E | 每 100 个汉字对应的 English 词数 |
+| N | 同一块内需同时记住的不同数值（不计 0–3） |
+| C | 条件型关系词（仅当、除非、前提是、取决于、但是）个数 |
 
-需要辅助视线定位时，批次或单卡设置 `narration_follow: true`。当前生成器按标题和各节点 speech 分段合成，以真实解码时长连接成唯一音轨并记录节点时间点；高亮跟随讲解，不滚动、不隐藏内容。暂停保留位置，结束及切卡清理；语音顺序按教学设计，不强制抽象根节点先读。节点高亮不能代替图内对象的口头指向。预览未合成时不生成虚构时间点，不能按字数猜测同步。
+**硬触发**（任一满足即 1.5×）：H1 `S ≥ 4 且 M ≥ 4`；H2 `m% ≥ 35%`；H3 证明结构（contradiction、induction、show that 等）且 `S ≥ 3`；H4 `N ≥ 4`。**软分**（≥3 即 1.5×）：`S ≥ 3` 加 2，`M ≥ 3`、`T ≥ 3`、`E ≥ 8`、`C ≥ 2` 各加 1。结果与理由写进 `report.json` 与卡片 Source；1.5× 卡的播放器旁显示简短理由（如“6 步推导”）。阈值是根据用户习惯与研究方向定的起点，按用户反馈（常按暂停、常按 1 的卡）校准。
 
-验收检查可解码、原速与成品时长比约1.5、中文与English术语发音、图像解说的阅读顺序、公式意义、一页一个播放器、Space暂停续播及切卡停止。声音能播放不能证明讲解容易理解；听感须另外检查。既有其他卡片不因默认值变化而自动全量改写，按本次授权范围更新。
+依据：年轻母语听者看讲座视频时 1.5×–2× 的理解代价很小，2.5× 起明显下降（Murphy et al. 2022；Ritzhaupt 2008；纯音频 1.5× 无差异、3× 下降）；非母语成分（English 术语）在压缩下受损更大（Conrad 1989）；作者提醒复杂技术材料未必适用。详见 [learning-science.md](learning-science.md)。
 
-接口依据：[微软 REST 文档](https://learn.microsoft.com/en-us/azure/ai-services/speech-service/rest-text-to-speech)、[edge-tts 项目](https://github.com/rany2/edge-tts)。
+## 管线
+
+1. 原速合成（Edge `rate=+0%`），原音按 `(voice, 朗读文本)` 存入全局缓存 `~/.cache/ccpt-tts/v1/`（可用 `CCPT_TTS_CACHE` 改位置），与速度无关：改速度或补另一档速度不需要再联网。
+2. 修剪每段首尾静音（Edge 每段自带约 0.19 s 开头与 0.6–0.97 s 结尾静音），再用 ffmpeg `atempo` **一次**加速到卡片速度（uniform 时域伸缩；不用 `--rate=+100%` 出成品：那只是服务端“建议值”、已顶到文档上限，每换速度都要重新联网）。生成器核对成品时长与“修剪后原速 ÷ 速度”一致。
+3. 拼接时插入设计停顿（成品时间轴）：同一块内的步骤、行、分支之间 0.30 s；块与块之间、标题之后 0.50 s，给视线移动留时间。cue 由解码后的样本数计算，播放时高亮当前节点并在读者没有手动滚动时把它带进视野。
+4. 页面播放 `playbackRate = 1`；临时切速时 `playbackRate = 目标 ÷ 编码速度`，并设 `preservesPitch`（Chromium／Qt WebEngine 与 WebKit 都是时域算法，二次处理损失很小）。
+
+## 读法
+
+Edge 只接受纯文本（不能用 SSML 的 `<lang>`、`<phoneme>`、`<say-as>`、`<break>`、style），中文声音也不支持 `<lang>`。所以读法全部写在文本里：
+
+- 公式在卡面写 LaTeX，紧跟中文读法 `〔…〕`；读“含义＋结构”，不逐个念符号。示例见 [language-and-math.md](language-and-math.md)。
+- 牌组级 `speech_lexicon` 是读音替换表（Edge 能用的 `<sub>` 替代）：`{"ILATE": "I L A T E", "MEC": "M E C"}`。生成器已内置希腊字母（λ→lambda、μ→mu、σ→sigma…）、≥ ≤ ≠ ≈、e.g.／i.e.／vs 的替换。朗读文本残留 LaTeX（`\frac`、`^`、`_`、`{}`、`$`）时构建失败；残留 `→`、`/` 等难读符号时报告警告。
+- 用逗号控制停顿（Edge 唯一可用的停顿手段）。缩写第一次出现时读全称。
+- `--term-sampler` 生成 `term-sampler.mp3`：把牌组里每个 English 术语放进“下面这个词是：___。”逐个读一遍，导入前花一分钟听，读错就改 `speech_lexicon` 后重建。
+- 语音与卡面用同一术语和符号读法；句子可以略改述、补连接词与“为什么”，不逐字念长段，也不讲卡面没有的新论点。静音时卡面必须完整。
+
+## 服务可用性与断网
+
+- `python scripts/speech_backend.py --check` 检查声音目录与配置，`--probe 文件.mp3` 实际合成一句。Edge read-aloud 是非公开端点，2025 年 8 月与 12 月都曾变动导致失效；持续 `NoAudioReceived` 时先 `pip install -U edge-tts`。Edge 的 zh-CN 只有晓晓、晓伊、云健、云希、云夏、云扬 6 个标准声（另有两个方言声），没有 zh-CN multilingual；`XiaoxiaoMultilingual`、DragonHD 等只在 Azure。
+- 构建前若有原音需要合成，生成器先做预检：服务不可达时以退出码 2（`network_blocked`）立即停止，声音不在列表时退出码 3（`voice_missing`），都不改动任何文件，也不换声音。
+- 语音服务不可达时：`--audio-pending` 先交付图文包（页面明示“语音待补”、播放器禁用）；之后在能访问 `speech.platform.bing.com` 的机器上**去掉该参数重跑同一条命令**并导入，同 GUID 原位更新，复习历史保留。
+- 已授权的 Azure Speech（`AZURE_SPEECH_KEY`、`AZURE_SPEECH_REGION`）只作为**同一声音**的备选；凭据不进 skill、日志或仓库。换成别的声音只在用户明确同意后改 `style.voice` 并全牌组重合成。
+
+## 验收
+
+音频可解码；成品时长与修剪后原速 ÷ 速度一致；段间没有超过设计值的空白；中文与 English 术语发音正确（听 term-sampler）；公式读法表达了含义；Space 暂停续播、结束重播、切卡停止；速度按钮切换时音高不变；1.5× 卡都有理由。声音能播放不等于讲解好懂，听感另外检查。

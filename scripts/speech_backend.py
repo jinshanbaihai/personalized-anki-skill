@@ -101,8 +101,31 @@ async def synthesize_original(text, voice, output):
         return 'azure'
 
 
+SAMPLER_TEXT = ('Marginal social cost 等于 marginal private cost 加上 marginal external cost。'
+                'Sampling frame 是包含全部 sampling units 的名单。8 加 32x，这个整体的三分之一次方，先提出 2。')
+
+
+async def write_samplers(folder):
+    """Xiaoxiao and Yunyang at 2× and 1.5× on the same mixed Chinese–English–math text."""
+    import subprocess
+    folder = Path(folder)
+    folder.mkdir(parents=True, exist_ok=True)
+    written = []
+    for alias in ('xiaoxiao', 'yunyang'):
+        original = folder / f'{alias}-1x.mp3'
+        await synthesize_original(SAMPLER_TEXT, VOICES[alias], original)
+        for speed in (2.0, 1.5):
+            dest = folder / f'{alias}-{speed:g}x.mp3'
+            subprocess.run(['ffmpeg', '-v', 'error', '-y', '-i', str(original), '-af', f'atempo={speed:g}', '-codec:a', 'libmp3lame', '-q:a', '3', str(dest)], check=True)
+            written.append(str(dest))
+    return written
+
+
 async def _cli(args):
     args.voice = resolve_voice(args.voice)
+    if args.sampler:
+        print(json.dumps({'samplers': await write_samplers(args.sampler), 'text': SAMPLER_TEXT}, ensure_ascii=False, indent=2))
+        return
     report = await inspect_voice(args.voice)
     if args.probe:
         try:
@@ -123,4 +146,5 @@ if __name__ == '__main__':
     parser.add_argument('--voice', default=DEFAULT_VOICE, help='xiaoxiao, yunyang, yunxi or a full Microsoft voice name')
     parser.add_argument('--check', action='store_true', help='Check providers and configuration; does not synthesize')
     parser.add_argument('--probe', type=Path, help='Actually synthesize a short diagnostic clip to this path')
+    parser.add_argument('--sampler', type=Path, help='Write Xiaoxiao/Yunyang samples at 2x and 1.5x into this folder for choosing a voice')
     asyncio.run(_cli(parser.parse_args()))

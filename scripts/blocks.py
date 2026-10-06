@@ -180,6 +180,11 @@ def r_definition(b, bid, where):
     if gloss:
         out += f'<p class="def-gloss">{gloss.html}</p>'
     extra_speech, extra_unspoken = [], 0
+    everyday = inline(b.get('everyday'), where)
+    if everyday:
+        out += f'<p class="def-everyday"><span class="tagline">日常义 vs 考试义</span>{everyday.html}</p>'
+        extra_speech.append('注意日常意思和考试意思的区别：' + everyday.speech)
+        extra_unspoken += everyday.unspoken
     lists = []
     for key, title, cls in (('accept', '也给分的说法', 'def-accept'), ('reject', '不给分的说法', 'def-reject')):
         values = b.get(key, [])
@@ -275,28 +280,36 @@ def r_steps(b, bid, where):
         out += f'<div class="steps-given" data-node="{bid}-given"><span class="tagline">已知</span>{given.html}</div>'
         parts.append(Part(f'{bid}-given', joined(label.speech, '已知：' + given.speech), given.unspoken))
     out += '<ol class="steps">'
+    current_goal = None
     for i, item in enumerate(items):
         w = f'{where}.items[{i}]'
         do = inline(need_text(item, 'do', w), w)
         why = inline(item.get('why'), w)
         basis = inline(item.get('basis'), w)
         mark = item.get('mark')
+        subgoal = inline(item.get('subgoal'), w)
+        goal_speech = ''
+        if subgoal and subgoal.html != current_goal:
+            current_goal = subgoal.html
+            out += f'<li class="subgoal" aria-hidden="false"><span class="subgoal-mark">▸</span>{subgoal.html}</li>'
+            goal_speech = subgoal.speech
         if mark is not None and not re.fullmatch(r'(?:d?[MAB]\d|M\d A\d|B\d B\d|SC|ft|cso|awrt)(?:[ ,]+(?:d?[MAB]\d|ft|cso|awrt))*', str(mark)):
             fail(w, f'mark {mark!r} should use mark-scheme notation such as M1, A1, B1, dM1 or "M1 A1"')
-        if not why and not basis:
-            fail(w, 'explain each step: give "why" (the reasoning) and/or "basis" (the rule used)')
+        trivial = item.get('trivial') is True
+        if not why and not basis and not trivial:
+            fail(w, 'explain each step: give "why" (the reasoning) and/or "basis" (the rule used); pure arithmetic may set "trivial": true')
         note = inline(item.get('mark_note'), w)
         nid = f'{bid}-s{i}'
-        out += (f'<li class="step" data-node="{nid}"><span class="step-n">{i + 1}</span><div class="step-body">'
+        out += (f'<li class="step{" trivial" if trivial else ""}" data-node="{nid}"><span class="step-n">{i + 1}</span><div class="step-body">'
                 f'<div class="step-do">{do.html}</div>'
                 + (f'<div class="step-why"><span class="tagline">为什么</span>{why.html}</div>' if why else '')
                 + (f'<div class="step-basis"><span class="tagline">依据</span>{basis.html}</div>' if basis else '')
                 + (f'<div class="step-mark-note">{note.html}</div>' if note else '')
                 + '</div>' + (f'<span class="mark-badge">{esc(mark)}</span>' if mark else '') + '</li>')
-        speech = joined(f'第{i + 1}步，{do.speech}', ('为什么？' + why.speech) if why else '', ('依据：' + basis.speech) if basis else '')
+        speech = joined(goal_speech, f'第{i + 1}步，{do.speech}', ('为什么？' + why.speech) if why else '', ('依据：' + basis.speech) if basis else '')
         if not given and i == 0 and label:
             speech = joined(label.speech, speech)
-        parts.append(Part(nid, speech, do.unspoken + why.unspoken + basis.unspoken))
+        parts.append(Part(nid, speech, do.unspoken + why.unspoken + basis.unspoken + subgoal.unspoken))
     out += '</ol>'
     basis_note = inline(b.get('marks_basis'), where)
     if basis_note:

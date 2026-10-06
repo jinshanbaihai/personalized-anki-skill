@@ -25,7 +25,7 @@ python scripts/speech_backend.py --probe /tmp/probe.mp3       # 实际合成一�
 python scripts/build_cards.py deck.json out/                  # 合成全部语音并打包
 ```
 
-检查：音频可解码；实测加速比与卡片速度一致（生成器自动校验）；中文与 English 术语发音；公式读法；讲图时先说看哪里；Space 暂停续播、结束重播、切卡停止；点速度按钮可在 2×／1.5× 之间切换。语音服务不可达时用 `--audio-pending` 先交付图文包（页面明示“语音待补”，播放器禁用），告诉用户在能访问服务的机器上去掉参数重跑并导入即可原位补上语音。不静默换声音。
+检查：音频可解码；成品时长与“修剪后原速 ÷ 速度”一致（生成器自动校验）；段间没有超过设计停顿的空白；听一遍 `term-sampler.mp3` 确认 English 术语与缩写读音，读错就改 `speech_lexicon`；公式读法表达含义；讲图时先说看哪里；Space 暂停续播、结束重播、切卡停止；点速度按钮可在 2×／1.5× 之间切换且音高不变；1.5× 卡都有理由。`node scripts/render_check.mjs out/ --play` 在 Chromium 中实际按 Space 播放、检查高亮与切速。规则见 [narration.md](narration.md)。语音服务不可达时用 `--audio-pending` 先交付图文包（页面明示“语音待补”，播放器禁用），告诉用户在能访问服务的机器上去掉参数重跑并导入即可原位补上语音。不静默换声音。
 
 ## 四、打包与导入验证
 

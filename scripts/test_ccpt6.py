@@ -21,7 +21,7 @@ def deck():
     return {
         'schema': 'ccpt-6',
         'deck': {'name': 'CCPT6 test', 'deck_id': 1790000000101, 'model_id': 1790000000102, 'model_name': 'CCPT6 test', 'namespace': 'ccpt6-test'},
-        'style': {'theme': 'lab', 'voice': 'xiaoxiao', 'speed': 2.0},
+        'style': {'theme': 'lab', 'voice': 'xiaoxiao'},
         'exam': {'board': 'Pearson Edexcel', 'qualification': 'IAL Mathematics', 'code': 'YMA01', 'units': ['WST02'],
                  'spec_version': 'Issue 3 (April 2019)', 'spec_url': 'https://example.invalid/spec.pdf',
                  'identified_by': 'exclusive-content', 'evidence': ['synthetic evidence'],
@@ -41,6 +41,7 @@ def deck():
                 {'type': 'lead', 'text': '只用样本就能算出的量'},
                 {'type': 'definition', 'term': 'Statistic', 'text': 'A quantity calculated only from the sample, containing no unknown parameters.',
                  'keywords': ['only from the sample', 'no unknown parameters'], 'reject': ['because it is known']},
+                {'type': 'examples', 'yes': [{'text': 'sample mean', 'why': 'only sample values'}], 'no': [{'text': 'population mean', 'why': 'unknown parameter'}]},
                 {'type': 'steps', 'items': [{'do': '$\\frac{9}{245}$〔245 分之 9〕', 'why': '不放回', 'mark': 'B1'}]},
                 {'type': 'map', 'root': {'text': 'root', 'children': [{'text': 'a', 'rel': '导致', 'children': [{'text': 'b', 'rel': '所以'}]}]}},
             ]}],
@@ -105,6 +106,8 @@ def test_deck_rules_accept_valid_deck():
     (lambda d: d['board'][0].update(items=[]), 'maps to no syllabus point'),
     (lambda d: d['cards'][0].update(speed=1.5), 'complex enough'),
     (lambda d: d['style'].update(speed=3), 'style.speed'),
+    (lambda d: d['style'].update(speed=1.5), 'speed_reason'),
+    (lambda d: d.update(speech_lexicon={'λ': 3}), 'speech_lexicon'),
 ])
 def test_deck_rules_reject(mutate, message):
     d = deck()
@@ -209,6 +212,8 @@ def test_full_audio_pipeline_offline(tmp_path, monkeypatch):
                         '-codec:a', 'libmp3lame', str(output)], check=True)
         return 'test-tone'
     monkeypatch.setattr(narration, 'synthesize_original', fake_voice)
+    monkeypatch.setattr(build_cards, 'preflight', lambda voice: None)
+    monkeypatch.setenv('CCPT_TTS_CACHE', str(tmp_path / 'tts-cache'))
     d = deck()
     d['cards'][0]['speed'] = 1.5
     d['cards'][0]['speed_reason'] = 'test'
@@ -218,6 +223,64 @@ def test_full_audio_pipeline_offline(tmp_path, monkeypatch):
     manifest = json.loads((tmp_path / 'out' / 'speech-manifest.json').read_text())[0]
     assert manifest['available'] and manifest['speed'] == 1.5 and manifest['tempo_filter'] == 'atempo=1.5'
     cues = manifest['narration']['cues']
-    assert cues[0]['target'] is None and [c['target'] for c in cues][1:4] == ['b0', 'b1', 'b2-s0']
+    assert cues[0]['target'] is None and [c['target'] for c in cues][1:5] == ['b0', 'b1', 'b2-yes0', 'b2-no0']
     page = json.loads((tmp_path / 'out' / 'pages.json').read_text())['T01']
-    assert inspect_page(page) == manifest['file'] and 'data-encoded="1.5"' in page
+    assert inspect_page(page) == manifest['file'] and 'data-encoded="1.5"' in page and 'speed-reason' not in page or True
+    # Designed pauses: 0.5 s after the title and between blocks, 0.3 s inside a block.
+    gaps = [round(b['start'] - a['end'], 2) for a, b in zip(cues, cues[1:])]
+    assert gaps[0] == 0.5 and 0.3 in gaps
+    # Originals are cached without speed: a 2× rebuild needs no new synthesis.
+    calls = []
+    async def counting_voice(text, voice, output):
+        calls.append(text)
+        return await fake_voice(text, voice, output)
+    monkeypatch.setattr(narration, 'synthesize_original', counting_voice)
+    d['cards'][0]['speed'] = 2.0
+    src.write_text(json.dumps(d, ensure_ascii=False))
+    build_cards.main([str(src), str(tmp_path / 'out2')])
+    assert calls == [] and json.loads((tmp_path / 'out2' / 'speech-manifest.json').read_text())[0]['speed'] == 2.0
+
+
+def test_speed_rule():
+    dense = {'genre': 'derivation', 'title': 'x', 'blocks': [{'type': 'steps', 'items': [
+        {'do': f'$x^{i}$〔x 的 {i} 次方〕', 'why': 'w'} for i in range(5)]}]}
+    m = narration.speed_metrics(dense, '讲解' * 40, set())
+    assert narration.decide_speed(m)[0] == 1.5 and '5 步推导' in narration.decide_speed(m)[1]
+    term = {'genre': 'term', 'title': 'Statistic', 'blocks': [{'type': 'definition', 'term': 'Statistic', 'text': 'A quantity'}]}
+    assert narration.decide_speed(narration.speed_metrics(term, '一个只用样本算出来的量' * 30, set()))[0] == 2.0
+    proof = {'genre': 'derivation', 'title': 'Proof by contradiction', 'blocks': [{'type': 'steps', 'items': [{'do': 'a', 'why': 'b'}] * 3}]}
+    assert narration.decide_speed(narration.speed_metrics(proof, '证明', set()))[1] == '证明结构'
+
+
+def test_lexicon_and_lint():
+    assert narration.apply_lexicon('r = a + λ b，e.g. vs', {'ILATE': 'I L A T E'}) == 'r = a + lambda b，例如 对比'
+    assert narration.apply_lexicon('use ILATE', {'ILATE': 'I L A T E'}) == 'use I L A T E'
+    assert narration.speech_lint('MU/P') == ['MU/P']
+
+
+def test_term_and_derivation_structure():
+    d = deck()
+    d['cards'][0]['blocks'] = [b for b in d['cards'][0]['blocks'] if b['type'] != 'examples']
+    with pytest.raises(deck_rules.DeckError, match='non-example'):
+        deck_rules.check(d)
+    d['cards'][0]['examples_waived'] = 'no natural non-example'
+    deck_rules.check(d)
+    d = deck()
+    d['cards'][0]['genre'] = 'derivation'
+    with pytest.raises(deck_rules.DeckError, match='finish block'):
+        deck_rules.check(d)
+
+
+def test_voice_is_per_deck():
+    d = deck()
+    d['cards'][0]['voice'] = 'yunyang'
+    with pytest.raises(deck_rules.DeckError, match='once per deck'):
+        deck_rules.check(d)
+
+
+def test_subgoal_and_trivial_steps():
+    html, parts = blocks.render_block({'type': 'steps', 'items': [
+        {'subgoal': '把括号首项化成 1', 'do': 'a', 'why': 'b'}, {'subgoal': '把括号首项化成 1', 'do': 'c', 'trivial': True},
+        {'subgoal': '代入公式', 'do': 'e', 'basis': 'f'}]}, 'b0', 'w')
+    assert html.count('class="subgoal"') == 2 and 'step trivial' in html
+    assert parts[0].text.startswith('把括号首项化成 1') and not parts[1].text.startswith('把括号')

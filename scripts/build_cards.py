@@ -22,7 +22,7 @@ import genanki
 
 from blocks import inline, render_block, esc, BlockError, strip_tags
 from deck_rules import check, GENRES, DeckError
-from speech_backend import resolve_voice, DEFAULT_VOICE, DEFAULT_SPEED
+from speech_backend import resolve_voice, inspect_voice, DEFAULT_VOICE
 import narration
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -50,15 +50,6 @@ def card_tag(data, card):
     return ' · '.join(x for x in (exam.get('code'), units) if x)
 
 
-def complexity(page_html, card):
-    maths = page_html.count('<math')
-    steps = sum(len(b.get('items', [])) for b in card['blocks'] if b.get('type') == 'steps')
-    depth = max([int(d) for d in re.findall(r'data-depth="(\d+)"', page_html)] or [0])
-    chars = len(strip_tags(page_html))
-    complex_ = (steps >= 5 and maths >= 6) or maths >= 14 or depth >= 5 or chars >= 1500
-    return {'math': maths, 'steps': steps, 'map_depth': depth, 'visible_chars': chars, 'suggest_slower': complex_}
-
-
 def render_card(data, card, style):
     where = f'card {card["id"]}'
     title = inline(card['title'], f'{where}.title')
@@ -69,10 +60,26 @@ def render_card(data, card, style):
         section, block_parts = render_block(block, f'b{i}', f'{where}.blocks[{i}]')
         sections.append(section)
         parts += [(p.target, p.text) for p in block_parts]
-    voice = resolve_voice(card.get('voice') or style.get('voice') or DEFAULT_VOICE)
-    speed = float(card.get('speed', style.get('speed', DEFAULT_SPEED)))
+    voice = resolve_voice(style.get('voice') or DEFAULT_VOICE)
     theme = card.get('theme') or style.get('theme', 'editorial')
-    return {'title_html': title.html, 'sections': sections, 'parts': parts, 'voice': voice, 'speed': speed, 'theme': theme}
+    return {'title_html': title.html, 'sections': sections, 'parts': parts, 'voice': voice, 'theme': theme}
+
+
+def choose_speed(card, style, narration_text, seen_terms):
+    """Card speed: explicit card value, else a deck-wide number, else the computed rule."""
+    metrics = narration.speed_metrics(card, narration_text, seen_terms)
+    auto_speed, auto_reason = narration.decide_speed(metrics)
+    if 'speed' in card:
+        return float(card['speed']), card.get('speed_reason', ''), metrics, auto_speed
+    deck_speed = style.get('speed', 'auto')
+    if deck_speed != 'auto':
+        return float(deck_speed), style.get('speed_reason', ''), metrics, auto_speed
+    return auto_speed, auto_reason, metrics, auto_speed
+
+
+def clock(seconds):
+    seconds = int(round(seconds))
+    return f'{seconds // 60}:{seconds % 60:02d}'
 
 
 def page(data, card, r, audio_name, cues, pending_message=None):
@@ -84,8 +91,11 @@ def page(data, card, r, audio_name, cues, pending_message=None):
         attrs += f' data-audio-pending="1" data-audio-message="{esc(pending_message)}"'
     player = (f'<button class="speak" data-audio="{"" if pending_message else esc(audio_name)}" aria-label="整页讲解：播放、暂停或继续" aria-pressed="false"'
               + (f' disabled title="{esc(pending_message)}"' if pending_message else '') + '>▶</button>'
-              f'<button class="speed" type="button" data-speed="{r["speed"]:g}" data-encoded="{r["speed"]:g}" title="点击在 2× 与 1.5× 之间切换">{speed_label}</button>')
-    status = esc(pending_message) if pending_message else f'{voice_label} · {speed_label}'
+              f'<button class="speed" type="button" data-speed="{r["speed"]:g}" data-encoded="{r["speed"]:g}" aria-label="切换 2× 与 1.5×" title="点击在 2× 与 1.5× 之间切换（只对本卡生效）">{speed_label}</button>')
+    if r['speed'] < 2 and r.get('speed_reason'):
+        player += f'<span class="speed-reason" title="{esc(r["speed_reason"])}">{esc(r["speed_reason"].split("；")[0][:16])}</span>'
+    length = f' · {clock(cues["duration"])}' if cues else ''
+    status = esc(pending_message) if pending_message else f'{voice_label} · {speed_label}{length}'
     out = (f'<main {attrs}><header class="cc-head"><div class="cc-meta"><span class="cc-genre">{GENRES[genre]}</span>'
            f'<span class="cc-tag">{esc(card_tag(data, card))}</span></div>'
            f'<div class="cc-titlebar"><h1 data-node="title">{r["title_html"]}</h1><div class="cc-player">{player}</div></div></header>'
@@ -98,11 +108,11 @@ def page(data, card, r, audio_name, cues, pending_message=None):
     return out
 
 
-def source_record(data, card):
+def source_record(data, card, speed=None, speed_reason=''):
     record = {'schema': 'ccpt-6', 'card': card['id'], 'covers': card.get('covers', []), 'sources': card.get('sources', []),
-              'exam': data.get('exam'), 'coverage_scope': (data.get('coverage') or {}).get('scope')}
-    if card.get('speed_reason'):
-        record['speed_reason'] = card['speed_reason']
+              'exam': data.get('exam'), 'coverage_scope': (data.get('coverage') or {}).get('scope'), 'speed': speed}
+    if speed_reason:
+        record['speed_reason'] = speed_reason
     # Anki stores fields as HTML; JSON escapes keep json.loads exact without HTML-escaping.
     return json.dumps(record, ensure_ascii=False).replace('<', r'<').replace('>', r'>').replace('&', r'&')
 
@@ -111,12 +121,50 @@ def subdeck_id(base, name):
     return base + int(hashlib.sha256(name.encode()).hexdigest()[:6], 16)
 
 
+def write_term_sampler(data, out, media, lexicon):
+    """Edge cannot take phoneme hints, so the user hears every term once and fixes speech_lexicon if needed."""
+    terms = []
+    for card in data['cards']:
+        for b in card['blocks']:
+            if b.get('type') == 'definition':
+                terms.append(strip_tags(inline(b['term'], 'sampler').html))
+    terms += [k for k in lexicon if re_latin(k)]
+    terms = list(dict.fromkeys(t for t in terms if t))
+    if not terms:
+        return
+    voice = resolve_voice(data['style'].get('voice') or DEFAULT_VOICE)
+    speed = 2.0 if data['style'].get('speed', 'auto') == 'auto' else float(data['style']['speed'])
+    p = narration.plan('term-sampler', [(f't{i}', f'下面这个词是：{t}。') for i, t in enumerate(terms)], voice, speed, lexicon)
+    asyncio.run(narration.synthesize_clips([p], media))
+    narration.assemble(p, media)
+    (out / 'term-sampler.mp3').write_bytes((media / p['file']).read_bytes())
+    (out / 'term-sampler.txt').write_text('\n'.join(terms))
+
+
+def re_latin(value):
+    return bool(re.search(r'[A-Za-z]', value))
+
+
+def preflight(voice):
+    """Fail fast with a clear class instead of hanging on a blocked network."""
+    report = asyncio.run(inspect_voice(voice))
+    if report['route'] != 'unavailable':
+        return
+    if report.get('edge_list_available') is False:
+        print(f'✗ network_blocked: the Edge voice service could not be reached ({report.get("edge_error")}) and no Azure Speech is configured.\n'
+              '  Deliver now with --audio-pending; run the same command without it on a machine that can reach speech.platform.bing.com.', file=sys.stderr)
+        sys.exit(2)
+    print(f'✗ voice_missing: {voice} is not offered by the Edge service; no voice was substituted.', file=sys.stderr)
+    sys.exit(3)
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument('input', type=Path)
     ap.add_argument('output', type=Path)
     ap.add_argument('--preview', action='store_true', help='write preview pages only; no audio, no package')
     ap.add_argument('--audio-pending', action='store_true', help='package without narration; pages say so and the player is disabled')
+    ap.add_argument('--term-sampler', action='store_true', help='also write term-sampler.mp3: every English term in a carrier sentence, for a one-minute pronunciation check')
     a = ap.parse_args(argv)
 
     data = json.loads(a.input.read_text())
@@ -130,17 +178,31 @@ def main(argv=None):
     media = out / 'media'
     out.mkdir(parents=True, exist_ok=True)
     media.mkdir(exist_ok=True)
-    plans = {cid: narration.plan(cid, r['parts'], r['voice'], r['speed']) for cid, r in rendered.items()}
+    lexicon = data.get('speech_lexicon', {})
+    plans, seen_terms, metrics, auto_speeds = {}, set(), {}, {}
+    for card in data['cards']:
+        r = rendered[card['id']]
+        spoken = narration.apply_lexicon('\n'.join(t for _, t in r['parts']), lexicon)
+        leaked = narration.TEX_REMNANT.findall(spoken)
+        if leaked:
+            sys.exit(f'✗ card {card["id"]}: narration still contains LaTeX ({" ".join(sorted(set(leaked)))}); write the reading in 〔…〕 or speech')
+        r['speed'], r['speed_reason'], metrics[card['id']], auto_speeds[card['id']] = choose_speed(card, data['style'], spoken, seen_terms)
+        plans[card['id']] = narration.plan(card['id'], r['parts'], r['voice'], r['speed'], lexicon)
     cues, audio_report = {}, {}
     pending = a.preview or a.audio_pending
     if not pending:
+        missing = narration.missing_originals(plans.values())
+        if missing:
+            preflight(missing[0][0])
         try:
             asyncio.run(narration.synthesize_clips(list(plans.values()), media, report=audio_report))
         except Exception as error:  # noqa: BLE001 - explain, never substitute a voice
             sys.exit(f'✗ Narration failed: {error}\n  Run: python scripts/speech_backend.py --check --voice {next(iter(plans.values()))["voice"]}\n'
-                     '  To deliver pages now, rebuild with --audio-pending and fill narration later on a machine that can reach the voice service.')
+                     '  To deliver pages now, rebuild with --audio-pending and run this same command later where the voice service is reachable.')
         for cid, p in plans.items():
             cues[cid] = narration.assemble(p, media)
+        if a.term_sampler:
+            write_term_sampler(data, out, media, lexicon)
 
     css = asset_css(data.get('css', ''))
     js = asset_js()
@@ -164,21 +226,24 @@ def main(argv=None):
         deck = decks.setdefault(name, genanki.Deck(did, name))
         title_text = strip_tags(r['title_html'])
         tags = ['ccpt6', card['genre']] + ([re.sub(r'\W+', '_', data['exam']['code'])] if data.get('exam') else [])
-        deck.add_note(genanki.Note(model=model, fields=[card['id'], title_text, body, source_record(data, card), p['text']],
+        deck.add_note(genanki.Note(model=model, fields=[card['id'], title_text, body, source_record(data, card, r['speed'], r['speed_reason']), p['text']],
                                    guid=genanki.guid_for(deck_info['namespace'], card['id']), tags=tags, due=i + 1))
         preview = body.replace(f'data-audio="{p["file"]}"', f'data-audio="media/{p["file"]}"').replace(f'src="{p["file"]}"', f'src="media/{p["file"]}"')
         (out / f'{card["id"]}.html').write_text(
             '<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
             f'<title>{esc(title_text)}</title><style>{css}</style><body class="card">{preview}<script>{js}</script></body></html>')
-        stats = complexity(body, card)
         warn = []
-        if stats['suggest_slower'] and r['speed'] > 1.5:
-            warn.append('内容密度高，考虑 speed 1.5 并写 speed_reason')
+        if 'speed' in card and float(card['speed']) != auto_speeds[card['id']]:
+            warn.append(f'手动速度 {card["speed"]}× 与计算规则 {auto_speeds[card["id"]]}× 不同，确认理由')
+        maps = [m for m in re.findall(r'class="mm-node"', body)]
+        if len(maps) > 20:
+            warn.append(f'导图 {len(maps)} 个节点，超过 20 个时考虑拆卡')
         odd = narration.speech_lint(p['text'])
         if odd:
             warn.append('朗读文本含难读符号 ' + ' '.join(odd) + '：改写成文字读法')
-        report_cards.append({'id': card['id'], 'genre': card['genre'], 'title': title_text, 'speed': r['speed'], 'voice': r['voice'],
-                             'theme': r['theme'], 'segments': len(p['segments']), 'narration_chars': len(p['text']), **stats, 'warnings': warn})
+        report_cards.append({'id': card['id'], 'genre': card['genre'], 'title': title_text, 'speed': r['speed'], 'speed_reason': r['speed_reason'],
+                             'voice': r['voice'], 'theme': r['theme'], 'segments': len(p['segments']), 'narration_chars': len(p['text']),
+                             'duration': (cues.get(card['id']) or {}).get('duration'), 'metrics': metrics[card['id']], 'warnings': warn})
 
     (out / 'pages.json').write_text(json.dumps(pages, ensure_ascii=False, indent=1))
     manifest = [{'card': cid, 'file': p['file'], 'voice': p['voice'], 'speed': p['speed'], 'tempo_filter': narration.tempo_chain(p['speed']),
