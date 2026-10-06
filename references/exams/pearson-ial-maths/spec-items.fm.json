@@ -211,7 +211,8 @@
    "title": "Use of the formula ½∫_α^β r² dθ for area",
    "page": 39,
    "level": "A2",
-   "note": "Printed as a second '7.1' in Issue 3 (printed p.39, checked on the rendered page); key suffixed '#2' to keep JSON keys unique. Its guidance row is about tangents parallel/perpendicular to the initial line."
+   "note": "Printed as a second '7.1' in Issue 3 (printed p.39, checked on the rendered page); key suffixed '#2' to keep JSON keys unique. Its guidance row is about tangents parallel/perpendicular to the initial line. Query it as '7.2' (exam_index.py maps the alias).",
+   "alias": "7.2"
   }
  },
  "WFM03": {

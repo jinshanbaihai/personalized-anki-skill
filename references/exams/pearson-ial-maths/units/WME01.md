@@ -1,5 +1,7 @@
 # WME01 · M1 Mechanics 1：考纲摘要
 
+> **构建溯源，不随包发布**：本文件反引号里的 `registry/…`、`work/…`、`src/…`、`inventory/…`、`scratchpad/…`、`finder/…`、`research/…`、`boards/…` 路径，`*.coverage.part*.md`、`*.questions.part*.json` 等分卷文件，以及审核脚本和它们的输出文件，都是构建登记时沙箱里的工作文件，技能包里没有，只说明结论是怎么核出来的。要看原件，用同目录 `WME01.questions.json` 各条的 `sources`（公开地址或 Drive 定位，见 [README](../../README.md) “原件怎么取”）。文中写到的缺口是构建时的记录，**缺口以 `python scripts/exam_index.py WME01 --gaps` 输出为准（快照 2026-10-06）**。
+
 核对日期：2026-10-06。条目编号、措辞和页码以考纲原文为准，本文件的中文是转述，英文术语保留原文。
 
 **来源**
@@ -134,13 +136,13 @@
 
 ---
 
-## 6. 往届真题与审核记录（2026-10-06）
+## 6. 往届真题与审核记录（2026-10-06；构建溯源，不随包发布）
 
 本节与第 7 节中的路径都相对于 `registry/`。审核脚本在 `work/wme01audit/scripts/`，改正清单在 `work/wme01audit/fixes.json`（每条写明原值、证据、改动类型），改动前的文件备份在 `work/wme01audit/backup/`。
 
 **逐题索引（合并版）**：`pearson-ial-maths/units/WME01.questions.json`，由同目录 `WME01.questions.part1.json`（79 题，2019-06 至 2022-10）与 `part2.json`（82 题，2023-01 至 2026-01，含 2025-10 /01A）合并，按 id 去重（没有重复），按考季 → 卷别（/01 在 /01A 前）→ 题号排序。改正同时写回两个 part 文件，合并文件与两个 part 文件逐条一致。各卷来源、文件校验与缺口见 `WME01.coverage.part1.md`、`WME01.coverage.part2.md`。
 
-- **格式校验**（`merge_validate.py`）：161 题、422 小问、1575 分；字段齐全，无多余字段；每题各小问分值之和等于题目总分；每份卷 75 分，题号连续；spec id 全部在 `spec-items.mech.json` → WME01 中；series 全部符合 YYYY-MM；id 与 paper 一致；有 MS 的卷每个小问都有 `ms`，没有 MS 的卷 `ms` 全空；引号内的原文都不超过 25 词。结果 0 个问题。（2026-10-06 补入 S19 的 MS 裁切后，S19 是唯一的部分情形：Q2 没有裁切，它的 `ms` 仍为空，其余 16 个小问都已填写。）
+- **格式校验**（构建时的合并校验脚本）：161 题、422 小问、1575 分；字段齐全，无多余字段；每题各小问分值之和等于题目总分；每份卷 75 分，题号连续；spec id 全部在 `spec-items.mech.json` → WME01 中；series 全部符合 YYYY-MM；id 与 paper 一致；有 MS 的卷每个小问都有 `ms`，没有 MS 的卷 `ms` 全空；引号内的原文都不超过 25 词。结果 0 个问题。（2026-10-06 补入 S19 的 MS 裁切后，S19 是唯一的部分情形：Q2 没有裁切，它的 `ms` 仍为空，其余 16 个小问都已填写。）
 - **完整性**：对照 `inventory/fm-mech.json`、`inventory/fm-mech-gaps.md`、`versions.json`（预期考季 2019-06 至 2026-06）、Edexcel-Finder 清单 `finder/finder-inventory.tsv`（2019-06 至 2025-01 每季的 P 号与题数都和索引一致；SAM 不是考季，不收），以及第三方抓取的 Pearson 官方链接索引 `finder/gh/grademax_maths_index.json`（2025-01 至 2026-06）。**凡是拿得到 QP 文本的卷都已索引**，共 21 份：2019-06 至 2026-01 每个考季的 /01（20 份）加 2025-10 /01A。2019-01 及以前同代码的卷属于 2013 版考纲，不收。
 - **所有来源都拿不到的卷**：
   - **2026-06 WME01/01**：QP、MS、ER 都没有。

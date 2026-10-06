@@ -1,5 +1,7 @@
 # WMA12 Pure Mathematics 2（P2）考纲条目登记
 
+> **构建溯源，不随包发布**：本文件反引号里的 `registry/…`、`work/…`、`src/…`、`inventory/…`、`scratchpad/…`、`finder/…`、`research/…`、`boards/…` 路径，`*.coverage.part*.md`、`*.questions.part*.json` 等分卷文件，以及审核脚本和它们的输出文件，都是构建登记时沙箱里的工作文件，技能包里没有，只说明结论是怎么核出来的。要看原件，用同目录 `WMA12.questions.json` 各条的 `sources`（公开地址或 Drive 定位，见 [README](../../README.md) “原件怎么取”）。文中写到的缺口是构建时的记录，**缺口以 `python scripts/exam_index.py WMA12 --gaps` 输出为准（快照 2026-10-06）**。
+
 **来源**：Pearson Edexcel IAL Mathematics, Further Mathematics and Pure Mathematics Specification，**Issue 3 – April 2019**（ISBN 978 1 446 94981 8；本地 `research/dl/ial-maths-spec.pdf`，md5 06d01a11…；与 `registry/versions.md` §1.1 一致）。P2 位于印刷页 **pp.17–20**（PDF 页 = 印刷页 + 6）。公式册 *Mathematical Formulae and Statistical Tables* **Issue 2 – January 2021**（P59773RA；Pure Mathematics P2 一节在公式册印刷 **p.3**）。条目编号与页码已用脚本逐页核对，含公式的格子另用渲染图核对。登记日期 2026-10-06。
 
 共用部分见 `../specification.md`。
@@ -144,15 +146,15 @@
 
 ## 5. 往届真题
 
-2018 考纲下 WMA12 的试卷、MS、ER 收集情况见 `../../inventory/pure.json` 与 `../../inventory/pure-gaps.md`。
+2018 考纲下 WMA12 的试卷、MS、ER 收集情况与缺口以 `python scripts/exam_index.py WMA12 --gaps` 输出为准（快照 2026-10-06）；构建时的清单 `inventory/pure.json`、`pure-gaps.md` 是构建溯源，不随包发布。
 
 逐题索引（合并版）：`WMA12.questions.json`（同一文件夹；由 `WMA12.questions.part1.json` 与 `part2.json` 合并、去重、排序，2026-10-06 审核）。各卷来源、缺失文件与审核记录见第 6 节、`WMA12.coverage.part1.md`、`WMA12.coverage.part2.md`。
 
-## 6. 审核记录（2026-10-06）
+## 6. 审核记录（2026-10-06；构建溯源，不随包发布）
 
 本节与第 7 节中的路径都相对于 `registry/`。
 
-- **合并**：`WMA12.questions.json` = part1（98 题，2019-06 至 2022-10）+ part2（121 题，2023-01 至 2026-01），按 id 去重（没有重复），按考季、卷别、题号排序。脚本 `work/wma12audit/scripts/merge_validate.py`：字段齐全、各小问分值之和等于题目总分、spec id 都在 `spec-items.pure.json` → WMA12 中、series 符合 YYYY-MM、id 与 paper 一致、每份卷 75 分且题号连续。结果 0 个问题。`totals.py` 与 QP 文本中印刷的 “(Total … marks)” 逐题核对，22 份卷全部一致；各小问分值也与 QP 印刷的 (n) 序列一致（文本层没有单独成行的 3 处，用 QP 原文人工核对过）。
+- **合并**：`WMA12.questions.json` = part1（98 题，2019-06 至 2022-10）+ part2（121 题，2023-01 至 2026-01），按 id 去重（没有重复），按考季、卷别、题号排序。构建时的合并校验脚本：字段齐全、各小问分值之和等于题目总分、spec id 都在 `spec-items.pure.json` → WMA12 中、series 符合 YYYY-MM、id 与 paper 一致、每份卷 75 分且题号连续。结果 0 个问题。`totals.py` 与 QP 文本中印刷的 “(Total … marks)” 逐题核对，22 份卷全部一致；各小问分值也与 QP 印刷的 (n) 序列一致（文本层没有单独成行的 3 处，用 QP 原文人工核对过）。
 - **完整性**：索引了 22 份卷，覆盖 `inventory/pure.json`、`inventory/finder.json`（Edexcel-Finder，19 份 2018 考纲卷 + SAM）与 `versions.json` 预期考季中所有有 QP 文本的卷。SAM 不是考季，按约定不收。所有来源都缺失的卷：2025-10 /01A、2026-01 /01A（是否存在 WMA12 的 /01A 卷未能证实；`versions.json` 记录中国考点 10 月有 WMA12A 报考代码），2026-06 /01 与 /01A（是否已公布未能证实）；2026-01 /01 缺 MS 和 ER；2019-06 至 2022-06（2021-06 本来就没有 ER）以及 2024-06 及之后各卷缺 ER。2026-10-06 复查：Drive 中 `WMA12/01A`、`P84523A`、2026 年 P2 标题的检索，以及 GitHub `EslamAhmedGaber/elite-igcse-math`（commit 05b0320，2026-10-02）的 WMA12 文件列表，都没有新卷。
 - **准确性**：逐条对照 QP、MS、ER 原文（文本层加渲染图）复核了 22 条（每份卷 1 条，题号和小问类型分散）：S19 Q7、O19 Q9、J20 Q5、O20 Q4、J21 Q10、S21 Q8、O21 Q3、J22 Q6、S22 Q9、O22 Q4、J23 Q7、S23 Q10、O23 Q2、J24 Q8、S24 Q5、S24R Q9、O24 Q6、J25 Q3、S25 Q7、S25A Q4、O25 Q8、J26 Q1。在 S25A Q4 发现错误后，又复核了 S25A 整份卷的其余 9 题，另外重新计算了 J23 Q9、O24 Q8、O25 Q7、J24 Q10 的答案，并对照 QP／MS 核对了 J26 Q6、J25 Q8。part 2 的 MS 原先主要从文本层读，因此对 part 2 的 23 个 PDF 做了三项自动检查：①矢量绘制的根号（`radicals.py`、`radcheck.py`，共 222 处）；②Symbol 字体的负号（`minuscheck.py`）；③π（`picheck.py`）。看它们是否被文本层丢掉。结果只有 S25A Q4(b) 这一处丢失。
 - **改正**（详见 `work/wma12audit/fixes.json`，合并文件和 part 文件同步修改）：

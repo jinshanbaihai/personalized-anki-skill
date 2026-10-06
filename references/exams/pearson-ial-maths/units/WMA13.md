@@ -1,5 +1,7 @@
 # WMA13 Pure Mathematics 3（P3）考纲条目登记
 
+> **构建溯源，不随包发布**：本文件反引号里的 `registry/…`、`work/…`、`src/…`、`inventory/…`、`scratchpad/…`、`finder/…`、`research/…`、`boards/…` 路径，`*.coverage.part*.md`、`*.questions.part*.json` 等分卷文件，以及审核脚本和它们的输出文件，都是构建登记时沙箱里的工作文件，技能包里没有，只说明结论是怎么核出来的。要看原件，用同目录 `WMA13.questions.json` 各条的 `sources`（公开地址或 Drive 定位，见 [README](../../README.md) “原件怎么取”）。文中写到的缺口是构建时的记录，**缺口以 `python scripts/exam_index.py WMA13 --gaps` 输出为准（快照 2026-10-06）**。
+
 **来源**：Pearson Edexcel IAL Mathematics, Further Mathematics and Pure Mathematics Specification，**Issue 3 – April 2019**（ISBN 978 1 446 94981 8；本地 `research/dl/ial-maths-spec.pdf`，md5 06d01a11…；与 `registry/versions.md` §1.1 一致）。P3 位于印刷页 **pp.21–25**（PDF 页 = 印刷页 + 6）。公式册 *Mathematical Formulae and Statistical Tables* **Issue 2 – January 2021**（P59773RA；Pure Mathematics P3 一节在公式册印刷 **pp.4–5**）。条目编号与页码已用脚本逐页核对，含公式的格子另用渲染图核对（如 5.1 的 1/xⁿ、2.3 的 r cos(θ ± a)）。登记日期 2026-10-06。
 
 共用部分见 `../specification.md`。
@@ -134,7 +136,7 @@
 
 ## 5. 往届真题
 
-2018 考纲下 WMA13 的试卷、MS、ER 收集情况见 `../../inventory/pure.json` 与 `../../inventory/pure-gaps.md`。逐题索引见同目录 `WMA13.questions.json`（19 份卷、178 题，2020-01 至 2025-10，含 2025-06、2025-10 的 /01A），来源与缺口说明见 `WMA13.coverage.part1.md`、`WMA13.coverage.part2.md`；真题需求概览见第 6 节。注意：`pure-gaps.md` 把 2020-01 至 2021-10 的 QP／MS 记为缺失，后来已在 GitHub `RayZ3R0/papernexus-finder` 找到并核实（见 `WMA13.coverage.part1.md`“New sources found in this pass”）。
+2018 考纲下 WMA13 的试卷、MS、ER 收集情况与缺口以 `python scripts/exam_index.py WMA13 --gaps` 输出为准（快照 2026-10-06）；构建时的清单 `inventory/pure.json`、`pure-gaps.md` 是构建溯源，不随包发布。逐题索引见同目录 `WMA13.questions.json`（19 份卷、178 题，2020-01 至 2025-10，含 2025-06、2025-10 的 /01A），来源与缺口说明见 `WMA13.coverage.part1.md`、`WMA13.coverage.part2.md`；真题需求概览见第 6 节。注意：`pure-gaps.md` 把 2020-01 至 2021-10 的 QP／MS 记为缺失，后来已在 GitHub `RayZ3R0/papernexus-finder` 找到并核实（见 `WMA13.coverage.part1.md`“New sources found in this pass”）。
 
 ## 6. 真题需求概览
 
@@ -278,9 +280,9 @@
 13. **x = f(y) 型：整个导数取倒数，答案化成只含 x。** MS 2025-01 Q10(b)：题目写 hence，用 arccos 求导公式直接得出答案不给分；ER 2023-06 Q10(b)：平行于 y 轴的切线要写成方程 x = …，只给坐标丢分。
 14. **精确值与过早取整。** MS 通则：要求精确值时 “marks will normally be lost if the candidate resorts to using rounded decimals”（如 MS 2025-10 通则）；MS 2024-01 Q7(b)：k = 7/3、11/3 可写成循环小数，但 2.33、3.67 不行；ER 2023-06 Q7(a)：k 要 4 s.f.，写 0.173 而非 0.1733 丢分。
 
-### 6.5 审计记录（2026-10-06）
+### 6.5 审计记录（2026-10-06；构建溯源，不随包发布）
 
-- **合并与校验**：`work/wma13audit/scripts/merge_validate.py` 合并两个 part 文件（178 题，无重复 id），按 series → paper → 题号排序写出 `WMA13.questions.json`。校验项：字段齐全、无多余字段；series 为 YYYY-MM；paper 为 WMA13/01 或 WMA13/01A；id 与 series、paper、题号一致；每题小问分值之和 = 题目总分；每卷 75 分、题号连续；每个 spec id 都在 `spec-items.pure.json` → `WMA13` 中；有 ms／er 文字的题有对应来源。结果 0 错误。另用 `markcheck.py` 逐题核对 QP 印刷的 “Total … marks” 与各小问 “(n)”（小问只拆分印刷分组、不跨组）：178/178 一致。`numcheck.py` 核对 ms 与 final_form 中的小数答案都出现在 MS／QP 原文里，13 处不在原文的值逐一复算（如 0.24/8、135/16 = 8.4375、cos θ = −1/3 → 109.5°、250.5°），都正确。MS／ER 页码引用 350 处，全部在对应 PDF 页数之内；43 个 `local:src/WMA13/…` 来源文件都存在，且 series、paper、类型与条目一致。
+- **合并与校验**：构建时的合并校验脚本合并两个 part 文件（178 题，无重复 id），按 series → paper → 题号排序写出 `WMA13.questions.json`。校验项：字段齐全、无多余字段；series 为 YYYY-MM；paper 为 WMA13/01 或 WMA13/01A；id 与 series、paper、题号一致；每题小问分值之和 = 题目总分；每卷 75 分、题号连续；每个 spec id 都在 `spec-items.pure.json` → `WMA13` 中；有 ms／er 文字的题有对应来源。结果 0 错误。另用 `markcheck.py` 逐题核对 QP 印刷的 “Total … marks” 与各小问 “(n)”（小问只拆分印刷分组、不跨组）：178/178 一致。`numcheck.py` 核对 ms 与 final_form 中的小数答案都出现在 MS／QP 原文里，13 处不在原文的值逐一复算（如 0.24/8、135/16 = 8.4375、cos θ = −1/3 → 109.5°、250.5°），都正确。MS／ER 页码引用 350 处，全部在对应 PDF 页数之内；43 个 `local:src/WMA13/…` 来源文件都存在，且 series、paper、类型与条目一致。
 - **完整性**：对照 `inventory/pure.json`、`inventory/finder.json`（Edexcel-Finder 2020-01 至 2025-01 的 15 份 + SAM）、`inventory/pure-coverage.json`、`versions.json`（预期考季 2020-01 至 2026-06）和 `pure-gaps.md`：凡有 QP 文本的卷（19 份）都已索引；SAM 不是考季，不收。所有来源都缺的卷：2026-01 WMA13/01 与 /01A、2026-06 WMA13/01 与 /01A（QP、MS、ER 都没有；本轮再次查了 Drive：标题含 P3／WMA13 或全文含 WMA13/01 且创建于 2026-01-10 之后的文件，标题含 26_01、26_06、2601、2606 的文件，只找到 WMA14、WST01 的 2026 卷；GitHub `EslamAhmedGaber/elite-igcse-math` HEAD 仍为 05b0320，没有 WMA13）。/01A 是否在 2026-01、2026-06 开考未核实（中国考点时间表列出了全部 14 个单元的 A 代码，见 `versions.json` → `regional_01A`）。ER 缺 14 份：2020-01 至 2022-06（2021-06 本来就没有报告）以及 2024-06 至 2025-10 的全部卷。
 - **抽查**：逐条对照 QP、MS（及 ER）原文复核 22 题，覆盖 19 份卷中的每一份：2020-01 Q4、2020-10 Q9、2021-01 Q8、2021-06 Q1、2021-10 Q3、2021-10 Q7、2022-01 Q6、2022-06 Q9、2022-10 Q7、2023-01 Q5、2023-06 Q10、2023-10 Q2、2024-01 Q7、2024-06 Q3、2024-06 Q9、2024-10 Q8、2025-01 Q6、2025-01 Q10、2025-06 Q4、2025-06A Q7、2025-10 Q5、2025-10A Q2。分值、小问拆分、命令词和 MS 要点都与原文一致；发现的问题集中在 part 2 的 spec 标注上，于是对全部 500 小问做了 spec 规则扫描，并逐行复读了 part 2（2023-01 至 2025-10）全部 287 小问的 spec 标签。
 - **改正 12 处**（明细与理由见 `work/wma13audit/fixes.json`，用 `apply_fixes.py` 已写回两个 part 文件后重新合并）：
@@ -291,5 +293,5 @@
   - 2024-01 Q7(a)：ask 补上定义域 x > k/3 和 “in terms of k”。
   - 2023-06 Q10(b)：final_form 补上答案形式 x = −4/3、x = 4（必须写成方程、精确）。
   - 2025-01 Q10(b)：ms 补上 MS 的说明：题目写 hence，用 arccos 求导公式直接作答不给分。
-- **重建注意**：part 2 由 `work/wma13p2/papers/p_*.py` 经 `build.py`／`finalize.py` 生成，part 1 由 `work/wma13p1/scripts/p_<series>.py` 生成。若重新生成 part 文件，要再运行 `python3 -I work/wma13audit/scripts/apply_fixes.py pearson-ial-maths/units work/wma13audit/fixes.json`（已改过的会显示 already），然后运行 `merge_validate.py … --write`。
+- **重建注意**：part 2 由 `work/wma13p2/papers/p_*.py` 经 `build.py`／`finalize.py` 生成，part 1 由 `work/wma13p1/scripts/p_<series>.py` 生成。若重新生成 part 文件，要再运行 `python3 -I work/wma13audit/scripts/apply_fixes.py pearson-ial-maths/units work/wma13audit/fixes.json`（已改过的会显示 already），然后重新运行构建时的合并校验。
 - **体例差异（未改）**：part 1 的 ask／ms 用 Unicode 数学符号（π、², ≠）并在 ms 末尾注 MS 页码；part 2 用 ASCII 写法（pi、^2、!=），只在 er 末尾注 ER 页码。检索时两种写法都要考虑。

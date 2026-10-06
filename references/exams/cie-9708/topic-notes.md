@@ -26,7 +26,7 @@
 | R23w | [November 2023 ER，Cambridge 原文件镜像](https://pastpapers.papacambridge.com/directories/CAIE/CAIE-pastpapers/upload/9708_w23_er.pdf) | PDF pp.23–29，Paper 41/42/43 的完整报告；另读p.19的 Paper 32 Q1解释 | Paper 42 Q2 区分两个 effects 并延伸至 demand；只列评价点和用错模型会限制表现。Paper 32 Q1指出 TU/MU 误读。 |
 | R23m | [March 2023 ER，Cambridge 原文件镜像](https://www.smartexamresources.com/files/9708_m23_er.pdf) | PDF pp.6–7，Paper 32 的 key、general comments 与各题解释完整读取 | Q2解释 MU/P；Q3解释 price fall 后的两个 effects，尤其辅助平行线到最终点的 income effect。 |
 
-2024/2025 ER 的所查公开地址未取得完整原文；没有采用搜索摘要或其他网站转述作为已读 ER。新增需要应继续查合法可访问原文，或使用用户已有资料。
+没有采用搜索摘要或其他网站转述作为已读 ER。缺口以 `python scripts/exam_index.py 9708 --gaps` 输出为准（快照 2026-10-06）。
 
 ### MCQ：多种知识判断
 
@@ -39,8 +39,8 @@
 | 同卷Q3，QP p.3 | 同MS p.2：B | X降价、SE增加X、IE减少X；总变化不能当IE | R23m pp.6–7 Q3完整解释 |
 | [9708/32 O/N 2023 Q1，QP p.2](https://pastpapers.papacambridge.com/directories/CAIE/CAIE-pastpapers/upload/9708_w23_qp_32.pdf) | [MS p.2：C](https://pastpapers.papacambridge.com/directories/CAIE/CAIE-pastpapers/upload/9708_w23_ms_32.pdf) | 从TU曲线读取MU；第四单位的MU差为10，非TU高度差30 | R23w p.19 Q1完整解释 |
 | 同卷Q2，QP p.2 | 同MS p.2：C | IC不交叉、preference map不等于可负担集合、IC间距不必固定 | 已读ER无该题单独解释 |
-| [9708/32 M/J 2024 Q1，QP p.2](https://pastpapers.papacambridge.com/directories/CAIE/CAIE-pastpapers/upload/9708_s24_qp_32.pdf) | [MS p.2：C](https://pastpapers.papacambridge.com/directories/CAIE/CAIE-pastpapers/upload/9708_s24_ms_32.pdf) | 相邻TU差得到MU；单品TU表不足以证明整体支出最优 | 未取得该年ER |
-| 同卷Q2，QP p.2 | 同MS p.2：C | 单独Y涨价改变Y截距，X截距不变；两个端点非同时购买数量 | 未取得该年ER |
+| [9708/32 M/J 2024 Q1，QP p.2](https://pastpapers.papacambridge.com/directories/CAIE/CAIE-pastpapers/upload/9708_s24_qp_32.pdf) | [MS p.2：C](https://pastpapers.papacambridge.com/directories/CAIE/CAIE-pastpapers/upload/9708_s24_ms_32.pdf) | 相邻TU差得到MU；单品TU表不足以证明整体支出最优 | June 2024 ER p.20 只列为答对率 >80% 的题，无专门解释 |
+| 同卷Q2，QP p.2 | 同MS p.2：C | 单独Y涨价改变Y截距，X截距不变；两个端点非同时购买数量 | June 2024 ER 无该题单独解释 |
 | [9708/31 M/J 2025 Q3，QP p.2](https://pastpapers.papacambridge.com/directories/CAIE/CAIE-pastpapers/upload/9708_s25_qp_31.pdf) | [MS p.2：A](https://pastpapers.papacambridge.com/directories/CAIE/CAIE-pastpapers/upload/9708_s25_ms_31.pdf) | Preferences本身不改BL；收入、income tax和价格可改变约束 | 未取得该年ER |
 
 这些题为知识卡查漏，不构成八道必须复制的卡，也不表示八题足够证明整章完整。若直接采用任何原题，保留题干限定；若自创解释，明确预算约束、单位、固定变量和适用条件，不能把原题为选择题省略的语境变成普遍定理。
@@ -64,7 +64,7 @@
 
 ## Externalities、政府干预与 government failure（7.3–7.4、8.1）
 
->最近核验：2026-10-06。下列文件均为 Cambridge 官方文件，读自用户 Drive 中的副本（官网与镜像在当时环境不可连）；页码为印刷页，ER 为 PDF 页序。文件名写成 Cambridge 通用命名（`9708_m23_ms_42` = 2023 February/March，Paper 4 第 2 时区卷，mark scheme）。
+>最近核验：2026-10-06。下列文件均为 Cambridge 官方文件，读自构建登记时可得的 Drive 原件（官网与镜像在当时环境不可连；公开副本见逐题索引的 `sources`）；页码为印刷页，ER 为 PDF 页序。文件名写成 Cambridge 通用命名（`9708_m23_ms_42` = 2023 February/March，Paper 4 第 2 时区卷，mark scheme）。
 
 ### 一、考纲锚点（2026–2028 Version 2，Dec 2025）
 
@@ -91,7 +91,7 @@
 | 2023 Specimen 9708/04 Q2 | With the help of a diagram, **assess the view** that government intervention can be used successfully to correct market failure caused by positive externalities | pp.9–10 | subsidy “will lower the cost of production which will increase supply”；advertising “to increase demand”；direct provision；AO3：subsidy 价值难测、机会成本与 value judgement、时滞、advertising 成本与说服力、direct provision 较低效、净效果不一定为正 |
 | F/M 2023 9708/42 Q2 | The use of air travel leads to market failure caused by negative externalities. With the help of a diagram, **assess the extent to which** a government can intervene to correct this market failure | pp.9–10 | tax “will increase the cost of air travel which will decrease demand”；negative advertising；direct regulation；AO3：税额难测、时滞；结论句 “Some types of intervention will be more effective than others depending on the nature of the good/service” |
 | M/J 2023 9708/42 Q2 | EVs … **Evaluate, with the help of diagrams, two policies** a government may use to encourage the use of EVs | pp.10–11 | “MPB > MSB or MSC > MPC”；Indirect taxation；“Nudge theory effects”；“The diagram may be amended or re-drawn”；“Reference to the diagram … is made in the text” |
-| M/J 2023 9708/41 Q2 | 教育补贴（撤销补贴）——QP/MS 未取得 | — | ER p.22：须连起 merit good、positive externality、allocative efficiency；无相关图不能进 L3 |
+| M/J 2023 9708/41 Q2 | 教育补贴（撤销补贴）——QP/MS 现已收录（`9708-P4.questions.json` 的 `9708/4-2023-06-41-Q2`），本表未逐条深读 | — | ER p.22：须连起 merit good、positive externality、allocative efficiency；无相关图不能进 L3 |
 | F/M 2024 9708/42 Q2 | With the help of a diagram, **assess the effectiveness** of a government’s intervention in the price mechanism to address the causes of climate change | pp.10–11 | “L2 maximum if no accurate diagram provided”；minimum prices 只部分有效且影响利润和就业；complete ban 可更精确；结论比较直接干预与市场手段的净收益 |
 | M/J 2024 9708/42 Q2 | Market failure exists in all economies. **Evaluate**, with the aid of a diagram(s), the meaning of market failure and **two policies** | pp.9–10 | 市场失灵可涉及 allocative、productive inefficiency 或 information failure；“price restrictions/quantity direction”；时滞 “depending on the length of contract or production process” |
 | M/J 2024 9708/41 Q2 | 完全竞争长期均衡与效率；什么阻止效率（Explain … consider） | p.8 | 联考：externalities、merit goods、public goods；“regulation, taxation, subsides, or ownership”；AO3 “there may be government failure” |
@@ -145,7 +145,7 @@
 | 9708/32 M/J 2023 Q6 | C | SB − EB = PB | June 2023 ER p.18 只有 key |
 | 同卷 Q8 | C | 企业重修道路 = positive production externality | 同上 |
 | 同卷 Q17 | C | 电力最高价的理由 = 防止垄断剥削 | 同上 |
-| 9708/31 M/J 2023 Q10 | B | net social benefit 面积 x − y | ER p.17 全解（QP 未取得） |
+| 9708/31 M/J 2023 Q10 | B | net social benefit 面积 x − y | ER p.17 全解（QP 现已收录） |
 | 9708/32 F/M 2023 Q7 | B | 疫苗 = imperfect competition + positive consumption externality | March 2023 ER p.6 只有 key |
 | 同卷 Q10 | C | MC < P → 增产降价 | 同上 |
 | 同卷 Q15 | D | 补贴公共交通减少城市用车 | 同上 |
@@ -153,7 +153,7 @@
 | 旧考纲 9708/32 F/M 2019 Q15、Q17 | A、B | government failure 来自意外副作用；对生产者征税 = 最优产量处 MEC（图未见） | 无 ER |
 | 旧考纲 9708/33 O/N 2017 Q16、Q17 | D、A | 产权的结果 vs 非结果；私有化垄断需无进入壁垒 | 无 ER |
 
-**饱和**：当前考纲 Paper 3 最后读的三季（O/N 2023 /31、M/J 2023 /32、F/M 2023 /32）每季都还出现新题型，尚未饱和。下一次优先补：M/J 2024 /31–33、O/N 2024 /31–33、F/M 2025 /32、M/J 2025 /31–33、O/N 2025 /31 /33 及 2026 各季，并找 2024–2025 的 ER（逐题干扰项统计）。Paper 4 外部性 essay 在 2023–2025 的 /41–/42 内已饱和（/43 未取得）。
+**饱和**：本专题深读只逐题读了 Paper 3 的三季（O/N 2023 /31、M/J 2023 /32、F/M 2023 /32），每季都还出现新题型，尚未饱和；2023–2025 其余各卷都已在 `9708-P3.questions.json` 逐题索引，下一批先用 `python scripts/exam_index.py 9708/3 --spec 7.4`、`--spec 8.1` 拉出本主题的题再深读。Paper 4 外部性 essay 在 2023–2025 的 /41–/42 内已饱和；M/J 各季 /43 与 /41 同卷，O/N 的 /43 已收录但未在本专题深读。缺口以 `python scripts/exam_index.py 9708 --gaps` 输出为准（快照 2026-10-06）。
 
 ### 六、定义锚点（没有 MS 定义句时用什么）
 
@@ -179,12 +179,14 @@
 
 ### 八、资料获取的经验
 
-- 用户 Drive 是首选：按 `9708_<季><年>_<qp|ms|er>_<卷>` 搜文件名；全文检索题干独特句子可直接定位（例：“correct market failure caused by positive externalities” 命中 SPA）。
-- Drive 读取 PNG 页图只返回 OCR 文本，看不到图的几何；ECR 等扫描手写 PDF 读取后只有评语文本层。需要看图时请用户导出页面图片或提供原 PDF 到本地。
+- 有 Drive 连接器时：按 `9708_<季><年>_<qp|ms|er>_<卷>` 搜文件名；全文检索题干独特句子可直接定位（例：“correct market failure caused by positive externalities” 命中 SPA）。
+- Drive 读取 PNG 页图只返回 OCR 文本，看不到图的几何；ECR 等扫描手写 PDF 读取后只有评语文本层。需要看图时取原 PDF 渲染页面（公开副本见逐题索引的 `sources`）。
 - 9708 MCQ 的 key 若无 MS，可从同季 ER 首页的 key 表取得（March 2023 P32 p.6；June 2023 P31/32/33 pp.16–19）。
 
 ### 九、未取得
 
-- 2024、2025 各季与 O/N 2023 的 Principal Examiner Report；9708/43 各季 QP/MS；9708/41 M/J 2023 QP/MS。
+缺口以 `python scripts/exam_index.py 9708 --gaps` 输出为准（快照 2026-10-06）。
+
+登记之外：
 - ECR 手写答卷图像；SPA 图。
 - Cambridge 认可教材（Coursebook）术语表，用于 8.1.1 各措施与 nudge 的定义句。

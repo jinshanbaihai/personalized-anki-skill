@@ -1,5 +1,7 @@
 # WMA11 Pure Mathematics 1（P1）考纲条目登记
 
+> **构建溯源，不随包发布**：本文件反引号里的 `registry/…`、`work/…`、`src/…`、`inventory/…`、`scratchpad/…`、`finder/…`、`research/…`、`boards/…` 路径，`*.coverage.part*.md`、`*.questions.part*.json` 等分卷文件，以及审核脚本和它们的输出文件，都是构建登记时沙箱里的工作文件，技能包里没有，只说明结论是怎么核出来的。要看原件，用同目录 `WMA11.questions.json` 各条的 `sources`（公开地址或 Drive 定位，见 [README](../../README.md) “原件怎么取”）。文中写到的缺口是构建时的记录，**缺口以 `python scripts/exam_index.py WMA11 --gaps` 输出为准（快照 2026-10-06）**。
+
 **来源**：Pearson Edexcel IAL Mathematics, Further Mathematics and Pure Mathematics Specification，**Issue 3 – April 2019**（ISBN 978 1 446 94981 8；本地 `research/dl/ial-maths-spec.pdf`，md5 06d01a11…；与 `registry/versions.md` §1.1 一致）。P1 位于印刷页 **pp.12–16**（PDF 页 = 印刷页 + 6）。公式册：*Mathematical Formulae and Statistical Tables* **Issue 2 – January 2021**（P59773RA；Pure Mathematics P1 一节在公式册印刷 **p.3**）。逐页核对：条目编号与页码已用脚本对照逐页文本（77 个纯数条目 0 处不符），含公式的格子另用渲染图核对。登记日期 2026-10-06。
 
 共用部分（资格结构、cash-in、AO、记号附录、计算器规则、各单元公式对照）见 `../specification.md`。
@@ -146,7 +148,7 @@
 
 ## 5. 往届真题
 
-2018 考纲下 WMA11 全部考季的试卷、MS、ER 的收集情况见 `../../inventory/pure.json` 与 `../../inventory/pure-gaps.md`（另一任务产出；本文件不重复）。
+2018 考纲下 WMA11 的试卷、MS、ER 收集情况与缺口以 `python scripts/exam_index.py WMA11 --gaps` 输出为准（快照 2026-10-06）；构建时的清单 `inventory/pure.json`、`pure-gaps.md` 是构建溯源，不随包发布。
 
 逐题索引（24 份卷、240 题，含每小问的考纲条目、命令词、答案形式、MS 与 ER 要点）见同目录 `WMA11.questions.json`；各卷来源、缺失文件与审计记录见 `WMA11.coverage.part1.md`、`WMA11.coverage.part2.md`。下面第 6 节是据此汇总的考法概览。
 
@@ -154,7 +156,7 @@
 
 **数据与口径**。依据同目录 `WMA11.questions.json`（2026-10-06 合并并审计）：24 份卷 = WMA11/01 的 22 个考季（2019-01 至 2026-06；2020-06 取消，无卷）+ 2024-06 /01R + 2025-06 /01A，共 240 题、590 小问、1800 分。MS 有 22 份卷（2019-01 至 2025-10 全部，含 /01R、/01A；只有 2026-01、2026-06 没有，共 47 个小问 `ms` 为空），ER 只有 5 份（2022-10 至 2024-01），所以评分惯例取自 22 份 MS，考官提醒只能从这 5 份 ER 里取。2019-01 至 2022-06 的 10 份 MS 是 2026-10-06 补入的，2019-01、2019-06 的题面同日改为依据 QP PDF 核对（见下方注）；2026-06 只有第三方逐题截图（看不到封面和 P 号，见 `WMA11.coverage.part2.md` 第 8 节 Audit note）。
 
-> **Critic 2026-10-06（已补完，同日）**：2019-01 至 2022-06 的 10 份 Pearson 官方 MS 取自 GitHub `RayZ3R0/papernexus-finder@921bdf4f` 的 `papers/mathematics/ms/pure1/`（封面 Publications Code `WMA11_01_1901_MS` … `WMA11_01_2206_MS`；2021-06 起的 Log Number 与本索引 P 号一致），本地副本 `registry/src/WMA11/<series>_01_ms.pdf`。这 10 份卷共 101 题（2019-01 至 2020-10 有 53 题，2021-01 至 2022-06 有 48 题）、232 个小问的 `ms` 已全部填写，`sources.ms` 指向上述文件。2019-01、2019-06 的题面已改为依据 QP PDF（`2019-01_01_qp.pdf`、`2019-06_01_qp.pdf`，P60791A、P61837A）逐题核对：改写 14 个小问的 `ask`，按 MS 补准 14 个 `final_form`，2019-06 Q2(b) 的 spec 去掉 1.6（这是含根式的一次方程，不是联立方程；所以 6.2 里 1.6 的题数、小问数各少 1）。审核：按 MS 原文逐项复核了 15 题（2019-01 Q4、Q8，2019-06 Q2、Q7，2019-10 Q3、Q10，2020-01 Q4、Q11，2020-10 Q7，2021-01 Q6，2021-06 Q7，2021-10 Q4，2022-01 Q8，2022-06 Q7、Q10），另用脚本核对了 184 个小数是否出现在所引 MS 页（未出现的 5 个都是正确的派生值或等价写法）。改正 2 处：2022-06 Q7(b) 常数 c 的 follow-through 式子符号写反，应为 A/12 − 36；2019-01 Q4 的下界条件按 MS 改为“a ≤ x，a ≤ 12”。2026-01、2026-06 仍无 MS（见 `../../CRITIC.md` 第 3 项）。
+> **Critic 2026-10-06（已补完，同日）**：2019-01 至 2022-06 的 10 份 Pearson 官方 MS 取自 GitHub `RayZ3R0/papernexus-finder@921bdf4f` 的 `papers/mathematics/ms/pure1/`（封面 Publications Code `WMA11_01_1901_MS` … `WMA11_01_2206_MS`；2021-06 起的 Log Number 与本索引 P 号一致），本地副本 `registry/src/WMA11/<series>_01_ms.pdf`。这 10 份卷共 101 题（2019-01 至 2020-10 有 53 题，2021-01 至 2022-06 有 48 题）、232 个小问的 `ms` 已全部填写，`sources.ms` 指向上述文件。2019-01、2019-06 的题面已改为依据 QP PDF（`2019-01_01_qp.pdf`、`2019-06_01_qp.pdf`，P60791A、P61837A）逐题核对：改写 14 个小问的 `ask`，按 MS 补准 14 个 `final_form`，2019-06 Q2(b) 的 spec 去掉 1.6（这是含根式的一次方程，不是联立方程；所以 6.2 里 1.6 的题数、小问数各少 1）。审核：按 MS 原文逐项复核了 15 题（2019-01 Q4、Q8，2019-06 Q2、Q7，2019-10 Q3、Q10，2020-01 Q4、Q11，2020-10 Q7，2021-01 Q6，2021-06 Q7，2021-10 Q4，2022-01 Q8，2022-06 Q7、Q10），另用脚本核对了 184 个小数是否出现在所引 MS 页（未出现的 5 个都是正确的派生值或等价写法）。改正 2 处：2022-06 Q7(b) 常数 c 的 follow-through 式子符号写反，应为 A/12 − 36；2019-01 Q4 的下界条件按 MS 改为“a ≤ x，a ≤ 12”。2026-01、2026-06 仍无 MS（缺口以 `python scripts/exam_index.py WMA11 --gaps` 为准）。
 
 引用写法：`2023-01 Q5(b)` 指 2023 年 1 月 WMA11/01 第 5 题 (b)；`2024-06R` 指 /01R 卷，`2025-06A` 指 /01A 卷。一个小问可以挂多个条目，各条目分别计数。“主考”指该小问 spec 列表里排第一的条目；“分值中位”按挂了该条目的小问计；“卷”指 24 份卷中出现该条目的份数。
 

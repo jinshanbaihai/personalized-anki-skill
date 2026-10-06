@@ -1,5 +1,7 @@
 # WMA14 Pure Mathematics 4（P4）考纲条目登记
 
+> **构建溯源，不随包发布**：本文件反引号里的 `registry/…`、`work/…`、`src/…`、`inventory/…`、`scratchpad/…`、`finder/…`、`research/…`、`boards/…` 路径，`*.coverage.part*.md`、`*.questions.part*.json` 等分卷文件，以及审核脚本和它们的输出文件，都是构建登记时沙箱里的工作文件，技能包里没有，只说明结论是怎么核出来的。要看原件，用同目录 `WMA14.questions.json` 各条的 `sources`（公开地址或 Drive 定位，见 [README](../../README.md) “原件怎么取”）。文中写到的缺口是构建时的记录，**缺口以 `python scripts/exam_index.py WMA14 --gaps` 输出为准（快照 2026-10-06）**。
+
 **来源**：Pearson Edexcel IAL Mathematics, Further Mathematics and Pure Mathematics Specification，**Issue 3 – April 2019**（ISBN 978 1 446 94981 8；本地 `research/dl/ial-maths-spec.pdf`，md5 06d01a11…；与 `registry/versions.md` §1.1 一致）。P4 位于印刷页 **pp.26–29**（PDF 页 = 印刷页 + 6）。公式册 *Mathematical Formulae and Statistical Tables* **Issue 2 – January 2021**（P59773RA；Pure Mathematics P4 一节在公式册印刷 **p.5**）。条目编号与页码已用脚本逐页核对，所有页另用渲染图核对。登记日期 2026-10-06。
 
 共用部分见 `../specification.md`。
@@ -130,15 +132,15 @@
 
 ## 5. 往届真题
 
-2018 考纲下 WMA14 的试卷、MS、ER 收集情况见 `../../inventory/pure.json` 与 `../../inventory/pure-gaps.md`。注意：`pure-gaps.md` 仍把 2020-10 至 2022-06 的 QP、MS 记为缺失，这 14 个文件后来在 GitHub `RayZ3R0/papernexus-finder` 找到，已放在 `registry/src/WMA14/`（见 `WMA14.coverage.part1.md` “New sources found in this pass”）。
+2018 考纲下 WMA14 的试卷、MS、ER 收集情况与缺口以 `python scripts/exam_index.py WMA14 --gaps` 输出为准（快照 2026-10-06）；构建时的清单 `inventory/pure.json`、`pure-gaps.md` 是构建溯源，不随包发布。注意：`pure-gaps.md` 仍把 2020-10 至 2022-06 的 QP、MS 记为缺失，这 14 个文件后来在 GitHub `RayZ3R0/papernexus-finder` 找到，已放在 `registry/src/WMA14/`（见 `WMA14.coverage.part1.md` “New sources found in this pass”）。
 
 逐题索引（合并版）：`WMA14.questions.json`（同一文件夹；由 `WMA14.questions.part1.json` 与 `part2.json` 合并、去重、排序，2026-10-06 审核，改正同步写回两个 part 文件）。各卷来源、缺失文件与审核记录见第 6 节、`WMA14.coverage.part1.md`、`WMA14.coverage.part2.md`。
 
-## 6. 审核记录（2026-10-06）
+## 6. 审核记录（2026-10-06；构建溯源，不随包发布）
 
 本节与第 7 节中的路径都相对于 `registry/`。脚本在 `work/wma14audit/scripts/`，改正清单在 `work/wma14audit/fixes.json`（每条写明原值、证据和改动；改动前的 part 文件备份为 `work/wma14audit/part1.before.json`、`part2.before.json`）。
 
-- **合并**：`WMA14.questions.json` = part1（76 题，2020-10 至 2022-10，含 2022-01 未用卷 `01U`）+ part2（120 题，2023-01 至 2026-06，含 /01A），按 id 去重（没有重复），按考季、卷别（01、01U、01A）、题号排序，共 196 题、425 个小问、1575 分。`merge_validate.py`：字段齐全、各小问分值之和等于题目总分、spec id 都在 `spec-items.pure.json` → WMA14 中、series 符合 YYYY-MM、id 与 paper 一致、每份卷 75 分且题号连续，0 个问题。`totals.py` 把每题总分和各小问分值与 QP 文本中印刷的 “(Total …)” 和 (n) 逐一比对（2026 年两份 /01A 的 PDF 后面附有答题册，只读到 “TOTAL FOR PAPER” 为止），21 份卷 0 个问题。`pagecheck.py`：条目中 264 处 “(MS p.n)”“(ER p.n)” 引用，所指页面都含该题。
+- **合并**：`WMA14.questions.json` = part1（76 题，2020-10 至 2022-10，含 2022-01 未用卷 `01U`）+ part2（120 题，2023-01 至 2026-06，含 /01A），按 id 去重（没有重复），按考季、卷别（01、01U、01A）、题号排序，共 196 题、425 个小问、1575 分。构建时的合并校验脚本：字段齐全、各小问分值之和等于题目总分、spec id 都在 `spec-items.pure.json` → WMA14 中、series 符合 YYYY-MM、id 与 paper 一致、每份卷 75 分且题号连续，0 个问题。`totals.py` 把每题总分和各小问分值与 QP 文本中印刷的 “(Total …)” 和 (n) 逐一比对（2026 年两份 /01A 的 PDF 后面附有答题册，只读到 “TOTAL FOR PAPER” 为止），21 份卷 0 个问题。`pagecheck.py`：条目中 264 处 “(MS p.n)”“(ER p.n)” 引用，所指页面都含该题。
 - **完整性**：索引了 21 份卷，即所有能拿到 QP 文本的卷：`inventory/pure.json` 的 PDF 与 Edexcel-Finder 文本（2020-10 至 2025-01，含未用卷）、part 1 在 papernexus 补到的 2020-10 至 2022-06 的 14 个文件、Drive 上 2024-06 至 2026-06 的文件，对照 `versions.json` 的预期考季 2020-10 至 2026-06 没有漏卷。SAM 不是考季，按约定不收。**所有来源都拿不到的卷**：2025-10 /01A 和 2026-06 /01 的 QP 与 MS。这两份卷确实存在：第三方抓取的 Pearson 官方链接索引 `finder/gh/grademax_maths_index.json`（`ShariarAlamDipto/grademax` @9e091168）列出 `wma14-01a-que-20251029.pdf`、`wma14-01a-rms-20260122.pdf`、`wma14-01-que-20260610.pdf`、`wma14-01-rms-20260813.pdf`，都在 Pearson 的登录区。**缺 MS**：2026-01 /01、2026-01 /01A、2026-06 /01A（同一索引列出 `wma14-01-rms-20260305.pdf`、`wma14-01a-rms-20260305.pdf`、`wma14-01a-rms-20260813.pdf`），这 28 题的 `ms` 为空，也没有自行推算答案。**缺 ER**：2020-10、2021-01、2021-10、2022-01、2022-06，以及 2024-06 及以后的全部卷；2021-06 本来就没有 ER，未用卷没有考过。2026-10-06 复查：Drive 检索（2026 年以后创建、标题含 `WMA14`／`P4A`、全文含 `WMA14/01A` 或 `P78851A`；标题含 `26_06`、`25_10_QP`、`25_10_MS`、`26_01_MS`、`2606 WMA`、`2601 WMA`），没有新的 WMA14 文件（检索结果里的学生答卷只看了标题，没有打开）；`RayZ3R0/papernexus-finder` 的 HEAD 仍是 921bdf4f（2025-05-06），pure4 只到 2024 年 5 月。
 - **准确性**：对照 QP、MS、ER 原文（文本层，加渲染图）逐条复核了 23 条，覆盖全部 21 份卷，题号和小问类型分散：O20 Q6、J21 Q9、S21 Q6、O21 Q10、J22 Q8、J22U Q4、S22 Q8、O22 Q7、J23 Q5、J23 Q8、S23 Q4、O23 Q3、J24 Q8、S24 Q5、O24 Q9、J25 Q6、S25 Q10、S25A Q3、O25 Q9、J26 Q5、J26A Q7、S26A Q4、S26A Q10。没有 MS 的三份 2026 卷文本层容易出错，在 J26A Q7 发现错误后，把 J26A 和 S26A 两份卷的全部 19 题与页面渲染图逐题对照过，没有别的错。另外按题意重新计算了 part 1 全部 8 份卷中约 100 个有数值或代数终点的小问，以及 part 2 中带根号、π 的约 25 个终点。在 J22 Q9(c) 发现错误后，J22 整份卷其余各题都重新算过，没有别的错。还做了三项全量检查：命令词是否出现在该题 QP 文本里（`cmdcheck.py`）、spec 映射的一致性、part 标签格式。
 - **改正**（合并文件和两个 part 文件同步修改）：

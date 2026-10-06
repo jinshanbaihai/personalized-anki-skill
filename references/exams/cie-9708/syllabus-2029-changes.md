@@ -1,5 +1,7 @@
 # CIE 9708: the 2029 syllabus, change check
 
+> **Build provenance (not shipped):** paths such as `registry/…`, `src/…`, `work/…` and `scratchpad/…` in this file are working files of the sandbox that built the registry; they are not in the skill package and only record which copy was read. Public locators for the papers are in the `sources` of the question entries ([README](../README.md), “原件怎么取”). Gaps: `python scripts/exam_index.py 9708 --gaps` (snapshot 2026-10-06).
+
 Checked 2026-10-06. Baseline: `syllabus-a-level.md` (digest of the 2026–2028 syllabus, Version 2, December 2025; "SYL V2" below). Page numbers "p." are printed pages of SYL V2, which equal PDF pages.
 
 ## 0. Result
@@ -35,14 +37,14 @@ Checked 2026-10-06. Baseline: `syllabus-a-level.md` (digest of the 2026–2028 s
 | GitHub code search: `"764392-2029-syllabus"`, `"748950-2026-2028-syllabus-update"`, `"2029 Syllabus" "9708"`, `"2029-syllabus.pdf" 9708/economics` | 0 hits for both file names. The other hits list 9708 only up to 2026–2028: `KanzaAkram/syllabus-ib-edexcel-ocr-aqa-` download report; `RokctAI/factory`, `Mrmanwonder/Axon-Site`, `CNTWDev/AIStudy`, `funteck123/divergencie-web` |
 | GitHub repositories about 9708 updated since June 2026 (`sl080/Alevel-9708-Revision`, `vishal108bw-cloud/cie9708-economics`, `lisaelfishawi/a-level-economics-9708`, `renxudong117/economics-0455-9708-self-study`, `randomizerselection/oehler-huang-library`); file lists read from blobless clones | No 2029 syllabus. Where a syllabus version is named, it is 2026–2028 |
 | Hugging Face dataset search ("cambridge syllabus", "9708 economics", "cambridge past papers") | Nothing |
-| User's Google Drive: title and full-text searches for `2029`, `764392`, `748950`, "Use this syllabus for exams in 2029", "for examination in 2029" | Only the saved official page (E1). No 2029 PDF, no 2026–2028 update document |
+| Google Drive available when the registry was built: title and full-text searches for `2029`, `764392`, `748950`, "Use this syllabus for exams in 2029", "for examination in 2029" | Only the saved official page (E1). No 2029 PDF, no 2026–2028 update document |
 
 ## 3. Comparison to run when the PDF is available
 
-When the user uploads `https://www.cambridgeinternational.org/Images/764392-2029-syllabus.pdf` (Drive, any name; or `registry/src/9708-SYL/2029_syllabus.pdf`):
+When `https://www.cambridgeinternational.org/Images/764392-2029-syllabus.pdf` is available (a download, or a Drive copy under any name):
 
 1. **Verify the cover and version.** Check the years line ("Use this syllabus for exams in …"), the version and publication date in the "Important: Changes to this syllabus" box (SYL V2 has this on p.3), and the "Changes to this syllabus" page (SYL V2 p.43). Record the md5 and sha256.
-2. **Extract the text page by page** with `pdftotext -layout` into `cie-9708/work/syl2029/pNN.txt`. Then run `cie-9708/work/scripts/parse_syl.py` on it. That script reads pages 15–34 only, so adjust the range if the pagination differs.
+2. **Extract the text page by page** (for example `pdftotext -layout`) and list the topic 7–11 items with their printed pages (pp.15–34 in SYL V2; adjust if the pagination differs).
 3. **Diff against the baseline below.** Record every change here with its 2029 page and the SYL V2 page.
 
 | Area | SYL V2 baseline (page) | What to compare |
