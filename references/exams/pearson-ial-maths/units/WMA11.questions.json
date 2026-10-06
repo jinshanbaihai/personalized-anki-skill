@@ -16,15 +16,15 @@
      "1.1"
     ],
     "command": "Find",
-    "ask": "Integrate a sum of power terms in x (fractional/negative indices), simplifying the answer [exact expression not recoverable from the Finder text]",
-    "final_form": "simplified terms plus constant of integration",
-    "ms": "",
+    "ask": "Find ∫((2/3)x³ − 1/(2x³) + 5) dx, simplifying the answer",
+    "final_form": "three simplified terms plus c, all on one line",
+    "ms": "M1 raise any power by 1; A1 two of (2/3)(x⁴/4), −(1/2)(x⁻²/−2), 5x (unsimplified); A1 two correct and simplified; A1 (1/6)x⁴ + (1/4)x⁻² + 5x + c on one line. Common slip: rewriting 1/(2x³) as 2x⁻³, which can still earn the M (MS p.8)",
     "er": ""
    }
   ],
   "sources": {
-   "qp": "finder:static/Data/Mathematics (2018)/WMA11/Question paper - Unit 1 (WMA11) - January 2019.json (anonymouslyanonymous1/Edexcel-Finder@e3db7034; P60791A; lower-cased per-page text, stacked fractions/indices partly lost; no PDF reachable)",
-   "ms": "",
+   "qp": "local:src/WMA11/2019-01_01_qp.pdf (github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/qp/pure1/2019/Mathematics PURE1 (IAL) - January 2019 - QP (WMA11).pdf; PMT-stamped Pearson PDF, P60791A, cover Tuesday 8 January 2019; question text, marks and spec ids re-checked against the rendered pages 2026-10-06, replacing the earlier Finder reconstruction from anonymouslyanonymous1/Edexcel-Finder@e3db7034)",
+   "ms": "local:src/WMA11/2019-01_01_ms.pdf (github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/ms/pure1/2019/Mathematics PURE1 (IAL) - January 2019 - MS (WMA11).pdf; PMT-stamped Pearson PDF, Publications Code WMA11_01_1901_MS; MS page numbers are PDF pages)",
    "er": ""
   }
  },
@@ -43,15 +43,15 @@
      "1.1"
     ],
     "command": "Find",
-    "ask": "Given y as an index/root expression involving 27 and x, find y as a simplified function of x [exact expression not recoverable from the Finder text]",
-    "final_form": "y as a single simplified power of x (with coefficient)",
-    "ms": "",
+    "ask": "Given 3ˣ/3^(4y) = 27√3, find y as a simplified function of x",
+    "final_form": "y = px + q with exact simplified p, q; forms such as (x − 3.5)/4 or (x − 7/2)/4 not accepted",
+    "ms": "M1 write both sides as powers of 3 with the index laws (27√3 = 3^3.5, so 3^(x − 4y) = 3^3.5; logs also allowed); dM1 equate indices (three terms kept) and make y the subject; A1 y = x/4 − 7/8 or exact simplified equivalent (MS pp.9–10)",
     "er": ""
    }
   ],
   "sources": {
-   "qp": "finder:static/Data/Mathematics (2018)/WMA11/Question paper - Unit 1 (WMA11) - January 2019.json (anonymouslyanonymous1/Edexcel-Finder@e3db7034; P60791A; lower-cased per-page text, stacked fractions/indices partly lost; no PDF reachable)",
-   "ms": "",
+   "qp": "local:src/WMA11/2019-01_01_qp.pdf (github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/qp/pure1/2019/Mathematics PURE1 (IAL) - January 2019 - QP (WMA11).pdf; PMT-stamped Pearson PDF, P60791A, cover Tuesday 8 January 2019; question text, marks and spec ids re-checked against the rendered pages 2026-10-06, replacing the earlier Finder reconstruction from anonymouslyanonymous1/Edexcel-Finder@e3db7034)",
+   "ms": "local:src/WMA11/2019-01_01_ms.pdf (github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/ms/pure1/2019/Mathematics PURE1 (IAL) - January 2019 - MS (WMA11).pdf; PMT-stamped Pearson PDF, Publications Code WMA11_01_1901_MS; MS page numbers are PDF pages)",
    "er": ""
   }
  },
@@ -72,7 +72,7 @@
     "command": "Find",
     "ask": "Find the gradient of l₁: 3x + 5y − 7 = 0",
     "final_form": "gradient",
-    "ms": "",
+    "ms": "M1 rearrange to make y the subject (or gradient from two points on the line); A1 −3/5 or exact equivalent; y = −(3/5)x + 7/5 with no statement of m is not enough (MS p.11)",
     "er": ""
    },
    {
@@ -85,13 +85,13 @@
     "command": "Find",
     "ask": "l₂ is perpendicular to l₁ and passes through (6, −2): find l₂",
     "final_form": "y = mx + c",
-    "ms": "",
+    "ms": "M1 perpendicular gradient 5/3 (ft their (a)); M1 line through (6, −2) with the changed gradient (via y = mx + c: must reach c); A1 y = (5/3)x − 12, exact constants (not 1.67x) (MS pp.11–12)",
     "er": ""
    }
   ],
   "sources": {
-   "qp": "finder:static/Data/Mathematics (2018)/WMA11/Question paper - Unit 1 (WMA11) - January 2019.json (anonymouslyanonymous1/Edexcel-Finder@e3db7034; P60791A; lower-cased per-page text, stacked fractions/indices partly lost; no PDF reachable)",
-   "ms": "",
+   "qp": "local:src/WMA11/2019-01_01_qp.pdf (github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/qp/pure1/2019/Mathematics PURE1 (IAL) - January 2019 - QP (WMA11).pdf; PMT-stamped Pearson PDF, P60791A, cover Tuesday 8 January 2019; question text, marks and spec ids re-checked against the rendered pages 2026-10-06, replacing the earlier Finder reconstruction from anonymouslyanonymous1/Edexcel-Finder@e3db7034)",
+   "ms": "local:src/WMA11/2019-01_01_ms.pdf (github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/ms/pure1/2019/Mathematics PURE1 (IAL) - January 2019 - MS (WMA11).pdf; PMT-stamped Pearson PDF, Publications Code WMA11_01_1901_MS; MS page numbers are PDF pages)",
    "er": ""
   }
  },
@@ -110,15 +110,15 @@
      "1.8"
     ],
     "command": "Identify",
-    "ask": "Line l₁: 2y = x, curve C: y = 2x − x²/8 (as read from the Finder text), l₂ vertical through the positive x-intercept of C: identify the inequalities defining the unshaded region R",
-    "final_form": "inequalities in x and y (here R is the unshaded region)",
-    "ms": "",
+    "ask": "Line l₁: 2y = x, curve C: y = 2x − x²/8, l₂ parallel to the y-axis through the positive x-intercept of C; R (unshaded) is bounded by l₁, C and l₂: identify the inequalities that define R",
+    "final_form": "three inequalities in x and y (not in terms of R); strict for the dashed boundary l₂ and non-strict for the solid ones, or the opposite convention used consistently",
+    "ms": "B1 2y ≤ x or y ≥ 2x − x²/8; M1 solve 2x − x²/8 = 0 to get x = 16 and write x < (or ≤) 16; A1 x < 16, 2y ≤ x and y ≥ 2x − x²/8 (a lower bound a ≤ x with a ≤ 12 is also allowed; strict/non-strict swapped consistently also accepted) (MS p.13)",
     "er": ""
    }
   ],
   "sources": {
-   "qp": "finder:static/Data/Mathematics (2018)/WMA11/Question paper - Unit 1 (WMA11) - January 2019.json (anonymouslyanonymous1/Edexcel-Finder@e3db7034; P60791A; lower-cased per-page text, stacked fractions/indices partly lost; no PDF reachable)",
-   "ms": "",
+   "qp": "local:src/WMA11/2019-01_01_qp.pdf (github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/qp/pure1/2019/Mathematics PURE1 (IAL) - January 2019 - QP (WMA11).pdf; PMT-stamped Pearson PDF, P60791A, cover Tuesday 8 January 2019; question text, marks and spec ids re-checked against the rendered pages 2026-10-06, replacing the earlier Finder reconstruction from anonymouslyanonymous1/Edexcel-Finder@e3db7034)",
+   "ms": "local:src/WMA11/2019-01_01_ms.pdf (github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/ms/pure1/2019/Mathematics PURE1 (IAL) - January 2019 - MS (WMA11).pdf; PMT-stamped Pearson PDF, Publications Code WMA11_01_1901_MS; MS page numbers are PDF pages)",
    "er": ""
   }
  },
@@ -138,8 +138,8 @@
     ],
     "command": "State",
     "ask": "For y = cos 2x (radians), state the coordinates of the marked minimum P",
-    "final_form": "exact coordinates in terms of π",
-    "ms": "",
+    "final_form": "exact coordinates in radians (π form)",
+    "ms": "B1 either coordinate (x = π/2 or awrt 1.57); B1 (π/2, −1); coordinates reversed score B1B0 (MS p.14)",
     "er": ""
    },
    {
@@ -151,7 +151,7 @@
     "command": "Sketch",
     "ask": "On the copy of the graph, sketch y = sin x",
     "final_form": "sketch on the given diagram",
-    "ms": "",
+    "ms": "M1 a sine curve through the origin with max/min ±1 (at least one cycle); A1 correct y = sin x across the whole diagram (−π/2 to 3π), curved turning points, x-axis crossings within half a square (MS pp.14–15)",
     "er": ""
    },
    {
@@ -164,13 +164,13 @@
     "command": "Deduce",
     "ask": "Hence or otherwise deduce the number of solutions of cos 2x = sin x in (i) 0 ≤ x ≤ 20π, (ii) 0 ≤ x ≤ 21π",
     "final_form": "two numbers",
-    "ms": "",
+    "ms": "B1ft (i) 30, ft 10 × their number of intersections in 0 to 2π; B1 (ii) 32 (MS pp.14–15)",
     "er": ""
    }
   ],
   "sources": {
-   "qp": "finder:static/Data/Mathematics (2018)/WMA11/Question paper - Unit 1 (WMA11) - January 2019.json (anonymouslyanonymous1/Edexcel-Finder@e3db7034; P60791A; lower-cased per-page text, stacked fractions/indices partly lost; no PDF reachable)",
-   "ms": "",
+   "qp": "local:src/WMA11/2019-01_01_qp.pdf (github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/qp/pure1/2019/Mathematics PURE1 (IAL) - January 2019 - QP (WMA11).pdf; PMT-stamped Pearson PDF, P60791A, cover Tuesday 8 January 2019; question text, marks and spec ids re-checked against the rendered pages 2026-10-06, replacing the earlier Finder reconstruction from anonymouslyanonymous1/Edexcel-Finder@e3db7034)",
+   "ms": "local:src/WMA11/2019-01_01_ms.pdf (github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/ms/pure1/2019/Mathematics PURE1 (IAL) - January 2019 - MS (WMA11).pdf; PMT-stamped Pearson PDF, Publications Code WMA11_01_1901_MS; MS page numbers are PDF pages)",
    "er": ""
   }
  },
@@ -190,9 +190,9 @@
      "1.1"
     ],
     "command": "Solve",
-    "ask": "No graphical/numerical-only solutions: for f(x) = 2x^(5/2) − 40x + 8, x > 0 (as read from the Finder text), solve f′(x) = 0",
-    "final_form": "exact value of x",
-    "ms": "",
+    "ask": "No solutions based entirely on graphical or numerical methods: for f(x) = 2x^(5/2) − 40x + 8, x > 0, solve f′(x) = 0",
+    "final_form": "exact value of x (not ±); differentiation must be shown",
+    "ms": "M1 reduce a power by one; A1 f′(x) = 5x^(3/2) − 40; M1 set f′(x) = 0 and make x^(3/2) the subject, then solve; A1 x = 4 cao, not ±4 (MS p.16)",
     "er": ""
    },
    {
@@ -206,13 +206,13 @@
     "command": "Solve",
     "ask": "Solve f″(x) = 5",
     "final_form": "exact value of x",
-    "ms": "",
+    "ms": "M1 differentiate f′ again and set f″(x) = 5, i.e. (15/2)x^(1/2) = 5; M1 correct method from Ax^(1/2) = 5 to x; A1 x = 4/9 or exact equivalent; no marks if no differentiation is shown (MS p.16)",
     "er": ""
    }
   ],
   "sources": {
-   "qp": "finder:static/Data/Mathematics (2018)/WMA11/Question paper - Unit 1 (WMA11) - January 2019.json (anonymouslyanonymous1/Edexcel-Finder@e3db7034; P60791A; lower-cased per-page text, stacked fractions/indices partly lost; no PDF reachable)",
-   "ms": "",
+   "qp": "local:src/WMA11/2019-01_01_qp.pdf (github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/qp/pure1/2019/Mathematics PURE1 (IAL) - January 2019 - QP (WMA11).pdf; PMT-stamped Pearson PDF, P60791A, cover Tuesday 8 January 2019; question text, marks and spec ids re-checked against the rendered pages 2026-10-06, replacing the earlier Finder reconstruction from anonymouslyanonymous1/Edexcel-Finder@e3db7034)",
+   "ms": "local:src/WMA11/2019-01_01_ms.pdf (github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/ms/pure1/2019/Mathematics PURE1 (IAL) - January 2019 - MS (WMA11).pdf; PMT-stamped Pearson PDF, Publications Code WMA11_01_1901_MS; MS page numbers are PDF pages)",
    "er": ""
   }
  },
@@ -232,8 +232,8 @@
     ],
     "command": "Find",
     "ask": "Roof support of four beams: AB = 6.5 m, BC = BD = 4.7 m, angle BAC = 35°; find angle ACB",
-    "final_form": "one decimal place (BC = BD, so two triangles share AB and angle A: the figure fixes which angle is ACB)",
-    "ms": "",
+    "final_form": "degrees to 1 d.p.; the obtuse angle (C lies on AD and BC = BD, so ACB is obtuse)",
+    "ms": "M1 sine rule sin ACB/6.5 = sin 35°/4.7 (or cosine-rule quadratic in AC, then cosine rule again); A1 awrt 52 or 53° or awrt 127 or 128°; A1 ACB = 127.5° only (MS pp.17–18)",
     "er": ""
    },
    {
@@ -244,14 +244,14 @@
     ],
     "command": "Find",
     "ask": "Find the total length of wood (AB, BD, BC, AD) needed",
-    "final_form": "nearest metre",
-    "ms": "",
+    "final_form": "nearest metre, with the unrounded total (awrt 24.1) shown",
+    "ms": "M1 valid method for part or all of AD (sine/cosine rule in ABD with angle ADB = 52.5°, ABD = 92.5°, or AC + CD, or right-angled triangles); A1 AD awrt 8.2; A1 total awrt 24.1, i.e. 24 m (24 or 25 alone without awrt 24.1 not accepted) (MS pp.17–20)",
     "er": ""
    }
   ],
   "sources": {
-   "qp": "finder:static/Data/Mathematics (2018)/WMA11/Question paper - Unit 1 (WMA11) - January 2019.json (anonymouslyanonymous1/Edexcel-Finder@e3db7034; P60791A; lower-cased per-page text, stacked fractions/indices partly lost; no PDF reachable)",
-   "ms": "",
+   "qp": "local:src/WMA11/2019-01_01_qp.pdf (github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/qp/pure1/2019/Mathematics PURE1 (IAL) - January 2019 - QP (WMA11).pdf; PMT-stamped Pearson PDF, P60791A, cover Tuesday 8 January 2019; question text, marks and spec ids re-checked against the rendered pages 2026-10-06, replacing the earlier Finder reconstruction from anonymouslyanonymous1/Edexcel-Finder@e3db7034)",
+   "ms": "local:src/WMA11/2019-01_01_ms.pdf (github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/ms/pure1/2019/Mathematics PURE1 (IAL) - January 2019 - MS (WMA11).pdf; PMT-stamped Pearson PDF, Publications Code WMA11_01_1901_MS; MS page numbers are PDF pages)",
    "er": ""
   }
  },
@@ -272,7 +272,7 @@
     "command": "State",
     "ask": "Curve y = f(x) with maximum (4, 9), axis crossings (−3, 0), (0, 6), asymptote y = 4: state the asymptote of y = f(−x)",
     "final_form": "an equation",
-    "ms": "",
+    "ms": "B1 y = 4 only (MS p.21)",
     "er": ""
    },
    {
@@ -284,7 +284,7 @@
     "command": "State",
     "ask": "State the turning point of y = f(x/4)",
     "final_form": "coordinates",
-    "ms": "",
+    "ms": "B1 (16, 9) only (MS p.21)",
     "er": ""
    },
    {
@@ -294,9 +294,9 @@
      "1.11"
     ],
     "command": "State",
-    "ask": "y = k meets C at exactly one point: state the possible values of k",
-    "final_form": "set of k values (check the asymptote and the maximum)",
-    "ms": "",
+    "ask": "The line y = k intersects C at exactly one point: state the possible values of k",
+    "final_form": "values of k in terms of k (an inequality and a single value)",
+    "ms": "B1 either of k ≤ 4, k = 9; B1 both and nothing else; written with y instead of k scores B1B0 (MS p.21)",
     "er": ""
    },
    {
@@ -308,13 +308,13 @@
     "command": "State",
     "ask": "(i) y = f(x) − a passes through the origin: state a; (ii) write down another single transformation of C that passes through the origin",
     "final_form": "value of a; an equation of a transformed curve",
-    "ms": "",
+    "ms": "B1 (i) a = 6; B1 (ii) y = f(x − 3) (also y = f(x + 4) − 9 or y = −f(x) + 6); combinations of different transformations not accepted (MS p.21)",
     "er": ""
    }
   ],
   "sources": {
-   "qp": "finder:static/Data/Mathematics (2018)/WMA11/Question paper - Unit 1 (WMA11) - January 2019.json (anonymouslyanonymous1/Edexcel-Finder@e3db7034; P60791A; lower-cased per-page text, stacked fractions/indices partly lost; no PDF reachable)",
-   "ms": "",
+   "qp": "local:src/WMA11/2019-01_01_qp.pdf (github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/qp/pure1/2019/Mathematics PURE1 (IAL) - January 2019 - QP (WMA11).pdf; PMT-stamped Pearson PDF, P60791A, cover Tuesday 8 January 2019; question text, marks and spec ids re-checked against the rendered pages 2026-10-06, replacing the earlier Finder reconstruction from anonymouslyanonymous1/Edexcel-Finder@e3db7034)",
+   "ms": "local:src/WMA11/2019-01_01_ms.pdf (github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/ms/pure1/2019/Mathematics PURE1 (IAL) - January 2019 - MS (WMA11).pdf; PMT-stamped Pearson PDF, Publications Code WMA11_01_1901_MS; MS page numbers are PDF pages)",
    "er": ""
   }
  },
@@ -334,15 +334,15 @@
      "1.9"
     ],
     "command": "Find",
-    "ask": "The equation 3/x + 5 = −2x + c (as read from the Finder text) has no real roots: find the range of c",
-    "final_form": "inequality for c (exact surd bounds expected)",
-    "ms": "",
+    "ask": "3/x + 5 = −2x + c (c constant) has no real roots: find the set of possible values of c",
+    "final_form": "strict inequality in c with exact surd bounds",
+    "ms": "M1 multiply through by x and collect on one side; A1 2x² + (5 − c)x + 3 = 0 oe; M1 discriminant (5 − c)² − 24; dM1 set = 0 and solve for c; A1 c = 5 ± 2√6; M1 choose the inside region; A1 5 − 2√6 < c < 5 + 2√6, exact and in c (MS pp.22–23)",
     "er": ""
    }
   ],
   "sources": {
-   "qp": "finder:static/Data/Mathematics (2018)/WMA11/Question paper - Unit 1 (WMA11) - January 2019.json (anonymouslyanonymous1/Edexcel-Finder@e3db7034; P60791A; lower-cased per-page text, stacked fractions/indices partly lost; no PDF reachable)",
-   "ms": "",
+   "qp": "local:src/WMA11/2019-01_01_qp.pdf (github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/qp/pure1/2019/Mathematics PURE1 (IAL) - January 2019 - QP (WMA11).pdf; PMT-stamped Pearson PDF, P60791A, cover Tuesday 8 January 2019; question text, marks and spec ids re-checked against the rendered pages 2026-10-06, replacing the earlier Finder reconstruction from anonymouslyanonymous1/Edexcel-Finder@e3db7034)",
+   "ms": "local:src/WMA11/2019-01_01_ms.pdf (github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/ms/pure1/2019/Mathematics PURE1 (IAL) - January 2019 - MS (WMA11).pdf; PMT-stamped Pearson PDF, Publications Code WMA11_01_1901_MS; MS page numbers are PDF pages)",
    "er": ""
   }
  },
@@ -364,7 +364,7 @@
     "command": "Show that",
     "ask": "Sector of radius r, angle θ: area 6 cm² and perimeter 10 cm; show that 3θ² − 13θ + 12 = 0",
     "final_form": "given equation via eliminating r",
-    "ms": "",
+    "ms": "B1 one of ½r²θ = 6, 2r + rθ = 10; B1 both; M1 eliminate r (e.g. r = 10/(2 + θ)) to an equation in θ; A1* 3θ² − 13θ + 12 = 0 with (θ + 2)² expanded and an intermediate line shown (MS pp.24–25)",
     "er": ""
    },
    {
@@ -376,14 +376,14 @@
     ],
     "command": "Hence find",
     "ask": "Hence find the possible values of r and θ",
-    "final_form": "pairs of values of r and θ",
-    "ms": "",
+    "final_form": "exact pairs (θ, r), correctly matched; negative r rejected",
+    "ms": "B1 θ = 4/3, 3; M1 substitute a θ to find r; A1 θ = 4/3, r = 3 and θ = 3, r = 2, exact and correctly paired; withheld if r = −3 or −2 is not ruled out (MS pp.24–25)",
     "er": ""
    }
   ],
   "sources": {
-   "qp": "finder:static/Data/Mathematics (2018)/WMA11/Question paper - Unit 1 (WMA11) - January 2019.json (anonymouslyanonymous1/Edexcel-Finder@e3db7034; P60791A; lower-cased per-page text, stacked fractions/indices partly lost; no PDF reachable)",
-   "ms": "",
+   "qp": "local:src/WMA11/2019-01_01_qp.pdf (github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/qp/pure1/2019/Mathematics PURE1 (IAL) - January 2019 - QP (WMA11).pdf; PMT-stamped Pearson PDF, P60791A, cover Tuesday 8 January 2019; question text, marks and spec ids re-checked against the rendered pages 2026-10-06, replacing the earlier Finder reconstruction from anonymouslyanonymous1/Edexcel-Finder@e3db7034)",
+   "ms": "local:src/WMA11/2019-01_01_ms.pdf (github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/ms/pure1/2019/Mathematics PURE1 (IAL) - January 2019 - MS (WMA11).pdf; PMT-stamped Pearson PDF, Publications Code WMA11_01_1901_MS; MS page numbers are PDF pages)",
    "er": ""
   }
  },
@@ -404,7 +404,7 @@
     "command": "Sketch",
     "ask": "On one diagram sketch (i) y = x(3 − x) and (ii) y = x(x − 2)(5 − x)",
     "final_form": "two curves with all axis-crossing coordinates shown",
-    "ms": "",
+    "ms": "B1 ∩-shaped quadratic; B1 through O and (3, 0); B1 negative cubic with a maximum and a minimum; B1 through O, (2, 0), (5, 0) (MS pp.26–27)",
     "er": ""
    },
    {
@@ -417,7 +417,7 @@
     "command": "Show that",
     "ask": "Show the x-coordinates of their intersections satisfy x(x² − 8x + 13) = 0",
     "final_form": "given equation with algebra shown",
-    "ms": "",
+    "ms": "M1 set the curves equal; dM1 expand and collect on one side with x a factor of every term; A1* x(x² − 8x + 13) = 0 with (x − 2)(5 − x) expanded and x factored out, no errors (MS pp.26–27)",
     "er": ""
    },
    {
@@ -430,13 +430,13 @@
     "command": "Find",
     "ask": "P lies on both curves in the first quadrant: using algebra, find the exact coordinates of P",
     "final_form": "exact (surd) coordinates with working; choose the root in the first quadrant",
-    "ms": "",
+    "ms": "M1 solve x² − 8x + 13 = 0 (formula or completing the square); A1 x = 4 ± √3; M1 substitute 4 − √3 into a curve; M1 surd working shown to reach d + f√g; A1 (4 − √3, −7 + 5√3) as the only answer. Roots stated without working: at most M0A0M1M1A0 (MS pp.26–27)",
     "er": ""
    }
   ],
   "sources": {
-   "qp": "finder:static/Data/Mathematics (2018)/WMA11/Question paper - Unit 1 (WMA11) - January 2019.json (anonymouslyanonymous1/Edexcel-Finder@e3db7034; P60791A; lower-cased per-page text, stacked fractions/indices partly lost; no PDF reachable)",
-   "ms": "",
+   "qp": "local:src/WMA11/2019-01_01_qp.pdf (github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/qp/pure1/2019/Mathematics PURE1 (IAL) - January 2019 - QP (WMA11).pdf; PMT-stamped Pearson PDF, P60791A, cover Tuesday 8 January 2019; question text, marks and spec ids re-checked against the rendered pages 2026-10-06, replacing the earlier Finder reconstruction from anonymouslyanonymous1/Edexcel-Finder@e3db7034)",
+   "ms": "local:src/WMA11/2019-01_01_ms.pdf (github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/ms/pure1/2019/Mathematics PURE1 (IAL) - January 2019 - MS (WMA11).pdf; PMT-stamped Pearson PDF, Publications Code WMA11_01_1901_MS; MS page numbers are PDF pages)",
    "er": ""
   }
  },
@@ -456,9 +456,9 @@
      "2.1"
     ],
     "command": "Find",
-    "ask": "y = f(x), x > 0, through P(4, −2), dy/dx given as an expression in powers of x [exact expression not recoverable from the Finder text]: find the tangent at P",
+    "ask": "y = f(x), x > 0, passes through P(4, −2) and dy/dx = 3x√x − 10x^(−1/2): find the tangent at P in the form y = mx + c, m and c integers",
     "final_form": "y = mx + c with integers m, c",
-    "ms": "",
+    "ms": "M1 substitute x = 4 into dy/dx as given (not differentiated); A1 gradient 19; M1 line through (4, −2) with their gradient (via y = mx + c: must reach c); A1 y = 19x − 78 cao (MS p.28)",
     "er": ""
    },
    {
@@ -472,13 +472,13 @@
     "command": "Find",
     "ask": "Find f(x)",
     "final_form": "f(x) with constant evaluated",
-    "ms": "",
+    "ms": "M1 raise a power by 1; A1 one term correct; A1 both, (6/5)x^(5/2) − 20x^(1/2); M1 substitute (4, −2) to find c; A1 f(x) = (6/5)x^(5/2) − 20x^(1/2) − 0.4 cso (MS p.28)",
     "er": ""
    }
   ],
   "sources": {
-   "qp": "finder:static/Data/Mathematics (2018)/WMA11/Question paper - Unit 1 (WMA11) - January 2019.json (anonymouslyanonymous1/Edexcel-Finder@e3db7034; P60791A; lower-cased per-page text, stacked fractions/indices partly lost; no PDF reachable)",
-   "ms": "",
+   "qp": "local:src/WMA11/2019-01_01_qp.pdf (github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/qp/pure1/2019/Mathematics PURE1 (IAL) - January 2019 - QP (WMA11).pdf; PMT-stamped Pearson PDF, P60791A, cover Tuesday 8 January 2019; question text, marks and spec ids re-checked against the rendered pages 2026-10-06, replacing the earlier Finder reconstruction from anonymouslyanonymous1/Edexcel-Finder@e3db7034)",
+   "ms": "local:src/WMA11/2019-01_01_ms.pdf (github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/ms/pure1/2019/Mathematics PURE1 (IAL) - January 2019 - MS (WMA11).pdf; PMT-stamped Pearson PDF, Publications Code WMA11_01_1901_MS; MS page numbers are PDF pages)",
    "er": ""
   }
  },
@@ -498,9 +498,9 @@
      "1.1"
     ],
     "command": "Find",
-    "ask": "Differentiate the given curve equation (sum of power/reciprocal terms in x) [exact expression not recoverable from the Finder text]",
+    "ask": "Differentiate y = x³/8 − 24/√x + 1, giving dy/dx in its simplest form",
     "final_form": "dy/dx in simplest form",
-    "ms": "",
+    "ms": "M1 reduce a correct power by one on either x term; A1 one of (3/8)x², 12x^(−3/2) correct and simplified; A1 dy/dx = (3/8)x² + 12x^(−3/2) or exact simplified equivalent (MS p.8)",
     "er": ""
    },
    {
@@ -513,13 +513,13 @@
     "command": "Find",
     "ask": "P(4, −3) lies on C: find the tangent to C at P",
     "final_form": "y = mx + c with m and c found",
-    "ms": "",
+    "ms": "M1 evaluate their dy/dx at x = 4 (7.5); M1 tangent through (4, −3) with that gradient (via y = mx + c: must reach c); A1 y = 7.5x − 33 or exact equivalent; a calculator gradient without the derivative can earn the last two marks (MS p.8)",
     "er": ""
    }
   ],
   "sources": {
-   "qp": "finder:static/Data/Mathematics (2018)/WMA11/Question paper - Unit 1 (WMA11) - June 2019.json (anonymouslyanonymous1/Edexcel-Finder@e3db7034; P61837A; lower-cased per-page text; some runs are font glyph codes (char − 29), decoded here with scripts/decode_finder2.py; stacked fractions, roots and indices partly lost; no PDF reachable)",
-   "ms": "",
+   "qp": "local:src/WMA11/2019-06_01_qp.pdf (github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/qp/pure1/2019/Mathematics PURE1 (IAL) - May 2019 - QP (WMA11).pdf; PMT-stamped Pearson PDF, P61837A, cover Wednesday 22 May 2019; question text, marks and spec ids re-checked against the rendered pages 2026-10-06, replacing the earlier Finder reconstruction from anonymouslyanonymous1/Edexcel-Finder@e3db7034)",
+   "ms": "local:src/WMA11/2019-06_01_ms.pdf (github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/ms/pure1/2019/Mathematics PURE1 (IAL) - May 2019 - MS (WMA11).pdf; PMT-stamped Pearson PDF, Publications Code WMA11_01_1906_MS; MS page numbers are PDF pages)",
    "er": ""
   }
  },
@@ -538,28 +538,27 @@
      "1.2"
     ],
     "command": "Simplify",
-    "ask": "Each stage of working shown: simplify a reciprocal surd expression in √2 (read as 1/(4 − 2√2); radical signs lost in the Finder text)",
+    "ask": "Showing each stage of working: simplify 1/(4 − 2√2), giving a + b√2 with a, b rational",
     "final_form": "a + b√2 with rational a, b",
-    "ms": "",
+    "ms": "M1 multiply numerator and denominator by (4 + 2√2); A1 1/2 + (1/4)√2 or exact equivalent (MS p.9)",
     "er": ""
    },
    {
     "part": "b",
     "marks": 3,
     "spec": [
-     "1.2",
-     "1.6"
+     "1.2"
     ],
     "command": "Hence solve",
-    "ask": "Hence or otherwise solve a linear equation in x with √2 coefficients (read as 4x = 2√2x + 20√2)",
+    "ask": "Hence or otherwise solve 4x = 2√2x + 20√2, giving x in the form p + q√2 with p, q rational",
     "final_form": "p + q√2 with rational p, q",
-    "ms": "",
+    "ms": "M1 collect x terms, x(4 − 2√2) = 20√2; dM1 use (a): x = 20√2 × (1/2 + √2/4); A1 10 + 10√2, not 10(√2 + 1), and only with the step using (a) seen; squaring to a quadratic or rationalising afresh are alternative routes (MS pp.9–10)",
     "er": ""
    }
   ],
   "sources": {
-   "qp": "finder:static/Data/Mathematics (2018)/WMA11/Question paper - Unit 1 (WMA11) - June 2019.json (anonymouslyanonymous1/Edexcel-Finder@e3db7034; P61837A; lower-cased per-page text; some runs are font glyph codes (char − 29), decoded here with scripts/decode_finder2.py; stacked fractions, roots and indices partly lost; no PDF reachable)",
-   "ms": "",
+   "qp": "local:src/WMA11/2019-06_01_qp.pdf (github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/qp/pure1/2019/Mathematics PURE1 (IAL) - May 2019 - QP (WMA11).pdf; PMT-stamped Pearson PDF, P61837A, cover Wednesday 22 May 2019; question text, marks and spec ids re-checked against the rendered pages 2026-10-06, replacing the earlier Finder reconstruction from anonymouslyanonymous1/Edexcel-Finder@e3db7034)",
+   "ms": "local:src/WMA11/2019-06_01_ms.pdf (github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/ms/pure1/2019/Mathematics PURE1 (IAL) - May 2019 - MS (WMA11).pdf; PMT-stamped Pearson PDF, Publications Code WMA11_01_1906_MS; MS page numbers are PDF pages)",
    "er": ""
   }
  },
@@ -578,9 +577,9 @@
      "1.9"
     ],
     "command": "Show that",
-    "ask": "Garden plan with six straight edges, right angles, sides including 2x − 1, 5x, 2x, 6x − 2 (m): given the perimeter exceeds 29 m, show that x > 1.5",
+    "ask": "Garden plan with six straight edges and right angles, sides 2x − 1, 2x, 5x and 6x − 2 (m): given the perimeter exceeds 29 m, show that x > 1.5",
     "final_form": "given inequality from a linear inequality in x",
-    "ms": "",
+    "ms": "M1 perimeter, 2 × 5x + 2(6x − 2); dM1 set > 29 and solve to ax > c; A1* x > 1.5 with an intermediate line such as 22x > 33, cso (MS p.10)",
     "er": ""
    },
    {
@@ -593,7 +592,7 @@
     "command": "Form and solve",
     "ask": "Given also that the area is less than 72 m², form and solve a quadratic inequality in x",
     "final_form": "quadratic inequality and its solution set",
-    "ms": "",
+    "ms": "M1 area as a sum or difference of rectangles, e.g. 2x(2x − 1) + 3x(6x − 2); A1 22x² − 8x − 72 < 0 oe simplified; M1 critical values of the 3TQ (x = −18/11, 2); ddM1 inside region; A1 −18/11 < x < 2 (0 < x < 2 also allowed in context) (MS pp.10–11)",
     "er": ""
    },
    {
@@ -605,13 +604,13 @@
     "command": "State",
     "ask": "Hence state the range of possible values of x",
     "final_form": "combined inequality for x",
-    "ms": "",
+    "ms": "B1 1.5 < x < 2; \"x > 1.5 or x < 2\" not accepted (MS p.11)",
     "er": ""
    }
   ],
   "sources": {
-   "qp": "finder:static/Data/Mathematics (2018)/WMA11/Question paper - Unit 1 (WMA11) - June 2019.json (anonymouslyanonymous1/Edexcel-Finder@e3db7034; P61837A; lower-cased per-page text; some runs are font glyph codes (char − 29), decoded here with scripts/decode_finder2.py; stacked fractions, roots and indices partly lost; no PDF reachable)",
-   "ms": "",
+   "qp": "local:src/WMA11/2019-06_01_qp.pdf (github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/qp/pure1/2019/Mathematics PURE1 (IAL) - May 2019 - QP (WMA11).pdf; PMT-stamped Pearson PDF, P61837A, cover Wednesday 22 May 2019; question text, marks and spec ids re-checked against the rendered pages 2026-10-06, replacing the earlier Finder reconstruction from anonymouslyanonymous1/Edexcel-Finder@e3db7034)",
+   "ms": "local:src/WMA11/2019-06_01_ms.pdf (github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/ms/pure1/2019/Mathematics PURE1 (IAL) - May 2019 - MS (WMA11).pdf; PMT-stamped Pearson PDF, Publications Code WMA11_01_1906_MS; MS page numbers are PDF pages)",
    "er": ""
   }
  },
@@ -632,15 +631,15 @@
      "1.1"
     ],
     "command": "Find",
-    "ask": "Integrate an algebraic fraction (terms over a power of x) [exact expression not recoverable from the Finder text]",
+    "ask": "Find ∫(4x² + 1)/(2√x) dx, giving the answer in its simplest form",
     "final_form": "simplest form, plus constant of integration",
-    "ms": "",
+    "ms": "M1 split into Px^m + Qx^n with an index processed; A1 2x^(3/2) + (1/2)x^(−1/2); M1 raise a correct index by 1; A1 one term correct and simplified; A1 (4/5)x^(5/2) + x^(1/2) + c (MS p.11)",
     "er": ""
    }
   ],
   "sources": {
-   "qp": "finder:static/Data/Mathematics (2018)/WMA11/Question paper - Unit 1 (WMA11) - June 2019.json (anonymouslyanonymous1/Edexcel-Finder@e3db7034; P61837A; lower-cased per-page text; some runs are font glyph codes (char − 29), decoded here with scripts/decode_finder2.py; stacked fractions, roots and indices partly lost; no PDF reachable)",
-   "ms": "",
+   "qp": "local:src/WMA11/2019-06_01_qp.pdf (github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/qp/pure1/2019/Mathematics PURE1 (IAL) - May 2019 - QP (WMA11).pdf; PMT-stamped Pearson PDF, P61837A, cover Wednesday 22 May 2019; question text, marks and spec ids re-checked against the rendered pages 2026-10-06, replacing the earlier Finder reconstruction from anonymouslyanonymous1/Edexcel-Finder@e3db7034)",
+   "ms": "local:src/WMA11/2019-06_01_ms.pdf (github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/ms/pure1/2019/Mathematics PURE1 (IAL) - May 2019 - MS (WMA11).pdf; PMT-stamped Pearson PDF, Publications Code WMA11_01_1906_MS; MS page numbers are PDF pages)",
    "er": ""
   }
  },
@@ -662,7 +661,7 @@
     "command": "Find",
     "ask": "Find, using algebra, all real solutions of 2x³ + 3x² − 35x = 0",
     "final_form": "all roots found algebraically",
-    "ms": "",
+    "ms": "M1 take out the factor x; dM1 solve the quadratic algebraically; A1 x = −5, 0, 7/2. Calculator answers only, or the quadratic formula applied to the cubic, score 0 (MS p.12)",
     "er": ""
    },
    {
@@ -673,15 +672,15 @@
      "1.2"
     ],
     "command": "Hence find",
-    "ask": "Hence find all real solutions of 2(y − 5)⁶ + 3(y − 5)⁴ − 35(y − 5)² = 0 (powers as read from the Finder text)",
+    "ask": "Hence find all real solutions of 2(y − 5)⁶ + 3(y − 5)⁴ − 35(y − 5)² = 0",
     "final_form": "all real solutions, exact; reject the negative value of (y − 5)²",
-    "ms": "",
+    "ms": "B1 y = 5; M1 (y − 5)² = 7/2 (ft a positive root from (a)) and solve for y; A1ft one of 5 ± √(7/2) (decimals allowed here); A1 both 5 + √(7/2) and 5 − √(7/2) exact, with 5 and no other solutions (MS p.12)",
     "er": ""
    }
   ],
   "sources": {
-   "qp": "finder:static/Data/Mathematics (2018)/WMA11/Question paper - Unit 1 (WMA11) - June 2019.json (anonymouslyanonymous1/Edexcel-Finder@e3db7034; P61837A; lower-cased per-page text; some runs are font glyph codes (char − 29), decoded here with scripts/decode_finder2.py; stacked fractions, roots and indices partly lost; no PDF reachable)",
-   "ms": "",
+   "qp": "local:src/WMA11/2019-06_01_qp.pdf (github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/qp/pure1/2019/Mathematics PURE1 (IAL) - May 2019 - QP (WMA11).pdf; PMT-stamped Pearson PDF, P61837A, cover Wednesday 22 May 2019; question text, marks and spec ids re-checked against the rendered pages 2026-10-06, replacing the earlier Finder reconstruction from anonymouslyanonymous1/Edexcel-Finder@e3db7034)",
+   "ms": "local:src/WMA11/2019-06_01_ms.pdf (github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/ms/pure1/2019/Mathematics PURE1 (IAL) - May 2019 - MS (WMA11).pdf; PMT-stamped Pearson PDF, Publications Code WMA11_01_1906_MS; MS page numbers are PDF pages)",
    "er": ""
   }
  },
@@ -703,7 +702,7 @@
     "command": "Find",
     "ask": "The line y = 4x + c meets the curve y = x(x − 3) at only one point: find c",
     "final_form": "value of c (discriminant = 0)",
-    "ms": "",
+    "ms": "M1 equate 4x + c = x(x − 3) and form a 3TQ (x² − 7x − c = 0); dM1 use b² − 4ac (= 0); A1 49 + 4c = 0; A1 c = −12.25 oe. Alternative: gradient 2x − 3 = 4 (MS p.13)",
     "er": ""
    },
    {
@@ -716,13 +715,13 @@
     "command": "Hence find",
     "ask": "Hence find the coordinates of the point of intersection",
     "final_form": "coordinates",
-    "ms": "",
+    "ms": "M1 solve the quadratic with their c; dM1 find y; A1 (7/2, 7/4) (MS p.13)",
     "er": ""
    }
   ],
   "sources": {
-   "qp": "finder:static/Data/Mathematics (2018)/WMA11/Question paper - Unit 1 (WMA11) - June 2019.json (anonymouslyanonymous1/Edexcel-Finder@e3db7034; P61837A; lower-cased per-page text; some runs are font glyph codes (char − 29), decoded here with scripts/decode_finder2.py; stacked fractions, roots and indices partly lost; no PDF reachable)",
-   "ms": "",
+   "qp": "local:src/WMA11/2019-06_01_qp.pdf (github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/qp/pure1/2019/Mathematics PURE1 (IAL) - May 2019 - QP (WMA11).pdf; PMT-stamped Pearson PDF, P61837A, cover Wednesday 22 May 2019; question text, marks and spec ids re-checked against the rendered pages 2026-10-06, replacing the earlier Finder reconstruction from anonymouslyanonymous1/Edexcel-Finder@e3db7034)",
+   "ms": "local:src/WMA11/2019-06_01_ms.pdf (github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/ms/pure1/2019/Mathematics PURE1 (IAL) - May 2019 - MS (WMA11).pdf; PMT-stamped Pearson PDF, Publications Code WMA11_01_1906_MS; MS page numbers are PDF pages)",
    "er": ""
   }
  },
@@ -742,8 +741,8 @@
     ],
     "command": "Find",
     "ask": "Shape ABCDA = sector ABCOA (radius 6 cm) joined to triangle AOD, D on OC, AD = 5 cm, angle AOD = 0.7 rad: find the area of the sector",
-    "final_form": "one decimal place",
-    "ms": "",
+    "final_form": "cm² to 1 d.p.; ABCOA is the major sector (angle 2π − 0.7)",
+    "ms": "M1 ½r²θ with r = 6 and an allowable angle (0.7 or 2π − 0.7); M1 full method for the major sector, ½ × 6² × (2π − 0.7) or π × 6² − ½ × 6² × 0.7; A1 awrt 100.5 cm² (MS pp.14–15)",
     "er": ""
    },
    {
@@ -754,8 +753,8 @@
     ],
     "command": "Find",
     "ask": "Given angle ADO is obtuse, find angle ADO",
-    "final_form": "3 decimal places; obtuse value (ambiguous case of the sine rule)",
-    "ms": "",
+    "final_form": "radians to 3 d.p. (degrees also credited); the obtuse value",
+    "ms": "M1 sine rule sin ADO/6 = sin 0.7/5; A1 sin ADO = 0.77… (writing ADO = 0.77… is A0); A1 ADO awrt 2.258 rad (129.4°) (MS pp.14–15)",
     "er": ""
    },
    {
@@ -768,13 +767,13 @@
     "command": "Hence find",
     "ask": "Hence find the perimeter of ABCDA",
     "final_form": "one decimal place",
-    "ms": "",
+    "ms": "M1 arc ABC = 6(2π − 0.7) ≈ 33.5; M1 OD by the sine or cosine rule with angle OAD = π − 0.7 − 2.258 (OD ≈ 1.42); ddM1 perimeter = arc + 5 + (6 − OD); A1 43.1 cm cso (MS pp.14–15)",
     "er": ""
    }
   ],
   "sources": {
-   "qp": "finder:static/Data/Mathematics (2018)/WMA11/Question paper - Unit 1 (WMA11) - June 2019.json (anonymouslyanonymous1/Edexcel-Finder@e3db7034; P61837A; lower-cased per-page text; some runs are font glyph codes (char − 29), decoded here with scripts/decode_finder2.py; stacked fractions, roots and indices partly lost; no PDF reachable)",
-   "ms": "",
+   "qp": "local:src/WMA11/2019-06_01_qp.pdf (github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/qp/pure1/2019/Mathematics PURE1 (IAL) - May 2019 - QP (WMA11).pdf; PMT-stamped Pearson PDF, P61837A, cover Wednesday 22 May 2019; question text, marks and spec ids re-checked against the rendered pages 2026-10-06, replacing the earlier Finder reconstruction from anonymouslyanonymous1/Edexcel-Finder@e3db7034)",
+   "ms": "local:src/WMA11/2019-06_01_ms.pdf (github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/ms/pure1/2019/Mathematics PURE1 (IAL) - May 2019 - MS (WMA11).pdf; PMT-stamped Pearson PDF, Publications Code WMA11_01_1906_MS; MS page numbers are PDF pages)",
    "er": ""
   }
  },
@@ -795,9 +794,9 @@
      "2.1"
     ],
     "command": "Find",
-    "ask": "x > 0, C passes through P(4, 1), f′(x) given as a sum of power terms [exact expression not recoverable from the Finder text]: find the normal to C at P",
+    "ask": "C: y = f(x), x > 0, passes through P(4, 1) and f′(x) = 4√x − 2 − 8/(3x²): find the normal to C at P in the form ax + by + c = 0 with integers a, b, c",
     "final_form": "ax + by + c = 0 with integers a, b, c",
-    "ms": "",
+    "ms": "M1 f′(4) = 35/6 (embedded values or awrt 5.83); dM1 negative reciprocal; M1 normal through (4, 1) with the changed gradient; A1 6x + 35y − 59 = 0 or an integer multiple (MS pp.16–17)",
     "er": ""
    },
    {
@@ -811,13 +810,13 @@
     "command": "Find",
     "ask": "Find f(x)",
     "final_form": "f(x) with constant evaluated",
-    "ms": "",
+    "ms": "M1 raise a correct index by 1; A1 two terms; A1 (8/3)x^(3/2) − 2x + 8/(3x) simplified; dM1 use (4, 1) to find c; A1 f(x) = (8/3)x^(3/2) − 2x + 8/(3x) − 13. Differentiating f′ in (a) and integrating back in (b) scores 0 in (b) (MS pp.16–17)",
     "er": ""
    }
   ],
   "sources": {
-   "qp": "finder:static/Data/Mathematics (2018)/WMA11/Question paper - Unit 1 (WMA11) - June 2019.json (anonymouslyanonymous1/Edexcel-Finder@e3db7034; P61837A; lower-cased per-page text; some runs are font glyph codes (char − 29), decoded here with scripts/decode_finder2.py; stacked fractions, roots and indices partly lost; no PDF reachable)",
-   "ms": "",
+   "qp": "local:src/WMA11/2019-06_01_qp.pdf (github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/qp/pure1/2019/Mathematics PURE1 (IAL) - May 2019 - QP (WMA11).pdf; PMT-stamped Pearson PDF, P61837A, cover Wednesday 22 May 2019; question text, marks and spec ids re-checked against the rendered pages 2026-10-06, replacing the earlier Finder reconstruction from anonymouslyanonymous1/Edexcel-Finder@e3db7034)",
+   "ms": "local:src/WMA11/2019-06_01_ms.pdf (github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/ms/pure1/2019/Mathematics PURE1 (IAL) - May 2019 - MS (WMA11).pdf; PMT-stamped Pearson PDF, Publications Code WMA11_01_1906_MS; MS page numbers are PDF pages)",
    "er": ""
   }
  },
@@ -839,7 +838,7 @@
     "command": "State",
     "ask": "Given the graph of y = sin θ, 0 ≤ θ ≤ 360°, state the minimum point of y = 4 sin θ",
     "final_form": "coordinates",
-    "ms": "",
+    "ms": "B1 either coordinate in the right place; B1 (270°, −4) (degree symbol optional) (MS p.18)",
     "er": ""
    },
    {
@@ -852,7 +851,7 @@
     "command": "Sketch",
     "ask": "On the copy of the graph sketch and label y = 1 + sin θ and y = tan θ for 0 ≤ θ ≤ 360°",
     "final_form": "two labelled curves",
-    "ms": "",
+    "ms": "B1 y = 1 + sin θ through (0, 1), (90, 2), (180, 1), (270, 0), (360, 1), curved; B1 y = tan θ with the correct branch shape, going beyond y = ±1 (MS p.18)",
     "er": ""
    },
    {
@@ -865,13 +864,13 @@
     "command": "Hence find",
     "ask": "Hence find the number of solutions of tan θ = 1 + sin θ in (i) 0 ≤ θ ≤ 2160°, (ii) 0 ≤ θ ≤ 1980°",
     "final_form": "two numbers",
-    "ms": "",
+    "ms": "M1 2160/360 × their solutions per cycle (6 × 2); A1 (i) 12; B1ft (ii) 11, i.e. (i) minus their solutions in one 180°–360° stretch; answers from the graphs are expected (\"hence\") (MS p.18)",
     "er": ""
    }
   ],
   "sources": {
-   "qp": "finder:static/Data/Mathematics (2018)/WMA11/Question paper - Unit 1 (WMA11) - June 2019.json (anonymouslyanonymous1/Edexcel-Finder@e3db7034; P61837A; lower-cased per-page text; some runs are font glyph codes (char − 29), decoded here with scripts/decode_finder2.py; stacked fractions, roots and indices partly lost; no PDF reachable)",
-   "ms": "",
+   "qp": "local:src/WMA11/2019-06_01_qp.pdf (github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/qp/pure1/2019/Mathematics PURE1 (IAL) - May 2019 - QP (WMA11).pdf; PMT-stamped Pearson PDF, P61837A, cover Wednesday 22 May 2019; question text, marks and spec ids re-checked against the rendered pages 2026-10-06, replacing the earlier Finder reconstruction from anonymouslyanonymous1/Edexcel-Finder@e3db7034)",
+   "ms": "local:src/WMA11/2019-06_01_ms.pdf (github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/ms/pure1/2019/Mathematics PURE1 (IAL) - May 2019 - MS (WMA11).pdf; PMT-stamped Pearson PDF, Publications Code WMA11_01_1906_MS; MS page numbers are PDF pages)",
    "er": ""
   }
  },
@@ -892,7 +891,7 @@
     "command": "State",
     "ask": "f(x) = (x − 4)(2x + 1)² touches the x-axis at P and crosses it at Q: state P",
     "final_form": "coordinates",
-    "ms": "",
+    "ms": "B1 P(−1/2, 0); if (4, 0) is also given, P must be identified (MS p.19)",
     "er": ""
    },
    {
@@ -905,7 +904,7 @@
     "command": "Find",
     "ask": "Find f′(x)",
     "final_form": "derivative (expanded or factorised)",
-    "ms": "",
+    "ms": "M1 expand to a 4-term cubic; A1 4x³ − 12x² − 15x − 4; dM1 differentiate each term; A1 f′(x) = 12x² − 24x − 15 cso (product rule also accepted) (MS p.19)",
     "er": ""
    },
    {
@@ -918,7 +917,7 @@
     "command": "Show that",
     "ask": "Hence show that the tangent at x = 5/2 has equation y = k, finding k",
     "final_form": "y = k with k found (gradient zero shown)",
-    "ms": "",
+    "ms": "M1 evaluate their f′(2.5); A1 f′(2.5) = 75 − 60 − 15 = 0 shown, needs correct f′; A1 y = −54 (k = −54) cso; or solve f′(x) = 0 to x = −0.5, 2.5 (MS pp.19–20)",
     "er": ""
    },
    {
@@ -930,13 +929,13 @@
     "command": "State",
     "ask": "y = f(x + a) passes through the origin: state the possible values of a",
     "final_form": "all possible values of a",
-    "ms": "",
+    "ms": "B1 one of −1/2, 4; B1 a = −1/2 and 4 only (MS p.20)",
     "er": ""
    }
   ],
   "sources": {
-   "qp": "finder:static/Data/Mathematics (2018)/WMA11/Question paper - Unit 1 (WMA11) - June 2019.json (anonymouslyanonymous1/Edexcel-Finder@e3db7034; P61837A; lower-cased per-page text; some runs are font glyph codes (char − 29), decoded here with scripts/decode_finder2.py; stacked fractions, roots and indices partly lost; no PDF reachable)",
-   "ms": "",
+   "qp": "local:src/WMA11/2019-06_01_qp.pdf (github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/qp/pure1/2019/Mathematics PURE1 (IAL) - May 2019 - QP (WMA11).pdf; PMT-stamped Pearson PDF, P61837A, cover Wednesday 22 May 2019; question text, marks and spec ids re-checked against the rendered pages 2026-10-06, replacing the earlier Finder reconstruction from anonymouslyanonymous1/Edexcel-Finder@e3db7034)",
+   "ms": "local:src/WMA11/2019-06_01_ms.pdf (github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/ms/pure1/2019/Mathematics PURE1 (IAL) - May 2019 - MS (WMA11).pdf; PMT-stamped Pearson PDF, Publications Code WMA11_01_1906_MS; MS page numbers are PDF pages)",
    "er": ""
   }
  },
@@ -958,7 +957,7 @@
     "command": "Find",
     "ask": "Sector AOB, angle 1.25 rad, area 15 cm²: find the exact radius r",
     "final_form": "exact (surd) value",
-    "ms": "",
+    "ms": "M1 ½r² × 1.25 = 15 used to find r; A1 r = √24 or 2√6 only (±2√6 loses the A) (MS p.7)",
     "er": ""
    },
    {
@@ -971,13 +970,13 @@
     "command": "Find",
     "ask": "Find the exact perimeter of the sector",
     "final_form": "exact, simplest form",
-    "ms": "",
+    "ms": "M1 arc rθ with their r and 1.25; dM1 perimeter 2r + rθ; A1 13√6/2 or 6.5√6 (MS p.7)",
     "er": ""
    }
   ],
   "sources": {
    "qp": "github:EslamAhmedGaber/elite-igcse-math/downloads/IAL/WMA11/Papers/WMA11_2019_Oct_QP.pdf (= local:src/WMA11/2019-10_01_qp.pdf, P58436A, cover Wednesday 9 October 2019)",
-   "ms": "",
+   "ms": "local:src/WMA11/2019-10_01_ms.pdf (github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/ms/pure1/2019/Mathematics PURE1 (IAL) - October 2019 - MS (WMA11).pdf; PMT-stamped Pearson \"Mark Scheme (Final)\", Publications Code WMA11_01_1910_MS; MS page numbers are PDF pages)",
    "er": ""
   }
  },
@@ -999,7 +998,7 @@
     "command": "Find",
     "ask": "Linear model H = at + b for tree height (1.85 m at t = 2, 3.45 m at t = 7): find a and b",
     "final_form": "values of a and b",
-    "ms": "",
+    "ms": "M1 one of 1.85 = 2a + b, 3.45 = 7a + b; A1 both; dM1 solve simultaneously; A1 a = 0.32, b = 1.21. Alternative: a = (3.45 − 1.85)/(7 − 2), then b (MS p.7)",
     "er": ""
    },
    {
@@ -1011,13 +1010,13 @@
     "command": "State",
     "ask": "State, according to the model, the height when planted",
     "final_form": "value in context (metres)",
-    "ms": "",
+    "ms": "B1ft 1.21 m (or 121 cm), with units, ft their positive b (MS p.7)",
     "er": ""
    }
   ],
   "sources": {
    "qp": "github:EslamAhmedGaber/elite-igcse-math/downloads/IAL/WMA11/Papers/WMA11_2019_Oct_QP.pdf (= local:src/WMA11/2019-10_01_qp.pdf, P58436A, cover Wednesday 9 October 2019)",
-   "ms": "",
+   "ms": "local:src/WMA11/2019-10_01_ms.pdf (github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/ms/pure1/2019/Mathematics PURE1 (IAL) - October 2019 - MS (WMA11).pdf; PMT-stamped Pearson \"Mark Scheme (Final)\", Publications Code WMA11_01_1910_MS; MS page numbers are PDF pages)",
    "er": ""
   }
  },
@@ -1039,7 +1038,7 @@
     "command": "Find",
     "ask": "All stages of working, no calculator: find the minimum point M of y = x² − 5x + 13",
     "final_form": "coordinates of M",
-    "ms": "",
+    "ms": "M1 complete the square, (x − 2.5)²…; A1 (x − 2.5)² + 6.75; A1 M(2.5, 6.75). A calculus route is allowed; an answer with no working scores 0 (MS p.8)",
     "er": ""
    },
    {
@@ -1053,7 +1052,7 @@
     "command": "Find",
     "ask": "Line l through O and M meets C again at N: find N",
     "final_form": "coordinates of N with working",
-    "ms": "",
+    "ms": "M1 line OM from their M (y = 2.7x); M1 solve with the curve (x² − 7.7x + 13 = 0); A1 x = 5.2; dM1 find y; A1 N(5.2, 14.04) or (26/5, 351/25) (MS p.8)",
     "er": ""
    },
    {
@@ -1065,13 +1064,13 @@
     "command": "Use inequalities",
     "ask": "Define with inequalities the finite region R bounded by C, l and the y-axis",
     "final_form": "inequalities in x and y",
-    "ms": "",
+    "ms": "M1 two of y < x² − 5x + 13, y > 2.7x, 0 ≤ x < 2.5 (non-strict signs and < or ≤ at x = 0 accepted; inequalities in R score M0); A1ft all three (MS p.8)",
     "er": ""
    }
   ],
   "sources": {
    "qp": "github:EslamAhmedGaber/elite-igcse-math/downloads/IAL/WMA11/Papers/WMA11_2019_Oct_QP.pdf (= local:src/WMA11/2019-10_01_qp.pdf, P58436A, cover Wednesday 9 October 2019)",
-   "ms": "",
+   "ms": "local:src/WMA11/2019-10_01_ms.pdf (github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/ms/pure1/2019/Mathematics PURE1 (IAL) - October 2019 - MS (WMA11).pdf; PMT-stamped Pearson \"Mark Scheme (Final)\", Publications Code WMA11_01_1910_MS; MS page numbers are PDF pages)",
    "er": ""
   }
  },
@@ -1092,7 +1091,7 @@
     "command": "Find",
     "ask": "Parallelogram ABCD with area 40 cm², AB = 10 cm, BC = 6 cm, angle DAB obtuse: find angle DAB",
     "final_form": "degrees to 2 decimal places; obtuse value",
-    "ms": "",
+    "ms": "M1 40 = 6 × 10 × sin θ; M1 θ = 180° − arcsin(2/3); A1 DAB awrt 138.19° (MS p.9)",
     "er": ""
    },
    {
@@ -1104,13 +1103,13 @@
     "command": "Find",
     "ask": "Find the length of diagonal BD",
     "final_form": "cm to 1 decimal place",
-    "ms": "",
+    "ms": "M1 cosine rule BD² = 10² + 6² − 2 × 10 × 6 cos(their DAB); A1 BD awrt 15.0 cm (MS p.9)",
     "er": ""
    }
   ],
   "sources": {
    "qp": "github:EslamAhmedGaber/elite-igcse-math/downloads/IAL/WMA11/Papers/WMA11_2019_Oct_QP.pdf (= local:src/WMA11/2019-10_01_qp.pdf, P58436A, cover Wednesday 9 October 2019)",
-   "ms": "",
+   "ms": "local:src/WMA11/2019-10_01_ms.pdf (github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/ms/pure1/2019/Mathematics PURE1 (IAL) - October 2019 - MS (WMA11).pdf; PMT-stamped Pearson \"Mark Scheme (Final)\", Publications Code WMA11_01_1910_MS; MS page numbers are PDF pages)",
    "er": ""
   }
  },
@@ -1132,7 +1131,7 @@
     "command": "Find",
     "ask": "Differentiate y = x³/6 + 4√x − 15 (x ≥ 0)",
     "final_form": "dy/dx in simplest form",
-    "ms": "",
+    "ms": "M1 reduce a power by one; A1 two correct terms; A1 x²/2 + 2x^(−1/2) simplified; final A withheld if +c is added (MS p.10)",
     "er": ""
    },
    {
@@ -1146,13 +1145,13 @@
     "command": "Find",
     "ask": "Find the normal to the curve at P(4, 11/3)",
     "final_form": "ax + by + c = 0 with integers a, b, c",
-    "ms": "",
+    "ms": "M1 dy/dx at x = 4 (= 9); dM1 negative reciprocal −1/9; M1 normal through (4, 11/3) with the changed gradient; A1 x + 9y − 37 = 0 or any integer multiple, including \"= 0\" (MS p.10)",
     "er": ""
    }
   ],
   "sources": {
    "qp": "github:EslamAhmedGaber/elite-igcse-math/downloads/IAL/WMA11/Papers/WMA11_2019_Oct_QP.pdf (= local:src/WMA11/2019-10_01_qp.pdf, P58436A, cover Wednesday 9 October 2019)",
-   "ms": "",
+   "ms": "local:src/WMA11/2019-10_01_ms.pdf (github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/ms/pure1/2019/Mathematics PURE1 (IAL) - October 2019 - MS (WMA11).pdf; PMT-stamped Pearson \"Mark Scheme (Final)\", Publications Code WMA11_01_1910_MS; MS page numbers are PDF pages)",
    "er": ""
   }
  },
@@ -1174,7 +1173,7 @@
     "command": "Sketch",
     "ask": "Sketch y = 4/x + k (k > 0)",
     "final_form": "sketch stating the horizontal asymptote and the x-axis intersection",
-    "ms": "",
+    "ms": "B1 shape of y = 1/x translated, not bending back; B1 horizontal asymptote above the x-axis stated as y = k; B1 crosses the negative x-axis at −4/k (MS pp.11–12)",
     "er": ""
    },
    {
@@ -1187,13 +1186,13 @@
     "command": "Find",
     "ask": "y = 10 − 2x is a tangent to C: find the possible values of k",
     "final_form": "all possible values of k (k > 0)",
-    "ms": "",
+    "ms": "M1 equate and multiply by x; A1 2x² + (k − 10)x + 4 = 0; M1 (k − 10)² − 32 = 0 (not an inequality); M1 solve for k; A1 k = 10 ± 4√2 exact, no inequality stated afterwards. Alternative: dy/dx = −2 gives x = ±√2 (MS p.11)",
     "er": ""
    }
   ],
   "sources": {
    "qp": "github:EslamAhmedGaber/elite-igcse-math/downloads/IAL/WMA11/Papers/WMA11_2019_Oct_QP.pdf (= local:src/WMA11/2019-10_01_qp.pdf, P58436A, cover Wednesday 9 October 2019)",
-   "ms": "",
+   "ms": "local:src/WMA11/2019-10_01_ms.pdf (github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/ms/pure1/2019/Mathematics PURE1 (IAL) - October 2019 - MS (WMA11).pdf; PMT-stamped Pearson \"Mark Scheme (Final)\", Publications Code WMA11_01_1910_MS; MS page numbers are PDF pages)",
    "er": ""
   }
  },
@@ -1215,7 +1214,7 @@
     "command": "Find",
     "ask": "Find the gradient of the tangent to y = 2x² + 5 at P(2, 13)",
     "final_form": "numerical gradient",
-    "ms": "",
+    "ms": "M1 dy/dx = 4x at x = 2; A1 8 (MS p.13)",
     "er": ""
    },
    {
@@ -1228,7 +1227,7 @@
     "command": "Find",
     "ask": "Q on the curve has x-coordinate 2 + h: find the gradient of chord PQ in terms of h",
     "final_form": "simplest form in h",
-    "ms": "",
+    "ms": "B1 y_Q = 2(2 + h)² + 5; M1 (y_Q − 13)/h; A1 8 + 2h with no errors (MS p.13)",
     "er": ""
    },
    {
@@ -1240,13 +1239,13 @@
     "command": "Explain",
     "ask": "Explain the relationship between (b) and (a)",
     "final_form": "statement about the limit as h → 0",
-    "ms": "",
+    "ms": "B1 as h → 0 the chord gradient tends to 8, the tangent gradient; must mention the limit and link to (a) (MS p.13)",
     "er": ""
    }
   ],
   "sources": {
    "qp": "github:EslamAhmedGaber/elite-igcse-math/downloads/IAL/WMA11/Papers/WMA11_2019_Oct_QP.pdf (= local:src/WMA11/2019-10_01_qp.pdf, P58436A, cover Wednesday 9 October 2019)",
-   "ms": "",
+   "ms": "local:src/WMA11/2019-10_01_ms.pdf (github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/ms/pure1/2019/Mathematics PURE1 (IAL) - October 2019 - MS (WMA11).pdf; PMT-stamped Pearson \"Mark Scheme (Final)\", Publications Code WMA11_01_1910_MS; MS page numbers are PDF pages)",
    "er": ""
   }
  },
@@ -1269,13 +1268,13 @@
     "command": "Solve",
     "ask": "Solve, using algebra, x − 6x^(1/2) + 4 = 0 (quadratic in x^(1/2))",
     "final_form": "fully simplified answers in the form a + b√c with integers a, b, c",
-    "ms": "",
+    "ms": "M1 solve u² − 6u + 4 = 0 with u = √x, working shown; A1 √x = 3 ± √5; M1 square p ± q√r; A1 one of 14 ± 6√5; A1 both, simplified. Alternative: isolate 6√x and square to x² − 28x + 16 = 0; squaring term by term scores 0 (MS p.14)",
     "er": ""
    }
   ],
   "sources": {
    "qp": "github:EslamAhmedGaber/elite-igcse-math/downloads/IAL/WMA11/Papers/WMA11_2019_Oct_QP.pdf (= local:src/WMA11/2019-10_01_qp.pdf, P58436A, cover Wednesday 9 October 2019)",
-   "ms": "",
+   "ms": "local:src/WMA11/2019-10_01_ms.pdf (github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/ms/pure1/2019/Mathematics PURE1 (IAL) - October 2019 - MS (WMA11).pdf; PMT-stamped Pearson \"Mark Scheme (Final)\", Publications Code WMA11_01_1910_MS; MS page numbers are PDF pages)",
    "er": ""
   }
  },
@@ -1296,7 +1295,7 @@
     "command": "State",
     "ask": "For y = sin(x/12) (x in radians), state the period",
     "final_form": "period in terms of π",
-    "ms": "",
+    "ms": "B1 24π, not an interval or coordinates (MS p.15)",
     "er": ""
    },
    {
@@ -1308,7 +1307,7 @@
     "command": "State",
     "ask": "State the coordinates of the minimum point M shown",
     "final_form": "coordinates",
-    "ms": "",
+    "ms": "B1ft (18π, −1), ft 3/4 of their period (MS p.15)",
     "er": ""
    },
    {
@@ -1320,13 +1319,13 @@
     "command": "Find",
     "ask": "Smallest positive solution of sin(x/12) = k is α: find in terms of α (i) the negative solution of sin(x/12) = k closest to zero, (ii) the smallest positive solution of cos(x/12) = k",
     "final_form": "two expressions in α (and π)",
-    "ms": "",
+    "ms": "B1ft (i) −12π − α; B1ft (ii) 6π − α (ft −P/2 − α and P/4 − α for their period P); answers in degrees lose the first mark only (MS p.15)",
     "er": ""
    }
   ],
   "sources": {
    "qp": "github:EslamAhmedGaber/elite-igcse-math/downloads/IAL/WMA11/Papers/WMA11_2019_Oct_QP.pdf (= local:src/WMA11/2019-10_01_qp.pdf, P58436A, cover Wednesday 9 October 2019)",
-   "ms": "",
+   "ms": "local:src/WMA11/2019-10_01_ms.pdf (github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/ms/pure1/2019/Mathematics PURE1 (IAL) - October 2019 - MS (WMA11).pdf; PMT-stamped Pearson \"Mark Scheme (Final)\", Publications Code WMA11_01_1910_MS; MS page numbers are PDF pages)",
    "er": ""
   }
  },
@@ -1348,7 +1347,7 @@
     "command": "Deduce",
     "ask": "From the sketch of y = (2x + 5)(x − 3)², deduce the values of x for which f(x) ≤ 0",
     "final_form": "inequality/values in x (include the touching point)",
-    "ms": "",
+    "ms": "M1 x ≤ −5/2 or x = 3; A1 both, x ≤ −5/2 and x = 3; −5/2 ≤ x ≤ 3 scores 0 (MS pp.15–16)",
     "er": ""
    },
    {
@@ -1360,7 +1359,7 @@
     "command": "Expand",
     "ask": "Expand f(x) to ax³ + bx² + cx + d",
     "final_form": "integers a, b, c, d",
-    "ms": "",
+    "ms": "M1 multiply two brackets; M1 multiply by the third to a 4-term cubic; A1 2x³ − 7x² − 12x + 45 (MS p.16)",
     "er": ""
    },
    {
@@ -1373,7 +1372,7 @@
     "command": "Hence find",
     "ask": "Find (i) the y-intercept P, (ii) the gradient of the curve at P",
     "final_form": "coordinates; gradient value",
-    "ms": "",
+    "ms": "B1ft (i) P(0, 45), not (45, 0) or just 45; B1ft (ii) gradient −12 (their c) (MS p.16)",
     "er": ""
    },
    {
@@ -1385,13 +1384,13 @@
     "command": "Find",
     "ask": "The curve is translated 2 units in the positive x direction to y = g(x): (i) find g(x) in simplified factorised form, (ii) hence state its y-intercept",
     "final_form": "factorised g(x); y-intercept",
-    "ms": "",
+    "ms": "M1 replace x with (x − 2); A1 g(x) = (2x + 1)(x − 5)²; B1 25 (MS p.16)",
     "er": ""
    }
   ],
   "sources": {
    "qp": "github:EslamAhmedGaber/elite-igcse-math/downloads/IAL/WMA11/Papers/WMA11_2019_Oct_QP.pdf (= local:src/WMA11/2019-10_01_qp.pdf, P58436A, cover Wednesday 9 October 2019)",
-   "ms": "",
+   "ms": "local:src/WMA11/2019-10_01_ms.pdf (github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/ms/pure1/2019/Mathematics PURE1 (IAL) - October 2019 - MS (WMA11).pdf; PMT-stamped Pearson \"Mark Scheme (Final)\", Publications Code WMA11_01_1910_MS; MS page numbers are PDF pages)",
    "er": ""
   }
  },
@@ -1413,7 +1412,7 @@
     "command": "Find",
     "ask": "P(4, 32/3) on y = f(x), f″(x) = 4/√x − 3, f′(x) = 5 at P: find the tangent at P",
     "final_form": "y = mx + c",
-    "ms": "",
+    "ms": "M1 tangent through (4, 32/3) with gradient 5; A1 y = 5x − 28/3 (recurring decimal accepted, 9.33 not) (MS p.17)",
     "er": ""
    },
    {
@@ -1427,13 +1426,13 @@
     "command": "Find",
     "ask": "Find f(x) (integrate twice, using f′ = 5 at P then P)",
     "final_form": "f(x) with both constants evaluated",
-    "ms": "",
+    "ms": "M1 integrate f″ with one index correct; A1 8x^(1/2) − 3x (+k); dM1 use f′(4) = 5; A1 k = 1; dM1 integrate again; A1ft (16/3)x^(3/2) − (3/2)x² + kx (+d); ddM1 use P to find d (both constants needed; \"cx + c\" is M0); A1 f(x) = (16/3)x^(3/2) − (3/2)x² + x − 12 (MS p.17)",
     "er": ""
    }
   ],
   "sources": {
    "qp": "github:EslamAhmedGaber/elite-igcse-math/downloads/IAL/WMA11/Papers/WMA11_2019_Oct_QP.pdf (= local:src/WMA11/2019-10_01_qp.pdf, P58436A, cover Wednesday 9 October 2019)",
-   "ms": "",
+   "ms": "local:src/WMA11/2019-10_01_ms.pdf (github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/ms/pure1/2019/Mathematics PURE1 (IAL) - October 2019 - MS (WMA11).pdf; PMT-stamped Pearson \"Mark Scheme (Final)\", Publications Code WMA11_01_1910_MS; MS page numbers are PDF pages)",
    "er": ""
   }
  },
@@ -1456,13 +1455,13 @@
     "command": "Find",
     "ask": "Integrate 8x³/3 − 1/(2√x) − 5 with respect to x",
     "final_form": "simplest form, plus constant of integration",
-    "ms": "",
+    "ms": "M1 raise a power by 1 (or −5 → −5x); A1 two of (8/3)(x⁴/4), −(1/2)(2x^(1/2)), −5x (unsimplified); A1 two simplified; A1 (2/3)x⁴ − x^(1/2) − 5x + c on one line (exact, not 0.67) (MS p.7)",
     "er": ""
    }
   ],
   "sources": {
    "qp": "github:EslamAhmedGaber/elite-igcse-math/downloads/IAL/WMA11/Papers/WMA11_2020_Jan_QP.pdf (= local:src/WMA11/2020-01_01_qp.pdf, P60796A, cover Wednesday 8 January 2020)",
-   "ms": "",
+   "ms": "local:src/WMA11/2020-01_01_ms.pdf (github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/ms/pure1/2020/Mathematics PURE1 (IAL) - January 2020 - MS (WMA11).pdf; PMT-stamped Pearson PDF, Publications Code WMA11_01_MS_2001; MS page numbers are PDF pages)",
    "er": ""
   }
  },
@@ -1483,7 +1482,7 @@
     "command": "Express",
     "ask": "Given y = 3ˣ, express 3^(3x) in terms of y",
     "final_form": "simplest form in y",
-    "ms": "",
+    "ms": "B1 y³ (MS p.8)",
     "er": ""
    },
    {
@@ -1495,7 +1494,7 @@
     "command": "Express",
     "ask": "Express 1/3^(x − 2) in terms of y",
     "final_form": "simplest form in y",
-    "ms": "",
+    "ms": "M1 correct index law, e.g. 1/(3ˣ × 3⁻²) or 9/3ˣ; A1 9/y or 9y⁻¹, not 3²y⁻¹ or fractions within fractions (MS p.8)",
     "er": ""
    },
    {
@@ -1507,13 +1506,13 @@
     "command": "Express",
     "ask": "Express 81/9^(2 − 3x) in terms of y",
     "final_form": "simplest form in y",
-    "ms": "",
+    "ms": "M1 simplify to a single power, e.g. 9^(3x), 3^(6x) or ky⁶ from correct work; A1 y⁶ only (MS p.8)",
     "er": ""
    }
   ],
   "sources": {
    "qp": "github:EslamAhmedGaber/elite-igcse-math/downloads/IAL/WMA11/Papers/WMA11_2020_Jan_QP.pdf (= local:src/WMA11/2020-01_01_qp.pdf, P60796A, cover Wednesday 8 January 2020)",
-   "ms": "",
+   "ms": "local:src/WMA11/2020-01_01_ms.pdf (github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/ms/pure1/2020/Mathematics PURE1 (IAL) - January 2020 - MS (WMA11).pdf; PMT-stamped Pearson PDF, Publications Code WMA11_01_MS_2001; MS page numbers are PDF pages)",
    "er": ""
   }
  },
@@ -1535,7 +1534,7 @@
     "command": "Find",
     "ask": "Find the gradient of the tangent to y = x² + 3x − 2 at P(3, 16)",
     "final_form": "numerical gradient",
-    "ms": "",
+    "ms": "M1 dy/dx = 2x + 3 at x = 3; A1 9 (MS p.9)",
     "er": ""
    },
    {
@@ -1548,7 +1547,7 @@
     "command": "Find",
     "ask": "Q on the curve has x-coordinate 3 + h: find the gradient of chord PQ in terms of h",
     "final_form": "simplest form in h",
-    "ms": "",
+    "ms": "B1 y_Q = (3 + h)² + 3(3 + h) − 2; M1 (y_Q − 16)/h; A1 9 + h with no errors, not from calculus (MS p.9)",
     "er": ""
    },
    {
@@ -1560,13 +1559,13 @@
     "command": "Explain",
     "ask": "Explain the relationship between the chord gradient in (b) and the tangent gradient in (a)",
     "final_form": "statement about the limit as h → 0",
-    "ms": "",
+    "ms": "B1 as h → 0 the chord gradient tends to 9, the tangent gradient; needs 9 + h and 9 and a reference to the limit (MS p.9)",
     "er": ""
    }
   ],
   "sources": {
    "qp": "github:EslamAhmedGaber/elite-igcse-math/downloads/IAL/WMA11/Papers/WMA11_2020_Jan_QP.pdf (= local:src/WMA11/2020-01_01_qp.pdf, P60796A, cover Wednesday 8 January 2020)",
-   "ms": "",
+   "ms": "local:src/WMA11/2020-01_01_ms.pdf (github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/ms/pure1/2020/Mathematics PURE1 (IAL) - January 2020 - MS (WMA11).pdf; PMT-stamped Pearson PDF, Publications Code WMA11_01_MS_2001; MS page numbers are PDF pages)",
    "er": ""
   }
  },
@@ -1588,7 +1587,7 @@
     "command": "Show that",
     "ask": "Rectangle ABCD with AB = 16 m; sector APCOA centre O on DC, radius 12 m: show angle AOD = 1.231 rad to 3 d.p.",
     "final_form": "given value to 3 d.p. with working",
-    "ms": "",
+    "ms": "M1 cos AOD = 4/12 (OD = 16 − 12) or another valid route (Pythagoras then sine/tangent, cosine rule); A1* awrt 1.231 with a step shown (in degrees, awrt 70.5° must appear first) (MS pp.10–11)",
     "er": ""
    },
    {
@@ -1601,7 +1600,7 @@
     "command": "Find",
     "ask": "Find the area of the lawn APCDA",
     "final_form": "m² to 1 decimal place",
-    "ms": "",
+    "ms": "M1 ½r²θ with r = 12 and θ = π ± 1.231 or 1.231; M1 area of triangle AOD, ½ × 4 × √(12² − 4²) (≈ 22.6); ddM1 major sector − triangle, ½ × 12² × (π + 1.231) − 22.6, or circle − minor sector − triangle; A1 awrt 292.2 m² (MS pp.10–11)",
     "er": ""
    },
    {
@@ -1613,13 +1612,13 @@
     "command": "Find",
     "ask": "Find the perimeter of the lawn",
     "final_form": "metres to 1 decimal place",
-    "ms": "",
+    "ms": "M1 arc rθ with r = 12 and an allowable angle; dM1 P = 16 + √(12² − 4²) + 12(π + 1.231); A1 awrt 79.8 m (MS pp.10–11)",
     "er": ""
    }
   ],
   "sources": {
    "qp": "github:EslamAhmedGaber/elite-igcse-math/downloads/IAL/WMA11/Papers/WMA11_2020_Jan_QP.pdf (= local:src/WMA11/2020-01_01_qp.pdf, P60796A, cover Wednesday 8 January 2020)",
-   "ms": "",
+   "ms": "local:src/WMA11/2020-01_01_ms.pdf (github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/ms/pure1/2020/Mathematics PURE1 (IAL) - January 2020 - MS (WMA11).pdf; PMT-stamped Pearson PDF, Publications Code WMA11_01_MS_2001; MS page numbers are PDF pages)",
    "er": ""
   }
  },
@@ -1641,7 +1640,7 @@
     "command": "Find",
     "ask": "Find, using algebra, all solutions of 20x³ − 50x² − 30x = 0",
     "final_form": "all roots found algebraically",
-    "ms": "",
+    "ms": "M1 factorise out x (e.g. 10x(2x² − 5x − 3)); A1 two of 0, −1/2, 3; A1 all three, nothing else; answers only score 0 (MS p.12)",
     "er": ""
    },
    {
@@ -1654,13 +1653,13 @@
     "command": "Hence find",
     "ask": "Hence find all real solutions of 20(y + 3)^(3/2) − 50(y + 3) − 30(y + 3)^(1/2) = 0",
     "final_form": "all real solutions; reject values impossible for (y + 3)^(1/2)",
-    "ms": "",
+    "ms": "B1ft set (y + 3)^(1/2) equal to a root from (a); M1 square and subtract 3 for a non-zero root; A1ft y = 6; A1 y = −3 and 6, with −1/2 rejected (MS pp.12–13)",
     "er": ""
    }
   ],
   "sources": {
    "qp": "github:EslamAhmedGaber/elite-igcse-math/downloads/IAL/WMA11/Papers/WMA11_2020_Jan_QP.pdf (= local:src/WMA11/2020-01_01_qp.pdf, P60796A, cover Wednesday 8 January 2020)",
-   "ms": "",
+   "ms": "local:src/WMA11/2020-01_01_ms.pdf (github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/ms/pure1/2020/Mathematics PURE1 (IAL) - January 2020 - MS (WMA11).pdf; PMT-stamped Pearson PDF, Publications Code WMA11_01_MS_2001; MS page numbers are PDF pages)",
    "er": ""
   }
  },
@@ -1682,7 +1681,7 @@
     "command": "Find",
     "ask": "l₁: 3x − 4y + 20 = 0; l₂ through R(8, 0) parallel to l₁: find l₂",
     "final_form": "ax + by + c = 0 with integers a, b, c",
-    "ms": "",
+    "ms": "M1 gradient of l₁ (3/4); M1 line through R(8, 0) with the same gradient (via y = mx + c: must reach c); A1 3x − 4y − 24 = 0 or an integer multiple, seen in (a) (MS pp.14–15)",
     "er": ""
    },
    {
@@ -1694,7 +1693,7 @@
     "command": "Find",
     "ask": "l₁ meets the axes at P and Q; PQRS is a parallelogram: find its area",
     "final_form": "area value",
-    "ms": "",
+    "ms": "B1 P(−20/3, 0) and Q(0, 5); M1 area = PR × OQ = (8 + 20/3) × 5 (shoelace or determinant also accepted); A1 220/3 (awrt 73.3 condoned) (MS pp.14–15)",
     "er": ""
    },
    {
@@ -1706,13 +1705,13 @@
     "command": "Find",
     "ask": "Find the coordinates of S",
     "final_form": "coordinates",
-    "ms": "",
+    "ms": "M1 full method for both coordinates of S (OP + QR as vectors, intersecting lines, or equal-length equations); A1 S(4/3, −5). S = (44/3, 5), from the parallelogram PQSR, scores SC 1,0 (MS pp.14–16)",
     "er": ""
    }
   ],
   "sources": {
    "qp": "github:EslamAhmedGaber/elite-igcse-math/downloads/IAL/WMA11/Papers/WMA11_2020_Jan_QP.pdf (= local:src/WMA11/2020-01_01_qp.pdf, P60796A, cover Wednesday 8 January 2020)",
-   "ms": "",
+   "ms": "local:src/WMA11/2020-01_01_ms.pdf (github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/ms/pure1/2020/Mathematics PURE1 (IAL) - January 2020 - MS (WMA11).pdf; PMT-stamped Pearson PDF, Publications Code WMA11_01_MS_2001; MS page numbers are PDF pages)",
    "er": ""
   }
  },
@@ -1733,7 +1732,7 @@
     "command": "State",
     "ask": "From a sketch of y = 3 sin x (degrees), state the coordinates of the marked points P and Q",
     "final_form": "two coordinate pairs",
-    "ms": "",
+    "ms": "M1 one value of (90°, 3); A1 P(90°, 3); B1 Q(540°, 0); radians or missing brackets penalised once (MS p.18)",
     "er": ""
    },
    {
@@ -1746,13 +1745,13 @@
     "command": "State",
     "ask": "C₂: y = 3 sin x + k has maximum value 10; state the minimum point R with the smallest positive x-coordinate",
     "final_form": "coordinates of R",
-    "ms": "",
+    "ms": "M1 one value of (270°, 4); A1 R(270°, 4) (k = 7, so the minimum value is 4) (MS p.18)",
     "er": ""
    }
   ],
   "sources": {
    "qp": "github:EslamAhmedGaber/elite-igcse-math/downloads/IAL/WMA11/Papers/WMA11_2020_Jan_QP.pdf (= local:src/WMA11/2020-01_01_qp.pdf, P60796A, cover Wednesday 8 January 2020)",
-   "ms": "",
+   "ms": "local:src/WMA11/2020-01_01_ms.pdf (github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/ms/pure1/2020/Mathematics PURE1 (IAL) - January 2020 - MS (WMA11).pdf; PMT-stamped Pearson PDF, Publications Code WMA11_01_MS_2001; MS page numbers are PDF pages)",
    "er": ""
   }
  },
@@ -1775,13 +1774,13 @@
     "command": "Find",
     "ask": "Find the set of k for which y = k(2x − 1) does not cross or touch y = x² + 2x + 11",
     "final_form": "inequality for k from discriminant < 0",
-    "ms": "",
+    "ms": "M1 equate k(2x − 1) = x² + 2x + 11; A1 x² + (2 − 2k)x + 11 + k = 0; M1 discriminant to a 3TQ in k (4k² − 12k − 40) and critical values; A1 k = 5, −2 from correct working; M1 inside region (b² − 4ac < 0); A1 −2 < k < 5 cso (in x: A0) (MS p.19)",
     "er": ""
    }
   ],
   "sources": {
    "qp": "github:EslamAhmedGaber/elite-igcse-math/downloads/IAL/WMA11/Papers/WMA11_2020_Jan_QP.pdf (= local:src/WMA11/2020-01_01_qp.pdf, P60796A, cover Wednesday 8 January 2020)",
-   "ms": "",
+   "ms": "local:src/WMA11/2020-01_01_ms.pdf (github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/ms/pure1/2020/Mathematics PURE1 (IAL) - January 2020 - MS (WMA11).pdf; PMT-stamped Pearson PDF, Publications Code WMA11_01_MS_2001; MS page numbers are PDF pages)",
    "er": ""
   }
  },
@@ -1804,13 +1803,13 @@
     "command": "Find",
     "ask": "All stages of working, no calculator: y = (4x² + 9)/(2√x), x > 0; find the x-coordinate where dy/dx = 0",
     "final_form": "exact x-coordinate with algebraic working",
-    "ms": "",
+    "ms": "M1 divide by 2√x into powers (one term correct); A1 2x^(3/2) + (9/2)x^(−1/2); M1 differentiate a power; A1 3x^(1/2) − (9/4)x^(−3/2); M1 set = 0 and manipulate to x² = … (or x⁴ = …); A1 x = √3/2 cso, negative root rejected. Rounded 0.87 with no working: M0A0. Quotient or product rule also accepted (MS pp.20–21)",
     "er": ""
    }
   ],
   "sources": {
    "qp": "github:EslamAhmedGaber/elite-igcse-math/downloads/IAL/WMA11/Papers/WMA11_2020_Jan_QP.pdf (= local:src/WMA11/2020-01_01_qp.pdf, P60796A, cover Wednesday 8 January 2020)",
-   "ms": "",
+   "ms": "local:src/WMA11/2020-01_01_ms.pdf (github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/ms/pure1/2020/Mathematics PURE1 (IAL) - January 2020 - MS (WMA11).pdf; PMT-stamped Pearson PDF, Publications Code WMA11_01_MS_2001; MS page numbers are PDF pages)",
    "er": ""
   }
  },
@@ -1831,7 +1830,7 @@
     "command": "Sketch",
     "ask": "Sketch y = (4x − 3)(x − 5)², showing axis intercepts",
     "final_form": "labelled sketch with touching point at the repeated root",
-    "ms": "",
+    "ms": "B1 positive cubic shape; B1 crosses at (3/4, 0) and touches at (5, 0); B1 y-intercept (0, −75) (MS pp.22–23)",
     "er": ""
    },
    {
@@ -1843,7 +1842,7 @@
     "command": "Hence find",
     "ask": "(i) find x for which f(x/4) = 0; (ii) find p so that y = f(x) + p passes through the origin",
     "final_form": "values of x; value of p",
-    "ms": "",
+    "ms": "B1ft (i) x = 3, 20 (4 × their roots), nothing else; B1ft (ii) p = 75 (MS pp.22–23)",
     "er": ""
    },
    {
@@ -1856,13 +1855,13 @@
     "command": "Find",
     "ask": "g(x) = f(x + 1): (i) find g(x) in simplest (factorised allowed) form; (ii) hence find the y-intercept of C₂",
     "final_form": "g(x) simplified; y-intercept",
-    "ms": "",
+    "ms": "M1 replace x with x + 1; A1 g(x) = (4x + 1)(x − 4)² or 4x³ − 31x² + 56x + 16; B1 16 or (0, 16) (MS pp.22–23)",
     "er": ""
    }
   ],
   "sources": {
    "qp": "github:EslamAhmedGaber/elite-igcse-math/downloads/IAL/WMA11/Papers/WMA11_2020_Jan_QP.pdf (= local:src/WMA11/2020-01_01_qp.pdf, P60796A, cover Wednesday 8 January 2020)",
-   "ms": "",
+   "ms": "local:src/WMA11/2020-01_01_ms.pdf (github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/ms/pure1/2020/Mathematics PURE1 (IAL) - January 2020 - MS (WMA11).pdf; PMT-stamped Pearson PDF, Publications Code WMA11_01_MS_2001; MS page numbers are PDF pages)",
    "er": ""
   }
  },
@@ -1885,7 +1884,7 @@
     "command": "Find",
     "ask": "f″(x) = 6/√(x³) + x, P(4, −50) on the curve, f′(4) = −4: find the normal at P",
     "final_form": "y = mx + c",
-    "ms": "",
+    "ms": "B1 normal gradient 1/4; M1 line through (4, −50) with the changed gradient; A1 y = x/4 − 51 (MS pp.24–25)",
     "er": ""
    },
    {
@@ -1899,13 +1898,13 @@
     "command": "Find",
     "ask": "Find f(x) (integrate twice, using f′(4) = −4 then P)",
     "final_form": "f(x) with both constants evaluated",
-    "ms": "",
+    "ms": "M1 integrate f″ with one index correct; A1 −12x^(−1/2) + x²/2 (+k); dM1 use f′(4) = −4; A1 k = −6; dM1 integrate again; A1ft −24x^(1/2) + x³/6 − 6x (+d); dddM1 use (4, −50) for d (both constants present); A1 f(x) = −24x^(1/2) + x³/6 − 6x + 34/3, exact (MS pp.24–25)",
     "er": ""
    }
   ],
   "sources": {
    "qp": "github:EslamAhmedGaber/elite-igcse-math/downloads/IAL/WMA11/Papers/WMA11_2020_Jan_QP.pdf (= local:src/WMA11/2020-01_01_qp.pdf, P60796A, cover Wednesday 8 January 2020)",
-   "ms": "",
+   "ms": "local:src/WMA11/2020-01_01_ms.pdf (github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/ms/pure1/2020/Mathematics PURE1 (IAL) - January 2020 - MS (WMA11).pdf; PMT-stamped Pearson PDF, Publications Code WMA11_01_MS_2001; MS page numbers are PDF pages)",
    "er": ""
   }
  },
@@ -1926,13 +1925,13 @@
     "command": "Find",
     "ask": "Given (3pq²)⁴ × 2p√(q⁸) ≡ a p^b q^c, find a, b and c",
     "final_form": "three constants",
-    "ms": "",
+    "ms": "B1 a = 162; B1 b = 5; B1 c = 12; values may be implied by the expression (MS p.7)",
     "er": ""
    }
   ],
   "sources": {
    "qp": "drive:WMA11_01_que_20201020.pdf (id 103tDSN-0bZGuE_MKZWToHvb0GTVowC_9; = local:src/WMA11/2020-10_01_qp.pdf, P62597A; cover dated Wednesday 13 May 2020 = paper set for the cancelled June 2020 series, filed by Pearson as October 2020; 12-page copy with answer pages removed, all 9 questions present)",
-   "ms": "",
+   "ms": "local:src/WMA11/2020-10_01_ms.pdf (github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/ms/pure1/2020/Mathematics PURE1 (IAL) - October 2020 - MS (WMA11).pdf; PMT-stamped Pearson PDF, Publications Code WMA11_01_2010_MS; MS page numbers are PDF pages)",
    "er": ""
   }
  },
@@ -1953,7 +1952,7 @@
     "command": "Express",
     "ask": "Express f(x) = 3 + 12x − 2x² in the form a − b(x + c)²",
     "final_form": "integers a, b, c",
-    "ms": "",
+    "ms": "B1 b = 2; M1 (x ± 3)² seen; A1 21 − 2(x − 3)² (MS p.9)",
     "er": ""
    },
    {
@@ -1967,13 +1966,13 @@
     "command": "Find",
     "ask": "y = f(x) − 7 crosses the x-axis at P and Q and the y-axis at R: find the area of triangle PQR",
     "final_form": "m√n with integers m, n",
-    "ms": "",
+    "ms": "B1 R(0, −4); M1 solve f(x) − 7 = 0 (x = 3 ± √7); dM1 area = ½ × (difference of roots) × 4; A1 4√7 (√112 or 2√28 also accepted) cao. Using f(x) + 7 instead scores B0M1M1A0 (MS pp.9–10)",
     "er": ""
    }
   ],
   "sources": {
    "qp": "drive:WMA11_01_que_20201020.pdf (id 103tDSN-0bZGuE_MKZWToHvb0GTVowC_9; = local:src/WMA11/2020-10_01_qp.pdf, P62597A; cover dated Wednesday 13 May 2020 = paper set for the cancelled June 2020 series, filed by Pearson as October 2020; 12-page copy with answer pages removed, all 9 questions present)",
-   "ms": "",
+   "ms": "local:src/WMA11/2020-10_01_ms.pdf (github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/ms/pure1/2020/Mathematics PURE1 (IAL) - October 2020 - MS (WMA11).pdf; PMT-stamped Pearson PDF, Publications Code WMA11_01_2010_MS; MS page numbers are PDF pages)",
    "er": ""
   }
  },
@@ -1994,7 +1993,7 @@
     "command": "Show that",
     "ask": "Badge: two congruent triangles AOC, BOC (AO = OB = 3 cm, OC = 5 cm) joined to sector AOB of angle α; sector area 7.2 cm²: show α = 1.6 rad",
     "final_form": "given value with ½r²θ working shown",
-    "ms": "",
+    "ms": "M1 ½ × 3² × α = 7.2 solved for α (or α = 1.6 substituted to give 7.2); A1* α = 1.6 with an intermediate line and a conclusion (MS pp.11–12)",
     "er": ""
    },
    {
@@ -2007,13 +2006,13 @@
     "command": "Hence find",
     "ask": "Hence find (i) the area of the badge, (ii) the perimeter of the badge",
     "final_form": "(i) cm² to 2 significant figures; (ii) cm to 1 decimal place",
-    "ms": "",
+    "ms": "(i) M1 angle COA = (2π − 1.6)/2 ≈ 2.34; M1 triangle area ½ × 5 × 3 sin(2.34) (≈ 5.38); dM1 2 × triangle + 7.2; A1 awrt 18 cm². (ii) B1 arc AB = 4.8; M1 AC by the cosine rule (AC² ≈ 54.9); dM1 2AC + 4.8; A1 awrt 19.6 cm (MS pp.11–12)",
     "er": ""
    }
   ],
   "sources": {
    "qp": "drive:WMA11_01_que_20201020.pdf (id 103tDSN-0bZGuE_MKZWToHvb0GTVowC_9; = local:src/WMA11/2020-10_01_qp.pdf, P62597A; cover dated Wednesday 13 May 2020 = paper set for the cancelled June 2020 series, filed by Pearson as October 2020; 12-page copy with answer pages removed, all 9 questions present)",
-   "ms": "",
+   "ms": "local:src/WMA11/2020-10_01_ms.pdf (github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/ms/pure1/2020/Mathematics PURE1 (IAL) - October 2020 - MS (WMA11).pdf; PMT-stamped Pearson PDF, Publications Code WMA11_01_2010_MS; MS page numbers are PDF pages)",
    "er": ""
   }
  },
@@ -2035,13 +2034,13 @@
     "command": "Use algebra",
     "ask": "Solve simultaneously y − 3x = 4 and x² + y² + 6x − 4y = 4, showing all stages of working",
     "final_form": "all (x, y) solution pairs from algebraic substitution",
-    "ms": "",
+    "ms": "M1 substitute y = 3x + 4 (or x = (y − 4)/3) into the circle equation; M1 collect to a 3TQ; A1 5x² + 9x − 2 = 0 (or 5y² − 13y − 46 = 0); dM1 solve with working (calculator roots: dM0 and final A0); B1 x = 0.2, −2 (or y = 4.6, −2); M1 find the other coordinate; A1 (0.2, 4.6) and (−2, −2), correctly paired (MS pp.13–14)",
     "er": ""
    }
   ],
   "sources": {
    "qp": "drive:WMA11_01_que_20201020.pdf (id 103tDSN-0bZGuE_MKZWToHvb0GTVowC_9; = local:src/WMA11/2020-10_01_qp.pdf, P62597A; cover dated Wednesday 13 May 2020 = paper set for the cancelled June 2020 series, filed by Pearson as October 2020; 12-page copy with answer pages removed, all 9 questions present)",
-   "ms": "",
+   "ms": "local:src/WMA11/2020-10_01_ms.pdf (github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/ms/pure1/2020/Mathematics PURE1 (IAL) - October 2020 - MS (WMA11).pdf; PMT-stamped Pearson PDF, Publications Code WMA11_01_2010_MS; MS page numbers are PDF pages)",
    "er": ""
   }
  },
@@ -2062,7 +2061,7 @@
     "command": "Sketch",
     "ask": "Curve y = f(x) through (−5, 0), (0, −3), touching the x-axis at (2, 0): on separate diagrams sketch (a) y = f(x + 2), (b) y = f(−x)",
     "final_form": "two sketches showing coordinates of all axis crossings/touching points",
-    "ms": "",
+    "ms": "(a) B1 negative cubic translated left; B1 maximum (touching point) at the origin; B1 crosses at (−7, 0). (b) B1 reflection in the y-axis (positive cubic, minimum in quadrant 4, not on the y-axis); B1 touches at (−2, 0) and crosses at (5, 0); B1 through (0, −3). Coordinates without a sketch score nothing (MS pp.15–16)",
     "er": ""
    },
    {
@@ -2075,13 +2074,13 @@
     "command": "Find",
     "ask": "y = k cos(x + π/6), 0 ≤ x ≤ 2π, meets the y-axis at (0, √3) and the x-axis at (p, 0), (q, 0): find k and exact p, q",
     "final_form": "k; exact values of p and q in terms of π",
-    "ms": "",
+    "ms": "B1 k = 2 (k cos(π/6) = √3); B1 p = π/3 or q = 4π/3 (awrt 1.05 or 4.19, or 60° or 240°, accepted); B1 both exact (MS pp.15–16)",
     "er": ""
    }
   ],
   "sources": {
    "qp": "drive:WMA11_01_que_20201020.pdf (id 103tDSN-0bZGuE_MKZWToHvb0GTVowC_9; = local:src/WMA11/2020-10_01_qp.pdf, P62597A; cover dated Wednesday 13 May 2020 = paper set for the cancelled June 2020 series, filed by Pearson as October 2020; 12-page copy with answer pages removed, all 9 questions present)",
-   "ms": "",
+   "ms": "local:src/WMA11/2020-10_01_ms.pdf (github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/ms/pure1/2020/Mathematics PURE1 (IAL) - October 2020 - MS (WMA11).pdf; PMT-stamped Pearson PDF, Publications Code WMA11_01_2010_MS; MS page numbers are PDF pages)",
    "er": ""
   }
  },
@@ -2102,7 +2101,7 @@
     "command": "Find",
     "ask": "A(−4, 11), B(8, 2): find the gradient of AB",
     "final_form": "fully simplified fraction",
-    "ms": "",
+    "ms": "M1 gradient method; A1 −3/4 (MS pp.17–18)",
     "er": ""
    },
    {
@@ -2115,7 +2114,7 @@
     "command": "Find",
     "ask": "l passes through the midpoint M of AB, perpendicular to AB: find l",
     "final_form": "px + qy + r = 0 with integers p, q, r",
-    "ms": "",
+    "ms": "B1 M(2, 13/2); M1 perpendicular gradient 4/3; M1 line through M with the changed gradient (via y = mx + c: must reach c); A1 8x − 6y + 23 = 0 or an integer multiple (MS pp.17–18)",
     "er": ""
    },
    {
@@ -2128,13 +2127,13 @@
     "command": "Find",
     "ask": "C lies on l with area of triangle ABC = 37.5: find both possible coordinates of C",
     "final_form": "two coordinate pairs",
-    "ms": "",
+    "ms": "M1 AB = 15 by Pythagoras; M1 ½ × MC × AB = 37.5, so MC = 5; dM1 strategy for C on l (steps of ±3 in x and ±4 in y, or a circle of radius 5 about M with l); A1 one of (−1, 2.5), (5, 10.5); A1 both, correctly paired (MS pp.17–18)",
     "er": ""
    }
   ],
   "sources": {
    "qp": "drive:WMA11_01_que_20201020.pdf (id 103tDSN-0bZGuE_MKZWToHvb0GTVowC_9; = local:src/WMA11/2020-10_01_qp.pdf, P62597A; cover dated Wednesday 13 May 2020 = paper set for the cancelled June 2020 series, filed by Pearson as October 2020; 12-page copy with answer pages removed, all 9 questions present)",
-   "ms": "",
+   "ms": "local:src/WMA11/2020-10_01_ms.pdf (github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/ms/pure1/2020/Mathematics PURE1 (IAL) - October 2020 - MS (WMA11).pdf; PMT-stamped Pearson PDF, Publications Code WMA11_01_2010_MS; MS page numbers are PDF pages)",
    "er": ""
   }
  },
@@ -2156,7 +2155,7 @@
     "command": "Sketch",
     "ask": "Sketch y = 1/(2 − x)",
     "final_form": "sketch with axis intersection coordinates and asymptote equations stated",
-    "ms": "",
+    "ms": "B1 reciprocal shape with branches top left and bottom right of the asymptotes; B1 intercept (0, 1/2) only; B1 asymptotes x = 2 and y = 0 only (\"x-axis\" not accepted); no marks without a sketch (MS pp.19–20)",
     "er": ""
    },
    {
@@ -2169,7 +2168,7 @@
     "command": "Show that",
     "ask": "y = 4x + k meets C at two distinct points: show that k² + 16k + 48 > 0",
     "final_form": "given inequality via the discriminant of the resulting quadratic",
-    "ms": "",
+    "ms": "M1 equate, multiply by (2 − x) and collect; A1 4x² + (k − 8)x + 1 − 2k = 0 oe; M1 discriminant (k − 8)² − 16(1 − 2k); A1* k² + 16k + 48 > 0 with b² − 4ac > 0 stated, no errors (MS pp.19–20)",
     "er": ""
    },
    {
@@ -2181,13 +2180,13 @@
     "command": "Hence find",
     "ask": "Hence find the range of possible values of k",
     "final_form": "solution set of the quadratic inequality (two separate intervals)",
-    "ms": "",
+    "ms": "M1 solve the quadratic (calculator roots acceptable); A1 k = −12, −4; M1 outside region; A1 k < −12 or k > −4 in terms of k (\"and\", −12 > k > −4 or −4 < k < −12 not accepted) (MS pp.19–20)",
     "er": ""
    }
   ],
   "sources": {
    "qp": "drive:WMA11_01_que_20201020.pdf (id 103tDSN-0bZGuE_MKZWToHvb0GTVowC_9; = local:src/WMA11/2020-10_01_qp.pdf, P62597A; cover dated Wednesday 13 May 2020 = paper set for the cancelled June 2020 series, filed by Pearson as October 2020; 12-page copy with answer pages removed, all 9 questions present)",
-   "ms": "",
+   "ms": "local:src/WMA11/2020-10_01_ms.pdf (github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/ms/pure1/2020/Mathematics PURE1 (IAL) - October 2020 - MS (WMA11).pdf; PMT-stamped Pearson PDF, Publications Code WMA11_01_2010_MS; MS page numbers are PDF pages)",
    "er": ""
   }
  },
@@ -2209,7 +2208,7 @@
     "command": "Show that",
     "ask": "y = (x − 2)(x − 4)²: show that dy/dx = 3x² − 20x + 32",
     "final_form": "given derivative with expansion shown",
-    "ms": "",
+    "ms": "M1 expand to x³ ± …x² ± …x ± 32; A1 x³ − 10x² + 32x − 32; M1 differentiate a term; A1* dy/dx = 3x² − 20x + 32 with no errors (product rule alternative) (MS pp.21–22)",
     "er": ""
    },
    {
@@ -2222,7 +2221,7 @@
     "command": "Find",
     "ask": "Find the tangent l₁ to C at x = 6",
     "final_form": "y = mx + c with m and c found",
-    "ms": "",
+    "ms": "B1 y = 16 at x = 6; B1 gradient 20; M1 tangent through (6, 16) with that gradient (via y = mx + c: must reach c); A1 y = 20x − 104 cao (MS pp.21–22)",
     "er": ""
    },
    {
@@ -2236,13 +2235,13 @@
     "command": "Find",
     "ask": "Tangent l₂ at x = α is parallel to and distinct from l₁: find α",
     "final_form": "value of α (reject x = 6)",
-    "ms": "",
+    "ms": "M1 set 3x² − 20x + 32 equal to their 20, giving a 3TQ; dM1 solve it; A1 α = 2/3. Solving 3x² − 20x + 32 = 0 (giving 4 and 8/3) scores 0 (MS pp.21–22)",
     "er": ""
    }
   ],
   "sources": {
    "qp": "drive:WMA11_01_que_20201020.pdf (id 103tDSN-0bZGuE_MKZWToHvb0GTVowC_9; = local:src/WMA11/2020-10_01_qp.pdf, P62597A; cover dated Wednesday 13 May 2020 = paper set for the cancelled June 2020 series, filed by Pearson as October 2020; 12-page copy with answer pages removed, all 9 questions present)",
-   "ms": "",
+   "ms": "local:src/WMA11/2020-10_01_ms.pdf (github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/ms/pure1/2020/Mathematics PURE1 (IAL) - October 2020 - MS (WMA11).pdf; PMT-stamped Pearson PDF, Publications Code WMA11_01_2010_MS; MS page numbers are PDF pages)",
    "er": ""
   }
  },
@@ -2265,13 +2264,13 @@
     "command": "Find",
     "ask": "f′(x) = 27x² − (21x³ − 5x)/(2√x), x > 0, curve through (9, 10): find f(x)",
     "final_form": "each term fully simplified, constant evaluated",
-    "ms": "",
+    "ms": "M1 split the fraction with one correct index ((21/2)x^(5/2) or (5/2)x^(1/2)); M1 raise a power by 1; A1 two terms; A1 all of 9x³ − 3x^(7/2) + (5/3)x^(3/2); dM1 use f(9) = 10 to find c; A1 f(x) = 9x³ − 3x^(7/2) + (5/3)x^(3/2) − 35, simplified (MS p.23)",
     "er": ""
    }
   ],
   "sources": {
    "qp": "drive:WMA11_01_que_20201020.pdf (id 103tDSN-0bZGuE_MKZWToHvb0GTVowC_9; = local:src/WMA11/2020-10_01_qp.pdf, P62597A; cover dated Wednesday 13 May 2020 = paper set for the cancelled June 2020 series, filed by Pearson as October 2020; 12-page copy with answer pages removed, all 9 questions present)",
-   "ms": "",
+   "ms": "local:src/WMA11/2020-10_01_ms.pdf (github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/ms/pure1/2020/Mathematics PURE1 (IAL) - October 2020 - MS (WMA11).pdf; PMT-stamped Pearson PDF, Publications Code WMA11_01_2010_MS; MS page numbers are PDF pages)",
    "er": ""
   }
  },
@@ -2293,7 +2292,7 @@
     "command": "Find",
     "ask": "Differentiate y = 2x³ − 5x² − 3/(2x) + 7 (x > 0)",
     "final_form": "dy/dx in simplest form",
-    "ms": "",
+    "ms": "M1 any power reduced by 1; A1 two of 6x², −10x, +(3/2)x⁻² simplified; A1 all three on one line, e.g. 6x² − 10x + 3/(2x²) (not −10x¹ or + −10x) (MS p.7)",
     "er": ""
    },
    {
@@ -2307,13 +2306,13 @@
     "command": "Find",
     "ask": "P on the curve has x-coordinate 1/2: find the normal at P",
     "final_form": "ax + by + c = 0 with integers a, b, c",
-    "ms": "",
+    "ms": "B1 y = 3 at x = 1/2; M1 substitute x = 1/2 into their dy/dx (5/2); dM1 normal gradient −2/5 by the perpendicular rule; M1 line through (1/2, 3) with the changed gradient (if y = mx + c used, must reach c); A1 2x + 5y − 16 = 0 or integer multiple, must include = 0 (MS pp.7–8)",
     "er": ""
    }
   ],
   "sources": {
    "qp": "github:EslamAhmedGaber/elite-igcse-math/downloads/IAL/WMA11/Papers/WMA11_2021_Jan_QP.pdf (= local:src/WMA11/2021-01_01_qp.pdf, P66387A)",
-   "ms": "",
+   "ms": "github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/ms/pure1/2021/Mathematics PURE1 (IAL) - January 2021 - MS (WMA11).pdf (= local:src/WMA11/2021-01_01_ms.pdf; PMT-stamped Pearson PDF, 'Mark Scheme (Results) January 2021', Publications Code WMA11_01_2021_MS (sic); no log number printed; content matches the indexed P66387A paper)",
    "er": ""
   }
  },
@@ -2335,7 +2334,7 @@
     "command": "Find",
     "ask": "Tree height model H³ = pt² + q with H = 2 at t = 3 and H = 2.4 at t = 5: find p and q",
     "final_form": "3 significant figures where necessary",
-    "ms": "",
+    "ms": "M1 use the model at least once, e.g. 2³ = 9p + q; A1 9p + q = 8 and 25p + q = 13.824; dM1 solve simultaneously for p or q; A1 p = 0.364, q = 4.724 (fractions 91/250, 1181/250 accepted); correct values with no working score 4 (MS p.9)",
     "er": ""
    },
    {
@@ -2347,13 +2346,13 @@
     "command": "Find",
     "ask": "Find T when the height is 5 m according to the model",
     "final_form": "one decimal place",
-    "ms": "",
+    "ms": "M1 make T² = (125 − q)/p with H = 5 and proceed to T (needs (125 − q)/p > 0); A1 T = 18.2 cao (MS p.9)",
     "er": ""
    }
   ],
   "sources": {
    "qp": "github:EslamAhmedGaber/elite-igcse-math/downloads/IAL/WMA11/Papers/WMA11_2021_Jan_QP.pdf (= local:src/WMA11/2021-01_01_qp.pdf, P66387A)",
-   "ms": "",
+   "ms": "github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/ms/pure1/2021/Mathematics PURE1 (IAL) - January 2021 - MS (WMA11).pdf (= local:src/WMA11/2021-01_01_ms.pdf; PMT-stamped Pearson PDF, 'Mark Scheme (Results) January 2021', Publications Code WMA11_01_2021_MS (sic); no log number printed; content matches the indexed P66387A paper)",
    "er": ""
   }
  },
@@ -2374,7 +2373,7 @@
     "command": "State",
     "ask": "From a sketch of y = 4 cos x°, state the coordinates of the marked points P and Q",
     "final_form": "two coordinate pairs",
-    "ms": "",
+    "ms": "B1 one coordinate of P, B1 P(−180, −4) in degrees; B1 Q(450, 0); reversed coordinates score B1B0 (SC); radians throughout capped at one mark per point (MS p.10)",
     "er": ""
    },
    {
@@ -2387,13 +2386,13 @@
     "command": "State",
     "ask": "C₂: y = 4 cos x° + k has minimum value −1; state the maximum point R with the smallest positive x-coordinate",
     "final_form": "coordinates of R",
-    "ms": "",
+    "ms": "B1 x = 360 or y = 7; B1 R(360, 7) in degrees; (7, 360) scores B1B0 (MS p.10)",
     "er": ""
    }
   ],
   "sources": {
    "qp": "github:EslamAhmedGaber/elite-igcse-math/downloads/IAL/WMA11/Papers/WMA11_2021_Jan_QP.pdf (= local:src/WMA11/2021-01_01_qp.pdf, P66387A)",
-   "ms": "",
+   "ms": "github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/ms/pure1/2021/Mathematics PURE1 (IAL) - January 2021 - MS (WMA11).pdf (= local:src/WMA11/2021-01_01_ms.pdf; PMT-stamped Pearson PDF, 'Mark Scheme (Results) January 2021', Publications Code WMA11_01_2021_MS (sic); no log number printed; content matches the indexed P66387A paper)",
    "er": ""
   }
  },
@@ -2414,7 +2413,7 @@
     "command": "Find",
     "ask": "Line l through P(−2, 13) and Q(4, −5): find its equation",
     "final_form": "y = mx + c with integers m, c",
-    "ms": "",
+    "ms": "B1 gradient −3; M1 line through P or Q with their gradient (perpendicular gradient M0; y = mx + c must reach c); A1 y = −3x + 7 cso (MS p.11)",
     "er": ""
    },
    {
@@ -2427,7 +2426,7 @@
     "command": "Find",
     "ask": "Quadratic C passes through P and has its minimum at Q: find an equation for C",
     "final_form": "equation of the quadratic",
-    "ms": "",
+    "ms": "M1 use minimum (4, −5), e.g. y = A(x − 4)² − 5, or with ax² + bx + c via dy/dx = 0 at x = 4 or symmetry; dM1 substitute (−2, 13) to find A (or solve the three equations); A1 y = ½(x − 4)² − 5 or y = ½x² − 4x + 3 (not 'C = …') (MS pp.11–12)",
     "er": ""
    },
    {
@@ -2439,13 +2438,13 @@
     "command": "Use inequalities",
     "ask": "Define with inequalities the region R in the second quadrant bounded by C and l only",
     "final_form": "inequalities in x and y",
-    "ms": "",
+    "ms": "M1 two of y > −3x + 7, y < ½(x − 4)² − 5, x < −2 (line must have negative gradient, curve positive quadratic); A1 all three and no others (x < k for k between −2 and 4 accepted; consistent ≥/≤ allowed; set notation needs ∩ not ∪) (MS pp.11–12)",
     "er": ""
    }
   ],
   "sources": {
    "qp": "github:EslamAhmedGaber/elite-igcse-math/downloads/IAL/WMA11/Papers/WMA11_2021_Jan_QP.pdf (= local:src/WMA11/2021-01_01_qp.pdf, P66387A)",
-   "ms": "",
+   "ms": "github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/ms/pure1/2021/Mathematics PURE1 (IAL) - January 2021 - MS (WMA11).pdf (= local:src/WMA11/2021-01_01_ms.pdf; PMT-stamped Pearson PDF, 'Mark Scheme (Results) January 2021', Publications Code WMA11_01_2021_MS (sic); no log number printed; content matches the indexed P66387A paper)",
    "er": ""
   }
  },
@@ -2466,7 +2465,7 @@
     "command": "Find",
     "ask": "Viewing platform: sector ABCOA (OA = OC = 6 m) joined to triangle AOD with AD = 14 m, angle ADC = 0.43 rad, angle AOD obtuse, OCD straight: find angle AOD",
     "final_form": "radians to 3 decimal places; obtuse (ambiguous case of the sine rule)",
-    "ms": "",
+    "ms": "M1 sine rule sin α/14 = sin 0.43/6 (or awrt 1.33/1.34 rad, 76.6/76.7° seen); A1 acute angle awrt 1.33/1.34; A1 angle AOD = π − 1.337 = awrt 1.805 rad (MS p.13)",
     "er": ""
    },
    {
@@ -2478,7 +2477,7 @@
     "command": "Find",
     "ask": "Find the length of arc ABC",
     "final_form": "metres to 1 decimal place",
-    "ms": "",
+    "ms": "M1 s = rθ with r = 6 and an allowable angle (their (a), π − (a) or 2π − (a)); A1 awrt 26.9 m from the reflex angle 2π − 1.805; using acute AOD gives 29.7, M1A0 (MS p.13)",
     "er": ""
    },
    {
@@ -2491,13 +2490,13 @@
     "command": "Find",
     "ask": "Find the total area of the platform (sector plus triangle)",
     "final_form": "m² to 1 decimal place",
-    "ms": "",
+    "ms": "M1 sector ½r²θ with r = 6 and an allowable angle (80.6); M1 triangle AOD = ½ × 6 × 14 × sin(π − 0.43 − (a)) (≈ 33.1) or equivalent correct method; dM1 add both correct areas; A1 awrt 113.7 m²; acute-angle route gives 130, M1M1dM1A0 (MS pp.13–14)",
     "er": ""
    }
   ],
   "sources": {
    "qp": "github:EslamAhmedGaber/elite-igcse-math/downloads/IAL/WMA11/Papers/WMA11_2021_Jan_QP.pdf (= local:src/WMA11/2021-01_01_qp.pdf, P66387A)",
-   "ms": "",
+   "ms": "github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/ms/pure1/2021/Mathematics PURE1 (IAL) - January 2021 - MS (WMA11).pdf (= local:src/WMA11/2021-01_01_ms.pdf; PMT-stamped Pearson PDF, 'Mark Scheme (Results) January 2021', Publications Code WMA11_01_2021_MS (sic); no log number printed; content matches the indexed P66387A paper)",
    "er": ""
   }
  },
@@ -2518,7 +2517,7 @@
     "command": "Sketch",
     "ask": "Sketch y = −k/x, k > 0",
     "final_form": "sketch (branches in quadrants 2 and 4)",
-    "ms": "",
+    "ms": "M1 negative-reciprocal shape (top-left and bottom-right branches) with no clear overlaps; A1 correct curve in quadrants 2 and 4 only, asymptotic to the axes (MS pp.15–16)",
     "er": ""
    },
    {
@@ -2531,7 +2530,7 @@
     "command": "Sketch",
     "ask": "On a separate diagram sketch y = −k/x + k",
     "final_form": "sketch with x-intercept coordinates and horizontal asymptote equation in terms of k",
-    "ms": "",
+    "ms": "B1ft graph of (a) translated up; B1 x-intercept (1, 0) or asymptote y = k; B1 both stated (just k on the asymptote line not enough); graph takes precedence over contradictory text (MS pp.16–17)",
     "er": ""
    },
    {
@@ -2545,13 +2544,13 @@
     "command": "Find",
     "ask": "Find the range of k for which y = −k/x + k does not touch or intersect y = 3x + 4",
     "final_form": "inequality for k (combined with k > 0)",
-    "ms": "",
+    "ms": "M1 set 3x + 4 = −k/x + k and reach a 3TQ; A1 3x² + (4 − k)x + k = 0; M1 b² − 4ac = k² − 20k + 16 used to find critical values (needs a = 3, b and c in k); dM1 b² − 4ac < 0 and inside region chosen; A1 10 − 2√21 < k < 10 + 2√21 (or exact equivalent; 'or' between the two inequalities not accepted) (MS pp.16–17)",
     "er": ""
    }
   ],
   "sources": {
    "qp": "github:EslamAhmedGaber/elite-igcse-math/downloads/IAL/WMA11/Papers/WMA11_2021_Jan_QP.pdf (= local:src/WMA11/2021-01_01_qp.pdf, P66387A)",
-   "ms": "",
+   "ms": "github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/ms/pure1/2021/Mathematics PURE1 (IAL) - January 2021 - MS (WMA11).pdf (= local:src/WMA11/2021-01_01_ms.pdf; PMT-stamped Pearson PDF, 'Mark Scheme (Results) January 2021', Publications Code WMA11_01_2021_MS (sic); no log number printed; content matches the indexed P66387A paper)",
    "er": ""
   }
  },
@@ -2573,7 +2572,7 @@
     "command": "Solve",
     "ask": "All stages of working, no calculator: f(x) = 2x − 3√x − 5 (x > 0); solve f(x) = 9 (quadratic in √x)",
     "final_form": "exact solution(s); reject the impossible value of √x",
-    "ms": "",
+    "ms": "No calculator: answers without working score 0. M1 2x − 3√x − 14 = 0 solved as a 3TQ in √x (factorised form, formula or completed square shown), or isolate and square to a 3TQ; A1 √x = 7/2 (or 4x² − 65x + 196 = 0); dM1 find a value of x; A1 x = 49/4 only, 4 rejected if found (MS pp.17–19)",
     "er": ""
    },
    {
@@ -2587,13 +2586,13 @@
     "command": "Solve",
     "ask": "Solve f″(x) = 6",
     "final_form": "exact value of x",
-    "ms": "",
+    "ms": "B1 f′(x) = 2 − (3/2)x^(−1/2); M1 differentiate again (an index reduced by 1); A1 f″(x) = (3/4)x^(−3/2); dM1 set = 6 and make x the subject with an intermediate step (e.g. x^(−3/2) = 8); A1 x = 1/4 cso, working shown (MS pp.17–19)",
     "er": ""
    }
   ],
   "sources": {
    "qp": "github:EslamAhmedGaber/elite-igcse-math/downloads/IAL/WMA11/Papers/WMA11_2021_Jan_QP.pdf (= local:src/WMA11/2021-01_01_qp.pdf, P66387A)",
-   "ms": "",
+   "ms": "github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/ms/pure1/2021/Mathematics PURE1 (IAL) - January 2021 - MS (WMA11).pdf (= local:src/WMA11/2021-01_01_ms.pdf; PMT-stamped Pearson PDF, 'Mark Scheme (Results) January 2021', Publications Code WMA11_01_2021_MS (sic); no log number printed; content matches the indexed P66387A paper)",
    "er": ""
   }
  },
@@ -2615,7 +2614,7 @@
     "command": "Deduce",
     "ask": "For f(x) = (3x − 2)²(x − 4) (sketch given), deduce the values of x for which f(x) > 0",
     "final_form": "inequality in x",
-    "ms": "",
+    "ms": "B1 x > 4 only (MS p.19)",
     "er": ""
    },
    {
@@ -2627,7 +2626,7 @@
     "command": "Expand",
     "ask": "Expand f(x) to ax³ + bx² + cx + d",
     "final_form": "integers a, b, c, d",
-    "ms": "",
+    "ms": "M1 multiply two brackets then the third (x terms from a genuine product); A1 two terms of 9x³ − 48x² + 52x − 16 correct and simplified; A1 all four (MS pp.19–20)",
     "er": ""
    },
    {
@@ -2641,13 +2640,13 @@
     "command": "Find",
     "ask": "Line l through the y-intercept of C, parallel to the x-axis, cuts C again at P and Q; using algebra (no calculator-only solutions), find PQ",
     "final_form": "k√3 with k found",
-    "ms": "",
+    "ms": "B1ft 9x³ − 48x² + 52x = 0 from setting their cubic = −16; M1 cancel x to a 3TQ and solve (calculator fine once the 3TQ is shown; not available if their quadratic factorises); B1 roots (16 ± 4√3)/6 (awrt 1.51, 3.82); M1 subtract the two non-zero roots; A1 (4/3)√3 exact cso, all previous marks needed; solving f(x) = 0 scores 0 (MS pp.20–21)",
     "er": ""
    }
   ],
   "sources": {
    "qp": "github:EslamAhmedGaber/elite-igcse-math/downloads/IAL/WMA11/Papers/WMA11_2021_Jan_QP.pdf (= local:src/WMA11/2021-01_01_qp.pdf, P66387A)",
-   "ms": "",
+   "ms": "github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/ms/pure1/2021/Mathematics PURE1 (IAL) - January 2021 - MS (WMA11).pdf (= local:src/WMA11/2021-01_01_ms.pdf; PMT-stamped Pearson PDF, 'Mark Scheme (Results) January 2021', Publications Code WMA11_01_2021_MS (sic); no log number printed; content matches the indexed P66387A paper)",
    "er": ""
   }
  },
@@ -2670,7 +2669,7 @@
     "command": "Find",
     "ask": "Integrate (3x + 2)²/(4√x) with respect to x, x > 0",
     "final_form": "simplest form, plus constant of integration",
-    "ms": "",
+    "ms": "M1 expand and divide by 4√x, one correct index (e.g. (9/4)x^(3/2)); dM1 raise a correct index by 1; A1 one of (9/10)x^(5/2), 2x^(3/2), 2x^(1/2); A1 two correct; A1 all three + c on one line (0.9 accepted; ignore ∫ or dx left in) (MS pp.22–23)",
     "er": ""
    },
    {
@@ -2685,13 +2684,13 @@
     "command": "Find",
     "ask": "f′(x) = x² + ax + b; y-intercept −8; P(3, −2) on C; gradient 2 at P: find f(x)",
     "final_form": "f(x) in simplest form with all constants found",
-    "ms": "",
+    "ms": "M1 f′(3) = 2 gives 9 + 3a + b = 2; M1 integrate to …x³ + …ax² + bx (+c); dM1 use c = −8 and (3, −2); A1 −2 = 9 + (9/2)a + 3b − 8; ddM1 solve for a and b (a = −4, b = 5); A1 f(x) = x³/3 − 2x² + 5x − 8 as final answer, no isw (multiplying through by 3 loses it) (MS pp.22–23)",
     "er": ""
    }
   ],
   "sources": {
    "qp": "github:EslamAhmedGaber/elite-igcse-math/downloads/IAL/WMA11/Papers/WMA11_2021_Jan_QP.pdf (= local:src/WMA11/2021-01_01_qp.pdf, P66387A)",
-   "ms": "",
+   "ms": "github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/ms/pure1/2021/Mathematics PURE1 (IAL) - January 2021 - MS (WMA11).pdf (= local:src/WMA11/2021-01_01_ms.pdf; PMT-stamped Pearson PDF, 'Mark Scheme (Results) January 2021', Publications Code WMA11_01_2021_MS (sic); no log number printed; content matches the indexed P66387A paper)",
    "er": ""
   }
  },
@@ -2713,7 +2712,7 @@
     "command": "Find",
     "ask": "Differentiate y = x²/3 + 4/√x + 8/(3x) − 5 (x > 0)",
     "final_form": "dy/dx in simplest form",
-    "ms": "",
+    "ms": "M1 any power reduced by 1; A1 one, A1 two of (2/3)x, −2x^(−3/2), −(8/3)x⁻² (exact simplified equivalents); A1 all three simplified on one line, no isw and no rounded decimals (MS p.7)",
     "er": ""
    },
    {
@@ -2727,13 +2726,13 @@
     "command": "Find",
     "ask": "Find the equation of the normal to C at P(4, 3)",
     "final_form": "ax + by + c = 0 with integers a, b, c",
-    "ms": "",
+    "ms": "M1 substitute x = 4 into their dy/dx (9/4); M1 normal gradient by −1/m (−4/9); dM1 line through (4, 3) with the changed gradient (y = mx + c must reach c); A1 4x + 9y − 43 = 0 or integer multiple with all terms on one side (MS pp.7–8)",
     "er": ""
    }
   ],
   "sources": {
    "qp": "github:EslamAhmedGaber/elite-igcse-math/downloads/IAL/WMA11/Papers/WMA11_2021_MayJune_QP.pdf (= local:src/WMA11/2021-06_01_qp.pdf, P65792A)",
-   "ms": "",
+   "ms": "github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/ms/pure1/2021/Mathematics PURE1 (IAL) - May 2021 - MS (WMA11).pdf (= local:src/WMA11/2021-06_01_ms.pdf; PMT-stamped Pearson PDF, 'Mark Scheme (Results) Summer 2021', Publications Code WMA11_01_2106_MS; log number P65792A)",
    "er": ""
   }
  },
@@ -2755,7 +2754,7 @@
     "command": "Show that",
     "ask": "All stages of working, no calculator: f(x) = ax³ + (6a + 8)x² − a²x, a > 0, f(−1) = 32; (i) show a = 3 is the only possible value; (ii) with a = 3 solve f(x) = 0",
     "final_form": "(i) reject the other root of the quadratic in a using a > 0; (ii) all roots exactly",
-    "ms": "",
+    "ms": "(i) M1 substitute x = −1, f = 32 and reach a 3TQ in a; dM1 solve with working shown ((a + 8)(a − 3), formula or completed square; roots just stated get dM0); A1* a = 3 or −8, choose a = 3 with a reason such as a > 0 (crossing out −8 alone is A0). (ii) M1 take out x and solve the quadratic with an intermediate step; A1 x = 0, 1/3, −9; no working scores 0 (MS pp.8–10)",
     "er": ""
    },
    {
@@ -2768,13 +2767,13 @@
     "command": "Hence find",
     "ask": "Hence find all real solutions of (i) 3y + 26y^(2/3) − 9y^(1/3) = 0 and (ii) 3(9^(3z)) + 26(9^(2z)) − 9(9^z) = 0",
     "final_form": "all real solutions; reject values impossible for the substituted quantity",
-    "ms": "",
+    "ms": "(i) B1 y = 0; M1 set y^(1/3) equal to a non-zero root from (a) and cube, working seen; A1 y = 1/27, −729 and no others besides 0. (ii) M1 set 9^z equal to a positive root (9^z = 1/3) and solve (logs allowed); A1 z = −1/2 only; answers without working or calculator-only score 0 (MS pp.9–10)",
     "er": ""
    }
   ],
   "sources": {
    "qp": "github:EslamAhmedGaber/elite-igcse-math/downloads/IAL/WMA11/Papers/WMA11_2021_MayJune_QP.pdf (= local:src/WMA11/2021-06_01_qp.pdf, P65792A)",
-   "ms": "",
+   "ms": "github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/ms/pure1/2021/Mathematics PURE1 (IAL) - May 2021 - MS (WMA11).pdf (= local:src/WMA11/2021-06_01_ms.pdf; PMT-stamped Pearson PDF, 'Mark Scheme (Results) Summer 2021', Publications Code WMA11_01_2106_MS; log number P65792A)",
    "er": ""
   }
  },
@@ -2795,7 +2794,7 @@
     "command": "Show that",
     "ask": "All stages of working, no calculator: triangle ABC with AB = p, AC = q, BC = 2√2, angle BAC = 60°; show that p² + q² − pq = 8",
     "final_form": "given equation via the cosine rule with cos 60° used exactly",
-    "ms": "",
+    "ms": "M1 cosine rule (2√2)² = p² + q² − 2pq cos 60° (or two right-angled triangles taken to an equation); A1* p² + q² − pq = 8 with no errors, a line of working required (MS pp.11–12)",
     "er": ""
    },
    {
@@ -2809,7 +2808,7 @@
     "command": "Find",
     "ask": "Given AC is 2 m longer than AB, use algebra to find the exact values of p and q",
     "final_form": "exact (surd) values; reject the negative root",
-    "ms": "",
+    "ms": "M1 substitute q = p + 2; A1 p² + 2p − 4 = 0 (or q² − 2q − 4 = 0); M1 solve by formula (values embedded) or completing the square, factorising or stated roots M0; B1 p = −1 + √5 or q = 1 + √5 exact; A1 cso both and only these values (MS pp.11–12)",
     "er": ""
    },
    {
@@ -2822,13 +2821,13 @@
     "command": "Calculate",
     "ask": "Using (b), calculate the exact area of the flower bed",
     "final_form": "exact surd form",
-    "ms": "",
+    "ms": "M1 ½ × (−1 + √5)(1 + √5) × sin 60° with working; A1 √3 m² exact, rounded answers not accepted (MS pp.11–12)",
     "er": ""
    }
   ],
   "sources": {
    "qp": "github:EslamAhmedGaber/elite-igcse-math/downloads/IAL/WMA11/Papers/WMA11_2021_MayJune_QP.pdf (= local:src/WMA11/2021-06_01_qp.pdf, P65792A)",
-   "ms": "",
+   "ms": "github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/ms/pure1/2021/Mathematics PURE1 (IAL) - May 2021 - MS (WMA11).pdf (= local:src/WMA11/2021-06_01_ms.pdf; PMT-stamped Pearson PDF, 'Mark Scheme (Results) Summer 2021', Publications Code WMA11_01_2106_MS; log number P65792A)",
    "er": ""
   }
  },
@@ -2851,13 +2850,13 @@
     "command": "Find",
     "ask": "Integrate (3√x + 2)(x − 5)/(4√x) with respect to x (expand and divide first)",
     "final_form": "each term in simplest form, plus constant of integration",
-    "ms": "",
+    "ms": "M1 split into a sum of powers, one correct index from correct work; A1 two, A1 all four of (3/4)x − 15/4 + ½x^(1/2) − (5/2)x^(−1/2); dM1 raise a power by 1; A1 two integrated terms correct (indices processed); A1 (3/8)x² − (15/4)x + (1/3)x^(3/2) − 5x^(1/2) + C simplified on one line (−(15/4)x¹ not accepted) (MS p.13)",
     "er": ""
    }
   ],
   "sources": {
    "qp": "github:EslamAhmedGaber/elite-igcse-math/downloads/IAL/WMA11/Papers/WMA11_2021_MayJune_QP.pdf (= local:src/WMA11/2021-06_01_qp.pdf, P65792A)",
-   "ms": "",
+   "ms": "github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/ms/pure1/2021/Mathematics PURE1 (IAL) - May 2021 - MS (WMA11).pdf (= local:src/WMA11/2021-06_01_ms.pdf; PMT-stamped Pearson PDF, 'Mark Scheme (Results) Summer 2021', Publications Code WMA11_01_2106_MS; log number P65792A)",
    "er": ""
   }
  },
@@ -2879,7 +2878,7 @@
     "command": "Find",
     "ask": "Share models P_A = 53 − 0.4(t − 8)², P_B = −1.6t + 44.2 (t ≥ 0, £ millions): find the difference in value at t = 0",
     "final_form": "value in context (£ millions)",
-    "ms": "",
+    "ms": "M1 substitute t = 0 into P_A and subtract from 44.2; A1 awrt £16.8 million (MS p.14)",
     "er": ""
    },
    {
@@ -2892,7 +2891,7 @@
     "command": "State",
     "ask": "State the maximum share value of company A during the 15 years",
     "final_form": "value in context",
-    "ms": "",
+    "ms": "B1 £53 million (condone 53) (MS p.14)",
     "er": ""
    },
    {
@@ -2905,7 +2904,7 @@
     "command": "Find",
     "ask": "Using algebra with working, find the times in the 15-year period when A's value exceeds B's",
     "final_form": "interval of t from solving a quadratic inequality, restricted to the period",
-    "ms": "",
+    "ms": "M1 set −1.6t + 44.2 = 53 − 0.4(t − 8)² (any inequality sign allowed); M1 rearrange to a 3TQ (0.4t² − 8t + 16.8 = 0) and solve, calculator roots acceptable; A1 t = 10 − √58 = awrt 2.38; A1ft 2.38 < t up to the upper limit 15 (MS pp.14–15)",
     "er": ""
    },
    {
@@ -2917,13 +2916,13 @@
     "command": "Explain",
     "ask": "Explain why the model for A should not be used to predict its value at t = 20",
     "final_form": "reason in context",
-    "ms": "",
+    "ms": "B1 the share value would become negative, or the model is only known to hold for 15 years; a bare '−4.6 < 0' without reference to the model is insufficient (MS pp.14–15)",
     "er": ""
    }
   ],
   "sources": {
    "qp": "github:EslamAhmedGaber/elite-igcse-math/downloads/IAL/WMA11/Papers/WMA11_2021_MayJune_QP.pdf (= local:src/WMA11/2021-06_01_qp.pdf, P65792A)",
-   "ms": "",
+   "ms": "github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/ms/pure1/2021/Mathematics PURE1 (IAL) - May 2021 - MS (WMA11).pdf (= local:src/WMA11/2021-06_01_ms.pdf; PMT-stamped Pearson PDF, 'Mark Scheme (Results) Summer 2021', Publications Code WMA11_01_2106_MS; log number P65792A)",
    "er": ""
   }
  },
@@ -2946,7 +2945,7 @@
     "command": "Find",
     "ask": "x > 0, f′(x) = 32/(3x²) + 3 − 2∛x, P(8, 2) on C: find the tangent at P",
     "final_form": "y = mx + c with m and c found",
-    "ms": "",
+    "ms": "M1 f′(8) = −5/6; dM1 line through (8, 2) with their f′(8) (y = mx + c must reach c); A1 y = −(5/6)x + 26/3 (MS p.16)",
     "er": ""
    },
    {
@@ -2960,13 +2959,13 @@
     "command": "Find",
     "ask": "Find f(x) in simplest form",
     "final_form": "simplified f(x) with constant evaluated",
-    "ms": "",
+    "ms": "M1 raise one power (x⁻² → x⁻¹, 3 → 3x, x^(1/3) → x^(4/3)); A1 two of −(32/3)x⁻¹, +3x, −(3/2)x^(4/3); A1 all three (+c condoned); dM1 substitute (8, 2) to find c; A1 f(x) = −(32/3)x⁻¹ + 3x − (3/2)x^(4/3) + 10/3, no rounded decimal coefficients, isw (MS pp.16–17)",
     "er": ""
    }
   ],
   "sources": {
    "qp": "github:EslamAhmedGaber/elite-igcse-math/downloads/IAL/WMA11/Papers/WMA11_2021_MayJune_QP.pdf (= local:src/WMA11/2021-06_01_qp.pdf, P65792A)",
-   "ms": "",
+   "ms": "github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/ms/pure1/2021/Mathematics PURE1 (IAL) - May 2021 - MS (WMA11).pdf (= local:src/WMA11/2021-06_01_ms.pdf; PMT-stamped Pearson PDF, 'Mark Scheme (Results) Summer 2021', Publications Code WMA11_01_2106_MS; log number P65792A)",
    "er": ""
   }
  },
@@ -2987,7 +2986,7 @@
     "command": "State",
     "ask": "l₁: 4y + 3x = 48 cuts the y-axis at C: state the y-coordinate of C",
     "final_form": "single value",
-    "ms": "",
+    "ms": "B1 12; the main working takes precedence over the diagram if they conflict (MS p.18)",
     "er": ""
    },
    {
@@ -3000,7 +2999,7 @@
     "command": "Show that",
     "ask": "l₂ passes through D(8, 6) on l₁ and is perpendicular to l₁: show l₂ meets the y-axis at E with y = −14/3",
     "final_form": "given value reached with working",
-    "ms": "",
+    "ms": "B1 gradient of l₁ = −3/4 identified or used; M1 perpendicular gradient 4/3 and line through (8, 6) (y = mx + c must reach c); A1* y = −14/3 cso, clearly stated as the y-coordinate (MS pp.18–19)",
     "er": ""
    },
    {
@@ -3012,7 +3011,7 @@
     "command": "Find",
     "ask": "Sector BCE with centre C has angle 1.8 rad: find the arc length BE",
     "final_form": "length (radius CE from (a) and (b))",
-    "ms": "",
+    "ms": "B1ft radius CE = 12 + 14/3 = 50/3; M1 arc = r × 1.8; A1 30 cao (MS pp.18–19)",
     "er": ""
    },
    {
@@ -3025,13 +3024,13 @@
     "command": "Calculate",
     "ask": "Calculate the exact area of region CBED (sector BCE plus triangle CDE)",
     "final_form": "exact value",
-    "ms": "",
+    "ms": "M1 sector ½ × (50/3)² × 1.8 (= 250); M1 add triangle CDE by a correct method (CD = 10, DE = 40/3, area 200/3; shoelace also fine); A1 950/3 cao (316⅔ or 316.6 accepted, not 316.7) (MS pp.18–19)",
     "er": ""
    }
   ],
   "sources": {
    "qp": "github:EslamAhmedGaber/elite-igcse-math/downloads/IAL/WMA11/Papers/WMA11_2021_MayJune_QP.pdf (= local:src/WMA11/2021-06_01_qp.pdf, P65792A)",
-   "ms": "",
+   "ms": "github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/ms/pure1/2021/Mathematics PURE1 (IAL) - May 2021 - MS (WMA11).pdf (= local:src/WMA11/2021-06_01_ms.pdf; PMT-stamped Pearson PDF, 'Mark Scheme (Results) Summer 2021', Publications Code WMA11_01_2106_MS; log number P65792A)",
    "er": ""
   }
  },
@@ -3052,7 +3051,7 @@
     "command": "Write",
     "ask": "Write 3x² + 6x + 9 in the form a(x + b)² + c",
     "final_form": "a(x + b)² + c with constants found",
-    "ms": "",
+    "ms": "B1 3(x ± …)² ± … or a = 3; M1 3(x + 1)² ± … (a = 3 and b = 1); A1 3(x + 1)² + 6 (equating coefficients also fine) (MS pp.20–21)",
     "er": ""
    },
    {
@@ -3065,7 +3064,7 @@
     "command": "Deduce",
     "ask": "Deduce the minimum point P of C₁",
     "final_form": "coordinates",
-    "ms": "",
+    "ms": "B1ft (−1, 6) or their (−b, c) (MS pp.20–21)",
     "er": ""
    },
    {
@@ -3078,13 +3077,13 @@
     "command": "Find",
     "ask": "Cubic C₂: y = Ax³ + Bx² + Cx + D passes through P and meets the x-axis at −4, −2 and 3: find A, B, C, D, making the method clear",
     "final_form": "four constants, method made clear",
-    "ms": "",
+    "ms": "B1 factors (x + 4)(x + 2)(x − 3); M1 substitute P(−1, 6) to find the scale factor; A1 −1/2; M1 expand to x³ + … − 24 (times scale factor); A1 A = −1/2, B = −3/2, C = 5, D = 12. Alt: B1 three equations from the roots, M1 fourth from P, A1 one value, M1 solve (calculator/matrices fine), A1 all four (MS pp.20–21)",
     "er": ""
    }
   ],
   "sources": {
    "qp": "github:EslamAhmedGaber/elite-igcse-math/downloads/IAL/WMA11/Papers/WMA11_2021_MayJune_QP.pdf (= local:src/WMA11/2021-06_01_qp.pdf, P65792A)",
-   "ms": "",
+   "ms": "github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/ms/pure1/2021/Mathematics PURE1 (IAL) - May 2021 - MS (WMA11).pdf (= local:src/WMA11/2021-06_01_ms.pdf; PMT-stamped Pearson PDF, 'Mark Scheme (Results) Summer 2021', Publications Code WMA11_01_2106_MS; log number P65792A)",
    "er": ""
   }
  },
@@ -3105,7 +3104,7 @@
     "command": "State",
     "ask": "For y = tan x on −2π ≤ x ≤ 2π, state an equation of the marked asymptote l",
     "final_form": "an equation x = …",
-    "ms": "",
+    "ms": "B1 x = 3π/2 oe, an equation, not degrees; if several given it must be identified (MS pp.22–23)",
     "er": ""
    },
    {
@@ -3119,7 +3118,7 @@
     "command": "Sketch",
     "ask": "(i) On the diagram sketch y = 1/x + 1, stating its horizontal asymptote; (ii) hence, giving a reason, state the number of solutions of tan x = 1/x + 1 in −2π ≤ x ≤ 2π",
     "final_form": "sketch with asymptote equation; a number with a reason referring to intersections of the curves",
-    "ms": "",
+    "ms": "(i) B1 1/x-type branch in quadrant 1 not crossing the axes; B1 both branches correctly placed with asymptote labelled y = 1. (ii) B1 5 only; B1 reason: solutions = points of intersection of the two graphs (not where they cross the x-axis) (MS pp.22–23)",
     "er": ""
    },
    {
@@ -3132,13 +3131,13 @@
     "command": "State",
     "ask": "State the number of solutions of tan x = 1/x + 1 in (i) 0 ≤ x ≤ 40π, (ii) −10π ≤ x ≤ 5π/2",
     "final_form": "two numbers",
-    "ms": "",
+    "ms": "(i) B1ft 40 (follow through their sketch, e.g. first-quadrant intersections × 20); (ii) B1 14 (MS pp.22–23)",
     "er": ""
    }
   ],
   "sources": {
    "qp": "github:EslamAhmedGaber/elite-igcse-math/downloads/IAL/WMA11/Papers/WMA11_2021_MayJune_QP.pdf (= local:src/WMA11/2021-06_01_qp.pdf, P65792A)",
-   "ms": "",
+   "ms": "github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/ms/pure1/2021/Mathematics PURE1 (IAL) - May 2021 - MS (WMA11).pdf (= local:src/WMA11/2021-06_01_ms.pdf; PMT-stamped Pearson PDF, 'Mark Scheme (Results) Summer 2021', Publications Code WMA11_01_2106_MS; log number P65792A)",
    "er": ""
   }
  },
@@ -3161,13 +3160,13 @@
     "command": "Find",
     "ask": "Integrate 12x³ + 1/(6√x) − 3/(2x⁴) with respect to x",
     "final_form": "each term in simplest form, plus constant of integration",
-    "ms": "",
+    "ms": "M1 xⁿ → xⁿ⁺¹ on at least one term, index processed; A1A1A1A1 one, two, three, then all of 3x⁴, (1/3)x^(1/2), (1/2)x⁻³ and +c (+c counts as a term), the last needing everything simplified on one line; spurious ∫ or '= 0' with no clean expression loses the final mark (MS p.7)",
     "er": ""
    }
   ],
   "sources": {
    "qp": "github:EslamAhmedGaber/elite-igcse-math/downloads/IAL/WMA11/Papers/WMA11_2021_Oct_QP.pdf (= local:src/WMA11/2021-10_01_qp.pdf, P66645A)",
-   "ms": "",
+   "ms": "github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/ms/pure1/2021/Mathematics PURE1 (IAL) - October 2021 - MS (WMA11).pdf (= local:src/WMA11/2021-10_01_ms.pdf; PMT-stamped Pearson PDF, 'Mark Scheme (Results) October 2021', Publications Code WMA11_01_2110_MS; log number P66645A)",
    "er": ""
   }
  },
@@ -3190,13 +3189,13 @@
     "command": "Find",
     "ask": "All stages of working, no calculator: y = 3x⁵ + 4x³ − x + 5 has gradient 2 at P and Q; find their x-coordinates (quadratic in x²)",
     "final_form": "exact x-coordinates of both points; reject impossible values of x²",
-    "ms": "",
+    "ms": "M1 differentiate, one correct power; A1 15x⁴ + 12x² − 1; dM1 set = 2 and form a 3TQ in x² (15x⁴ + 12x² − 3 = 0); ddM1 solve it for x² with working (stated roots from the correct quadratic score M0); A1 x = ±1/√5 (both needed; exact equivalents such as ±√5/5), isw (MS p.8)",
     "er": ""
    }
   ],
   "sources": {
    "qp": "github:EslamAhmedGaber/elite-igcse-math/downloads/IAL/WMA11/Papers/WMA11_2021_Oct_QP.pdf (= local:src/WMA11/2021-10_01_qp.pdf, P66645A)",
-   "ms": "",
+   "ms": "github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/ms/pure1/2021/Mathematics PURE1 (IAL) - October 2021 - MS (WMA11).pdf (= local:src/WMA11/2021-10_01_ms.pdf; PMT-stamped Pearson PDF, 'Mark Scheme (Results) October 2021', Publications Code WMA11_01_2110_MS; log number P66645A)",
    "er": ""
   }
  },
@@ -3218,7 +3217,7 @@
     "command": "Solve",
     "ask": "Solve the inequality 3/x > 4",
     "final_form": "solution set in x (x ≠ 0)",
-    "ms": "",
+    "ms": "B1 critical values 0 and 3/4 (from 3x < 4x² or a sketch); M1 choose the inside region; A1 0 < x < 3/4 (equivalents such as x > 0 and x < 3/4); a common special case, x < 3/4 only, scores B1 (MS p.9)",
     "er": ""
    },
    {
@@ -3231,13 +3230,13 @@
     "command": "Use inequalities",
     "ask": "Infinite region R in quadrants 2 and 3 bounded only by C: y = 2x² − 50 and line l (gradient 3, meeting C on the negative x-axis): define R with inequalities",
     "final_form": "inequalities in x and y (equation of l found first)",
-    "ms": "",
+    "ms": "B1 l: y = 3(x + 5) (y = 3x + 15); M1 two of y < 2x² − 50, y > 3x + 15, x < a with −5 ≤ a ≤ 6.5 (inequalities written in terms of R score M0); A1 all three; consistent strictness needed if a = −5, set notation needs ∩ (MS pp.9–10)",
     "er": ""
    }
   ],
   "sources": {
    "qp": "github:EslamAhmedGaber/elite-igcse-math/downloads/IAL/WMA11/Papers/WMA11_2021_Oct_QP.pdf (= local:src/WMA11/2021-10_01_qp.pdf, P66645A)",
-   "ms": "",
+   "ms": "github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/ms/pure1/2021/Mathematics PURE1 (IAL) - October 2021 - MS (WMA11).pdf (= local:src/WMA11/2021-10_01_ms.pdf; PMT-stamped Pearson PDF, 'Mark Scheme (Results) October 2021', Publications Code WMA11_01_2110_MS; log number P66645A)",
    "er": ""
   }
  },
@@ -3258,7 +3257,7 @@
     "command": "State",
     "ask": "For f(x) = cos 2x°, 0 ≤ x ≤ k (graph given), state (i) the coordinates of the minimum Q, (ii) the value of k at the end point R(k, 0)",
     "final_form": "coordinates of Q; value of k",
-    "ms": "",
+    "ms": "(i) B1 one coordinate, B1 Q(90, −1) ((−1, 90) scores SC B1B0); (ii) B1 k = 225; radians penalised once only (MS p.11)",
     "er": ""
    },
    {
@@ -3270,14 +3269,14 @@
     ],
     "command": "Find",
     "ask": "Given cos 2x° = p has exactly two solutions in 0 ≤ x ≤ k, find the range of p",
-    "final_form": "inequality for p (check end-point inclusion)",
-    "ms": "",
+    "final_form": "range of p, plus any isolated value of p that also gives exactly two solutions; check end-point inclusion",
+    "ms": "M1 one of −1 < p < 0 or p = 1 (ft their minimum value from (a); condone y for p here); A1 both, in terms of p (MS p.11)",
     "er": ""
    }
   ],
   "sources": {
    "qp": "github:EslamAhmedGaber/elite-igcse-math/downloads/IAL/WMA11/Papers/WMA11_2021_Oct_QP.pdf (= local:src/WMA11/2021-10_01_qp.pdf, P66645A)",
-   "ms": "",
+   "ms": "github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/ms/pure1/2021/Mathematics PURE1 (IAL) - October 2021 - MS (WMA11).pdf (= local:src/WMA11/2021-10_01_ms.pdf; PMT-stamped Pearson PDF, 'Mark Scheme (Results) October 2021', Publications Code WMA11_01_2110_MS; log number P66645A)",
    "er": ""
   }
  },
@@ -3300,7 +3299,7 @@
     "command": "Find",
     "ask": "l₁: 3y − 2x = 30; l₂ through A(24, 0) perpendicular to l₁; find, using algebra with working, their intersection P",
     "final_form": "coordinates of P with algebraic working",
-    "ms": "",
+    "ms": "B1 gradient of l₁ = 2/3; M1 l₂ through (24, 0) with the negative reciprocal (y = mx + c must reach c); A1ft y = −(3/2)(x − 24) or 2y + 3x = 72; M1 full method for one coordinate of P (calculator solution of the pair allowed); A1 P(12, 18) (MS pp.12–13)",
     "er": ""
    },
    {
@@ -3312,13 +3311,13 @@
     "command": "Find",
     "ask": "l₁ meets the x-axis at B: find the area of triangle BPA",
     "final_form": "area value",
-    "ms": "",
+    "ms": "M1 (B1 on ePEN) y = 0 in l₁ for B (x = −15); dM1 correct area method with their −15 and 18, e.g. ½ × 39 × 18 (shoelace or other valid methods fine; B must lie on the x-axis); A1 351 cso (MS pp.12–13)",
     "er": ""
    }
   ],
   "sources": {
    "qp": "github:EslamAhmedGaber/elite-igcse-math/downloads/IAL/WMA11/Papers/WMA11_2021_Oct_QP.pdf (= local:src/WMA11/2021-10_01_qp.pdf, P66645A)",
-   "ms": "",
+   "ms": "github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/ms/pure1/2021/Mathematics PURE1 (IAL) - October 2021 - MS (WMA11).pdf (= local:src/WMA11/2021-10_01_ms.pdf; PMT-stamped Pearson PDF, 'Mark Scheme (Results) October 2021', Publications Code WMA11_01_2110_MS; log number P66645A)",
    "er": ""
   }
  },
@@ -3339,7 +3338,7 @@
     "command": "Sketch",
     "ask": "All stages of working, no calculator: sketch y = 2(x + 1)(x − 3)², showing where C cuts or meets the axes",
     "final_form": "labelled sketch: positive cubic touching the x-axis at the repeated root",
-    "ms": "",
+    "ms": "M1 positive cubic shape with one maximum and one minimum; A1 reaches the x-axis at −1 and has its minimum touching at x = 3 (must not stop or cross there); B1 y-intercept 18 consistent with the sketch (MS p.14)",
     "er": ""
    },
    {
@@ -3351,7 +3350,7 @@
     "command": "Write",
     "ask": "Write f(x) in the form ax³ + bx² + cx + d",
     "final_form": "expanded cubic with a, b, c, d found",
-    "ms": "",
+    "ms": "M1 multiply out (square (x − 3) then multiply by (2x + 2), or equivalent); A1 two terms of 2x³ − 10x² + 6x + 18; A1 all correct; 'simplifying' by dividing by 2 loses the last A1 (MS pp.14–15)",
     "er": ""
    },
    {
@@ -3365,13 +3364,13 @@
     "command": "Hence find",
     "ask": "Hence find the equation of the tangent to C at x = 1/3",
     "final_form": "equation of a straight line",
-    "ms": "",
+    "ms": "B1ft f′(x) = 6x² − 20x + 6 (ft only from a four-term cubic; product rule fine); M1 attempt f′(1/3); A1 f′(1/3) = 0 from a correct derivative; A1 tangent y = 512/27 (exact), all previous marks in (c) needed (MS pp.14–15)",
     "er": ""
    }
   ],
   "sources": {
    "qp": "github:EslamAhmedGaber/elite-igcse-math/downloads/IAL/WMA11/Papers/WMA11_2021_Oct_QP.pdf (= local:src/WMA11/2021-10_01_qp.pdf, P66645A)",
-   "ms": "",
+   "ms": "github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/ms/pure1/2021/Mathematics PURE1 (IAL) - October 2021 - MS (WMA11).pdf (= local:src/WMA11/2021-10_01_ms.pdf; PMT-stamped Pearson PDF, 'Mark Scheme (Results) October 2021', Publications Code WMA11_01_2110_MS; log number P66645A)",
    "er": ""
   }
  },
@@ -3393,7 +3392,7 @@
     "command": "Show that",
     "ask": "Sign = kite OABC (OA = OC = 0.6 m, AB = CB = 1.4 m, angles OAB = OCB = 2 rad) joined to sector OCXA; making the method clear, show angle AOC = θ = 1.64 rad to 3 s.f.",
     "final_form": "given value to 3 s.f.; method must be made clear (stated in the question)",
-    "ms": "",
+    "ms": "M1 cosine rule for OB (or OB²); A1 OB = awrt 1.74; dM1 sine rule (or cosine rule) with sides and angles placed correctly and inverse sine to find AOB (or ABO then angle sum); A1* θ = 2 × 0.822 = 1.64 with no rounding slips (doubling 0.827 to state 1.64 loses it); working backwards from 1.64 to recover BC = 1.4 or OC = 0.6 also accepted (MS pp.16–17)",
     "er": ""
    },
    {
@@ -3405,7 +3404,7 @@
     "command": "Find",
     "ask": "Find the perimeter of the sign",
     "final_form": "metres to 2 significant figures",
-    "ms": "",
+    "ms": "M1 0.6 × an allowable angle (2π − 1.64 or π − 1.64) or circumference minus minor arc (major arc ≈ 2.79); A1 total 0.6(2π − 1.64) + 2.8 = awrt 5.6 m (MS pp.16–17)",
     "er": ""
    },
    {
@@ -3418,13 +3417,13 @@
     "command": "Find",
     "ask": "Find the area of the sign (kite plus major sector)",
     "final_form": "m² to 2 significant figures",
-    "ms": "",
+    "ms": "M1 major sector ½ × 0.6² × (2π − 1.64) (≈ 0.835) or circle minus minor sector; M1 kite area 0.6 × 1.4 sin 2 (or half of it, or OCA + ABC); ddM1 complete correct total; A1 awrt 1.6 m² (degrees route equally creditable) (MS pp.16–19)",
     "er": ""
    }
   ],
   "sources": {
    "qp": "github:EslamAhmedGaber/elite-igcse-math/downloads/IAL/WMA11/Papers/WMA11_2021_Oct_QP.pdf (= local:src/WMA11/2021-10_01_qp.pdf, P66645A)",
-   "ms": "",
+   "ms": "github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/ms/pure1/2021/Mathematics PURE1 (IAL) - October 2021 - MS (WMA11).pdf (= local:src/WMA11/2021-10_01_ms.pdf; PMT-stamped Pearson PDF, 'Mark Scheme (Results) October 2021', Publications Code WMA11_01_2110_MS; log number P66645A)",
    "er": ""
   }
  },
@@ -3446,7 +3445,7 @@
     "command": "Write",
     "ask": "y = 4 + 12x − 3x²: (i) write in the form a + b(x + c)²; (ii) hence state the maximum point M",
     "final_form": "completed-square form with a, b, c; coordinates of M",
-    "ms": "",
+    "ms": "(i) M1 complete the square (b = ±3 or c = ±2), or compare coefficients; A1 two of a = 16, b = −3, c = −2; A1 16 − 3(x − 2)² (16 − 3(2 − x)² scores M1A1A0). (ii) B1ft x = 2 or y = 16, B1ft M(2, 16); reversed coordinates SC B1B0 (MS p.20)",
     "er": ""
    },
    {
@@ -3461,13 +3460,13 @@
     "command": "Find",
     "ask": "l₁ passes through O and M; l₂ is parallel to l₁ and touches C: find an equation of l₂",
     "final_form": "equation of l₂",
-    "ms": "",
+    "ms": "M1 l₂: y = 8x + k (gradient of OM, ft); dM1 set 4 + 12x − 3x² = 8x + k and reach a 3TQ; A1 3x² − 4x + k − 4 = 0; ddM1 b² − 4ac = 0 to find k; A1 y = 8x + 16/3. Alt: dy/dx = 8 gives contact point (2/3, 32/3), then find k (MS pp.20–21)",
     "er": ""
    }
   ],
   "sources": {
    "qp": "github:EslamAhmedGaber/elite-igcse-math/downloads/IAL/WMA11/Papers/WMA11_2021_Oct_QP.pdf (= local:src/WMA11/2021-10_01_qp.pdf, P66645A)",
-   "ms": "",
+   "ms": "github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/ms/pure1/2021/Mathematics PURE1 (IAL) - October 2021 - MS (WMA11).pdf (= local:src/WMA11/2021-10_01_ms.pdf; PMT-stamped Pearson PDF, 'Mark Scheme (Results) October 2021', Publications Code WMA11_01_2110_MS; log number P66645A)",
    "er": ""
   }
  },
@@ -3488,7 +3487,7 @@
     "command": "Sketch",
     "ask": "All stages of working, no calculator: f(x) = √x with P(9, 3); sketch and label y = f(2x) and y = f(x) + 3 on the given diagram",
     "final_form": "two labelled curves, each with the image of P stated",
-    "ms": "",
+    "ms": "M1 one correct labelled curve (f(2x) from O staying above f(x); f(x) + 3 from the positive y-axis, same shape); A1 that curve with its image point, (4.5, 3) or (9, 6); A1 both curves and both points correct; best single diagram is marked (MS pp.22–24)",
     "er": ""
    },
    {
@@ -3502,7 +3501,7 @@
     "command": "Show that",
     "ask": "The graphs meet at Q: show the x-coordinate of Q satisfies √x = 3(√2 + 1)",
     "final_form": "given equation reached with surd manipulation shown",
-    "ms": "",
+    "ms": "B1 √x + 3 = √(2x); M1 write √(2x) as √2√x and collect terms in √x ((√2 − 1)√x = 3); A1* rationalise to √x = 3(√2 + 1) with the multiplying-by-conjugate step shown. Alt: square to a 3TQ in √x and solve (giving both roots scores A0) (MS pp.22–23)",
     "er": ""
    },
    {
@@ -3514,13 +3513,13 @@
     "command": "Hence find",
     "ask": "Hence find the coordinates of Q in simplest form",
     "final_form": "exact simplified surd coordinates",
-    "ms": "",
+    "ms": "M1 square the given expression to α + β√2; A1 x = 9(3 + 2√2) = 27 + 18√2; B1 y = 3√2 + 6 (√(18√2 + 27) + 3 unsimplified scores B0); working must appear in (c) (MS pp.22–23)",
     "er": ""
    }
   ],
   "sources": {
    "qp": "github:EslamAhmedGaber/elite-igcse-math/downloads/IAL/WMA11/Papers/WMA11_2021_Oct_QP.pdf (= local:src/WMA11/2021-10_01_qp.pdf, P66645A)",
-   "ms": "",
+   "ms": "github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/ms/pure1/2021/Mathematics PURE1 (IAL) - October 2021 - MS (WMA11).pdf (= local:src/WMA11/2021-10_01_ms.pdf; PMT-stamped Pearson PDF, 'Mark Scheme (Results) October 2021', Publications Code WMA11_01_2110_MS; log number P66645A)",
    "er": ""
   }
  },
@@ -3543,7 +3542,7 @@
     "command": "Find",
     "ask": "x > 0, f′(x) = ax − 12x^(1/3), f″(x) = 0 when x = 27: find a",
     "final_form": "value of a",
-    "ms": "",
+    "ms": "B1 f″(x) = a − 4x^(−2/3); M1 set f″(27) = 0 and solve for a; A1 a = 4/9 (common slip a = −4/9 leads to c = 11/9) (MS pp.25–26)",
     "er": ""
    },
    {
@@ -3557,13 +3556,13 @@
     "command": "Hence find",
     "ask": "The curve passes through (1, −8): hence find f(x)",
     "final_form": "f(x) with constant evaluated",
-    "ms": "",
+    "ms": "M1 integrate with one term correct and indices processed, e.g. (a/2)x² or −9x^(4/3); A1ft (a/2)x² − 9x^(4/3) + c (must include + c); dM1 use (1, −8) with numerical a to find c; A1 f(x) = (2/9)x² − 9x^(4/3) + 7/9 (MS pp.25–26)",
     "er": ""
    }
   ],
   "sources": {
    "qp": "github:EslamAhmedGaber/elite-igcse-math/downloads/IAL/WMA11/Papers/WMA11_2021_Oct_QP.pdf (= local:src/WMA11/2021-10_01_qp.pdf, P66645A)",
-   "ms": "",
+   "ms": "github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/ms/pure1/2021/Mathematics PURE1 (IAL) - October 2021 - MS (WMA11).pdf (= local:src/WMA11/2021-10_01_ms.pdf; PMT-stamped Pearson PDF, 'Mark Scheme (Results) October 2021', Publications Code WMA11_01_2110_MS; log number P66645A)",
    "er": ""
   }
  },
@@ -3586,13 +3585,13 @@
     "command": "Find",
     "ask": "Integrate 8x³/5 − 2/(3x⁴) − 1 with respect to x",
     "final_form": "each term in simplest form, plus constant of integration",
-    "ms": "",
+    "ms": "M1 raise one power (x³ → x⁴, x⁻⁴ → x⁻³ or 1 → x); A1 two correct terms, unsimplified fine (+c not counted); A1 two of (2/5)x⁴, (2/9)x⁻³, −x simplified; A1 (2/5)x⁴ + (2/9)x⁻³ − x + c all on one line (2/(9x³) fine); spurious ∫ or '= 0' with no clean expression loses the final mark (MS p.7)",
     "er": ""
    }
   ],
   "sources": {
    "qp": "github:EslamAhmedGaber/elite-igcse-math/downloads/IAL/WMA11/Papers/WMA11_2022_Jan_QP.pdf (= local:src/WMA11/2022-01_01_qp.pdf, P70482A)",
-   "ms": "",
+   "ms": "github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/ms/pure1/2022/Mathematics PURE1 (IAL) - January 2022 - MS (WMA11).pdf (= local:src/WMA11/2022-01_01_ms.pdf; PMT-stamped Pearson PDF, 'Mark Scheme (Results) January 2022', Publications Code WMA11_01_2201_MS; log number P70482A)",
    "er": ""
   }
  },
@@ -3613,7 +3612,7 @@
     "command": "Express",
     "ask": "Express f(x) = 11 − 4x − 2x² in the form a + b(x + c)²",
     "final_form": "a + b(x + c)² with integers a, b, c",
-    "ms": "",
+    "ms": "B1 b = −2 (taking out −2); M1 complete the square, (x ± 1)² ± …, or compare coefficients for c; A1 13 − 2(x + 1)² (MS p.8)",
     "er": ""
    },
    {
@@ -3626,7 +3625,7 @@
     "command": "Sketch",
     "ask": "Sketch y = f(x), showing the y-intercept",
     "final_form": "sketch of the (negative) quadratic with the y-axis crossing labelled",
-    "ms": "",
+    "ms": "M1 ∩-shaped parabola on axes; A1 cuts the x-axis once either side of O, maximum in quadrant 2, y-intercept (0, 11) marked; graphs symmetric about the y-axis not accepted (MS pp.8–9)",
     "er": ""
    },
    {
@@ -3639,13 +3638,13 @@
     "command": "Write down",
     "ask": "Write down the equation of the line of symmetry of C",
     "final_form": "an equation x = …",
-    "ms": "",
+    "ms": "B1ft x = −1 (ft x = −c) (MS pp.8–9)",
     "er": ""
    }
   ],
   "sources": {
    "qp": "github:EslamAhmedGaber/elite-igcse-math/downloads/IAL/WMA11/Papers/WMA11_2022_Jan_QP.pdf (= local:src/WMA11/2022-01_01_qp.pdf, P70482A)",
-   "ms": "",
+   "ms": "github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/ms/pure1/2022/Mathematics PURE1 (IAL) - January 2022 - MS (WMA11).pdf (= local:src/WMA11/2022-01_01_ms.pdf; PMT-stamped Pearson PDF, 'Mark Scheme (Results) January 2022', Publications Code WMA11_01_2201_MS; log number P70482A)",
    "er": ""
   }
  },
@@ -3666,7 +3665,7 @@
     "command": "Express",
     "ask": "All stages of working, no calculator: expand f(x) = (x + √2)² + (3x − 5√8)²",
     "final_form": "ax² + bx√2 + c with integers a, b, c",
-    "ms": "",
+    "ms": "B1 √8 = 2√2 seen or implied; M1 expand both brackets to x² + a√2x + 2 + bx² − c√8x + d form; A1 10x² − 58√2x + 202 (−60√2x signals the B1 was missed) (MS pp.10–11)",
     "er": ""
    },
    {
@@ -3678,13 +3677,13 @@
     "command": "Solve",
     "ask": "Solve √3(4y − 3√3) = 5y + √3 (no calculator)",
     "final_form": "p + q√3 with p, q simplified fractions (denominator rationalised)",
-    "ms": "",
+    "ms": "No calculator. M1 expand and collect the y terms on one side; dM1 make y (or ky) the subject, e.g. y = (9 + √3)/(4√3 − 5); ddM1 rationalise the denominator, multiplication shown; A1 y = 57/23 + (41/23)√3 with all stages seen ((57 + 41√3)/23 not accepted). Alts: substitute y = p + q√3 and compare parts, or square to 23y² − 82√3y + 78 = 0 (MS pp.10–12)",
     "er": ""
    }
   ],
   "sources": {
    "qp": "github:EslamAhmedGaber/elite-igcse-math/downloads/IAL/WMA11/Papers/WMA11_2022_Jan_QP.pdf (= local:src/WMA11/2022-01_01_qp.pdf, P70482A)",
-   "ms": "",
+   "ms": "github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/ms/pure1/2022/Mathematics PURE1 (IAL) - January 2022 - MS (WMA11).pdf (= local:src/WMA11/2022-01_01_ms.pdf; PMT-stamped Pearson PDF, 'Mark Scheme (Results) January 2022', Publications Code WMA11_01_2201_MS; log number P70482A)",
    "er": ""
   }
  },
@@ -3705,7 +3704,7 @@
     "command": "Find",
     "ask": "All stages of working, no calculator: find, using algebra, the intersections P and Q of x + y = 6 and y = 6x − 2x² + 1",
     "final_form": "coordinates of P and Q, found algebraically",
-    "ms": "",
+    "ms": "No calculator, answers only 0/4. M1 combine to a 3TQ (2x² − 7x + 5 = 0); M1 solve with a correct intermediate line (factorised form, formula with values, or completed square); dM1 find y for one x; A1 (1, 5) and (2.5, 3.5) correctly paired (MS p.13)",
     "er": ""
    },
    {
@@ -3717,13 +3716,13 @@
     "command": "Use inequalities",
     "ask": "Use inequalities to define the region R bounded by C, l and the x-axis",
     "final_form": "set of inequalities in x and y",
-    "ms": "",
+    "ms": "M1 any two, A1 any three, A1 all four of y ≥ 6x − 2x² + 1, x + y ≤ 6, x ≥ a (1 ≤ a ≤ 2.5), y ≥ 0 (strict or non-strict, need not be consistent); using R in place of x or y scores 0; 'or' or ∪ between them loses the last mark (MS pp.13–14)",
     "er": ""
    }
   ],
   "sources": {
    "qp": "github:EslamAhmedGaber/elite-igcse-math/downloads/IAL/WMA11/Papers/WMA11_2022_Jan_QP.pdf (= local:src/WMA11/2022-01_01_qp.pdf, P70482A)",
-   "ms": "",
+   "ms": "github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/ms/pure1/2022/Mathematics PURE1 (IAL) - January 2022 - MS (WMA11).pdf (= local:src/WMA11/2022-01_01_ms.pdf; PMT-stamped Pearson PDF, 'Mark Scheme (Results) January 2022', Publications Code WMA11_01_2201_MS; log number P70482A)",
    "er": ""
   }
  },
@@ -3744,7 +3743,7 @@
     "command": "Show that",
     "ask": "Semicircular garden radius 3 m, chord BD parallel to diameter AE, angle BOA = 0.7 rad: show angle BOD = 1.742 rad to 4 s.f.",
     "final_form": "given value to 4 s.f.; working must lead to it (show-that)",
-    "ms": "",
+    "ms": "B1* angle BOD = π − 2 × 0.7 = 1.742 (or show the angles sum to π) with a minimal conclusion; degrees route via 99.8° fine (MS p.15)",
     "er": ""
    },
    {
@@ -3757,7 +3756,7 @@
     "command": "Find",
     "ask": "Find the area of the flowerbed (segment bounded by chord BD and arc BCD)",
     "final_form": "square metres to 1 decimal place",
-    "ms": "",
+    "ms": "M1 triangle BOD = ½ × 3² × sin 1.742 (awrt 4.43); dM1 segment = ½ × 3² × 1.742 − triangle (or semicircle minus triangle minus two small sectors); A1 awrt 3.4 m², no isw if other areas added (MS pp.15–16)",
     "er": ""
    },
    {
@@ -3770,13 +3769,13 @@
     "command": "Find",
     "ask": "Find the perimeter of the flowerbed",
     "final_form": "metres to 1 decimal place",
-    "ms": "",
+    "ms": "M1 a correct method for BD (cosine rule, 2 × 3 cos 0.7, etc., awrt 4.59) or for arc BCD = 3 × 1.742 (5.226); dM1 perimeter = arc + BD, both by correct methods; A1 awrt 9.8 m, no isw (MS pp.15–16)",
     "er": ""
    }
   ],
   "sources": {
    "qp": "github:EslamAhmedGaber/elite-igcse-math/downloads/IAL/WMA11/Papers/WMA11_2022_Jan_QP.pdf (= local:src/WMA11/2022-01_01_qp.pdf, P70482A)",
-   "ms": "",
+   "ms": "github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/ms/pure1/2022/Mathematics PURE1 (IAL) - January 2022 - MS (WMA11).pdf (= local:src/WMA11/2022-01_01_ms.pdf; PMT-stamped Pearson PDF, 'Mark Scheme (Results) January 2022', Publications Code WMA11_01_2201_MS; log number P70482A)",
    "er": ""
   }
  },
@@ -3799,7 +3798,7 @@
     "command": "Find",
     "ask": "x > 0, f′(x) = (x + 3)²/(x√x), P(4, 20) on C: (i) find the gradient at P; (ii) hence find the tangent at P",
     "final_form": "(ii) ax + by + c = 0 with integers a, b, c",
-    "ms": "",
+    "ms": "(i) B1 f′(4) = 49/8; (ii) M1 line through (4, 20) with their gradient (perpendicular gradient M0; y = mx + c must reach c); A1ft correct equation in any form; A1 49x − 8y − 36 = 0 or integer multiple (MS p.17)",
     "er": ""
    },
    {
@@ -3813,13 +3812,13 @@
     "command": "Find",
     "ask": "Find f(x) (expand, write as powers of x, integrate, use P to find c)",
     "final_form": "simplified f(x) with constant evaluated",
-    "ms": "",
+    "ms": "M1 square the numerator and split into powers, one correct index; A1 x^(1/2) + 6x^(−1/2) + 9x^(−3/2); dM1 raise a power by 1; A1 two of (2/3)x^(3/2), 12x^(1/2), −18x^(−1/2); A1 all three (+c condoned); M1 use (4, 20) in the integrated function for c; A1 f(x) = (2/3)x^(3/2) + 12x^(1/2) − 18x^(−1/2) − 1/3, exact coefficients, isw unless multiplied through (MS pp.17–18)",
     "er": ""
    }
   ],
   "sources": {
    "qp": "github:EslamAhmedGaber/elite-igcse-math/downloads/IAL/WMA11/Papers/WMA11_2022_Jan_QP.pdf (= local:src/WMA11/2022-01_01_qp.pdf, P70482A)",
-   "ms": "",
+   "ms": "github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/ms/pure1/2022/Mathematics PURE1 (IAL) - January 2022 - MS (WMA11).pdf (= local:src/WMA11/2022-01_01_ms.pdf; PMT-stamped Pearson PDF, 'Mark Scheme (Results) January 2022', Publications Code WMA11_01_2201_MS; log number P70482A)",
    "er": ""
   }
  },
@@ -3841,7 +3840,7 @@
     "command": "Find",
     "ask": "f(x) = (x + 4)(x − 2)(2x − 9); y = f(x) − p passes through (0, 50): find p",
     "final_form": "value of p",
-    "ms": "",
+    "ms": "M1 f(0) = 4 × −2 × −9 = 72 and subtract 50 (50 − 72 is M0); A1 p = 22 cao (MS p.19)",
     "er": ""
    },
    {
@@ -3853,7 +3852,7 @@
     "command": "Write down",
     "ask": "y = f(x + q) passes through the origin: write down the possible values of q",
     "final_form": "all possible values of q",
-    "ms": "",
+    "ms": "B1 one of −4, 2, 4.5; B1 all three and only these (sign-changed values withhold it) (MS p.19)",
     "er": ""
    },
    {
@@ -3866,7 +3865,7 @@
     "command": "Find",
     "ask": "Find f′(x) (expand the cubic then differentiate)",
     "final_form": "derivative",
-    "ms": "",
+    "ms": "M1 expand to ax³ + bx² + cx (+d); A1 2x³ − 5x² − 34x (+72); M1 reduce a power by 1; A1 f′(x) = 6x² − 10x − 34 from a correct expansion (wrong, not just missing, constant gives A0) (MS pp.19–20)",
     "er": ""
    },
    {
@@ -3879,13 +3878,13 @@
     "command": "Hence find",
     "ask": "Hence find the range of x for which the gradient of y = f(x) is less than −18",
     "final_form": "a quadratic-inequality solution set in x",
-    "ms": "",
+    "ms": "M1 set their f′(x) = −18 and solve 6x² − 10x − 16 = 0 (stated critical values allowed); dM1 choose the inside region; A1 −1 < x < 8/3 with some working ('or' or ∪ not accepted) (MS pp.19–20)",
     "er": ""
    }
   ],
   "sources": {
    "qp": "github:EslamAhmedGaber/elite-igcse-math/downloads/IAL/WMA11/Papers/WMA11_2022_Jan_QP.pdf (= local:src/WMA11/2022-01_01_qp.pdf, P70482A)",
-   "ms": "",
+   "ms": "github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/ms/pure1/2022/Mathematics PURE1 (IAL) - January 2022 - MS (WMA11).pdf (= local:src/WMA11/2022-01_01_ms.pdf; PMT-stamped Pearson PDF, 'Mark Scheme (Results) January 2022', Publications Code WMA11_01_2201_MS; log number P70482A)",
    "er": ""
   }
  },
@@ -3906,7 +3905,7 @@
     "command": "Find",
     "ask": "Find the gradient of l₁: 2x − 5y + 7 = 0",
     "final_form": "gradient",
-    "ms": "",
+    "ms": "B1 gradient 2/5 (or 0.4), identified in (a), not just read off a rearranged equation (MS p.21)",
     "er": ""
    },
    {
@@ -3919,7 +3918,7 @@
     "command": "Find",
     "ask": "l₂ passes through A(6, −2) perpendicular to l₁: find l₂",
     "final_form": "y = mx + c",
-    "ms": "",
+    "ms": "M1 perpendicular gradient −5/2; M1 line through (6, −2) with the changed gradient (y = mx + c must reach c); A1 y = −(5/2)x + 13 oe (MS p.21)",
     "er": ""
    },
    {
@@ -3932,7 +3931,7 @@
     "command": "Find",
     "ask": "Using algebra (no calculator solutions), find the intersection M of l₁ and l₂",
     "final_form": "coordinates of M with working shown",
-    "ms": "",
+    "ms": "Coordinates with no algebra score 0. M1 solve l₁ and l₂ simultaneously for x or y; dM1 find the other coordinate; A1 M(4, 3) (MS pp.21–22)",
     "er": ""
    },
    {
@@ -3944,13 +3943,13 @@
     "command": "Find",
     "ask": "Diagonals of square ABCD meet at M: find the coordinates of C",
     "final_form": "coordinates",
-    "ms": "",
+    "ms": "B1 x = 2 or y = 8; B1 C(2, 8) (reversed (8, 2) scores B1B0) (MS pp.21–22)",
     "er": ""
    }
   ],
   "sources": {
    "qp": "github:EslamAhmedGaber/elite-igcse-math/downloads/IAL/WMA11/Papers/WMA11_2022_Jan_QP.pdf (= local:src/WMA11/2022-01_01_qp.pdf, P70482A)",
-   "ms": "",
+   "ms": "github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/ms/pure1/2022/Mathematics PURE1 (IAL) - January 2022 - MS (WMA11).pdf (= local:src/WMA11/2022-01_01_ms.pdf; PMT-stamped Pearson PDF, 'Mark Scheme (Results) January 2022', Publications Code WMA11_01_2201_MS; log number P70482A)",
    "er": ""
   }
  },
@@ -3971,7 +3970,7 @@
     "command": "Write down",
     "ask": "y = A cos(x − 30)° has minimum P(30, −3): write down A",
     "final_form": "value of A",
-    "ms": "",
+    "ms": "B1 A = −3 (MS p.23)",
     "er": ""
    },
    {
@@ -3984,13 +3983,13 @@
     "command": "Find",
     "ask": "Find the coordinates of the maximum point Q shown in the figure",
     "final_form": "coordinates",
-    "ms": "",
+    "ms": "B1 y = 3; M1 correct strategy for x, e.g. 30 + 5 × 180 or 210 + 720; A1 x = 930, others discarded; (930, 3) alone scores 3; (3, 930) or radians scores B1M1A0 (MS p.23)",
     "er": ""
    }
   ],
   "sources": {
    "qp": "github:EslamAhmedGaber/elite-igcse-math/downloads/IAL/WMA11/Papers/WMA11_2022_Jan_QP.pdf (= local:src/WMA11/2022-01_01_qp.pdf, P70482A)",
-   "ms": "",
+   "ms": "github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/ms/pure1/2022/Mathematics PURE1 (IAL) - January 2022 - MS (WMA11).pdf (= local:src/WMA11/2022-01_01_ms.pdf; PMT-stamped Pearson PDF, 'Mark Scheme (Results) January 2022', Publications Code WMA11_01_2201_MS; log number P70482A)",
    "er": ""
   }
  },
@@ -4012,7 +4011,7 @@
     "command": "Sketch",
     "ask": "Sketch y = 1/x² − 9",
     "final_form": "sketch showing axis intersections and stating equations of asymptotes",
-    "ms": "",
+    "ms": "B1 1/x²-type shape anywhere on axes (two branches rising steeply near the y-axis and levelling off, no turning points); B1 x-intercepts (±1/3, 0) with a corresponding sketch; B1 one asymptote stated, x = 0 or y = −9; B1 both; the sketch takes precedence over contradictory text (MS pp.24–25)",
     "er": ""
    },
    {
@@ -4026,13 +4025,13 @@
     "command": "Find",
     "ask": "D: y = kx² meets C at 4 distinct points: find the range of k",
     "final_form": "inequality for k",
-    "ms": "",
+    "ms": "B1 k < 0; M1 set 1/x² − 9 = kx² and multiply by x² to a quartic; M1 discriminant of the 3TQ in x², 81 + 4k; A1 critical value −81/4 from correct working (sign slip in rearranging gives A0A0); A1 cso −81/4 < k < 0 in terms of k ('or', comma or ∪ not accepted) (MS pp.24–25)",
     "er": ""
    }
   ],
   "sources": {
    "qp": "github:EslamAhmedGaber/elite-igcse-math/downloads/IAL/WMA11/Papers/WMA11_2022_Jan_QP.pdf (= local:src/WMA11/2022-01_01_qp.pdf, P70482A)",
-   "ms": "",
+   "ms": "github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/ms/pure1/2022/Mathematics PURE1 (IAL) - January 2022 - MS (WMA11).pdf (= local:src/WMA11/2022-01_01_ms.pdf; PMT-stamped Pearson PDF, 'Mark Scheme (Results) January 2022', Publications Code WMA11_01_2201_MS; log number P70482A)",
    "er": ""
   }
  },
@@ -4055,13 +4054,13 @@
     "command": "Find",
     "ask": "Integrate 10x⁵ + 6x³ − 3/x² with respect to x, giving the answer in simplest form",
     "final_form": "simplified terms plus constant of integration",
-    "ms": "",
+    "ms": "M1 raise any power by 1 (x⁵ → x⁶, x³ → x⁴, x⁻² → x⁻¹; unprocessed x⁵⁺¹ accepted); A1 two terms correctly integrated, unsimplified fine but indices processed; A1 two correct simplified terms on one line; A1 (5/3)x⁶ + (3/2)x⁴ + 3/x + c all simplified on one line (no 1.67x⁶; spurious ∫/dx or multiplying through to clear fractions loses it) (MS p.7)",
     "er": ""
    }
   ],
   "sources": {
    "qp": "github:EslamAhmedGaber/elite-igcse-math/downloads/IAL/WMA11/Papers/WMA11_2022_MayJune_QP.pdf (= local:src/WMA11/2022-06_01_qp.pdf, P69458A)",
-   "ms": "",
+   "ms": "github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/ms/pure1/2022/Mathematics PURE1 (IAL) - May 2022 - MS (WMA11).pdf (= local:src/WMA11/2022-06_01_ms.pdf; PMT-stamped Pearson PDF, 'Mark Scheme (Results) Summer 2022', Publications Code WMA11_01_2206_MS; log number P69458A)",
    "er": ""
   }
  },
@@ -4082,7 +4081,7 @@
     "command": "Use",
     "ask": "Triangle ABC with AB = 21 cm, BC = 13 cm, angle BAC = 25°, angle ACB = x°: use the sine rule to find sin x°",
     "final_form": "4 decimal places",
-    "ms": "",
+    "ms": "M1 sine rule sin x/21 = sin 25/13 with sides and angles placed correctly; A1 sin x = awrt 0.6827, isw (MS p.8)",
     "er": ""
    },
    {
@@ -4094,13 +4093,13 @@
     "command": "Find",
     "ask": "Given AB is the longest side, find x (ambiguous case: the angle opposite the longest side is the largest)",
     "final_form": "2 decimal places; choose the obtuse value consistent with AB longest",
-    "ms": "",
+    "ms": "M1 inverse sine of their value (awrt 43°); M1 obtuse angle 180 − arcsin 0.6827, no reason needed (AB longest so the angle opposite it is largest); A1 x = awrt 136.95, A0 if two angles given; cosine-rule route (AC = 9.533) also credited (MS p.8)",
     "er": ""
    }
   ],
   "sources": {
    "qp": "github:EslamAhmedGaber/elite-igcse-math/downloads/IAL/WMA11/Papers/WMA11_2022_MayJune_QP.pdf (= local:src/WMA11/2022-06_01_qp.pdf, P69458A)",
-   "ms": "",
+   "ms": "github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/ms/pure1/2022/Mathematics PURE1 (IAL) - May 2022 - MS (WMA11).pdf (= local:src/WMA11/2022-06_01_ms.pdf; PMT-stamped Pearson PDF, 'Mark Scheme (Results) Summer 2022', Publications Code WMA11_01_2206_MS; log number P69458A)",
    "er": ""
   }
  },
@@ -4121,7 +4120,7 @@
     "command": "Show that",
     "ask": "All stages of working, no calculator: show that (√180 − √80)/√5 is an integer and find its value",
     "final_form": "integer value with surd simplification shown",
-    "ms": "",
+    "ms": "No calculator, all stages shown. M1 √180 = 6√5 or √80 = 4√5 (or √(180/5) = √36, or multiply by √5 to √900, √400); A1 (6√5 − 4√5)/√5 = 2√5/√5 = 2; big jumps without these steps score M0A0 (MS pp.9–10)",
     "er": ""
    },
    {
@@ -4133,13 +4132,13 @@
     "command": "Simplify",
     "ask": "Rationalise and simplify (4√5 − 5)/(7 − 3√5)",
     "final_form": "a + b√5 with a, b rational; working shown (no calculator)",
-    "ms": "",
+    "ms": "M1 multiply numerator and denominator by 7 + 3√5; dM1 denominator 49 − 45 = 4 and numerator expanded with four terms seen; A1 25/4 + (13/4)√5 (6.25 + 3.25√5 fine; (25 + 13√5)/4 alone not accepted unless a and b then stated). Alt: (4√5 − 5) = (a + b√5)(7 − 3√5), solve 7a − 15b = −5, 7b − 3a = 4 (MS pp.9–10)",
     "er": ""
    }
   ],
   "sources": {
    "qp": "github:EslamAhmedGaber/elite-igcse-math/downloads/IAL/WMA11/Papers/WMA11_2022_MayJune_QP.pdf (= local:src/WMA11/2022-06_01_qp.pdf, P69458A)",
-   "ms": "",
+   "ms": "github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/ms/pure1/2022/Mathematics PURE1 (IAL) - May 2022 - MS (WMA11).pdf (= local:src/WMA11/2022-06_01_ms.pdf; PMT-stamped Pearson PDF, 'Mark Scheme (Results) Summer 2022', Publications Code WMA11_01_2206_MS; log number P69458A)",
    "er": ""
   }
  },
@@ -4160,7 +4159,7 @@
     "command": "Sketch",
     "ask": "Curve y = f(x) has minimum P(−1, 0), maximum Q(3/2, 2) and only asymptote y = 1: sketch y = f(x) − 2",
     "final_form": "sketch stating coordinates of the maximum and minimum and the equation of the asymptote",
-    "ms": "",
+    "ms": "B1 same shape translated down (minimum left of the y-axis, maximum right of it); B1 asymptote labelled y = −1, below the x-axis, both ends level; B1 maximum (3/2, 0) on the positive x-axis and minimum (−1, −2) in quadrant 3, marked on the graph; marks independent, no misread credit for y = f(x − 2) (MS pp.11–12)",
     "er": ""
    },
    {
@@ -4172,13 +4171,13 @@
     "command": "Sketch",
     "ask": "On a separate diagram sketch y = f(−x)",
     "final_form": "sketch stating coordinates of the maximum and minimum and the equation of the asymptote",
-    "ms": "",
+    "ms": "B1 reflection in the y-axis (maximum in quadrant 2, minimum on the positive x-axis); B1 asymptote labelled y = 1; B1 maximum (−3/2, 2) and minimum (1, 0) in the right places; no misread credit for y = −f(x) (MS pp.11–12)",
     "er": ""
    }
   ],
   "sources": {
    "qp": "github:EslamAhmedGaber/elite-igcse-math/downloads/IAL/WMA11/Papers/WMA11_2022_MayJune_QP.pdf (= local:src/WMA11/2022-06_01_qp.pdf, P69458A)",
-   "ms": "",
+   "ms": "github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/ms/pure1/2022/Mathematics PURE1 (IAL) - May 2022 - MS (WMA11).pdf (= local:src/WMA11/2022-06_01_ms.pdf; PMT-stamped Pearson PDF, 'Mark Scheme (Results) Summer 2022', Publications Code WMA11_01_2206_MS; log number P69458A)",
    "er": ""
   }
  },
@@ -4200,7 +4199,7 @@
     "command": "Find",
     "ask": "Quadratic f(x) has maximum turning point (−2, 12) and crosses the negative x-axis at −5: find f(x)",
     "final_form": "quadratic expression f(x)",
-    "ms": "",
+    "ms": "M1 quadratic form using two facts, e.g. 12 − a(x + 2)², a(x − 1)(x + 5), or ax² + bx + c with two points (a = ±1 condoned for M1 only); A1 correct form with only a (or one equation) left to find; dM1 full method for f(x) using the remaining fact; A1 f(x) = 12 − (4/3)(x + 2)² or −(4/3)(x − 1)(x + 5) or −(4/3)x² − (16/3)x + 20/3 (MS pp.12–13)",
     "er": ""
    },
    {
@@ -4213,7 +4212,7 @@
     "command": "Find",
     "ask": "l₁: y = (4/5)x; l₂ is perpendicular to l₁ through (−5, 0): find an equation of l₂",
     "final_form": "y = mx + c with m and c stated",
-    "ms": "",
+    "ms": "M1 perpendicular gradient −5/4; M1 line through (−5, 0) with the changed gradient (y = mx + c must reach c); A1 y = −(5/4)x − 25/4, in the form y = mx + c (MS pp.12–13)",
     "er": ""
    },
    {
@@ -4225,13 +4224,13 @@
     "command": "Define",
     "ask": "Define the shaded region R (bounded by C, l₁ and l₂ in Figure 2) using inequalities",
     "final_form": "set of inequalities in x and y",
-    "ms": "",
+    "ms": "M1 two of y ≥ −(5/4)x − 25/4, y ≥ (4/5)x, y ≤ −(4/3)x² − (16/3)x + 20/3 (ft their (a) and (b); strict also fine; R in place of y scores M0); A1ft all three, strictness consistent; harmless extra restrictions ignored, restricting ones (e.g. y ≥ 0) penalised; final answer marked, no isw (MS pp.12–14)",
     "er": ""
    }
   ],
   "sources": {
    "qp": "github:EslamAhmedGaber/elite-igcse-math/downloads/IAL/WMA11/Papers/WMA11_2022_MayJune_QP.pdf (= local:src/WMA11/2022-06_01_qp.pdf, P69458A)",
-   "ms": "",
+   "ms": "github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/ms/pure1/2022/Mathematics PURE1 (IAL) - May 2022 - MS (WMA11).pdf (= local:src/WMA11/2022-06_01_ms.pdf; PMT-stamped Pearson PDF, 'Mark Scheme (Results) Summer 2022', Publications Code WMA11_01_2206_MS; log number P69458A)",
    "er": ""
   }
  },
@@ -4252,7 +4251,7 @@
     "command": "Show that",
     "ask": "All stages of working, no calculator: from 2xy − 3x² = 50 and y − x³ + 6x = 0, show that 2x⁴ − 15x² − 50 = 0",
     "final_form": "given equation reached by substitution, with working shown",
-    "ms": "",
+    "ms": "M1 substitute y = x³ − 6x into the first equation (or an equivalent elimination); A1* 2x⁴ − 12x² − 3x² − 50 = 0 → 2x⁴ − 15x² − 50 = 0 cso, with the two x² terms first shown uncollected (MS p.14)",
     "er": ""
    },
    {
@@ -4266,13 +4265,13 @@
     "command": "Hence solve",
     "ask": "Hence solve the simultaneous equations (quadratic in x²)",
     "final_form": "all valid (x, y) pairs in fully simplified surd form; reject impossible x² values",
-    "ms": "",
+    "ms": "No calculator. M1 solve the quadratic in x² by factorising (2x² + 5)(x² − 10), formula or completing the square; A1 x² = 10 (or x = ±√10); M1 y = (√10)³ − 6√10 by a non-calculator method; A1 one pair, e.g. (√10, 4√10); A1 cso both pairs (√10, 4√10) and (−√10, −4√10), clearly paired, no extras (MS pp.14–15)",
     "er": ""
    }
   ],
   "sources": {
    "qp": "github:EslamAhmedGaber/elite-igcse-math/downloads/IAL/WMA11/Papers/WMA11_2022_MayJune_QP.pdf (= local:src/WMA11/2022-06_01_qp.pdf, P69458A)",
-   "ms": "",
+   "ms": "github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/ms/pure1/2022/Mathematics PURE1 (IAL) - May 2022 - MS (WMA11).pdf (= local:src/WMA11/2022-06_01_ms.pdf; PMT-stamped Pearson PDF, 'Mark Scheme (Results) Summer 2022', Publications Code WMA11_01_2206_MS; log number P69458A)",
    "er": ""
   }
  },
@@ -4295,7 +4294,7 @@
     "command": "Find",
     "ask": "x > 0, f′(x) = 2/√x + A/x² + 3 and f″(x) = 0 when x = 4: find A",
     "final_form": "value of A",
-    "ms": "",
+    "ms": "M1 differentiate f′(x), one power reduced by 1; A1 f″(x) = −x^(−3/2) − 2Ax⁻³; dM1 set f″(4) = 0 and solve for A; A1 A = −4 (MS pp.15–16)",
     "er": ""
    },
    {
@@ -4309,14 +4308,14 @@
     ],
     "command": "Find",
     "ask": "Given f(x) = 8√3 when x = 12, find f(x) with each term in simplest form",
-    "final_form": "f(x) with constant evaluated; each term simplified (surd constant)",
-    "ms": "",
+    "final_form": "f(x) with the constant evaluated exactly; each term simplified (the √3 terms cancel, so the constant is rational)",
+    "ms": "M1 integrate f′(x), one power raised by 1; A1ft 4x^(1/2) − Ax⁻¹ + 3x (+c); dM1 use f(12) = 8√3 to find c with their A; A1ft c = −109/3 (ft A/12 − 36, since f(12) = 8√3 − A/12 + 36 + c; awrt 1 d.p.); A1 f(x) = 4√x + 4/x + 3x − 109/3, not ft; multiplying through by 3 afterwards gives A0 (MS pp.15–16)",
     "er": ""
    }
   ],
   "sources": {
    "qp": "github:EslamAhmedGaber/elite-igcse-math/downloads/IAL/WMA11/Papers/WMA11_2022_MayJune_QP.pdf (= local:src/WMA11/2022-06_01_qp.pdf, P69458A)",
-   "ms": "",
+   "ms": "github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/ms/pure1/2022/Mathematics PURE1 (IAL) - May 2022 - MS (WMA11).pdf (= local:src/WMA11/2022-06_01_ms.pdf; PMT-stamped Pearson PDF, 'Mark Scheme (Results) Summer 2022', Publications Code WMA11_01_2206_MS; log number P69458A)",
    "er": ""
   }
  },
@@ -4337,7 +4336,7 @@
     "command": "Show that",
     "ask": "Ceiling-fan section: sector OAB radius 9 cm with arc AB = 15 cm, sector OBCD radius 84 cm, angle AOD = 2π/3: show arc CD = 35.9 cm to 1 d.p.",
     "final_form": "given value; show enough working to justify 35.9 to 1 d.p.",
-    "ms": "",
+    "ms": "M1 arc AB: 15 = 9θ, θ = 5/3; dM1 angle for arc CD = 2π/3 − 5/3 (≈ 0.4277); A1* cso arc CD = 84(2π/3 − 5/3) = 35.929… shown to at least 2 d.p. before giving 35.9 cm (MS p.17)",
     "er": ""
    },
    {
@@ -4349,7 +4348,7 @@
     "command": "Find",
     "ask": "Find the perimeter of the whole fan face (three congruent sections)",
     "final_form": "nearest cm",
-    "ms": "",
+    "ms": "M1 perimeter = 3 × 15 + 3 × 35.9 + 6 × (84 − 9), all six arcs and radial edges (implied by awrt 603); A1 awrt 603 cm (MS pp.17–18)",
     "er": ""
    },
    {
@@ -4361,13 +4360,13 @@
     "command": "Find",
     "ask": "Find the surface area of the fan face according to the flat-surface model",
     "final_form": "3 significant figures with units made clear (cm²)",
-    "ms": "",
+    "ms": "M1 one relevant area (e.g. blade sector ½ × 84² × (2π/3 − 5/3) ≈ 1510); dM1 a second area that combines with it (inner sector ½ × 9² × 5/3 = 67.5); A1 both correct (angles to 3 s.f.); ddM1 correct combination, ×3; A1 awrt 4730 cm² or 0.473 m², units required, isw (MS pp.17–19)",
     "er": ""
    }
   ],
   "sources": {
    "qp": "github:EslamAhmedGaber/elite-igcse-math/downloads/IAL/WMA11/Papers/WMA11_2022_MayJune_QP.pdf (= local:src/WMA11/2022-06_01_qp.pdf, P69458A)",
-   "ms": "",
+   "ms": "github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/ms/pure1/2022/Mathematics PURE1 (IAL) - May 2022 - MS (WMA11).pdf (= local:src/WMA11/2022-06_01_ms.pdf; PMT-stamped Pearson PDF, 'Mark Scheme (Results) Summer 2022', Publications Code WMA11_01_2206_MS; log number P69458A)",
    "er": ""
   }
  },
@@ -4388,7 +4387,7 @@
     "command": "State",
     "ask": "Given sin α = p (0 < α < 90°), state in terms of p: 2 sin(180° − α), sin(α − 180°), 3 + sin(180° + α)",
     "final_form": "three expressions in p",
-    "ms": "",
+    "ms": "B1 2p; B1 −p; B1 3 − p (each accepted as the y-coordinate of a stated point) (MS pp.19–20)",
     "er": ""
    },
    {
@@ -4401,7 +4400,7 @@
     "command": "Sketch",
     "ask": "On the copy of the graph of y = sin x, sketch y = sin 2x",
     "final_form": "sketch on the given diagram",
-    "ms": "",
+    "ms": "M1 sine-shaped curve from O with the same amplitude (scaling may be off; one full cycle on one side enough); A1 correct, crossing at (180, 0) and (360, 0), two cycles each side of the y-axis (MS pp.19–20)",
     "er": ""
    },
    {
@@ -4413,13 +4412,13 @@
     "command": "Hence find",
     "ask": "Hence find, in terms of α, the x-coordinates in 0 < x < 180° where sin 2x = p",
     "final_form": "all solutions in the interval, in terms of α",
-    "ms": "",
+    "ms": "B1 x = α/2; M1 a second solution by symmetry (e.g. (180 − α)/2, 90 + α/2, 180 + α/2), range not yet checked; A1 x = 90 − α/2 as the second solution with no extra solutions in range (MS pp.19–20)",
     "er": ""
    }
   ],
   "sources": {
    "qp": "github:EslamAhmedGaber/elite-igcse-math/downloads/IAL/WMA11/Papers/WMA11_2022_MayJune_QP.pdf (= local:src/WMA11/2022-06_01_qp.pdf, P69458A)",
-   "ms": "",
+   "ms": "github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/ms/pure1/2022/Mathematics PURE1 (IAL) - May 2022 - MS (WMA11).pdf (= local:src/WMA11/2022-06_01_ms.pdf; PMT-stamped Pearson PDF, 'Mark Scheme (Results) Summer 2022', Publications Code WMA11_01_2206_MS; log number P69458A)",
    "er": ""
   }
  },
@@ -4440,7 +4439,7 @@
     "command": "Find",
     "ask": "Find dy/dx for y = (2/7)x³ + (1/7)x² − (5/2)x + k",
     "final_form": "derivative",
-    "ms": "",
+    "ms": "M1 at least two terms correct; A1 dy/dx = (6/7)x² + (2/7)x − 5/2, isw (MS pp.21–22)",
     "er": ""
    },
    {
@@ -4453,7 +4452,7 @@
     "command": "Show that",
     "ask": "The normal l to C at A (x = −7/2) is also a tangent to C at B: show the x-coordinate of B satisfies 12x² + 4x − 33 = 0",
     "final_form": "given equation reached with working shown",
-    "ms": "",
+    "ms": "M1 substitute x = −7/2 into dy/dx (gradient 7); M1 perpendicular gradient −1/7 for the tangent at B; dM1 set dy/dx = −1/7; A1* 12x² + 4x − 35 = −2 → 12x² + 4x − 33 = 0 with an intermediate line; no credit carried back from (d) (MS pp.21–22)",
     "er": ""
    },
    {
@@ -4466,7 +4465,7 @@
     "command": "Hence find",
     "ask": "Hence find the x-coordinate of B, justifying the choice of root",
     "final_form": "one exact value with a reason for rejecting the other root (e.g. from the figure)",
-    "ms": "",
+    "ms": "M1 solve the quadratic, e.g. (2x − 3)(6x + 11) = 0 (calculator allowed); A1 x = 3/2 with a reason from the sketch, e.g. B has positive x so not −11/6 (MS pp.21–22)",
     "er": ""
    },
    {
@@ -4479,13 +4478,13 @@
     "command": "Find",
     "ask": "Given the y-intercept of l is −1, find k",
     "final_form": "value of k",
-    "ms": "",
+    "ms": "M1 l: y = −(1/7)x − 1 from their changed gradient; dM1 coordinates of A (−7/2, −1/2) or B (3/2, −17/14) from l; ddM1 substitute into the equation of C and solve for k; A1 cso k = 5/4. Alts: y-coordinate in terms of k then intercept of l = −1, or equate l with C and use the known root (MS pp.21–23)",
     "er": ""
    }
   ],
   "sources": {
    "qp": "github:EslamAhmedGaber/elite-igcse-math/downloads/IAL/WMA11/Papers/WMA11_2022_MayJune_QP.pdf (= local:src/WMA11/2022-06_01_qp.pdf, P69458A)",
-   "ms": "",
+   "ms": "github:RayZ3R0/papernexus-finder@921bdf4f papers/mathematics/ms/pure1/2022/Mathematics PURE1 (IAL) - May 2022 - MS (WMA11).pdf (= local:src/WMA11/2022-06_01_ms.pdf; PMT-stamped Pearson PDF, 'Mark Scheme (Results) Summer 2022', Publications Code WMA11_01_2206_MS; log number P69458A)",
    "er": ""
   }
  },

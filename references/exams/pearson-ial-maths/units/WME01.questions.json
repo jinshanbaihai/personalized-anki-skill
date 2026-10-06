@@ -16,7 +16,7 @@
     "command": "Find",
     "ask": "P (3m, speed 2u) and Q (2m, speed 4u) approach each other on a smooth plane and collide directly; P's speed is halved and its direction reversed: find Q's speed after the collision",
     "final_form": "speed in terms of u (positive)",
-    "ms": "",
+    "ms": "M1 CLM with all four terms, dimensionally correct: 6mu − 8mu = −3mu + 2mv; A1 correct unsimplified; A1 v = u/2, must be positive (MS p.7, crop)",
     "er": ""
    },
    {
@@ -28,13 +28,13 @@
     "command": "Find",
     "ask": "Find the magnitude of the impulse exerted on Q by P",
     "final_form": "magnitude in terms of m and u",
-    "ms": "",
+    "ms": "M1 impulse-momentum for either particle, correct mass with its own velocities, e.g. I = 3m(u + 2u) or 2m(u/2 + 4u) (sign either way); A1 9mu, positive (MS p.7, crop)",
     "er": ""
    }
   ],
   "sources": {
    "qp": "finder:Old Mathematics/WME01/Question paper - Unit 1 (WME01) - June 2019.json (anonymouslyanonymous1/Edexcel-Finder@e3db7034; lower-cased per-page text, P55872A, 27 pp.; diagrams lost, some italic letters glyph-shifted; copy local:src/WME01/2019-06_01_qp.finder.txt) — no PDF of the question paper reached",
-   "ms": "",
+   "ms": "github:ShariarAlamDipto/grademax@9e091168 data/processed/Mechanics_1/markschemes/2019_Jun_P1_Q1.pdf (= local:src/WME01/2019-06_01_ms_crops/ms_2019_Jun_Q1.pdf; one-page crop of the PMT-stamped Pearson June 2019 WME01 mark scheme, header 'Mechanics_1 · 2019 · May/Jun · Paper · MS'; p.7 of 15 per the repo's segment file (ms_pages 6, 0-based); no crop exists for Q2)",
    "er": ""
   }
  },
@@ -84,7 +84,7 @@
     "command": "Find",
     "ask": "Uniform beam AB, 100 kg, 8 m, held horizontal by vertical ropes at C and D (AC = BD = 0.5 m); gymnast m kg at P (AP = 2 m); tension at D is 637 N: find (i) m and (ii) the tension at C (printed as one 6-mark item)",
     "final_form": "m in kg and tension in newtons",
-    "ms": "",
+    "ms": "M1 a moments equation with all terms, dimensionally correct (sign errors condoned), e.g. about C: 1.5Mg + 3.5 × 100g = 7 × 637; A1 correct; M1 resolve vertically or a second independent moments equation; A1ft T + 637 = Mg + 100g (ft their M or T); A1 M = 70 (rounding 69.99… from g = 9.81 is A0); A1 T = 1000 N or 1030 N (not 1029, not 105g) (MS p.9, crop)",
     "er": ""
    },
    {
@@ -96,7 +96,7 @@
     "command": "State",
     "ask": "State how you used the fact that the beam is modelled as a rod",
     "final_form": "modelling statement",
-    "ms": "",
+    "ms": "B1 the beam stays straight / does not bend (not flexible); adding an irrelevant claim such as the centre of mass being at the midpoint scores B0 (MS p.9, crop)",
     "er": ""
    },
    {
@@ -108,13 +108,13 @@
     "command": "Find",
     "ask": "Replaced by gymnasts of 60 kg at P and 48 kg at X (AX = x m); the two tensions are now equal: find x",
     "final_form": "value of x",
-    "ms": "",
+    "ms": "M1 resolve vertically with equal tensions, 2T = 60g + 100g + 48g; A1 correct (T = 104g); M1 moments with all terms, not reusing T from (a), e.g. about C: 60g × 1.5 + 100g × 3.5 + 48g(x − 0.5) = 7T; A1 correct; DM1 solve for x; A1 x = 6.5 m; beware a 'correct' x from working that omits the 100g (MS p.9, crop)",
     "er": ""
    }
   ],
   "sources": {
    "qp": "finder:Old Mathematics/WME01/Question paper - Unit 1 (WME01) - June 2019.json (anonymouslyanonymous1/Edexcel-Finder@e3db7034; lower-cased per-page text, P55872A, 27 pp.; diagrams lost, some italic letters glyph-shifted; copy local:src/WME01/2019-06_01_qp.finder.txt) — no PDF of the question paper reached",
-   "ms": "",
+   "ms": "github:ShariarAlamDipto/grademax@9e091168 data/processed/Mechanics_1/markschemes/2019_Jun_P1_Q3.pdf (= local:src/WME01/2019-06_01_ms_crops/ms_2019_Jun_Q3.pdf; one-page crop of the PMT-stamped Pearson June 2019 WME01 mark scheme, header 'Mechanics_1 · 2019 · May/Jun · Paper · MS'; p.9 of 15 per the repo's segment file (ms_pages 8, 0-based); no crop exists for Q2)",
    "er": ""
   }
  },
@@ -137,13 +137,13 @@
     "command": "Find",
     "ask": "Engine 2000 kg pushes truck 500 kg up a slope (sin θ = 1/14) through a light rod coupling; driving force 3050 N; resistances 100 N (truck) and 200 N (engine): find (i) the acceleration and (ii) the force exerted on the truck by the coupling (printed as one 8-mark item)",
     "final_form": "acceleration (m s⁻²) and force (N)",
-    "ms": "",
+    "ms": "(i) M1 whole-system equation, all terms (sign and sin/cos slips condoned); A1 at most one error; A1 3050 − 300 − 2500g sin θ = 2500a; A1 a = 0.4 m s⁻² (not 2/5, as g = 9.8). (ii) M1 truck (or engine) equation; A1 at most one error; A1 T − 100 − 500g sin θ = 500a; A1 T = 650 N, positive. Resistances swapped between vehicles is a misread (T = 750) (MS p.10, crop)",
     "er": ""
    }
   ],
   "sources": {
    "qp": "finder:Old Mathematics/WME01/Question paper - Unit 1 (WME01) - June 2019.json (anonymouslyanonymous1/Edexcel-Finder@e3db7034; lower-cased per-page text, P55872A, 27 pp.; diagrams lost, some italic letters glyph-shifted; copy local:src/WME01/2019-06_01_qp.finder.txt) — no PDF of the question paper reached",
-   "ms": "",
+   "ms": "github:ShariarAlamDipto/grademax@9e091168 data/processed/Mechanics_1/markschemes/2019_Jun_P1_Q4.pdf (= local:src/WME01/2019-06_01_ms_crops/ms_2019_Jun_Q4.pdf; one-page crop of the PMT-stamped Pearson June 2019 WME01 mark scheme, header 'Mechanics_1 · 2019 · May/Jun · Paper · MS'; p.10 of 15 per the repo's segment file (ms_pages 9, 0-based); no crop exists for Q2)",
    "er": ""
   }
  },
@@ -164,7 +164,7 @@
     "command": "Find",
     "ask": "The resultant R of two forces has the direction of 3i − 2j: find the angle between R and j",
     "final_form": "angle in degrees",
-    "ms": "",
+    "ms": "M1 trig for a relevant angle (tan⁻¹(2/3) = 33.7° or 56.3°); A1 angle = 33.7° + 90° = 123.69…, 124° or better (2.16 rad) (MS p.11, crop)",
     "er": ""
    },
    {
@@ -177,13 +177,13 @@
     "command": "Show that",
     "ask": "Given F1 = (ai + 3j) N and F2 = (−4i + bj) N, show that 2a + 3b + 1 = 0",
     "final_form": "printed equation",
-    "ms": "",
+    "ms": "M1 resultant as the sum F1 + F2 = (a − 4)i + (3 + b)j (not the difference) set parallel to k(3i − 2j); M1 use the direction to form an equation in a and b (ratio, or two equations in k); A1 (a − 4)/3 = (3 + b)/(−2) unsimplified; A1 2a + 3b + 1 = 0 from correct working, evidence needed for the given answer (MS p.11, crop)",
     "er": ""
    }
   ],
   "sources": {
    "qp": "finder:Old Mathematics/WME01/Question paper - Unit 1 (WME01) - June 2019.json (anonymouslyanonymous1/Edexcel-Finder@e3db7034; lower-cased per-page text, P55872A, 27 pp.; diagrams lost, some italic letters glyph-shifted; copy local:src/WME01/2019-06_01_qp.finder.txt) — no PDF of the question paper reached",
-   "ms": "",
+   "ms": "github:ShariarAlamDipto/grademax@9e091168 data/processed/Mechanics_1/markschemes/2019_Jun_P1_Q5.pdf (= local:src/WME01/2019-06_01_ms_crops/ms_2019_Jun_Q5.pdf; one-page crop of the PMT-stamped Pearson June 2019 WME01 mark scheme, header 'Mechanics_1 · 2019 · May/Jun · Paper · MS'; p.11 of 15 per the repo's segment file (ms_pages 10, 0-based); no crop exists for Q2)",
    "er": ""
   }
  },
@@ -204,7 +204,7 @@
     "command": "Find",
     "ask": "Ball projected vertically up at u m/s from A, 12.5 m above the ground, hits the ground 25/7 s later: find u",
     "final_form": "value of u",
-    "ms": "",
+    "ms": "M1 complete suvat method for an equation in U only, e.g. s = ut + ½at²; A1 −12.5 = (25/7)U − 4.9(25/7)²; A1 U = 14, positive (MS p.12, crop)",
     "er": ""
    },
    {
@@ -216,7 +216,7 @@
     "command": "Find",
     "ask": "It rebounds vertically and comes to instantaneous rest at B, 5/7 s after hitting the ground: find the height of B",
     "final_form": "height in metres",
-    "ms": "",
+    "ms": "M1 complete suvat method for s, e.g. s = vt − ½at² with v = 0; A1 s = 0 + ½(9.8)(5/7)²; A1 2.5 m. Alt: rebound speed 0 = u − g(5/7) gives u = 7, then s = 7(5/7) − ½ × 9.8 × (5/7)² (MS p.12, crop)",
     "er": ""
    },
    {
@@ -228,13 +228,13 @@
     "command": "Sketch",
     "ask": "Sketch the velocity-time graph from projection at A to instantaneous rest at B (no further calculation needed)",
     "final_form": "v-t graph with the rebound discontinuity",
-    "ms": "",
+    "ms": "B1 first straight line crossing the t-axis (positive to negative v); B1 second line parallel to the first, ending on the t-axis, no other lines; B1ft values 14 (their U), 25/7 and 30/7 in the right places; mirror image in the t-axis accepted (MS p.12, crop)",
     "er": ""
    }
   ],
   "sources": {
    "qp": "finder:Old Mathematics/WME01/Question paper - Unit 1 (WME01) - June 2019.json (anonymouslyanonymous1/Edexcel-Finder@e3db7034; lower-cased per-page text, P55872A, 27 pp.; diagrams lost, some italic letters glyph-shifted; copy local:src/WME01/2019-06_01_qp.finder.txt) — no PDF of the question paper reached",
-   "ms": "",
+   "ms": "github:ShariarAlamDipto/grademax@9e091168 data/processed/Mechanics_1/markschemes/2019_Jun_P1_Q6.pdf (= local:src/WME01/2019-06_01_ms_crops/ms_2019_Jun_Q6.pdf; one-page crop of the PMT-stamped Pearson June 2019 WME01 mark scheme, header 'Mechanics_1 · 2019 · May/Jun · Paper · MS'; p.12 of 15 per the repo's segment file (ms_pages 11, 0-based); no crop exists for Q2)",
    "er": ""
   }
  },
@@ -253,9 +253,9 @@
      "2.2"
     ],
     "command": "Show that",
-    "ask": "Ship A: velocity (2i − 14j) km/h, at 2 pm at (8i + 7j) km; ship B: velocity (12i − 4j) km/h, at 2 pm at (i + 2j) km: show that t hours after 2 pm, BA = [(7 − 10t)i + (5 − 10t)j] km (t read from the glyph-shifted \"w\")",
+    "ask": "Ship A: velocity (2i − 14j) km/h, at 2 pm at (8i + 7j) km; ship B: velocity (12i − 4j) km/h, at 2 pm at (i + 2j) km: show that t hours after 2 pm, BA = [(7 − 10t)i + (5 − 10t)j] km (t confirmed by the MS crop)",
     "final_form": "printed vector",
-    "ms": "",
+    "ms": "M1 r = r₀ + vt used at least once, adding not subtracting; A1 r_A = (8 + 2t)i + (7 − 14t)j; A1 r_B = (1 + 12t)i + (2 − 4t)j; M1 BA = r_A − r_B with the method shown; A1 (7 − 10t)i + (5 − 10t)j from correct working (MS p.13, crop)",
     "er": ""
    },
    {
@@ -268,13 +268,13 @@
     "command": "Hence find",
     "ask": "Hence find the length of time for which the ships are within 2 km of each other",
     "final_form": "length of time (minutes or hours)",
-    "ms": "",
+    "ms": "M1 Pythagoras with distance 2 km; A1 (7 − 10t)² + (5 − 10t)² = 2²; M1 3TQ 20t² − 24t + 7 = 0; DM1 solve, (10t − 7)(2t − 1) = 0 (working needed if the quadratic is wrong); A1 t = 7/10 or 1/2; DM1 subtract to find the interval; A1 1/5 h (12 minutes) (MS p.13, crop)",
     "er": ""
    }
   ],
   "sources": {
    "qp": "finder:Old Mathematics/WME01/Question paper - Unit 1 (WME01) - June 2019.json (anonymouslyanonymous1/Edexcel-Finder@e3db7034; lower-cased per-page text, P55872A, 27 pp.; diagrams lost, some italic letters glyph-shifted; copy local:src/WME01/2019-06_01_qp.finder.txt) — no PDF of the question paper reached",
-   "ms": "",
+   "ms": "github:ShariarAlamDipto/grademax@9e091168 data/processed/Mechanics_1/markschemes/2019_Jun_P1_Q7.pdf (= local:src/WME01/2019-06_01_ms_crops/ms_2019_Jun_Q7.pdf; one-page crop of the PMT-stamped Pearson June 2019 WME01 mark scheme, header 'Mechanics_1 · 2019 · May/Jun · Paper · MS'; p.13 of 15 per the repo's segment file (ms_pages 12, 0-based); no crop exists for Q2)",
    "er": ""
   }
  },
@@ -296,7 +296,7 @@
     "command": "Find",
     "ask": "P (4m) and Q (3m) joined by a light inextensible string over a smooth light fixed pulley; R (2m) attached to Q; released from rest: find (i) the acceleration of P and (ii) the tension (printed as one 7-mark item)",
     "final_form": "acceleration and tension in terms of g (and m)",
-    "ms": "",
+    "ms": "M1 equation for P or for Q and R (all terms; m omitted throughout is a misread); A1 5mg − T = 5ma or T − 4mg = 4ma; M1 second equation (whole system condoned); A1 correct; DM1 solve; A1 a = g/9 (1.09 or 1.1, not 49/45); A1 T = 40mg/9 (43.6m or 44m); whole system alone scores M0A0M1A1M0A1A0 (MS p.14, crop)",
     "er": ""
    },
    {
@@ -308,7 +308,7 @@
     "command": "State",
     "ask": "State how you used the fact that the string is inextensible",
     "final_form": "modelling statement",
-    "ms": "",
+    "ms": "B1 all particles have accelerations of the same magnitude (or all start moving at the same time); extra irrelevant comments B0 (MS p.14, crop)",
     "er": ""
    },
    {
@@ -319,15 +319,15 @@
      "3.1"
     ],
     "command": "Find",
-    "ask": "When P has moved up a distance d, R separates from Q at point A; Q continues down to instantaneous rest at B (P does not reach the pulley): find the distance AB in terms of d (\"d\" decoded from the glyph-shifted \"g\" of the Finder text; unverified against a PDF)",
+    "ask": "When P has moved up a distance d, R separates from Q at point A; Q continues down to instantaneous rest at B (P does not reach the pulley): find the distance AB in terms of d (\"d\" decoded from the glyph-shifted \"g\" of the Finder text; confirmed by the MS crop, which works with v² = 2gd/9)",
     "final_form": "distance in terms of d",
-    "ms": "",
+    "ms": "M1 speed at separation v² = 2gd/9; M1 two independent equations after separation; A1 3mg − T′ = 3ma′; A1 T′ − 4mg = 4ma′; A1 a′ = −g/7 (either sign); DM1 suvat for the distance (a′ not g/9 or g); A1ft 0 = 2gd/9 − 2(g/7)s; A1 AB = 7d/9 (0.78d or better), positive, no isw (MS p.14, crop)",
     "er": ""
    }
   ],
   "sources": {
    "qp": "finder:Old Mathematics/WME01/Question paper - Unit 1 (WME01) - June 2019.json (anonymouslyanonymous1/Edexcel-Finder@e3db7034; lower-cased per-page text, P55872A, 27 pp.; diagrams lost, some italic letters glyph-shifted; copy local:src/WME01/2019-06_01_qp.finder.txt) — no PDF of the question paper reached",
-   "ms": "",
+   "ms": "github:ShariarAlamDipto/grademax@9e091168 data/processed/Mechanics_1/markschemes/2019_Jun_P1_Q8.pdf (= local:src/WME01/2019-06_01_ms_crops/ms_2019_Jun_Q8.pdf; one-page crop of the PMT-stamped Pearson June 2019 WME01 mark scheme, header 'Mechanics_1 · 2019 · May/Jun · Paper · MS'; p.14 of 15 per the repo's segment file (ms_pages 13, 0-based); no crop exists for Q2)",
    "er": ""
   }
  },

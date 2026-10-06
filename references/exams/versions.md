@@ -151,6 +151,7 @@ Supporting facts:
 ### 2.2 Syllabus for 2029 or later (Medium that it exists; contents unknown)
 
 - Two WebSearch summaries of the **official 9708 programme page** state that a "**2029 Syllabus**" PDF (649 KB) is listed (*pointer*). The document number and the years it covers were not found. Other Cambridge syllabuses for 2029–2031 exist (e.g. `Images/763854-2029-2031-syllabus.pdf`, `764368-2029-syllabus.pdf`; *pointer*). Cambridge also publishes a "Syllabus Changes (International) September 2026 v1.1" list (*pointer*: `Images/663781-syllabus-changes-international-.pdf`).
+- **Update (later on 2026-10-06):** a saved copy of the official 9708 page in the user's Drive lists "2029 Syllabus (PDF, 649KB)" at `/Images/764392-2029-syllabus.pdf` and a "2026 - 2028 Syllabus update" at `/Images/748950-2026-2028-syllabus-update.pdf`; neither PDF could be fetched. Details and the comparison to run once obtained: `cie-9708/syllabus-2029-changes.md`.
 - **Gap:** the 2029 syllabus was not read. Whether it changes content, and whether its 2029 entry overlaps the "2028" end of the current syllabus, is **unknown**. For exams in 2026–2028, SYL V2 applies.
 
 ### 2.3 First examination of the current content: 2023 (High)

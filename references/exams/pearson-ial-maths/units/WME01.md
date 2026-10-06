@@ -140,13 +140,13 @@
 
 **逐题索引（合并版）**：`pearson-ial-maths/units/WME01.questions.json`，由同目录 `WME01.questions.part1.json`（79 题，2019-06 至 2022-10）与 `part2.json`（82 题，2023-01 至 2026-01，含 2025-10 /01A）合并，按 id 去重（没有重复），按考季 → 卷别（/01 在 /01A 前）→ 题号排序。改正同时写回两个 part 文件，合并文件与两个 part 文件逐条一致。各卷来源、文件校验与缺口见 `WME01.coverage.part1.md`、`WME01.coverage.part2.md`。
 
-- **格式校验**（`merge_validate.py`）：161 题、422 小问、1575 分；字段齐全，无多余字段；每题各小问分值之和等于题目总分；每份卷 75 分，题号连续；spec id 全部在 `spec-items.mech.json` → WME01 中；series 全部符合 YYYY-MM；id 与 paper 一致；有 MS 的卷每个小问都有 `ms`，没有 MS 的卷 `ms` 全空；引号内的原文都不超过 25 词。结果 0 个问题。
+- **格式校验**（`merge_validate.py`）：161 题、422 小问、1575 分；字段齐全，无多余字段；每题各小问分值之和等于题目总分；每份卷 75 分，题号连续；spec id 全部在 `spec-items.mech.json` → WME01 中；series 全部符合 YYYY-MM；id 与 paper 一致；有 MS 的卷每个小问都有 `ms`，没有 MS 的卷 `ms` 全空；引号内的原文都不超过 25 词。结果 0 个问题。（2026-10-06 补入 S19 的 MS 裁切后，S19 是唯一的部分情形：Q2 没有裁切，它的 `ms` 仍为空，其余 16 个小问都已填写。）
 - **完整性**：对照 `inventory/fm-mech.json`、`inventory/fm-mech-gaps.md`、`versions.json`（预期考季 2019-06 至 2026-06）、Edexcel-Finder 清单 `finder/finder-inventory.tsv`（2019-06 至 2025-01 每季的 P 号与题数都和索引一致；SAM 不是考季，不收），以及第三方抓取的 Pearson 官方链接索引 `finder/gh/grademax_maths_index.json`（2025-01 至 2026-06）。**凡是拿得到 QP 文本的卷都已索引**，共 21 份：2019-06 至 2026-01 每个考季的 /01（20 份）加 2025-10 /01A。2019-01 及以前同代码的卷属于 2013 版考纲，不收。
 - **所有来源都拿不到的卷**：
   - **2026-06 WME01/01**：QP、MS、ER 都没有。
   - **2026-01 WME01/01A**、**2026-06 WME01/01A**：QP、MS、ER 都没有。
   - 这三份卷确实存在：grademax 索引列出了 `wme01-01-que-20260508.pdf`、`wme01-01a-que-20260110.pdf`、`wme01-01a-que-20260508.pdf` 及各自的 rms 文件，都在 Pearson 的受限区。本次在 Drive 上重新检索（标题含 `M1A`、`WME01A`、`wme01-01a`、`26_01`、`26_06`、`2601`、`2606`，以及 2026-01-15 以后创建、标题含 M1/WME01/Mechanics 的文件），只找到 P4、P4A、S1、S1A；两个 GitHub 仓库 `git ls-remote` 仍是 elite-igcse-math 05b0320d、papernexus-finder 921bdf4f，没有更新。
-  - 已有卷缺的配套文件：2019-06、2019-10 没有 MS；（critic 2026-10-06：2019-06 MS 的 7 道题〔Q1、Q3–Q8，缺 Q2〕可从 GitHub `ShariarAlamDipto/grademax@9e09116` 的 `data/processed/Mechanics_1/markschemes/2019_Jun_P1_Q*.pdf` 取得，是带 PMT 戳的 Pearson MS 逐题裁切，内容与本索引 2019-06 各题吻合；已放在 `registry/src/WME01/2019-06_01_ms_crops/`，`ms` 字段尚未填写）2026-01 没有 MS（grademax 列出 `wme01-01-rms-20260305.pdf`，拿不到）；ER 只有 2022-10、2023-01、2023-06、2023-10、2024-01 五份，其余各季（2021-06 整季考试取消，本来就没有 ER）都没有。
+  - 已有卷缺的配套文件：2019-06、2019-10 没有 MS；（critic 2026-10-06，同日已补：2019-06 MS 的 7 道题〔Q1、Q3–Q8，缺 Q2〕取自 GitHub `ShariarAlamDipto/grademax@9e091168` 的 `data/processed/Mechanics_1/markschemes/2019_Jun_P1_Q*.pdf`，是带 PMT 戳的 Pearson MS 逐题裁切，本地副本在 `registry/src/WME01/2019-06_01_ms_crops/`。这 7 题 16 个小问的 `ms` 和 `sources.ms` 已填写；Q7(a) 的 t、Q8(c) 的 d 这两处 Finder 读法已由 MS 裁切证实。审核时按裁切原文复核了 Q5、Q7、Q8，没有错误。Q2〔6 分〕仍无 MS）2026-01 没有 MS（grademax 列出 `wme01-01-rms-20260305.pdf`，拿不到）；ER 只有 2022-10、2023-01、2023-06、2023-10、2024-01 五份，其余各季（2021-06 整季考试取消，本来就没有 ER）都没有。
   - **2025-06 WME01/01A 不存在**：grademax 索引里 2025 年 6 月只有 WMA11–WMA14、WFM02、WME02 有 /01A，WME01/01A 最早一份是 2025-10。`WME01.coverage.part2.md` §3 原来写“不知道是否存在”，已加审核注释。
 - **准确性**：
   - 逐条对照 QP、MS、ER 原文（`work/wme01p1/clean/`、`work/wme01p2/clean/` 的文本层，必要时看 `src/WME01/*.txt` 原始抽取和渲染图）复核了 34 题，21 份卷每份至少 1 题，题型分散：S19 Q6、Q8，O19 Q3，J20 Q4，O20 Q6，J21 Q5，S21 Q4，O21 Q7，J22 Q3、Q8，S22 Q5，O22 Q3、Q7，J23 Q7，S23 Q2、Q6、Q8，O23 Q6、Q7，J24 Q4，S24 Q8，O24 Q1、Q5、Q6、Q7，J25 Q6，S25 Q2、Q8，O25 Q2，O25A Q6，J26 Q1、Q2、Q5、Q6、Q7。核对内容：分值、spec 映射、命令词、`final_form`（按题意重新计算答案，和 MS 答案比对；没有 MS 的 J26 各题全部重算并看了渲染图）、MS 要点、ER 内容及页码。
@@ -161,7 +161,7 @@
 
 ## 7. 真题需求概览
 
-**数据范围**：`WME01.questions.json` 的 21 份卷（2019-06 至 2026-01 每季的 /01，加 2025-10 /01A），共 161 题、422 小问、1575 分。18 份有 MS（S19、O19、J26 没有）；ER 只有 O22、J23、S23、O23、J24 五份，覆盖 39 题、101 个小问。S19 只有 Edexcel-Finder 文本（少数式子是重建的，见 `WME01.coverage.part1.md`）。缺的三份 2026 卷见第 6 节。下面的数字由 `work/wme01audit/scripts/stats.py` 从索引统计（结果在 `work/wme01audit/stats.json`、`stats.txt`）；“问法、终点、评分”来自索引的 `ask`、`final_form`、`ms`、`er` 字段，这些字段在第 6 节抽查过。
+**数据范围**：`WME01.questions.json` 的 21 份卷（2019-06 至 2026-01 每季的 /01，加 2025-10 /01A），共 161 题、422 小问、1575 分。18 份有完整 MS；S19 有除 Q2 外 7 题的 MS（逐题裁切，2026-10-06 补入，17 个小问中 16 个有 `ms`）；O19、J26 没有 MS；ER 只有 O22、J23、S23、O23、J24 五份，覆盖 39 题、101 个小问。S19 只有 Edexcel-Finder 文本（少数式子是重建的，见 `WME01.coverage.part1.md`）。缺的三份 2026 卷见第 6 节。下面的数字由 `work/wme01audit/scripts/stats.py` 从索引统计（结果在 `work/wme01audit/stats.json`、`stats.txt`）；“问法、终点、评分”来自索引的 `ask`、`final_form`、`ms`、`er` 字段，这些字段在第 6 节抽查过。
 
 **引用写法**：J = January，S = June，O = October，后接两位年份；A = /01A；题号与小问照试卷印刷。“MS”“ER”指该卷的评分方案和考官报告；页码见索引条目的 `ms`、`er` 字段。
 
@@ -217,16 +217,16 @@
 
 ER 只有 O22、J23、S23、O23、J24 五份；没有标 ER 的条目来自 MS 的评分说明。下面每条的出处都在本次审核中核对过原文。
 
-1. **g 与精度**。每份 MS 的通用说明都写：用 g = 9.8 后答案给 2 或 3 位有效数字；用 9.81 每题扣一次；过度精确每题扣一次，过早取近似每次都扣。由 9.8 算出的分数不给 A 分：O20 Q6(a)（32/125 is A0），J20 Q7(d)（5/8 is A0），O24 Q6(a)（392/19 A0，40g/19 可以），J25 Q7(b)（7/5 A0）。题目要精确值时不能写小数：S23 Q4(b)，ER 说取 0.67 的人丢了最后一分。中间用近似角也算过早近似：O22 Q3(a) ER（用 α ≈ 36.9° 被扣分），J23 Q8(b) ER（a 取整后再算速度，最后一分丢掉）。
+1. **g 与精度**。每份 MS 的通用说明都写：用 g = 9.8 后答案给 2 或 3 位有效数字；用 9.81 每题扣一次；过度精确每题扣一次，过早取近似每次都扣。由 9.8 算出的分数不给 A 分：O20 Q6(a)（32/125 is A0），J20 Q7(d)（5/8 is A0），O24 Q6(a)（392/19 A0，40g/19 可以），J25 Q7(b)（7/5 A0），S19 Q8(a)（a = g/9 写成 1.09 或 1.1，写 49/45 不给分）。题目要精确值时不能写小数：S23 Q4(b)，ER 说取 0.67 的人丢了最后一分。中间用近似角也算过早近似：O22 Q3(a) ER（用 α ≈ 36.9° 被扣分），J23 Q8(b) ER（a 取整后再算速度，最后一分丢掉）。
 2. **M 分的通用条件**。方程项数要对、量纲一致、该分解的力都要分解；分解时漏写或多写 g 只算准确度错误，漏掉质量、或力矩方程漏掉长度算方法错误（每份 MS 通用说明）。
 3. **速率、冲量写正值，方向写清楚**。O22 Q1(a) ER：速率要求正值；O24 Q1(b) MS、S21 Q4 MS：答案 must be positive。方向措辞：O21 Q2(b) MS 写 “Direction changed is B0”；S22 Q1(b) MS 不接受 “motion of Q is unchanged”。
 4. **冲量是同一质点动量之差**。质量与速度要配对（O25 Q2 MS：所有 M 分都要求 correct pairings of masses and velocities）；含 g 是 M0（J23 Q2(b) MS）；题目要求时写单位 N s（O22 Q1(b)，S23 Q1(c)，O23 Q3(b)）。
-5. **多阶段运动不能用一条 suvat 贯穿**。J23 Q1(b) MS：整段用一个 suvat 公式是 M0；J23 Q5(c) ER：用 t = 14 代一个公式得 0 分；断绳、着地后要用新的加速度和新的初速度：O24 Q5(d) MS（s = 8 直接代是 M0），S25 Q8(e) MS，S23 Q7(c) ER（很多人沿用 0.75 m s⁻²）。不合题意的根要明确舍去：J21 Q7(c) MS。
+5. **多阶段运动不能用一条 suvat 贯穿**。J23 Q1(b) MS：整段用一个 suvat 公式是 M0；J23 Q5(c) ER：用 t = 14 代一个公式得 0 分；断绳、着地后要用新的加速度和新的初速度：O24 Q5(d) MS（s = 8 直接代是 M0），S25 Q8(e) MS，S19 Q8(c) MS（R 与 Q 分开后要列新的运动方程，沿用 g/9 或用 g 都不给 DM1），S23 Q7(c) ER（很多人沿用 0.75 m s⁻²）。不合题意的根要明确舍去：J21 Q7(c) MS。
 6. **速率–时间图与速度–时间图**。竖直上抛的速率图是 V 形，不是速度图的一条直线；图末端不要画实线竖线（虚线可以）：O22 Q5(c) ER，另有 12 份 MS 写有 vertical line 的扣分说明（如 O23 Q2(b)、S24 Q5(d)、S25 Q3(c)、O24 Q4(c)）。关键数值都要标出（J23 Q1(a) ER：漏标 3T + 180）。
 7. **摩擦**。只有极限平衡或运动时才能用 F = μR：O22 Q3(a) MS（用 F = 0.5R 是 M0），O23 Q5(a) ER。外力改变或撤去后要重新求 R：O24 Q6(b) MS（沿用 (a) 的 R、F 整问不给分），J25 Q6(c) MS（没有新的 R 是 M0），J23 Q8(c) ER。摩擦方向画反是 O22 Q3(b) ER 说的最常见错误。“是否保持静止”要写出不等式或差值再下结论，只写文字不给分：J25 Q6(c) MS；S23 Q6 ER：只在最后一行把等号改成 ≤ 不给最后一分。
 8. **连接体：ma 里的质量要和所选物体对应**。S24 Q8 MS：ma 项用错质量，该方程 M0；J23 Q7 ER：整体方程用了升降机的质量 m，丢方法分；O23 Q7(a)(ii) ER：kma 或 kmg 漏 k。静止问题不要加 ma：J24 Q1 ER，J23 Q6 ER（匀速仍写了 ma）。
 9. **力矩与“on the point of tilting”**。将要绕某点翻转就是另一支点（或绳）的力为零：J23 Q4 ER（置零的反力选错就一分不得），O22 Q2(a) ER，J24 Q5(c) ER（还要去掉题目说已经拿走的 55 kg）。不能假设两反力相等：S22 Q5 MS（M0）。反力比不要用反：J24 Q5(b) ER，O23 Q1 ER。
-10. **建模说明按固定措辞给分**。光滑滑轮：两侧张力相等，写 “same for A and B”“same for both strings” 是 B0（O21 Q7(d) MS）；不可伸长：两个物体加速度相同，写 “the string has the same acceleration” 不给分（O25 Q7(c) MS）；质点：质量或重量集中（作用）在一点，必须提到质量或重量（J22 Q3(c) MS）；均匀：重心在中点；S23 Q4(c) ER 列出的常见错答是 “remains straight”“does not bend”“equal tensions”，以及只说重量作用在一点、没说是梁的中点。
+10. **建模说明按固定措辞给分**。光滑滑轮：两侧张力相等，写 “same for A and B”“same for both strings” 是 B0（O21 Q7(d) MS）；不可伸长：两个物体加速度相同，写 “the string has the same acceleration” 不给分（O25 Q7(c) MS）；S19 Q8(b) MS 接受“所有质点加速度大小相同”或“同时开始运动”，多写无关内容判 B0；质点：质量或重量集中（作用）在一点，必须提到质量或重量（J22 Q3(c) MS）；均匀：重心在中点；S23 Q4(c) ER 列出的常见错答是 “remains straight”“does not bend”“equal tensions”，以及只说重量作用在一点、没说是梁的中点。
 11. **向量**。速度与速率要分清，问速率就给大小（J23 Q3(a) ER：只求出速度丢 2 分）。“平行于／沿某向量方向”要用分量成比例，不能令分量等于该向量（O22 Q6(a) ER；J25 Q1(b) 为此发了 Clarification Notice，把 “in the direction of” 改成 “parallel to”）。所有 MS 的通用说明都接受列向量，但题目要求 i、j 形式时，最终答案写成列向量要扣分：S23 Q8(a) ER，S25 Q2(a)(b) MS，O23 Q6(a)(b) MS，J22 Q8(b) MS。求方位要用相对向量 AB，不是 OA 和 OB（O22 Q8(c) ER），并取到要求的精度（J24 Q4(ii) ER：很多人停在 52° 或 38°）。中途改变航向要先求改向时刻的位置：O23 Q6(d) ER（两船都代 t = 2.5 最多 1/7）。
 12. **合成与滑轮受力的向量三角形**。两力夹角 150° 时，三角形里的角是 30°；在正弦或余弦定理里用 150° 是错误的三角形，所有 M 分都没有（J24 Q4 MS 与 ER）。滑轮受力用 2T cos((90° − α)/2)、余弦定理配 90° + α，或水平竖直分量都可以；用 90° − α 是常见错误（O23 Q7(b) ER）。
 13. **Show that**。必须写出完整推导，至少一行中间步骤，最后一行与印刷结果完全一致：O25 Q1(a) MS（要有 “x =” 和中间一行），S24 Q7(c) MS（AB 写在开头或结尾），O22 Q6(a) ER；验证型要明确写出 “X = 14.7 ⇒ F = 0” 这样的结论（O22 Q3(a) MS）。
