@@ -96,7 +96,7 @@ python scripts/validate_package.py out/<牌组>.apkg --output out/validate.json 
 ```
 
 - `genre`：`term` 术语、`derivation` 推导、`method` 方法、`formula` 公式、`chain` 因果、`map` 导图、`diagram` 图解、`compare` 辨析、`essay` 论述、`pitfall` 易错、`overview` 全景、`case` 案例。卡型怎样配块见 [card-genres.md](card-genres.md)。
-- 牌组级 `terms_known` 列出本牌组之前已经讲透、不必再解释的 English 词；生成器把卡上反复出现、却没有术语卡、`<abbr>` 或 `terms_known` 解释的 English 词列进 `report.json` 的 `term_ledger`，提醒补术语卡。
+- 牌组级 `terms_known` 列出本牌组之前已经讲透、不必再解释的 English 词；生成器把卡上出现、却没有术语卡、就地释义（`<abbr>` 或“词（中文）”）或 `terms_known` 解释的 English 词（单词与词组）列进 `report.json` 的 `term_ledger`，提醒补术语卡。
 - `speed` 可覆盖自动判定（`1.5` 必须同时写 `speed_reason`）；`theme`、`tag`（页眉考试标签）、`subdeck`、`title_speech`、`examples_waived`（术语卡没有自然非例时的理由）、`formula_booklet`（`given` 公式表已给／`memorise` 须背／`derive` 须会推导，显示在页眉）可选。声音只在 `style.voice` 或 `style.voice_by_subdeck` 设定。
 - `links`：相关卡的 id（例如论述卡连到它的因果链卡与导图卡）。`exam_waived`：术语卡确实没有考法可写时的理由。
 - 生成器按卡型检查最低结构：`term` 卡要有 definition、至少一个例子和一个写了理由的非例；考试牌组的 `term` 卡还要有 definition `source`、至少两项的 unpack、exam 块（或 `exam_waived`）；`derivation` 卡要有 steps 与 finish；`chain` 卡要有 chain 块，`map`／`overview` 卡要有 map 块，`essay` 卡要有 sections，并有 chain／map 块或 `links`。

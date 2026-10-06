@@ -343,7 +343,7 @@ def test_theme_contrast_meets_wcag():
 
 def test_css_stays_within_anki_engines():
     """Anki 25.02 ships Chromium 112: no CSS nesting, light-dark(), color-mix() or container queries."""
-    for css in [ROOT / 'assets/ccpt6/base.css', *(ROOT / 'assets/ccpt6/themes').glob('*.css')]:
+    for css in [ROOT / 'assets/ccpt6/base.css', ROOT / 'assets/ccpt6/motifs.css', *(ROOT / 'assets/ccpt6/themes').glob('*.css')]:
         text = re.sub(r'/\*[\s\S]*?\*/', '', css.read_text(encoding='utf-8'))
         for banned in ('light-dark(', 'color-mix(', '@container'):
             assert banned not in text, f'{css.name} uses {banned}'
@@ -528,7 +528,7 @@ def test_mark_scheme_notation_is_accepted(mark):
     assert '这一步记' in parts[0].text
 
 
-@pytest.mark.parametrize('mark', ['two marks', 'AO2', 'M', '1'])
+@pytest.mark.parametrize('mark', ['two marks', 'AO2', 'M', 'M1+A1'])
 def test_non_mark_scheme_labels_are_rejected(mark):
     with pytest.raises(blocks.BlockError, match='mark-scheme notation'):
         blocks.render_block({'type': 'steps', 'items': [{'do': 'x', 'why': 'y', 'mark': mark}]}, 'b0', 'w')
@@ -685,3 +685,67 @@ def test_term_ledger_sees_single_words():
 def test_comparison_swallowed_by_an_optional_end_tag_is_rejected():
     with pytest.raises(blocks.BlockError, match='attribute name'):
         blocks.render_block({'type': 'html', 'html': '<div>q<p 且 p>0.5 时拒绝</div>', 'speech': 'x'}, 'b0', 'w')
+
+
+def test_formula_splitting_respects_environments_and_brackets():
+    for tex in ('\\mathbf{r}=\\begin{pmatrix}1\\\\2\\end{pmatrix}+\\lambda\\begin{pmatrix}3\\\\-1\\end{pmatrix}+\\mu\\begin{pmatrix}0\\\\1\\end{pmatrix}',
+                'f(x)=\\begin{cases}2x & 0\\le x<1\\\\ 3-x & 1\\le x\\le 3\\end{cases}'):
+        assert blocks.split_relations(tex) == [tex]
+        assert 'class="math"' in blocks.inline(f'${tex}$〔读法〕', 'w').html
+    pieces = blocks.split_relations('P(X\\le 3)=P(X=0)+P(X=1)+P(X=2)+P(X=3)=0.6472')
+    assert all(p.count('(') == p.count(')') for p in pieces) and len(pieces) == 3
+
+
+def test_tight_comparison_is_rejected_not_swallowed():
+    for text in ('当 p<b 时选 A', 'MSB<MSC 时过度生产', '若 cost<em 则亏损'):
+        with pytest.raises(blocks.BlockError, match='touching a letter|reads as a tag|not inline'):
+            blocks.inline(text, 'w')
+    assert blocks.inline('<b>重点</b> 与 x < 2', 'w').speech == '重点 与 x < 2'
+
+
+def test_currency_before_punctuation():
+    assert blocks.inline('The tax is \\$2, and the subsidy is \\$1.50.', 'w').speech == 'The tax is 2 美元, and the subsidy is 1.50 美元.'
+
+
+def test_cambridge_mark_counts_are_read():
+    _, parts = blocks.render_block({'type': 'steps', 'items': [{'do': 'x', 'why': '为了 y', 'mark': '[2]'}]}, 'b0', 'w')
+    assert '这一步记 2 分' in parts[0].text
+
+
+def test_why_that_restates_the_step_is_flagged():
+    assert build_cards.why_echoes('代入得到 2x+3=7', '2x+3=7')
+    assert not build_cards.why_echoes('为了消去 B', 'x=1')
+    assert not build_cards.why_echoes('比较系数得到 B', 'B=3')
+
+
+def test_directional_relation_words_count_as_direction():
+    card = {'genre': 'chain', 'blocks': [{'type': 'chain', 'items': [{'text': '补贴'}, {'text': '消费量', 'rel': '提高'}]}]}
+    assert not any('方向' in w for w in build_cards.lint_card(card))
+
+
+def test_paper_gap_next_to_chinese_text():
+    d = deck()
+    d['exam']['papers'] = [{'code': '9708/3', 'format': 'mcq'}]
+    d['research_gaps'] = '缺9708/3的考官报告，用 9708/4 ER 替代'
+    deck_rules.check(d)
+
+
+def test_per_mark_board_ids_need_lost():
+    d = deck()
+    d['board'].append({'id': 'Q01A2', 'where': 'p1', 'point': '没乘回 2', 'note': '粗心'})
+    with pytest.raises(deck_rules.DeckError, match='per-mark score'):
+        deck_rules.check(d)
+
+
+def test_minus_after_symbols_is_subtraction():
+    assert narration.apply_lexicon('x² − 1，σ − 2，Q* − 3', {}) == 'x的平方 减 1，sigma 减 2，Q 星 减 3'
+
+
+def test_term_ledger_skips_chrome_and_glosses():
+    d = deck()
+    pages = {'T01': ('<main><article><span class="def-label">Definition</span><p class="def-src">June 2024 MS</p>'
+                     '<span class="ex-text">population mean</span><span class="ex-why">unknown parameter</span>'
+                     '<p>integrand（被积函数）与 exact 值，MPC 上移</p></article></main>')}
+    terms = [x['term'] for x in build_cards.term_ledger(d, pages)]
+    assert 'definition' not in terms and 'june' not in terms and 'integrand' not in terms
+    assert 'exact' in terms and 'MPC' in terms and not any('meanunknown' in t for t in terms)

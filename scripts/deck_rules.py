@@ -109,7 +109,7 @@ def check_research(data):
         value = r.get('paper', [])
         read_papers |= {value} if isinstance(value, str) else set(value) if isinstance(value, list) else set()
     for p in (data.get('exam') or {}).get('papers', []):
-        named_in_gaps = re.search(r'(?<![\w/])' + re.escape(p['code']) + r'(?![\w/])', gaps)
+        named_in_gaps = re.search(r'(?<![A-Za-z0-9/])' + re.escape(p['code']) + r'(?![A-Za-z0-9/])', gaps)
         need(p['code'] in read_papers or named_in_gaps,
              f'research: no source tagged paper "{p["code"]}" ({p["format"]}); read its mark scheme or examiner report, or name the gap in research_gaps')
 
@@ -172,6 +172,8 @@ def check_coverage(data, card_ids, card_covers):
         need(isinstance(mapped, list) and all(m in by_id for m in mapped), f'board[{i}].items must reference coverage item ids')
         need(mapped or text(point.get('note')), f'board[{i}] maps to no syllabus point; explain in note (correction, digression or out of scope)')
         need(point.get('legibility', 'ok') in ('ok', 'low'), f'board[{i}].legibility: ok or low')
+        if re.fullmatch(r'Q\d+[BMAC]\d*', point['id']):
+            need('lost' in point, f'board[{i}] {point["id"]} is a per-mark score from the learner\'s script: add "lost" (e.g. "A1") for a 0, and the card that fixes it')
         if 'lost' in point:  # a mark the learner lost on their own script (e.g. Q01A2 = 0)
             need(text(point['lost']), f'board[{i}].lost names the lost mark, e.g. "A1"')
             linked = point.get('cards', [])

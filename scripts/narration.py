@@ -52,7 +52,7 @@ def speech_lint(text, lexicon=None):
 def apply_lexicon(text, lexicon):
     """Edge accepts plain text only (no <sub>/<phoneme>), so readings are substituted before synthesis."""
     # U+2212 is "减" after an operand (x − 2, MPC − s) and "负" anywhere else (斜率为 −2、(−1, 1)、= −x).
-    text = re.sub(r'−(?=\s*[\dA-Za-z(（])', lambda m: '减' if re.search(r'[A-Za-z0-9)\]}）]$', text[:m.start()].rstrip()) else '负', text)
+    text = re.sub(r'−(?=\s*[\dA-Za-z(（])', lambda m: '减' if re.search(r'[A-Za-z0-9)\]}）²³′″*!%\u0370-\u03ff]$', text[:m.start()].rstrip()) else '负', text)
     text = re.sub(r'(^|[=(（\s，,：:、；\[])-(?=\d)', r'\1负', text)  # an ASCII hyphen only in clear negative positions
     text = re.sub(r'(?<=[A-Za-z])\*', ' 星', text)  # Q* → Q 星, as in the formula readings
     merged = dict(DEFAULT_LEXICON, **(lexicon or {}))

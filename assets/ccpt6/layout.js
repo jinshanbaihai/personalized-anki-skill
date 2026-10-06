@@ -549,12 +549,14 @@ function chainLayout(seq, o, avail) {
   size(seq);
   const lead = e => edgeRoom(e) + 14;
   const limit = (avail || Infinity) - 16;
+  // room right of a row's last element: the return connector (12px) or, after a fork, the merge curve too
+  const tail = e => e.type === 'node' ? 12 : o.curveW + 12;
   const rows = [[]];
   let w = 0;
   for (const e of seq) {
     const row = rows[rows.length - 1];
     const add = row.length ? e.gapIn + e.bodyW : (rows.length > 1 ? lead(e) : 0) + e.bodyW;
-    if (row.length && w + add > limit) {
+    if (row.length && w + add + tail(e) > limit) {
       if (e.type === 'node') { rows.push([e]); w = lead(e) + e.bodyW; continue; }
       const last = row[row.length - 1];
       if (row.length >= 2 && last.type === 'node') { row.pop(); rows.push([last, e]); w = lead(last) + last.bodyW + e.gapIn + e.bodyW; continue; }

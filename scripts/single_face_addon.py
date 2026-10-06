@@ -48,9 +48,28 @@ def check_steps_once(card):
         daily = steps_are_daily(did)
     except Exception:  # noqa: BLE001 - a hint must never get in the way of reviewing
         return
-    if not daily and askUser(f'“{mw.col.decks.name(did)}”的学习步长短于 1 天：按 Enter 的新卡和按 1 的卡今天几分钟后还会再出现。\n\n'
-                             '要改成 CCPT 阅读预设吗？（只改学习步长为 1 天、leech 只加标签；其余设置不变。也可以之后在“工具”菜单里改。）'):
-        apply_reading_preset(did)
+    if daily:
+        return
+    top = family_top(did)
+    if askUser(f'“{mw.col.decks.name(top)}”的学习步长短于 1 天：按 Enter 的新卡和按 1 的卡今天几分钟后还会再出现。\n\n'
+               '要改成 CCPT 阅读预设吗？（只改学习步长为 1 天、leech 只加标签；其余设置不变。选“否”则什么都不改，之后也可以在“工具”菜单里改。）',
+               defaultno=True):
+        apply_reading_preset(top)
+
+
+def family_top(did):
+    """The highest ancestor that shares this deck's preset, so one answer covers the whole delivered deck
+    (cards usually live in subdecks such as Deck::Terms)."""
+    decks = mw.col.decks
+    conf_id = decks.config_dict_for_deck_id(did)['id']
+    name, top = decks.name(did), did
+    while '::' in name:
+        name = name.rsplit('::', 1)[0]
+        parent = decks.by_name(name)
+        if not parent or parent.get('dyn') or decks.config_dict_for_deck_id(parent['id'])['id'] != conf_id:
+            break
+        top = parent['id']
+    return top
 
 
 def grade(reviewer, ease):
@@ -158,8 +177,9 @@ def apply_reading_preset(did=None):
         return
     if current['name'].startswith(PRESET_PREFIX):
         conf = current
-    else:
-        conf = decks.get_config(decks.add_config_returning_id(f'{PRESET_PREFIX}（{current["name"]}）', clone_from=current))
+    else:  # reuse a reading preset made earlier from the same preset instead of cloning it again
+        name = f'{PRESET_PREFIX}（{current["name"]}）'
+        conf = next((c for c in decks.all_config() if c['name'] == name), None) or decks.get_config(decks.add_config_returning_id(name, clone_from=current))
     conf['new']['delays'] = [ONE_DAY]
     conf['lapse']['delays'] = [ONE_DAY]
     conf['lapse']['leechAction'] = 1
@@ -168,7 +188,9 @@ def apply_reading_preset(did=None):
         d = decks.get(d_id)
         decks.set_config_id_for_deck_dict(d, conf['id'])
         decks.save(d)
-    tooltip('已应用 CCPT 阅读预设：之后按 1 的卡在下一个学习日出现。已在今天队列里的卡不会被移动。', period=6000)
+    # Rebuild the study queue so the card on screen is graded with the new steps too.
+    mw.reset()
+    tooltip('已应用 CCPT 阅读预设：之后按 1 的卡在下一个学习日出现。已在今天学习队列里的卡不会被移动。', period=6000)
 
 
 _menu = QAction('CCPT：当前牌组使用阅读预设（1 = 隔天再看）', mw)

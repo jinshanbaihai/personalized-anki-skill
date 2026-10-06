@@ -20,7 +20,7 @@ description: 把老师板书、课堂截图、讲评 PDF、讲义做成为考试
 
 ### 1. 读全输入
 
-完整读入板书、讲评或讲义：每页每块的文字、公式、图、箭头、圈画、颜色批注和老师改写，建立板书点清单（`B01…`，写位置与内容）。长图与 PDF 用 `scripts/slice_board.py` 切成重叠切片逐片读；老师批注（“粗心”“过程不充分”“忘记最终要求”）照录，用户卷面上的逐分记录（`Q01A2 0`）抄成丢分清单，它们是易错卡的来源。板书通常清楚，以板书为准；但聊天软件常把长图压到几百像素宽，`slice_board.py` 会报告宽度不足 800 px 的图：受影响的板书点标 `legibility: low`，用官方材料确认后写 `confirmed_by`，**不猜字**，不中途停下等用户，交付时请用户补原图。板书上的每道印刷题都去找官方出处（`source_paper`）。方法见 [coverage-ledger.md](references/coverage-ledger.md)。
+完整读入板书、讲评或讲义：每页每块的文字、公式、图、箭头、圈画、颜色批注和老师改写，建立板书点清单（`B01…`，写位置与内容）。长图与 PDF 用 `scripts/slice_board.py` 切成重叠切片逐片读；老师批注（“粗心”“过程不充分”“忘记最终要求”）照录，用户卷面上的逐分记录（`Q01A2 0`）每个 0 分记成一个板书点并连到补救它的卡（M0 → 方法与完整推导卡，A0 → 易错卡与交卷前检查，B0 → 术语或结论句卡），这些都是易错卡的来源。板书通常清楚，以板书为准；但聊天软件常把长图压到几百像素宽，`slice_board.py` 会报告宽度不足 800 px 的图：受影响的板书点标 `legibility: low`，用官方材料确认后写 `confirmed_by`，**不猜字**，不中途停下等用户，交付时请用户补原图。板书上的每道印刷题都去找官方出处（`source_paper`）。方法见 [coverage-ledger.md](references/coverage-ledger.md)。
 
 ### 2. 锁定考试
 
@@ -85,7 +85,7 @@ python scripts/validate_package.py out/<牌组>.apkg --output out/validate.json
 
 ## 操作方式
 
-单面卡：打开即见完整内容。**Space** 播放／暂停语音，**Enter** 记 Good 并继续，**1** 下一学习日再看。没有翻面、输入答案、选择题或“听完才能继续”。桌面端由 `scripts/single_face_addon.py` 实现，见 [review-and-delivery.md](references/review-and-delivery.md)；复习安排只在用户要求时调整，见 [review-planning.md](references/review-planning.md)。
+单面卡：打开即见完整内容。**Space** 播放／暂停语音，**Enter** 记 Good 并继续，**1** 下一学习日再看。没有翻面、输入答案、选择题或“听完才能继续”。桌面端由 `scripts/single_face_addon.py` 实现，见 [review-and-delivery.md](references/review-and-delivery.md)；复习安排只在用户要求时调整（插件第一次遇到学习步长短于 1 天的牌组时问一次，默认“否”，只有用户选“是”才改），见 [review-planning.md](references/review-planning.md)。
 
 ## 学习研究依据
 

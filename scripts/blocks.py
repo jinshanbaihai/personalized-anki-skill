@@ -11,7 +11,7 @@ import re
 from html.parser import HTMLParser
 from latex2mathml.converter import convert as latex_to_mathml
 
-from html_integrity import validate_markup, check_svg
+from html_integrity import validate_markup, check_svg, STANDARD_TAGS
 
 INLINE_TAGS = {'b', 'strong', 'em', 'i', 'u', 'sub', 'sup', 'br', 'span', 'code', 'mark', 'small', 'abbr', 's'}
 MATH = re.compile(r'(?<!\\)(\$\$(.+?)\$\$|\$(.+?)\$)(?:〔(.*?)〕)?', re.S)
@@ -77,15 +77,17 @@ def split_relations(tex):
     a chain, before each top-level binary + or −."""
     if len(tex) < 30:
         return [tex]
+    if '\\begin' in tex or '&' in tex or '\\\\' in tex:
+        return [tex]  # environments (cases, pmatrix, aligned) stay whole
     depth, fence, relations, sums, i = 0, 0, [], [], 0
     while i < len(tex):
         ch = tex[i]
         if ch == '\\':
-            m = re.match(r'\\(left|right|[A-Za-z]+|.)', tex[i:])
+            m = re.match(r'\\(left|right|langle|rangle|[A-Za-z]+|.)', tex[i:])
             name = m.group(1)
-            if name == 'left':
+            if name in ('left', 'langle', '{'):
                 fence += 1
-            elif name == 'right':
+            elif name in ('right', 'rangle', '}'):
                 fence -= 1
             elif depth == 0 and fence == 0 and RELATION.match(tex, i):
                 relations.append(i)
@@ -95,6 +97,10 @@ def split_relations(tex):
             depth += 1
         elif ch == '}':
             depth -= 1
+        elif ch in '([':
+            fence += 1  # never break inside brackets: P(X ≤ 3) stays on one line
+        elif ch in ')]':
+            fence -= 1
         elif depth == 0 and fence == 0:
             if ch in '=<>':
                 relations.append(i)
@@ -163,7 +169,7 @@ def strip_tags(markup, spaced=False):
 
 def dollars(speech):
     """An escaped dollar is currency: \\$2 is read as 2 美元."""
-    speech = re.sub(r'\\\$\s*(\d[\d,.]*)', r'\1 美元', speech)
+    speech = re.sub(r'\\\$\s*(\d+(?:[.,]\d+)*)', r'\1 美元', speech)
     return speech.replace('\\$', '美元')
 
 
@@ -176,6 +182,10 @@ def inline(text, where, *, allow_block_html=False):
     out_html, out_speech, unspoken, pos = [], [], 0, 0
     # A comparison sign followed by a space or digit is text, not a tag: show it and read it as 小于.
     stray = re.compile(r'<(?![A-Za-z/!])')
+    for segment in MATH.split(text)[::5]:
+        if re.search(r'<[A-Za-z][^<>]*(?:<|$)', segment):
+            fail(where, "a '<' touching a letter (for example MSB<MSC or p<q) would hide the rest of the sentence: "
+                        "write it with spaces (MSB < MSC), as &lt;, or inside $…$")
     for match in MATH.finditer(text):
         before = stray.sub('&lt;', text[pos:match.start()])
         out_html.append(before)
@@ -183,12 +193,16 @@ def inline(text, where, *, allow_block_html=False):
         display = match.group(2) is not None
         source = tidy_latex((match.group(2) if display else match.group(3)).strip())
         pieces = [source] if display else split_relations(source)
-        rendered = []
-        for n, piece in enumerate(pieces):
+        try:
+            converted = [polish_mathml(latex_to_mathml(piece, display='block' if display else 'inline'), display) for piece in pieces]
+        except Exception:  # noqa: BLE001 - a split the converter cannot take: keep the formula whole
+            pieces = [source]
             try:
-                mathml = polish_mathml(latex_to_mathml(piece, display='block' if display else 'inline'), display)
+                converted = [polish_mathml(latex_to_mathml(source, display='block' if display else 'inline'), display)]
             except Exception as error:  # noqa: BLE001
-                fail(where, f'LaTeX could not be converted: {piece!r} ({error})')
+                fail(where, f'LaTeX could not be converted: {source!r} ({type(error).__name__}: {error})')
+        rendered = []
+        for n, (piece, mathml) in enumerate(zip(pieces, converted)):
             if n:  # a continuation piece starts with a binary operator: keep its infix spacing
                 mathml = re.sub(r'^(<math[^>]*><mrow>)<mo>', r'\1<mo form="infix">', mathml)
             rendered.append(f'<span class="math{" math-display" if display else ""}" data-tex="{html.escape(piece, quote=True)}">{mathml}</span>')
@@ -209,6 +223,8 @@ def inline(text, where, *, allow_block_html=False):
     if not allow_block_html:
         for tag in re.findall(r'</?\s*([a-zA-Z][\w-]*)', re.sub(r'<math\b[\s\S]*?</math>', '', markup)):
             if tag.lower() not in INLINE_TAGS:
+                if tag.lower() not in STANDARD_TAGS:
+                    fail(where, f"'<{tag}' reads as a tag and would hide text: write a comparison with spaces or as &lt;")
                 fail(where, f'<{tag}> is not inline text markup; use a block type or an "html" block')
     passive(markup, where)
     return Inline(markup, strip_tags(dollars(''.join(out_speech))), unspoken)
@@ -238,9 +254,13 @@ def joined(*pieces):
     return out
 
 
-def need_object(block, where):
+ITEM_FIELDS = {'do': '{"do": "…", "why": "…"}', 'key': '{"key": "…", "explain": "…"}', 'wrong': '{"wrong": "…", "right": "…", "why": "…"}',
+               'head': '{"head": "…", "text": "…"}', 'text': '{"text": "…"}'}
+
+
+def need_object(block, where, key=None):
     if not isinstance(block, dict):
-        fail(where, 'each item must be an object with named fields, e.g. {"do": "…", "why": "…"}')
+        fail(where, 'each item must be an object with named fields, e.g. ' + ITEM_FIELDS.get(key, '{"text": "…"}'))
 
 
 def need_list(block, key, where, *, nonempty=True):
@@ -252,7 +272,7 @@ def need_list(block, key, where, *, nonempty=True):
 
 
 def need_text(block, key, where):
-    need_object(block, where)
+    need_object(block, where, key)
     value = block.get(key)
     if not isinstance(value, str) or not value.strip():
         fail(where, f'"{key}" must be non-empty text')
@@ -261,7 +281,7 @@ def need_text(block, key, where):
 
 # Mark-scheme notation: M1 dM1 ddM1 A1 A1* B1 C1 (Cambridge DM1), with ft cso cao ag oe isw awrt; SC1.
 MARK_TOKEN = r'(?:(?:dd|d|D)?[MABC]\d+\*?(?:\s*(?:ft|cso|cao|ag|oe|isw|awrt))*|SC\d*|ft|cso|cao|ag|oe|isw|awrt)'
-MARK = re.compile(rf'{MARK_TOKEN}(?:[ ,]*{MARK_TOKEN})*')
+MARK = re.compile(rf'{MARK_TOKEN}(?:[ ,]*{MARK_TOKEN})*|\[?\d+\]?')  # or a plain mark count (Cambridge [2])
 
 
 def mark_type(mark):
@@ -275,6 +295,8 @@ def mark_speech(mark):
     """How a mark badge is read aloud: letters spelled out, * as 星 (B1 → B 1, A1* → A 1 星)."""
     if not mark:
         return ''
+    if re.fullmatch(r'\[?\d+\]?', str(mark).strip()):
+        return str(mark).strip('[] ') + ' 分'
     text = re.sub(r'(\d\*?)(?=[A-Za-z])', r'\1 ', str(mark))  # M1A1 → M1 A1
     for word in ('cso', 'cao', 'awrt', 'isw', 'ft', 'oe', 'ag'):
         text = re.sub(rf'(?<![A-Za-z]){word}(?![A-Za-z])', ' ' + ' '.join(word) + ' ', text)
@@ -476,7 +498,7 @@ def r_steps(b, bid, where):
             out += f'<li class="subgoal" aria-hidden="false"><span class="subgoal-mark">▸</span>{subgoal.html}</li>'
             goal_speech = subgoal.speech
         if mark is not None and not MARK.fullmatch(str(mark).strip()):
-            fail(w, f'mark {mark!r} should use mark-scheme notation: M1, dM1, ddM1, A1, A1*, A1ft, B1, B1ft, C1, SC1, "M1 A1", "A1 cso"')
+            fail(w, f'mark {mark!r} should use mark-scheme notation: M1, dM1, ddM1, A1, A1*, A1ft, B1, B1ft, C1, SC1, "M1 A1", "A1 cso", or a Cambridge mark count such as [2]')
         trivial = item.get('trivial') is True
         note = inline(item.get('mark_note'), w)
         if not why and not basis and not note and not trivial:

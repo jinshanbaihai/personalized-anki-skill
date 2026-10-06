@@ -20,7 +20,7 @@ from pathlib import Path
 
 import genanki
 
-from blocks import inline, render_block, esc, BlockError, strip_tags, REL_RULES
+from blocks import inline, render_block, esc, BlockError, strip_tags, REL_RULES, MATH
 from deck_rules import check, GENRES, DeckError
 from speech_backend import resolve_voice, inspect_voice, DEFAULT_VOICE
 import narration
@@ -189,8 +189,9 @@ both either neither such same other into onto over under above below between abo
 there here their they them then thus hence therefore however although though if else unless whether so do does did done
 have has had having get gets got give given gives make makes made take takes taken use used uses using show shows shown write
 written find found work works answer answers question questions value values number numbers part parts total marks mark
-state states explain explains give gives calculate hence otherwise form forms exact correct simplest following below above
-example examples note notes level levels card cards page step steps reason reasons true false yes'''.split())
+state states explain explains give gives calculate hence otherwise form forms correct simplest following below above
+example examples note notes level levels card cards page step steps reason reasons true false yes
+june january october november march may definition root'''.split())
 
 
 CAUSAL = r'^(导致|引起|造成|使得|使|所以|因此|从而|进而|于是|带来|因而|结果|以致|引发|促进|推动|产生|加剧|抑制|提高|降低|增加|减少|刺激|leads? to|causes?|so|therefore|raises?|reduces?)'
@@ -223,23 +224,32 @@ def map_nodes(node, depth=0):
             yield from map_nodes(child, depth + 1)
 
 
+def plain(text):
+    """Author text as words: formulas replaced by their readings, tags removed (lint input)."""
+    return strip_tags(MATH.sub(lambda m: ' ' + (m.group(4) or m.group(2) or m.group(3) or '') + ' ', text or ''))
+
+
+ACTION_WORDS = r'代入|得到|可得|求得|算得|化简|计算|展开|整理|移项|于是|即|所以|就是|然后'
+
+
 def why_echoes(why, do):
-    """A "why" that has no reasoning word and mostly repeats the step's own symbols explains nothing."""
+    """A "why" that only restates the step: once the step's own symbols and action words are removed,
+    fewer than three meaningful characters remain and no reason (goal, condition, rule) is named."""
     w = re.sub(r'\s|\$|〔[^〕]*〕', '', strip_tags(why))
     d = re.sub(r'\s|\$|〔[^〕]*〕', '', strip_tags(do))
-    if re.search(REASONING, w) or not w:
+    if not w or re.search(REASONING.replace('所以|', ''), w):
         return False
-    shared = sum(1 for ch in w if ch in d)
-    return shared / len(w) > 0.7
+    residue = re.sub(ACTION_WORDS, '', ''.join(ch for ch in w if ch not in d))
+    return len(re.findall(r'[\u4e00-\u9fffA-Za-z]', residue)) < 3
 
 
 def causal_lint(nodes, out, where):
     """Arrows must say which variable moves which way; evaluation must name its condition."""
     vague, unjudged, long_nodes = [], [], []
     for node, depth in nodes:
-        text = strip_tags(node.get('text', ''))
-        rel = strip_tags(node.get('rel', '') or '')
-        if node.get('kind', 'topic') in ('topic', 'cause', 'effect', 'policy') and re.match(CAUSAL, rel) and not re.search(DIRECTION + '|' + CONDITION, text):
+        text = plain(node.get('text', ''))
+        rel = plain(node.get('rel', '') or '')
+        if node.get('kind', 'topic') in ('topic', 'cause', 'effect', 'policy') and re.match(CAUSAL, rel) and not re.search(DIRECTION + '|' + CONDITION, rel + ' ' + text):
             vague.append(text[:12])
         if (node.get('ao') == 'AO3' or node.get('kind') == 'evaluation') and not (
                 node.get('cond') or node.get('note') or re.search(CONDITION, text)
@@ -273,19 +283,19 @@ def lint_card(card, academic=True):
             if items and len(trivial) > len(items) * 0.25:
                 out.append('trivial 步超过四分之一，检查是否跳过了需要讲的步骤')
             if worked:
-                bare = [n + 1 for n, i in enumerate(items) if not i.get('trivial') and not i.get('why')]
+                bare = [n + 1 for n, i in enumerate(items) if not i.get('trivial') and not i.get('why') and not i.get('mark_note')]
                 if bare:
                     out.append(f'第 {"、".join(map(str, bare))} 步没有“为什么”：推导卡每一步都讲目的、条件或原理')
                 if academic and not any(i.get('mark') for i in items) and not b.get('marks_basis'):
                     out.append('推导步骤没有标得分点（mark）也没有 marks_basis：按 MS 标出每一步值什么分')
-            if any(i.get('why') and len(strip_tags(i['why'])) < 6 for i in items):
+            if any(i.get('why') and len(plain(i['why'])) < 6 for i in items):
                 out.append('有的“为什么”少于 6 个字，可能没讲出原理')
             echo = [n + 1 for n, i in enumerate(items) if i.get('why') and why_echoes(i['why'], i.get('do', ''))]
             if echo:
                 out.append(f'第 {"、".join(map(str, echo))} 步的“为什么”像在复述做法：写目的（为了…）、条件（因为…成立）或原理名')
-        if b.get('type') == 'sections' and any(isinstance(i, dict) and len(strip_tags(i.get('text', ''))) > 60 for i in b.get('items', [])):
+        if b.get('type') == 'sections' and any(isinstance(i, dict) and len(plain(i.get('text', ''))) > 60 for i in b.get('items', [])):
             out.append('sections 有超过 60 字的长段：文科展开改用 chain 或 map 的箭头结构')
-        if b.get('type') in ('lead', 'note') and card.get('genre') in ('chain', 'map', 'essay', 'overview') and len(strip_tags(b.get('text', ''))) > 80:
+        if b.get('type') in ('lead', 'note') and card.get('genre') in ('chain', 'map', 'essay', 'overview') and len(plain(b.get('text', ''))) > 80:
             out.append(f'{b["type"]} 超过 80 字：因果展开写进 chain 或 map 的节点，不写成段落')
         if b.get('type') == 'chain':
             causal_lint(((n, 0) for n in chain_nodes(b.get('items', []))), out, 'chain')
@@ -293,8 +303,8 @@ def lint_card(card, academic=True):
             root = b.get('root', {})
             nodes = list(map_nodes(root))
             causal_lint(nodes[1:], out, 'map')
-            unknown = sorted({strip_tags(n['rel']) for n, _ in nodes if n.get('rel') and not n.get('arrow')
-                              and not any(rule.match(strip_tags(n['rel'])) for rule, _ in REL_RULES)})
+            unknown = sorted({plain(n['rel']) for n, _ in nodes if n.get('rel') and not n.get('arrow')
+                              and not any(rule.match(plain(n['rel'])) for rule, _ in REL_RULES)})
             if unknown:
                 out.append('这些导图关系词不在规则表里，连线画成无箭头的普通线：' + '、'.join(unknown[:6]) + '（若表示因果，改用规则表中的词或给节点写 arrow）')
             branches = root.get('children', [])
@@ -319,16 +329,22 @@ def term_ledger(data, pages):
     defined_words = {w for d in defined for w in re.findall(r'[a-z]+', d)}
     seen = {}
     for cid, body in pages.items():
+        # chrome, citations and the definition sentence itself are not teaching vocabulary
         body = re.sub(r'<header[\s\S]*?</header>|<footer[\s\S]*?</footer>|<div hidden[\s\S]*?</div>', ' ', body)
-        body = re.sub(r'<p class="def-text">[\s\S]*?</p>', ' ', body)  # the definition sentence explains itself
+        body = re.sub(r'<(p|span|div) class="(?:def-text|def-label|def-src|pf-src|tbl-cap|marks-basis)[^"]*"[^>]*>[\s\S]*?</\1>', ' ', body)
+        body = re.sub(r'<math[\s\S]*?</math>', ' ', body)
         defined_here = {m.lower() for m in re.findall(r'<abbr[^>]*>(.*?)</abbr>', body)}
-        visible = strip_tags(re.sub(r'<math[\s\S]*?</math>', ' ', body), spaced=True)
+        visible = re.sub(r'<[^>]+>', ' ', body)  # a space at every tag boundary, so adjacent spans never merge
+        visible = strip_tags(visible)
+        # a gloss written right after the word counts as an explanation: integrand（被积函数）
+        defined_here |= {m.lower() for m in re.findall(r'([A-Za-z][A-Za-z ]{2,40}?)\s*[（(][^）)]*[\u4e00-\u9fff][^）)]*[）)]', visible)}
         for phrase in re.findall(r'\b[A-Za-z][a-z]{3,}(?: [a-z]{2,}){0,2}\b|\b[A-Z]{2,5}\b', visible):
-            words = [w for w in phrase.lower().split() if w not in COMMON_EN]
+            words = [w for w in phrase.split() if w.lower() not in COMMON_EN]
             if not words:
                 continue
-            key = ' '.join(words)
-            if key in defined or key in defined_here or all(w in defined_words for w in words):
+            key = ' '.join(w if w.isupper() else w.lower() for w in words)
+            if key.lower() in defined or key.lower() in defined_here or any(key.lower() in d for d in defined_here) \
+                    or all(w.lower() in defined_words for w in words):
                 continue
             seen.setdefault(key, set()).add(cid)
     ranked = sorted(seen.items(), key=lambda kv: (-len(kv[1]), kv[0]))
@@ -479,7 +495,7 @@ def main(argv=None):
         deck_warnings.append('同节相邻、留给下一批的考点（交付时告诉用户）：' + '、'.join(cov['adjacent']))
     ledger = term_ledger(data, pages) if data.get('academic', True) else []
     if ledger:
-        deck_warnings.append('这些 English 词出现在多张卡上，但没有术语卡、<abbr> 或 terms_known 解释：' + '、'.join(x['term'] for x in ledger[:10]))
+        deck_warnings.append('这些 English 词出现在卡上，但没有术语卡、就地释义（<abbr> 或“词（中文）”）或 terms_known：' + '、'.join(x['term'] for x in ledger[:10]))
     report = {'deck_warnings': deck_warnings, 'term_ledger': ledger, 'cards': report_cards, 'summary': summary, 'audio': 'preview' if a.preview else 'pending' if a.audio_pending else 'complete',
               'package': str(package) if package else None}
     (out / 'report.json').write_text(json.dumps(report, ensure_ascii=False, indent=1), encoding='utf-8')

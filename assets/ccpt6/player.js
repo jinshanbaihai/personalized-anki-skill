@@ -50,7 +50,9 @@
  });
  const playing=()=>`${voiceLabel} · ${speed}×${remaining()}`;
  on(speedBtn,'click',()=>{if(pending)return;speed=speed===2?1.5:2;label();audio.playbackRate=speed/encoded;
-  if(!audio.paused)setStatus(playing());else if(!audio.ended&&audio.currentTime>0)setStatus('已暂停'+remaining()+' · Space 继续');});
+  if(!audio.paused)setStatus(playing());
+  else if(!audio.ended&&audio.currentTime>0)setStatus('已暂停'+remaining()+' · Space 继续');
+  else if(!audio.ended&&total)setStatus(`${voiceLabel} · ${speed}× · ${clock(total*encoded/speed)}`);});
  let shownSecond=-1;
  on(audio,'timeupdate',()=>{if(audio.paused)return;const sec=Math.round(audio.currentTime*encoded/speed);if(sec!==shownSecond){shownSecond=sec;setStatus(playing());}});
  on(audio,'play',()=>{button.textContent='Ⅱ';button.setAttribute('aria-pressed','true');setStatus(playing());follow();});
