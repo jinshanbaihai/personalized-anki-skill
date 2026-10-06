@@ -20,9 +20,21 @@
 | N | 同一块**朗读文本**中需同时记住的不同数值（不计 0–3、步号、得分记号与年份；表格、图、因果链、导图、考法块不计；只对推导、方法、公式卡生效） |
 | C | 听觉块里的条件型说法（仅当、除非、前提是、取决于）个数；因果链与导图不计 |
 
-**硬触发**（任一满足即 1.5×）：H1 `S ≥ 4 且 M ≥ 4`；H2 `m% ≥ 35%`；H3 证明结构（contradiction、induction、show that 等）且 `S ≥ 3`；H4 `N ≥ 4`。**软分**（≥3 即 1.5×）：`S ≥ 3` 时，步骤带公式读法（M ≥ 1）加 2、不带公式加 1；`M ≥ 3`、`T ≥ 3`、`E ≥ 8`、`C ≥ 2` 各加 1。M 同时统计行内 `$…$` 与独立 `$$…$$` 的读法。整副牌组固定速度（`style.speed: 2.0`）时，规则判为 1.5× 的卡会在报告里警告；默认请用 `"auto"`。结果与理由写进 `report.json` 与卡片 Source；1.5× 卡的播放器旁显示简短理由（如“6 步推导”）。阈值是根据用户习惯与研究方向定的起点，按用户反馈（常按暂停、常按 1 的卡）校准。
+**两类信号同时成立才降到 1.5×**（`narration.speed_signals`）。单独一项（步骤多、公式多、证明、数值多）都不降速：
 
-依据：**默认 2× 的一级依据是用户自己长期 2× 收听的习惯**；研究只给边界——年轻母语听者看讲座视频时 1.5×–2× 的理解代价很小，2.5× 起明显下降（Murphy et al. 2022；Ritzhaupt 2008；纯音频 1.5× 无差异、3× 下降），所以不超过 2×；非母语成分（English 术语）在压缩下受损更大（Conrad 1989）；作者提醒复杂技术材料未必适用，所以真正复杂的卡降到 1.5×。这些研究多为英语视频讲座、本次只核对到摘要，不能用来把速度推得比用户习惯更高或更低。详见 [learning-science.md](learning-science.md)。
+| 信号 | 条件 |
+|---|---|
+| 多步推导 | `S ≥ 4 且 M ≥ 4` |
+| 公式读法占比高 | `m% ≥ 35%`（分子分母都只算听得到的块：表格、图、因果链、导图、考法块在屏幕上看，不计） |
+| 证明结构 | 含 contradiction、induction、反证、归纳、证明，且 `S ≥ 3`（“show that”是命令词，不算证明） |
+| 需同时记住多个数值 | `N ≥ 4`，且 `S ≥ 4`、卡型是推导／方法／公式（数值要跨几步记住才算负担） |
+| 密度分（短页面上代替“多步推导”） | `S ≥ 3` 时，步骤带公式读法（M ≥ 1）加 2、不带公式加 1；`M ≥ 3`、`T ≥ 3`、`E ≥ 8`、`C ≥ 2` 各加 1；≥ 3 计一项信号；已满足“多步推导”时不重复计 |
+
+M 同时统计行内 `$…$` 与独立 `$$…$$` 的读法。每张卡的信号列在 `report.json` 的 `metrics.signals`；结果与理由写进 `report.json` 与卡片 Source；1.5× 卡的播放器旁显示简短理由（如“6 步推导”）。整副牌组固定速度（`style.speed: 2.0`）时，规则判为 1.5× 的卡会在报告里警告；默认请用 `"auto"`。一副卡组超过三成判为 1.5× 时，报告逐卡列出原因，作者要在 `style.speed_review` 写明为什么这副卡确实这么密（例如整副都是完整的真题解答），并把理由写进交付说明。手动 `speed` 必须写 `speed_reason`。
+
+阈值是起点，不是测量结果：语音合成后按学习者的反馈（哪些卡常手动切到 1.5×、常按暂停或常按 1）校准，校准结果记在本节。
+
+依据：默认 2× 是本技能面向习惯快听的学习者的设定，学习者另有要求时用 `style.speed` 调整；研究只给边界——年轻母语听者看讲座视频时 1.5×–2× 的理解代价很小，2.5× 起明显下降（Murphy et al. 2022；Ritzhaupt 2008；纯音频 1.5× 无差异、3× 下降），所以不超过 2×；非母语成分（English 术语）在压缩下受损更大（Conrad 1989）；作者提醒复杂技术材料未必适用，所以真正复杂的卡降到 1.5×。这些研究多为英语视频讲座、本次只核对到摘要，不能用来把速度推得比学习者习惯更高或更低。详见 [learning-science.md](learning-science.md)。
 
 ## 管线
 
@@ -40,14 +52,17 @@ Edge 只接受纯文本（不能用 SSML 的 `<lang>`、`<phoneme>`、`<say-as>`
 - 用逗号控制停顿（Edge 唯一可用的停顿手段）。缩写第一次出现时读全称。
 - 得分记号逐字母读（M1 → “M 1”，A1* → “A 1 星”，cso → “c s o”）；负号在数字或字母前读“负”、在两个量之间读“减”；`Q*` 读“Q 星”；↑↓∴∵∈°²、常见希腊字母已内置读法；其他非常规符号构建时会警告。
 - 出处（`source`、`marks_basis`、卡片 `sources`）只显示不朗读；得分点、评分注意、丢的分、表注都朗读。
-- `--term-sampler` 生成 `term-sampler.mp3`：把牌组里每个 English 术语放进“下面这个词是：___。”逐个读一遍，**制作端**听一遍，读错就改 `speech_lexicon` 后重建；这是制作检查，不交给用户去做。
+- **发音检查分两步，第一步不需要联网**：
+  1. 构建前（制作者，沙盒里也能做）：扫一遍 `out/speech-manifest.json` 的朗读文本，把每个缩写、全大写词和容易被逐字母或按拼音误读的 English 词列出来，给需要的写进 `speech_lexicon`（如 `"MSC": "M S C"`、`"cosec": "co-sec"`）；`speech_lint` 报出的难读符号与“如果，若”“得 7 分里得”这类拼接错读是 **must-fix**，改源文或读法后重建，不留到交付。
+  2. 合成后：`--term-sampler` 生成 `term-sampler.mp3`，把牌组里每个 English 术语、缩写放进“下面这个词是：___。”逐个读一遍。能合成时制作者自己听一遍，读错就改 `speech_lexicon` 后重建；语音待补时这条命令写进 `补语音.txt`，交付说明里请学习者补完语音后听一遍（约一分钟），把读错的词告诉 Claude。
 - 语音与卡面用同一术语和符号读法；句子可以略改述、补连接词与“为什么”，不逐字念长段，也不讲卡面没有的新论点。静音时卡面必须完整。
 
 ## 服务可用性与断网
 
 - `python scripts/speech_backend.py --check` 检查声音目录与配置，`--probe 文件.mp3` 实际合成一句。Edge read-aloud 是非公开端点，2025 年 8 月与 12 月都曾变动导致失效；持续 `NoAudioReceived` 时先 `pip install -U edge-tts`。Edge 的 zh-CN 只有晓晓、晓伊、云健、云希、云夏、云扬 6 个标准声（另有两个方言声），没有 zh-CN multilingual；`XiaoxiaoMultilingual`、DragonHD 等只在 Azure。
 - 构建前若有原音需要合成，生成器先做预检：服务不可达时以退出码 2（`network_blocked`）立即停止，声音不在列表时退出码 3（`voice_missing`），都不改动任何文件，也不换声音。
-- 语音服务不可达时：`--audio-pending` 先交付图文包（页面明示“语音待补”、播放器禁用）；之后在能访问 `speech.platform.bing.com` 的机器上**去掉该参数重跑同一条命令**并导入，同 GUID 原位更新，复习历史保留。
+- 缺 ffmpeg／ffprobe 时构建以退出码 4（`ffmpeg_missing`）停止并给出三平台安装命令；`speech_backend.py --check` 也会报告，不会误报成语音服务的问题。
+- 语音服务不可达时：`--audio-pending` 先交付图文包（页面明示“语音待补”、播放器禁用），交付文件夹里同时写出 `deck.json` 和 `补语音.txt`。`补语音.txt` 是学习者照着做就能补完的编号步骤：取得同一个 skill 包并解压 → 安装 Python 3.10+ → `pip install -r scripts/requirements.txt` → 安装 ffmpeg（Windows `winget install Gyan.FFmpeg`，macOS `brew install ffmpeg`，Linux `sudo apt install ffmpeg`）→ `python scripts/speech_backend.py --check` → `python scripts/build_cards.py "<交付文件夹>/deck.json" "<交付文件夹>" --term-sampler` → 导入新 .apkg（同 GUID 原位更新，复习历史保留）→ 听一遍 term-sampler.mp3。也可以在自己电脑上的 Claude Code 里让 Claude 照着执行。
 - 已授权的 Azure Speech（`AZURE_SPEECH_KEY`、`AZURE_SPEECH_REGION`）只作为**同一声音**的备选；凭据不进 skill、日志或仓库。换成别的声音只在用户明确同意后改 `style.voice` 并全牌组重合成。
 
 ## 验收

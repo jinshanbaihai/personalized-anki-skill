@@ -7,6 +7,16 @@
 3. **双向核对**：按 [coverage-ledger.md](coverage-ledger.md) 回扫考纲原文、板书点与真题需求清单（每条 demand 都能指出准备它的卡）；生成器的 `coverage` 报告只能证明连线没断，考点清单本身是否漏项要人读原文判断。
 4. **独立评审**：内容成形后，交给没有参与制作的审阅者（子 agent），给它考纲条目、MS 摘录、板书和卡片预览，要求：找遗漏、误读、超纲、讲不透的地方，并对每条给出可执行的改法。采纳后让审阅者复查改动部分与整组连接；旧版通过不代表新版通过。没有子 agent 时，作者分开做冷读、反例检查和范围回扫，并如实说明。
 5. **数值核算**：所有计算、概率、系数、图中数值用工具复算一遍。
+6. **真题回查留痕**：上面第 2 步与 coverage-ledger 的“只凭卡组作答 2–3 道问法不同的真题”都要记进 deck.json：`coverage.backcheck`（每道题的 paper、series、q、结果 pass／gap、补救的卡）与 `coverage.coldread`（冷读关键词测试里写不出的词与补救的卡）。`status: complete` 至少要有两道不同考季的回查；交付说明引用这些记录，不只说“已回查”。
+7. **隐私复查**：全文搜一遍姓名、考生号、中心号、日期、邮箱、总分与“你的卷面／你丢”式写法（生成器会拦下常见写法，但拦不住姓名）。批改卷只按“题号 + 分点 + 是否得分”记录。
+
+**警告怎么处理**（`report.json` 的 `deck_warnings` 与每张卡的 `warnings`）：
+
+| 类别 | 警告 | 处理 |
+|---|---|---|
+| must-fix | 空泛箭头（没写哪个变量往哪边变）、含代数的 trivial 步、推导步缺“为什么”、卡面上 `$…$` 之外的纯文本数学、`speech_lint` 报出的难读符号与拼接错读 | 交付前改掉；改不了的逐条写理由 |
+| explain-in-delivery | 同节相邻的 `adjacent` 考点、超过三成判为 1.5×（附 `style.speed_review` 与逐卡原因）、术语台账（给出真实总数与前几项的处理）、豁免字段（`*_waived`） | 交付说明里如实列出 |
+| 参考 | 关系词不在规则表、导图分支偏宽、长节点 | 看截图后决定 |
 
 ## 二、版式与渲染
 
@@ -15,7 +25,9 @@ python scripts/build_cards.py deck.json out/ --preview
 node scripts/render_check.mjs out/ --phone --dark
 ```
 
-`render_check` 在真实 Chromium 中打开每页，桌面 1280×800、手机 390×844、亮／暗两种模式截图到 `out/check/`，并用 `ccptAudit()` 检查：正文不小于 15px、界面小字不小于 12px、数学上下标不小于 9.5px、没有横向滚动、手机上没有被横向截断的公式、没有被截断的块、导图节点不重叠、每页恰好一个播放器、无脚本错误。程序通过后仍要**看截图**：层级是否一眼可辨，图是否清楚，长卡在正常字号下是否读起来顺。读着累的卡要重新分卡，不靠缩小字号。
+找不到浏览器时先试 `which chromium chromium-browser google-chrome`，找到就用 `CHROMIUM_PATH=<路径> node scripts/render_check.mjs …`（Playwright 不在全局路径时再设 `NODE_PATH`）。`render_check` 在真实 Chromium 中打开每页，桌面 1280×800、手机 390×844、亮／暗两种模式截图到 `out/check/`，并用 `ccptAudit()` 检查：正文不小于 15px、界面小字不小于 12px、数学上下标不小于 9.5px、没有横向滚动、手机上没有被横向截断的公式、没有被截断的块、导图节点不重叠、每页恰好一个播放器、无脚本错误。程序通过后仍要**看截图**：层级是否一眼可辨，图是否清楚，长卡在正常字号下是否读起来顺。读着累的卡要重新分卡，不靠缩小字号。
+
+**没有 Node 或 Chromium 时**（常见于 Claude 网页版的沙盒）：① 冷读 `out/pages.json` 里每页的可见文本，专找重复注释（“优点（优点）”）、残留标签、未翻译的长英文句和表格里挤成一列的内容；② 跑 `python scripts/contrast_check.py` 检查配色；③ 把一两张代表页（一张导图或因果链、一张推导）的 `out/<id>.html` 交给用户先打开看一眼；④ 交付说明写明“未做截图检查”。
 
 ## 三、语音
 
@@ -25,15 +37,17 @@ python scripts/speech_backend.py --probe /tmp/probe.mp3       # 实际合成一�
 python scripts/build_cards.py deck.json out/                  # 合成全部语音并打包
 ```
 
-检查：音频可解码；成品时长与“修剪后原速 ÷ 速度”一致（生成器自动校验）；段间没有超过设计停顿的空白；听一遍 `term-sampler.mp3` 确认 English 术语与缩写读音，读错就改 `speech_lexicon`；公式读法表达含义；讲图时先说看哪里；Space 暂停续播、结束重播、切卡停止；点速度按钮可在 2×／1.5× 之间切换且音高不变；1.5× 卡都有理由。`node scripts/render_check.mjs out/ --play` 在 Chromium 中实际按 Space 播放、检查高亮与切速。规则见 [narration.md](narration.md)。语音服务不可达时用 `--audio-pending` 先交付图文包（页面明示“语音待补”，播放器禁用），告诉用户在能访问服务的机器上去掉参数重跑并导入即可原位补上语音。不静默换声音。
+缺 ffmpeg 时构建以 `ffmpeg_missing` 停止并给出安装命令（不是语音服务的问题）。检查：音频可解码；成品时长与“修剪后原速 ÷ 速度”一致（生成器自动校验）；段间没有超过设计停顿的空白；听一遍 `term-sampler.mp3` 确认 English 术语与缩写读音，读错就改 `speech_lexicon`；公式读法表达含义；讲图时先说看哪里；Space 暂停续播、结束重播、切卡停止；点速度按钮可在 2×／1.5× 之间切换且音高不变；1.5× 卡都有理由。`node scripts/render_check.mjs out/ --play` 在 Chromium 中实际按 Space 播放、检查高亮与切速。规则见 [narration.md](narration.md)。语音服务不可达时用 `--audio-pending` 先交付图文包（页面明示“语音待补”，播放器禁用）；交付文件夹里会写出 `deck.json` 和按步骤编号的 `补语音.txt`（安装 Python、依赖与 ffmpeg，检查语音服务，带 `--term-sampler` 重建，导入后原位补上语音），**整个文件夹一起交付**。不静默换声音。
 
 ## 四、打包与导入验证
 
 ```bash
-python scripts/validate_package.py out/<牌组>.apkg --output out/validate.json [--allow-text-only-test]
+pip install -r scripts/requirements-validate.txt                          # 一次性：anki 后端，约 30 MB
+python scripts/validate_package.py out/<牌组>.apkg --output out/validate.json   # 语音待补的包会被识别并报告 audio_pending_cards
+python scripts/validate_package.py out/<牌组>.apkg --require-audio            # 成品包：每页都必须带可解码的语音
 ```
 
-在临时空 collection 中导入，检查每张卡单页、一个播放器、媒体可解码、无缺失媒体；再做一次真实评分后重复导入，确认卡片身份、排程与 revlog 不变。这一步不等于桌面操作测试。
+装不上 anki 时跳过这一步，交付说明写“未做导入验证”。在临时空 collection 中导入，检查每张卡单页、一个播放器、媒体可解码、无缺失媒体；再做一次真实评分后重复导入，确认卡片身份、排程与 revlog 不变。这一步不等于桌面操作测试。
 
 ## 五、单面卡的桌面操作
 
@@ -61,6 +75,9 @@ python scripts/validate_package.py out/<牌组>.apkg --output out/validate.json 
 - 实际读过的考纲、MS、ER、范文与真题考季（以及取不到的）；真题需求清单的条数与饱和依据。
 - 考点总数、卡数与覆盖状态；同节相邻、留给下一批的考点（`adjacent`）逐条列出，用户说一句即可续做。
 - 板书中看不清（`legibility: low`）或更正的位置：看不清的请用户补发原始导出（例如 ClassIn 原图），补来后原位更新。
-- 语音状态（已合成／待补，以及补语音的一条命令）。
+- 语音状态：已合成，或待补（照 `补语音.txt` 的步骤补；补完后可选听一遍 `term-sampler.mp3`，读错的词告诉 Claude）。
+- 交付物是**整个输出文件夹**：`.apkg`、`ccpt_single_face.ankiaddon`、`deck.json`、`report.json`，语音待补时还有 `补语音.txt`。`deck.json` 是续做与补语音的依据：在新的对话里接着做时，把它（或上次的 .apkg）和交付说明一起交给 Claude，新对话不会记得上一次的内容。
+- 实测范围：导入验证做了没有、截图检查做了没有、桌面按键（Space／Enter／1）是在真实 Anki 里试过还是只在测试里模拟过，如实写。
+- 隐私：交付文件（含 deck.json、交付说明）不写学习者姓名、考生号、日期与总分；批改卷只记题号和分点。学习者想知道总分时在对话里说，不写进文件。
 - 首次使用：双击安装 `ccpt_single_face.ankiaddon`、重启 Anki、导入 `.apkg`，再用工具菜单把牌组设为阅读预设（一次性）；导入后先在真实客户端看一张导图卡和一张推导卡，确认字体、公式与图都正常。
 - 工程检查、制作者判断和用户实际体验分开说，不把程序通过说成学会了。

@@ -1,7 +1,8 @@
 // Render every preview page in real Chromium, screenshot it and collect ccptAudit().
 // Usage: node scripts/render_check.mjs out/ [--only=ID,ID] [--dark] [--phone] [--play]
 // --play also exercises the player: Space starts narration, highlight follows cues, the speed button toggles 2×/1.5×.
-// Needs Playwright (npm i -g playwright, or NODE_PATH pointing at a global install).
+// Needs Playwright (npm i -g playwright, or NODE_PATH pointing at a global install) and a Chromium:
+// CHROMIUM_PATH=/path/to/chrome overrides the browser (find one with: which chromium chromium-browser google-chrome).
 // Screenshots show layout and typography only; Anki's desktop shortcuts are checked natively.
 import fs from 'node:fs';
 import path from 'node:path';
@@ -22,7 +23,7 @@ const only = (args.find(a => a.startsWith('--only='))?.slice(7) || '').split(','
 const modes = [{ name: 'desktop', width: 1280, height: 800 }];
 if (args.includes('--phone')) modes.push({ name: 'phone', width: 390, height: 844 });
 const schemes = args.includes('--dark') ? ['light', 'dark'] : ['light'];
-const exe = ['/opt/pw-browsers/chromium-1194/chrome-linux/chrome', process.env.CHROMIUM_PATH].find(p => p && fs.existsSync(p));
+const exe = [process.env.CHROMIUM_PATH, '/opt/pw-browsers/chromium-1194/chrome-linux/chrome'].find(p => p && fs.existsSync(p));
 const browser = await chromium.launch({ ...(exe ? { executablePath: exe } : {}), args: ['--autoplay-policy=no-user-gesture-required'] });
 const outDir = path.join(dir, 'check');
 fs.mkdirSync(outDir, { recursive: true });
