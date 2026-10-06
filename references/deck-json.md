@@ -8,10 +8,11 @@ python scripts/build_cards.py deck.json out/ --preview         # 只出页面，
 node scripts/render_check.mjs out/ --phone --dark              # 真实 Chromium 截图 + ccptAudit 体检
 python scripts/build_cards.py deck.json out/ --term-sampler    # 合成语音（晓晓/云扬，2× 或 1.5×）并打包 .apkg；另出术语试听
 python scripts/build_cards.py deck.json out/ --audio-pending   # 语音服务不可达时先交付图文包，页面明示“语音待补”
-python scripts/validate_package.py out/<牌组>.apkg --output out/validate.json   # 隔离 collection 导入、解码、重复导入保历史
+python scripts/build_cards.py deck.json --check-research       # 卡还没写时：先查考试锁定、research、考点与真题需求计划
+python scripts/validate_package.py out/<牌组>.apkg --output out/validate.json   # 隔离 collection 导入、解码、重复导入保历史（需 requirements-validate.txt）
 ```
 
-`--audio-pending` 的包可以先导入学习；输出目录里同时写出 `deck.json` 与 `补语音.txt`。之后在能访问语音服务的机器上用这份 deck.json 去掉该参数重跑、再导入，同 GUID 的 note 原位更新（Anki 默认“较新时更新”），复习历史保留。Note 字段 `StableID, Title, Page, Source, Narration` 永远不改，改了旧卡就无法原位更新（测试锁定）。
+`--audio-pending` 的包可以先导入学习；输出目录里同时写出 `deck.json` 与按步骤编号的 `补语音.txt`（每次打包都会写出 `deck.json`，新对话续做时把它交给 Claude）。之后在能访问语音服务的机器上照 `补语音.txt` 用这份 deck.json 去掉该参数重跑、再导入，同 GUID 的 note 原位更新（Anki 默认“较新时更新”），复习历史保留。Note 字段 `StableID, Title, Page, Source, Narration` 永远不改，改了旧卡就无法原位更新（测试锁定）。
 
 ## 顶层结构
 
@@ -23,7 +24,8 @@ python scripts/validate_package.py out/<牌组>.apkg --output out/validate.json 
   "style": {"theme": "lab", "voice": "xiaoxiao", "speed": "auto"},
   "speech_lexicon": {"ILATE": "I L A T E"},
   "exam": { ... },
-  "terms_known": ["sample", "population"],
+  "terms_known": [{"term": "sampling frame", "taught_in": ["T03"]}],
+  "ignore_words": ["respectively"],
   "research": [ ... ],
   "research_gaps": "",
   "board": [ ... ],
@@ -36,6 +38,8 @@ python scripts/validate_package.py out/<牌组>.apkg --output out/validate.json 
 - `deck_id`、`model_id` 取一次后固定；`namespace` + 卡 `id` 决定 GUID，原位更新时两者都不能改。
 - `style.theme`：`editorial`（经济、商科、社科）、`paper`（纯数）、`lab`（统计、数据）、`blueprint`（物理、化学、工程）、`manuscript`（历史、文学、哲学）。同一资格跨学科时用 `style.theme_by_subdeck`（如 `{"S2": "lab", "P4": "paper"}`）；单卡可用 `theme` 覆盖。
 - `style.voice`：`xiaoxiao`（默认）或 `yunyang`；`style.voice_by_subdeck` 只用于**单独学习**的子牌组（如 `{"Essay": "yunyang"}`），因为从父牌组一起复习时声音会逐卡交替；`--term-sampler` 按每种声音各出一份试听；`style.speed`：`"auto"`（默认：逐卡按规则判定 2× 或 1.5×），或整副牌组固定 `2.0`／`1.5`（1.5 需写 `style.speed_reason`）。`speech_lexicon` 是读音替换表。规则见 [narration.md](narration.md)。
+- `style.speed_review`：一副卡组超过三成判为 1.5× 时必填，写为什么这副卡确实这么密（会印进报告，也要写进交付说明）。`style.legacy_voice: true` 才允许云希（只用于维护旧卡）。`deck.tag` 可指定页眉考试标签（默认由考试代码与单元生成，如“9708 · P3 · P4”）。
+- `personal`：默认不写（false）。生成器拒绝“你的卷面／你丢”式写法、考生号与中心号、邮箱，以及卷面总分（如“总分 49/75”）；只有学习者明确要一副只给自己看的个人化讲评时才写 `"personal": true`，这类卡组不外传。姓名生成器认不出，制作者自己保证不写。
 - 非考试材料设 `"academic": false`，可省略 `exam`、`research`、`coverage`；有 `exam` 或任何卡写了 `covers` 时生成器拒绝 `academic: false`，不能用它绕过取证。
 
 ## exam：锁定考试
@@ -55,11 +59,11 @@ python scripts/validate_package.py out/<牌组>.apkg --output out/validate.json 
 
 ## research：实际读过的资料
 
-每条 `{type, ref, read, used_for, paper?}`：`type` 取 `spec | qp | ms | er | exemplar | specimen | textbook | board | teacher | other`；`ref` 写文件名、年份季次、卷号题号与 URL；`read` 写实际读到的页码或范围；`used_for` 写它改变了哪些卡、哪句定义、哪一步。生成器要求至少有 `spec` 与 `ms`；没有 `er`／`exemplar`／`specimen` 时必须在 `research_gaps` 写明取不到什么、用什么替代。
+每条 `{type, ref, read, used_for, paper?, via?}`：`type` 取 `spec | qp | ms | er | exemplar | specimen | textbook | board | teacher | other`；`ref` 写文件名、年份季次、卷号题号与 URL；`read` 写实际读到的页码或范围；`used_for` 写它改变了哪些卡、哪句定义、哪一步。`via`：`original`（读的是原件）或 `registry`（读的是技能自带考试登记里的摘要，`ref` 写卷号与考季；要引用的措辞仍回原件核对）。生成器要求有 `spec` 与 `ms`；任何地方都找不到 MS 时，只允许 `coverage.status: "partial"` 并在 `research_gaps` 说明（交付说明第一行也要写）。没有 `er`／`exemplar`／`specimen` 时必须在 `research_gaps` 写明取不到什么、用什么替代。卷型含 essay 或 data-response 时，`exemplar`／`specimen` 记录的 `read` 要写明读了哪几页（如 `script pp.15–21 read`）：扫描答卷渲染成图片后看图读，“是图片／无 OCR”不算取不到，否则报告给出警告。
 
 ## board：板书点
 
-`[{id:"B07", where:"p3 左下", point:"proof by contradiction 三步", items:["P4-1.1"], note:"…", source_paper:"WMA14 Jan 2026 Q7", legibility:"ok"}]`。每个板书点要么映射到考点，要么在 `note` 说明为什么不进卡（老师口误已更正、离题、超纲）。`source_paper` 写印刷题的官方出处（找不到写“未找到官方出处”）；用户卷面上丢的分（如 `Q01A2 0`）也记成板书点，写 `lost`（“A1”）与 `cards`（补救它的卡）或 `not_carded`：M0 → 方法卡与完整推导卡，A0 → 易错卡与 finish 检查项，B0 → 术语或结论句卡；看不清的板书点写 `"legibility": "low"` 和 `confirmed_by`（用哪份官方材料确认了内容），不猜字。
+`[{id:"B07", where:"p3 左下", point:"proof by contradiction 三步", items:["P4-1.1"], note:"…", source_paper:"WMA14 Jan 2026 Q7", legibility:"ok"}]`。每个板书点要么映射到考点，要么在 `note` 说明为什么不进卡（老师口误已更正、离题、超纲）。`source_paper` 写印刷题的官方出处（找不到写“未找到官方出处”）；批改卷上丢的分（如 `Q01A2 0`，也可写 `Q9a(ii)A1` 这类带小问的 id）也记成板书点，写 `lost`（“A1”）与 `cards`（补救它的卡）或 `not_carded`；只记题号、分点与是否得分，不写姓名、日期和总分。可选 `score`（这一分点得了几分），`score` 大于 0 时不需要 `lost`：M0 → 方法卡与完整推导卡，A0 → 易错卡与 finish 检查项，B0 → 术语或结论句卡；看不清的板书点写 `"legibility": "low"` 和 `confirmed_by`（用哪份官方材料确认了内容），不猜字。卡组不是从板书做的（例如只按考纲某节制作）时，`board` 可为空，但要写 `board_waived` 说明。
 
 ## demands：真题需求清单
 
@@ -73,6 +77,9 @@ python scripts/validate_package.py out/<牌组>.apkg --output out/validate.json 
   "status": "complete",
   "remaining": "",
   "saturation": "按考季倒序读 WST02 June 2026 → Jan 2023 共 9 季；最后 3 季没有新问法",
+  "backcheck": [{"paper": "WST02/01", "series": "2024-06", "q": "3", "result": "pass", "fixed_by": []},
+                {"paper": "WST02/01", "series": "2023-01", "q": "5(b)", "result": "gap", "fixed_by": ["M-sampdist"], "note": "缺“列出全部样本”这一步的 B1"}],
+  "coldread": [{"card": "T03", "missing": ["all"], "fixed_by": ["T03"]}],
   "items": [
     {"id": "S2-4.2a", "spec": "4.2 Concepts of a statistic and its sampling distribution", "class": "core", "kind": "term",
      "point": "statistic 的定义与判断", "level": "MS：判断需给理由 contains no unknown parameters／based only on the sample；“because it is known”不给分",
@@ -85,7 +92,7 @@ python scripts/validate_package.py out/<牌组>.apkg --output out/validate.json 
 }
 ```
 
-`class`：`core`（本卷考点，必须写 `level`：MS 要求的措辞、步骤、图或评价深度；`kind`：`term`／`method`／`formula`／`diagram`／`chain`／`essay`／`command`／`fact`，`term` 类考点必须有自己的术语卡；`evidence`：至少两条不同考季的 MS 或 ER 出处，取不到就写 `evidence_gap`；已由其他牌组的卡讲透时写 `existing` 指明那张卡）、`prerequisite`（理解或解题必需的先修，写 `reason`）、`adjacent`（同一考纲大节、留给下一批，写 `reason`；卡片不能覆盖它，报告会列出）、`excluded`（教材或板书出现但不属于本卷，写 `reason`，任何卡不得覆盖）。`status: complete` 时每个 core／prerequisite 至少有一张卡；`partial` 时 `remaining` 写清还差什么。卡片用 `covers` 反向声明自己教哪些考点，生成器双向核对。方法见 [coverage-ledger.md](coverage-ledger.md)。
+`class`：`core`（本卷考点，必须写 `level`：MS 要求的措辞、步骤、图或评价深度；`kind`：`term`／`method`／`formula`／`diagram`／`chain`／`essay`／`command`／`fact`，`term` 类考点必须有自己的术语卡；`evidence`：至少两条不同考季的 MS 或 ER 出处，取不到就写 `evidence_gap`；已由其他牌组的卡讲透时写 `existing` 指明那张卡）、`prerequisite`（理解或解题必需的先修，写 `reason`）、`adjacent`（同一考纲大节、留给下一批，写 `reason`；卡片不能覆盖它，报告会列出）、`excluded`（教材或板书出现但不属于本卷，写 `reason`，任何卡不得覆盖）。`status: complete` 时每个 core／prerequisite 至少有一张卡；`partial` 时 `remaining` 写清还差什么。卡片用 `covers` 反向声明自己教哪些考点，生成器双向核对。`backcheck` 记录“只凭卡组作答真题”的结果（`result` 为 `pass` 或 `gap`，`gap` 必须写 `fixed_by`）；`status: complete` 至少要有两条不同考季的回查。`coldread` 记录冷读关键词测试里写不出的词（`missing`）和补上它们的卡。方法见 [coverage-ledger.md](coverage-ledger.md) 与 [review-and-delivery.md](review-and-delivery.md) §一。
 
 ## cards：卡片
 
@@ -96,10 +103,10 @@ python scripts/validate_package.py out/<牌组>.apkg --output out/validate.json 
 ```
 
 - `genre`：`term` 术语、`derivation` 推导、`method` 方法、`formula` 公式、`chain` 因果、`map` 导图、`diagram` 图解、`compare` 辨析、`essay` 论述、`pitfall` 易错、`overview` 全景、`case` 案例。卡型怎样配块见 [card-genres.md](card-genres.md)。
-- 牌组级 `terms_known` 列出本牌组之前已经讲透、不必再解释的 English 词；生成器把卡上出现、却没有术语卡、就地释义（`<abbr>` 或“词（中文）”）或 `terms_known` 解释的 English 词（单词与词组）列进 `report.json` 的 `term_ledger`，提醒补术语卡。
+- 牌组级 `terms_known` 写成 `{term, taught_in: [卡 id]}`：只列本牌组里确实有卡讲透的词（`taught_in` 指向那张卡）；功能词写进 `ignore_words`；别处讲过、这里只是用到的词在卡上就地释义（`<abbr title="…">词</abbr>（中文）` 或“词（中文）”，缩写同样可以写成 `MS（评分方案）`）。旧的纯字符串写法仍能用，但报告会提醒改写。生成器把卡上出现、却没有术语卡、就地释义或 `terms_known` 解释的 English 词（单词与词组，复数归到单数）**全量**列进 `report.json` 的 `term_ledger`（总数在 `term_ledger_total`，与考点或真题文本相关的排在前面）；8 个词以上、旁边没有中文的英文句子列进 `untranslated`。交付说明引用真实总数。
 - `speed` 可覆盖自动判定（`1.5` 必须同时写 `speed_reason`）；`theme`、`tag`（页眉考试标签）、`subdeck`、`title_speech`、`examples_waived`（术语卡没有自然非例时的理由）、`formula_booklet`（`given` 公式表已给／`memorise` 须背／`derive` 须会推导，显示在页眉）可选。声音只在 `style.voice` 或 `style.voice_by_subdeck` 设定。
 - `links`：相关卡的 id（例如论述卡连到它的因果链卡与导图卡）。`exam_waived`：术语卡确实没有考法可写时的理由。
-- 生成器按卡型检查最低结构：`term` 卡要有 definition、至少一个例子和一个写了理由的非例；考试牌组的 `term` 卡还要有 definition `source`、至少两项的 unpack、exam 块（或 `exam_waived`）；`derivation` 卡要有 steps 与 finish；`chain` 卡要有 chain 块，`map`／`overview` 卡要有 map 块，`essay` 卡要有 sections，并有 chain／map 块或 `links`。
+- 生成器按卡型检查最低结构：`term` 卡要有 definition、至少一个例子和一个写了理由的非例；考试牌组的 `term` 卡还要有 definition `source`、至少两项的 unpack、exam 块（或 `exam_waived`）；`derivation` 卡要有 steps 与 finish；`method` 卡要有 steps；`formula` 卡要有 unpack 或 steps，考试牌组还要写 `formula_booklet`（推导、方法卡缺它会警告）；`case` 卡要有 chain、map 或 sections 把案例连回理论；`chain` 卡要有 chain 块，`map`／`overview` 卡要有 map 块，`essay` 卡要有 sections，并有 chain／map 块或 `links`。
 - 卡片顺序就是首次学习顺序：先修与术语在前，推导与论述在后。
 
 ## 内容块（blocks）
@@ -111,7 +118,7 @@ python scripts/validate_package.py out/<牌组>.apkg --output out/validate.json 
 | `unpack` | items[{key, explain}], label | 逐词拆解定义或公式 |
 | `examples` | yes[{text, why}], no[{text, why}] | 例子与反例 |
 | `table` | head[], rows[[]], caption, label | 对比、分类、条件表 |
-| `steps` | given, items[{subgoal, do, why, basis, mark, mark_note, trivial}], goal, marks_basis, label, when | 理科推导：每步“做什么＋为什么＋依据”；`subgoal` 把 2–4 步归成一组并显示组名；`mark` 用 MS 记号（M1、dM1、ddM1、A1、A1*、A1ft、A1cso、B1、B1ft、C1、SC1，可写“M1 A1”或“M1A1”），朗读时读成“这一步记 M 1”；`mark_note` 写容忍与扣分并朗读为“评分注意”；只有 `mark_note` 的步骤也算有解释；纯算术步可 `trivial: true`；`marks_basis` 说明得分标注来自哪份 MS 或“按同类题推断”；MS 的另一种做法再用一个 steps 块，`label` 写“另一种做法”、`when` 写何时选它 |
+| `steps` | given, items[{subgoal, do, why, basis, mark, mark_note, trivial}], goal, marks_basis, label, when | 理科推导：每步“做什么＋为什么＋依据”；`subgoal` 把 2–4 步归成一组并显示组名；`mark` 用 MS 记号（M1、dM1、ddM1、A1、A1*、A1ft、A1cso、B1、B1ft、C1、SC1，可写“M1 A1”或“M1A1”），朗读时读成“这一步记 M 1”；`mark_note` 写容忍与扣分并朗读为“评分注意”；只有 `mark_note` 的步骤也算有解释；纯算术步可 `trivial: true`；`marks_basis` 说明得分标注来自哪份 MS（登记里已有真 MS 时不能再写“按同类题推断”）；MS 的另一种做法再用一个 steps 块，`label` 写“另一种做法”、`when` 写何时选它 |
 | `chain` | items[{text, rel, cond, note, kind, ao, arrow, line} 或 {fork: [[…], […]]}], direction, label | 箭头因果链：`rel` 印在箭头上，`cond` 是挂在箭头下的条件旁注，`note` 是节点内的次要说明；`fork` 并列两条以上分支，分叉后的节点自动汇合（链不能以分叉开头，两个分叉之间要有节点）；`direction`: auto / row / column |
 | `map` | root{text, rel, kind, ao, arrow, line, children[]}, layout, edge, fold, label | 深层导图；`kind` 见下；`layout`: auto / logic / outline；`edge`: curve / elbow（默认按主题）；`fold: false` 不折叠分支 |
 | `figure` | svg, caption, points[] | 原创 SVG 图及逐点解读 |
@@ -135,4 +142,4 @@ python scripts/validate_package.py out/<牌组>.apkg --output out/validate.json 
 
 ## 输出
 
-`out/<id>.html`（预览页）、`ccpt_single_face.ankiaddon`（双击安装的桌面插件）、`pages.json`、`speech-manifest.json`（每卡 voice、speed、atempo、分段朗读文本与实测 cue）、`report.json`（每卡速度与理由、S／M／m%／T／E／N／C 指标、时长、警告、覆盖统计）、`<牌组名>.apkg`，以及可选的 `term-sampler.mp3`。Note 字段：`StableID, Title, Page, Source, Narration`；Source 存 JSON（考试锁定、covers、来源），不显示在卡面。
+`out/<id>.html`（预览页）、`ccpt_single_face.ankiaddon`（双击安装的桌面插件）、`pages.json`、`speech-manifest.json`（每卡 voice、speed、atempo、分段朗读文本与实测 cue）、`report.json`（每卡速度、理由与 `metrics.signals`、S／M／m%／T／E／N／C 指标、时长、`plain_math` 纯文本数学处数、警告；全量 `term_ledger` 与 `term_ledger_total`、`untranslated`、`waivers`、`speed` 汇总、`backcheck`／`coldread`、覆盖统计）、`deck.json`（打包时的卡组数据，续做与补语音用）、`<牌组名>.apkg`，以及可选的 `term-sampler.mp3`。Note 字段：`StableID, Title, Page, Source, Narration`；Source 存 JSON（考试锁定、covers、来源），不显示在卡面。

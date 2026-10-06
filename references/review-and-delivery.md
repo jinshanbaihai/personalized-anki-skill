@@ -53,11 +53,11 @@ python scripts/validate_package.py out/<牌组>.apkg --require-audio            
 
 用户只看一页完整内容，没有题目面、翻面、输入答案或选择题。**Space** 播放／暂停／继续／重播语音，不评分；**Enter** 记 Good 并进入下一张；**1** 记 Again，下一个 Anki 学习日再看。
 
-实现：question 与 answer 模板显示同一页；每次构建都在输出目录写出 `ccpt_single_face.ankiaddon`（也可 `python scripts/package_addon.py 目录/`），用户双击即安装（重启 Anki）。插件只对模板含 `data-ccpt-single` 的卡生效：首次显示后自动切到可评分状态，接管 Space／Enter／1，长按不连发，其他卡与编辑器不受影响；调度参数只在用户对一次性提示选“是”或使用工具菜单时才改。插件通过公开钩子 `gui_hooks.state_shortcuts_will_change` 改写 reviewer 的 Space／Enter／1；需要 Anki 2.1.50 或更新（manifest `min_point_version`），接口缺失时只提示、不接管按键。牌组设了“不自动播放音频”时 Anki 会要求点击才能出声，插件只对 CCPT 卡解除这一限制（CCPT 音频从不自动播放），所以 Space 照常播音；页面里只处理 Space，Enter 与 1 交给宿主（浏览器预览窗等不受影响）。已核对 Anki 26.09.3（aqt 26.9.3）源码中这些接口与钩子均存在；26.x 的作答键来自可配置的 `get_answer_key`，插件在 `1` 被改键时会补回。Anki 升级后先在测试 profile 复核。
+实现：question 与 answer 模板显示同一页；每次构建都在输出目录写出 `ccpt_single_face.ankiaddon`（也可 `python scripts/package_addon.py 目录/`），用户双击即安装（重启 Anki）。插件只对模板含 `data-ccpt-single` 的卡生效：首次显示后自动切到可评分状态，接管 Space／Enter／1，长按不连发，其他卡与编辑器不受影响；学习步长按下文在首次复习时自动设置一次；复习中从不弹对话框。插件通过公开钩子 `gui_hooks.state_shortcuts_will_change` 改写 reviewer 的 Space／Enter／1；需要 Anki 2.1.50 或更新（manifest `min_point_version`），接口缺失时只提示、不接管按键。牌组设了“不自动播放音频”时 Anki 会要求点击才能出声，插件只对 CCPT 卡解除这一限制（CCPT 音频从不自动播放），所以 Space 照常播音；页面里只处理 Space，Enter 与 1 交给宿主（浏览器预览窗等不受影响）。已核对 Anki 26.09.3（aqt 26.9.3）源码中这些接口与钩子均存在；26.x 的作答键来自可配置的 `get_answer_key`，插件在 `1` 被改键时会补回。Anki 升级后先在测试 profile 复核。
 
-**“1 = 下一学习日再看”依赖牌组的学习步长**：Anki 默认步长（1m、10m）下，按 1 的卡和 Enter 的新卡会在当天几分钟后再出现。第一次在某个牌组看到 CCPT 卡、而它的学习步长短于 1 天时，插件问一次是否改用阅读预设；工具菜单里也有“CCPT：当前牌组使用阅读预设”。确认后克隆当前预设（已是 CCPT 阅读预设则直接沿用），只把新卡与遗忘卡的步长改成 1 天、leech 只加标签，其余设置（每日数量、FSRS、retention）不变；只给与该牌组共用同一预设的子牌组换上，有自己预设的子牌组保持不变并在对话框里列出；筛选牌组不处理。交付时告诉用户这一步（一次性）。AnkiMobile／AnkiDroid 不加载桌面插件：卡片仍是同一张完整页面，点页面上的播放键听讲解（2×／1.5× 键同样可用），先点 Show Answer 再点 Good／Again（AnkiDroid 可在设置里把手势或音量键映射到这两个按钮）；“Again = 下一学习日”同样取决于牌组预设，预设在桌面改一次即同步到手机。
+**“1 = 下一学习日再看”依赖牌组的学习步长**：Anki 默认步长（1m、10m）下，按 1 的卡和 Enter 的新卡会在当天几分钟后再出现。所以插件第一次显示某个牌组的 CCPT 卡、而它的学习或重学步长短于 1 天（或为空）时，自动给这个牌组的“家族”（共用同一预设的最高上级牌组，及共用该预设的子牌组）换上“CCPT 阅读（原预设名）”：克隆原预设（已有同名阅读预设则沿用，不重复克隆），只把新卡与遗忘卡的步长改成 1 天、leech 只加标签，其余设置（每日数量、FSRS、retention）不变；有自己预设的子牌组、只含非 CCPT 卡的牌组和筛选牌组不改。随后重建队列，屏幕上这张卡也按新步长评分；右下角提示改了什么、如何撤销，不弹对话框（评分用的 Enter 不会误点）。撤销：工具 → “CCPT：撤销阅读预设”，恢复插件记录的原预设，此后插件不再自动修改这些牌组（包括之后加在其下的子牌组）。决定按 Anki 用户（profile）与牌组记在插件配置里（工具 → 插件 → 配置），重启、重装插件都保留；`auto_reading_preset` 设为 false 则不自动改，每次启动只提示一次。两台电脑同步同一个集合时，这些决定各自记在本机，一台上撤销后另一台可能再次应用，需要时在另一台也撤销一次。工具菜单“CCPT：牌组使用阅读预设（1 = 隔天再看）”是后备：它找出所有含 CCPT 卡（标签 ccpt6 或单面模板）的牌组，与当前选中的牌组无关，列出名单确认后应用；撤销过的牌组也可由此重新启用。FSRS 关闭时 Enter 的新卡隔天出现；开启 FSRS 时 Enter 的新卡间隔由 FSRS 决定（不会是当天），按 1 仍是下一学习日。AnkiMobile／AnkiDroid 不加载桌面插件：卡片仍是同一张完整页面，点页面上的播放键听讲解（2×／1.5× 键同样可用），先点 Show Answer 再点 Good／Again（AnkiDroid 可在设置里把手势或音量键映射到这两个按钮）；预设在桌面改过一次即随同步生效；只用手机、从不在桌面复习的用户要在牌组选项里手动把学习步长与重学步长都设为 `1d`（leech 选“仅标记”）。交付时把这些告诉用户。
 
-实测项：打开卡即见完整内容；Space 只控制语音；Enter 一次 Good；1 一次 Again 且 due = 下一学习日；切卡停止旧音频。评分测试在测试 profile 或测试后立即撤销，并核对原卡状态与 revlog，不污染学习历史。
+实测项：打开卡即见完整内容；Space 只控制语音；Enter 一次 Good；1 一次 Again 且 due = 下一学习日；切卡停止旧音频。评分测试在测试 profile 或测试后立即撤销，并核对原卡状态与 revlog，不污染学习历史。插件的自动测试（源码仓库的 `scripts/test_addon.py`）用模拟的 aqt 调用 Space／Enter／1 的快捷键回调，并在真实 anki 集合上核对按 1 与 Enter 后 due = 下一天、不是几分钟后；它没有在真实 Anki 窗口里按键，桌面按键仍需在测试 profile 里实测一次，没测时交付说明照实写。
 
 ## 六、原位更新与新旧卡
 
@@ -65,7 +65,7 @@ python scripts/validate_package.py out/<牌组>.apkg --require-audio            
 - 先读取实际集合中的 note GUID、StableID、note／card ID、notetype 与牌组，再决定映射；不凭旧作者文件猜。
 - 旧版本 skill 生成的卡（v5 导图卡，字段 FrontHTML／BackHTML）要改用 ccpt-6 时：先导入一个 ccpt-6 包让新 notetype 存在，在 Anki 浏览器里选中旧卡 → Change Note Type → ccpt-6（BackHTML → Page，StableID → StableID，Source → Source），复习历史随卡保留；再用同一 GUID 的 deck.json 生成新包导入覆盖内容。整个流程先在集合备份或测试 profile 中走一遍。
 - 共享 notetype 的模板改动影响该类型全部卡，改前确认不会破坏未改的旧卡。
-- 只操作用户授权的牌组；调度设置按 [review-planning.md](review-planning.md)，只在用户要求时改（插件的一次性提示默认“否”，用户选“是”才改学习步长）。
+- 只操作用户授权的牌组；调度设置按 [review-planning.md](review-planning.md)，只在用户要求时改。例外：插件按“1 = 下一学习日再看”的设计，在首次复习时把 CCPT 牌组的学习与重学步长设为 1 天：只改含 CCPT 卡的牌组家族，记录原预设，提示一次，可从工具菜单撤销，撤销后不再自动改。
 
 ## 七、交付说明
 
@@ -79,5 +79,5 @@ python scripts/validate_package.py out/<牌组>.apkg --require-audio            
 - 交付物是**整个输出文件夹**：`.apkg`、`ccpt_single_face.ankiaddon`、`deck.json`、`report.json`，语音待补时还有 `补语音.txt`。`deck.json` 是续做与补语音的依据：在新的对话里接着做时，把它（或上次的 .apkg）和交付说明一起交给 Claude，新对话不会记得上一次的内容。
 - 实测范围：导入验证做了没有、截图检查做了没有、桌面按键（Space／Enter／1）是在真实 Anki 里试过还是只在测试里模拟过，如实写。
 - 隐私：交付文件（含 deck.json、交付说明）不写学习者姓名、考生号、日期与总分；批改卷只记题号和分点。学习者想知道总分时在对话里说，不写进文件。
-- 首次使用：双击安装 `ccpt_single_face.ankiaddon`、重启 Anki、导入 `.apkg`，再用工具菜单把牌组设为阅读预设（一次性）；导入后先在真实客户端看一张导图卡和一张推导卡，确认字体、公式与图都正常。
+- 首次使用：双击安装 `ccpt_single_face.ankiaddon`、重启 Anki、导入 `.apkg`；第一次复习时插件会自动把 CCPT 牌组设为阅读预设并在右下角提示（不想要：工具 → CCPT：撤销阅读预设）；只用手机的用户请在牌组选项里把学习与重学步长设为 1d。导入后先在真实客户端看一张导图卡和一张推导卡，确认字体、公式与图都正常。
 - 工程检查、制作者判断和用户实际体验分开说，不把程序通过说成学会了。

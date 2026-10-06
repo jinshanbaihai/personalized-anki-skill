@@ -80,7 +80,7 @@ python scripts/validate_package.py out/<牌组>.apkg --output out/validate.json 
 
 ### 7. 审查与交付
 
-先冷读与关键词复现测试，再交给独立审阅者找遗漏、误读、超纲和讲不透的地方，修改后复查；然后看截图、听语音、做导入验证与桌面操作测试。交付物包括 `.apkg`、双击安装的 `ccpt_single_face.ankiaddon`，并提醒用户一次性用插件菜单把牌组设为阅读预设（否则按 1 不是隔天再看）。交付时说明锁定的考试与证据（假设放第一行）、实际读过的资料与缺口、覆盖统计与留给下一批的相邻考点、板书看不清或更正处（请用户补原图）、语音状态。见 [review-and-delivery.md](references/review-and-delivery.md)。
+先冷读与关键词复现测试，再交给独立审阅者找遗漏、误读、超纲和讲不透的地方，修改后复查；然后看截图、听语音、做导入验证与桌面操作测试。交付物是整个输出文件夹：`.apkg`、双击安装的 `ccpt_single_face.ankiaddon`、`deck.json`、`report.json`，语音待补时还有 `补语音.txt`；并告诉用户：插件在第一次复习 CCPT 卡时会自动把该牌组设为阅读预设（学习与重学步长 1 天，按 1 = 下一学习日再看），右下角提示一次，不想要可用“工具 → CCPT：撤销阅读预设”恢复；只用手机复习的用户要在牌组选项里手动把学习与重学步长设为 1d。交付时说明锁定的考试与证据（假设放第一行）、实际读过的资料与缺口、真题回查与冷读的记录、覆盖统计与留给下一批的相邻考点、板书看不清或更正处（请用户补原图）、语音状态，以及哪些检查真的做了（导入验证、截图、真实 Anki 里的按键）；交付文件不写学习者姓名、日期与总分。见 [review-and-delivery.md](references/review-and-delivery.md)。
 
 ## 版式与美感
 
@@ -92,7 +92,7 @@ python scripts/validate_package.py out/<牌组>.apkg --output out/validate.json 
 
 ## 操作方式
 
-单面卡：打开即见完整内容。**Space** 播放／暂停语音，**Enter** 记 Good 并继续，**1** 下一学习日再看。没有翻面、输入答案、选择题或“听完才能继续”。桌面端由 `scripts/single_face_addon.py` 实现，见 [review-and-delivery.md](references/review-and-delivery.md)；复习安排只在用户要求时调整（插件第一次遇到学习步长短于 1 天的牌组时问一次，默认“否”，只有用户选“是”才改），见 [review-planning.md](references/review-planning.md)。
+单面卡：打开即见完整内容。**Space** 播放／暂停语音，**Enter** 记 Good 并继续，**1** 下一学习日再看。没有翻面、输入答案、选择题或“听完才能继续”。桌面端由 `scripts/single_face_addon.py` 实现，见 [review-and-delivery.md](references/review-and-delivery.md)。为满足“1 = 下一学习日再看”，插件第一次复习某牌组的 CCPT 卡、且其学习或重学步长短于 1 天时，自动改用 CCPT 阅读预设（只改步长为 1 天与 leech 只加标签），不弹窗，可从工具菜单撤销，撤销后不再自动改；其余复习安排只在用户要求时调整，见 [review-planning.md](references/review-planning.md)。
 
 ## 学习研究依据
 
