@@ -1,0 +1,85 @@
+/* paper — Pure Mathematics, Further Maths, Mechanics proofs.
+   Art reference: a well-set mathematics textbook / journal page — Computer Modern–era LaTeX manners (amsthm run-in
+   "Definition." heads, booktabs tables with only top/mid/bottom rules, "∎" closing a proof, equation numbers set
+   apart from the formula), with STIX Two as the face because STIX Two Text and STIX Two Math are designed to match
+   (text italic x == math italic x). Chinese in 宋体 (Noto Serif SC) so the page reads as one printed book.
+   Why it serves understanding: the reader's eye must move between formula and reason; same-design text/math faces,
+   quiet colour and a fixed "做什么 / 为什么 / 依据" rhythm keep attention on the reasoning, not the decoration. */
+@font-face{font-family:"CCPT6 Paper Text";src:url("_ccpt6-stix-400.woff2") format("woff2");font-weight:400;font-style:normal;font-display:block;unicode-range:U+0000-00B6,U+00B8-00FF,U+0131,U+0152-0153,U+02C6,U+02DA,U+02DC,U+0300-03FF,U+2000-2013,U+2015-201B,U+201E-2025,U+2027-209F,U+20AC,U+2122,U+2190-21FF,U+2212,U+2264-2265}
+@font-face{font-family:"CCPT6 Paper Text";src:url("_ccpt6-stix-400i.woff2") format("woff2");font-weight:400;font-style:italic;font-display:block;unicode-range:U+0000-00B6,U+00B8-00FF,U+0131,U+0152-0153,U+02C6,U+02DA,U+02DC,U+0300-03FF,U+2000-2013,U+2015-201B,U+201E-2025,U+2027-209F,U+20AC,U+2122,U+2190-21FF,U+2212,U+2264-2265}
+@font-face{font-family:"CCPT6 Paper Text";src:url("_ccpt6-stix-700.woff2") format("woff2");font-weight:600 800;font-style:normal;font-display:block;unicode-range:U+0000-00B6,U+00B8-00FF,U+0131,U+0152-0153,U+02C6,U+02DA,U+02DC,U+0300-03FF,U+2000-2013,U+2015-201B,U+201E-2025,U+2027-209F,U+20AC,U+2122,U+2190-21FF,U+2212,U+2264-2265}
+
+.ccpt6[data-theme="paper"]{
+ --bg:#fdfcf8;--surface:#ffffff;--surface-2:#f3f2ec;--rule:#dcd9cf;--rule-strong:#827d6f;
+ --ink:#17191e;--ink-2:#4b515e;--accent:#1c3d8c;--accent-ink:#ffffff;--accent-soft:#e6ecf8;
+ --wire:#1c3d8c;--kw:#d8e3fb;--good:#1c6a43;--good-soft:#e5f1e9;--bad:#a62d27;--bad-soft:#fbe5e2;--pen:#b2261e;
+ --mark-bg:#17191e;--mark-ink:#ffffff;--focus:#b86e10;--focus-soft:rgba(184,110,16,.13);
+ --k-policy:#1c3d8c;--k-cause:#1c3d8c;--k-effect:#4b515e;--k-cond:#4b515e;--k-eval:#a62d27;--k-example:#1c6a43;--k-limit:#a62d27;--k-def:#1c3d8c;
+ --c1:#a62d27;--c2:#1c3d8c;--c3:#1c6a43;--c4:#b86e10;--c-grid:#dcd9cf;
+ --font-text:"CCPT6 Paper Text",var(--cjk-serif);
+ --font-head:"CCPT6 Paper Text",var(--cjk-serif);
+ --font-ui:"CCPT6 Paper Text",var(--cjk-serif);
+ --font-math:"CCPT6 Math","STIX Two Math","Latin Modern Math","Cambria Math",math;
+ --fs:19px;--lh:1.78;--radius:3px;--radius-sm:3px;--gap:22px;--col:780px;
+}
+.card:has(.ccpt6[data-theme="paper"]){background:#fdfcf8}
+.ccpt6[data-theme="paper"] .cc-head{border-bottom:1px solid var(--ink)}
+.ccpt6[data-theme="paper"] .cc-meta{font-family:var(--font-ui);font-size:14px;letter-spacing:.04em}
+.ccpt6[data-theme="paper"] .cc-genre{background:none;color:var(--accent);border:1px solid var(--accent);border-radius:2px;padding:1px 8px}
+.ccpt6[data-theme="paper"] .cc-titlebar h1{font-size:29px;font-weight:700;letter-spacing:0}
+.ccpt6[data-theme="paper"] .speak{border-color:var(--ink);color:var(--ink);border-width:1px}
+.ccpt6[data-theme="paper"] .speak[aria-pressed="true"]{background:var(--ink);color:var(--surface)}
+.ccpt6[data-theme="paper"] .blk{border:1px solid var(--rule);border-radius:var(--radius);box-shadow:0 1px 0 rgba(23,25,30,.03)}
+.ccpt6[data-theme="paper"] .blk-label{font-size:17px;letter-spacing:.02em;font-weight:700;color:var(--ink)}
+/* the key idea reads like an abstract */
+.ccpt6[data-theme="paper"] .blk-lead{padding:4px 0 2px}
+.ccpt6[data-theme="paper"] .lead{border-left:0;padding:0 2.2em;font-weight:400;font-size:20px;text-align:left}
+.ccpt6[data-theme="paper"] .lead::before{content:"Key idea. ";font-weight:700;font-variant:small-caps;letter-spacing:.04em;color:var(--accent)}
+/* definition: a framed theorem box with a tab, as in a tcolorbox textbook */
+.ccpt6[data-theme="paper"] .blk-definition{border:1.5px solid var(--accent);border-radius:4px;margin-top:10px;padding-top:24px}
+.ccpt6[data-theme="paper"] .def-head{position:static}
+.ccpt6[data-theme="paper"] .def-label{position:absolute;top:-13px;left:18px;width:auto;background:var(--accent);color:var(--accent-ink);font:700 15px/1.55 var(--font-head);letter-spacing:.04em;text-transform:none;padding:0 12px;border-radius:2px}
+.ccpt6[data-theme="paper"] .blk-definition{position:relative}
+.ccpt6[data-theme="paper"] .def-term{font-size:27px;font-weight:700}
+.ccpt6[data-theme="paper"] .def-text{font-style:italic}
+.ccpt6[data-theme="paper"] .def-text :is(.math,mark){font-style:normal}
+.ccpt6[data-theme="paper"] mark.kw{background:linear-gradient(transparent 60%,var(--kw) 60%);font-weight:600}
+.ccpt6[data-theme="paper"] .def-gloss{background:var(--surface-2);border-radius:2px}
+.ccpt6[data-theme="paper"] .tagline{font-family:var(--font-ui);text-transform:none;letter-spacing:.04em;font-size:14px}
+.ccpt6[data-theme="paper"] .u-row dt{font-style:italic;font-weight:600}
+/* booktabs */
+.ccpt6[data-theme="paper"] .tbl th{border-top:2px solid var(--ink);border-bottom:1px solid var(--ink);font-weight:700}
+.ccpt6[data-theme="paper"] .tbl td:first-child{color:var(--ink);font-style:italic}
+.ccpt6[data-theme="paper"] .tbl td{border-bottom:0}
+.ccpt6[data-theme="paper"] .tbl tbody tr:last-child td{border-bottom:2px solid var(--ink)}
+/* derivation: numbers set like equation tags, reasons like marginal glosses */
+.ccpt6[data-theme="paper"] .step{--step-n-w:44px;grid-template-columns:var(--step-n-w) minmax(0,1fr) auto;border-top:1px dotted var(--rule-strong)}
+.ccpt6[data-theme="paper"] .step:first-child,.ccpt6[data-theme="paper"] .subgoal+.step{border-top:0}
+.ccpt6[data-theme="paper"] .step-n{display:block;white-space:nowrap;background:none;color:var(--accent);width:auto;height:auto;border-radius:0;font:600 19px/1.6 var(--font-head);margin-top:2px}
+.ccpt6[data-theme="paper"] .step-n::before{content:"("}
+.ccpt6[data-theme="paper"] .step-n::after{content:")"}
+.ccpt6[data-theme="paper"] .step-do{font-size:1.04em}
+.ccpt6[data-theme="paper"] .subgoal{font-family:var(--font-head);font-style:italic;font-weight:600;font-size:17px;border-top:1px solid var(--rule)}
+.ccpt6[data-theme="paper"] .steps-given{background:none;border-left:3px solid var(--rule-strong);border-radius:0}
+.ccpt6[data-theme="paper"] .steps-goal{background:var(--accent-soft);border-left:0;border-radius:2px;padding-right:2.4em;position:relative}
+.ccpt6[data-theme="paper"] .steps-goal::after{content:"∎";position:absolute;right:14px;bottom:12px;color:var(--ink);font:20px/1 var(--font-math)}
+.ccpt6[data-theme="paper"] .mark-badge{font-family:var(--font-mono);border-radius:2px}
+/* chain: thin-ruled boxes, connectives in italic like "hence" in a proof */
+.ccpt6[data-theme="paper"] .ch-node{border-radius:2px}
+.ccpt6[data-theme="paper"] .ch-rel{font-style:italic;font-family:var(--font-head)}
+.ccpt6[data-theme="paper"] .mm-node{border-radius:2px}
+.ccpt6[data-theme="paper"] .sec::before{content:"§" counter(sec);border:0;border-radius:0;width:auto;height:auto;top:13px;font:700 17px/1.4 var(--font-head);color:var(--accent)}
+.ccpt6[data-theme="paper"] .ex-col{border-radius:2px}
+.ccpt6[data-theme="paper"] .pf{border-radius:2px}
+.ccpt6[data-theme="paper"] .finish-box{border-radius:0;border-width:1.5px}
+
+.ccpt6[data-theme="paper"] .blk-lead{border:0;box-shadow:none;background:none}
+
+.nightMode .ccpt6[data-theme="paper"],.night_mode .ccpt6[data-theme="paper"]{
+ --bg:#14161b;--surface:#1b1e24;--surface-2:#242832;--rule:#363b46;--rule-strong:#8a91a1;
+ --ink:#e9ebf0;--ink-2:#aab1bf;--accent:#a3bcff;--accent-ink:#14161b;--accent-soft:#232d47;
+ --wire:#a3bcff;--kw:#2e3c66;--good:#86d3a7;--good-soft:#1b2f25;--bad:#ff9f95;--bad-soft:#3b2220;--pen:#ff9082;
+ --mark-bg:#e9ebf0;--mark-ink:#14161b;--focus:#f0b45c;--focus-soft:rgba(240,180,92,.16);
+ --k-policy:#a3bcff;--k-cause:#a3bcff;--k-effect:#aab1bf;--k-cond:#aab1bf;--k-eval:#ff9f95;--k-example:#86d3a7;--k-limit:#ff9f95;--k-def:#a3bcff;
+ --c1:#ff9f95;--c2:#a3bcff;--c3:#86d3a7;--c4:#f0b45c;--c-grid:#363b46}
+.nightMode.card:has(.ccpt6[data-theme="paper"]),.night_mode.card:has(.ccpt6[data-theme="paper"]),.nightMode .card:has(.ccpt6[data-theme="paper"]){background:#14161b}

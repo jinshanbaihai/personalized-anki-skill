@@ -1,0 +1,86 @@
+/* blueprint — Physics, Chemistry, Engineering, Computer Science.
+   Art reference: the engineering drawing sheet — title block in the corner, item "balloons" numbering parts,
+   dimension lines with arrowheads, single-stroke technical lettering (JetBrains Mono as the lettering face,
+   Inter for reading), cobalt construction lines on drafting film; in night mode the sheet becomes a true
+   cyanotype (white lines on Prussian blue, the 19th-century blueprint process).
+   Why it serves understanding: physical-science answers are chains of quantities with units and laws; a drawing
+   sheet's habits (numbered callouts, labelled arrows, nothing decorative) map one-to-one onto
+   "quantity → law → substitution → unit". */
+@font-face{font-family:"CCPT6 Drafting Sans";src:url("_ccpt6-inter-400.woff2") format("woff2");font-weight:400 500;font-display:block;unicode-range:U+0000-00B6,U+00B8-00FF,U+0131,U+0152-0153,U+02C6,U+02DA,U+02DC,U+0300-03FF,U+2000-2013,U+2015-201B,U+201E-2025,U+2027-209F,U+20AC,U+2122,U+2190-21FF,U+2212,U+2264-2265}
+@font-face{font-family:"CCPT6 Drafting Sans";src:url("_ccpt6-inter-600.woff2") format("woff2");font-weight:600 800;font-display:block;unicode-range:U+0000-00B6,U+00B8-00FF,U+0131,U+0152-0153,U+02C6,U+02DA,U+02DC,U+0300-03FF,U+2000-2013,U+2015-201B,U+201E-2025,U+2027-209F,U+20AC,U+2122,U+2190-21FF,U+2212,U+2264-2265}
+@font-face{font-family:"CCPT6 Drafting Mono";src:url("_ccpt6-jbmono-400.woff2") format("woff2");font-weight:400 500;font-display:block;unicode-range:U+0000-00FF,U+2000-206F,U+2190-21FF,U+2212}
+@font-face{font-family:"CCPT6 Drafting Mono";src:url("_ccpt6-jbmono-700.woff2") format("woff2");font-weight:600 800;font-display:block;unicode-range:U+0000-00FF,U+2000-206F,U+2190-21FF,U+2212}
+
+.ccpt6[data-theme="blueprint"]{
+ --bg:#f0f5fa;--surface:#ffffff;--surface-2:#e5eef8;--rule:#c3d4e8;--rule-strong:#5f7ea3;
+ --ink:#0d2240;--ink-2:#42587a;--accent:#1a55a0;--accent-ink:#ffffff;--accent-soft:#dae7f7;
+ --wire:#1a55a0;--kw:#cfe1fa;--good:#1a6a49;--good-soft:#ddefe6;--bad:#ae3429;--bad-soft:#f9e1dd;--pen:#b2261e;
+ --mark-bg:#0d2240;--mark-ink:#ffffff;--focus:#c06a00;--focus-soft:rgba(192,106,0,.14);
+ --k-policy:#1a55a0;--k-cause:#1a55a0;--k-effect:#0d2240;--k-cond:#42587a;--k-eval:#ae3429;--k-example:#1a6a49;--k-limit:#ae3429;--k-def:#1a55a0;
+ --c1:#ae3429;--c2:#1a55a0;--c3:#1a6a49;--c4:#c06a00;--c-grid:#c3d4e8;
+ --font-text:"CCPT6 Drafting Sans",var(--cjk-sans);
+ --font-ui:"CCPT6 Drafting Sans",var(--cjk-sans);
+ --font-head:"CCPT6 Drafting Sans",var(--cjk-sans);
+ --font-mono:"CCPT6 Drafting Mono",ui-monospace,"SF Mono",Menlo,Consolas,var(--cjk-sans);
+ --fs:18px;--lh:1.74;--radius:0px;--radius-sm:0px;--gap:22px;--col:800px;
+ background-image:linear-gradient(rgba(26,85,160,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(26,85,160,.07) 1px,transparent 1px);
+ background-size:20px 20px;background-position:-1px -1px;
+}
+.card:has(.ccpt6[data-theme="blueprint"]){background:#f0f5fa}
+/* title block */
+.ccpt6[data-theme="blueprint"] .cc-head{background:var(--bg);border:1.5px solid var(--ink);border-top:0;padding:12px 14px 12px;margin:0 0 10px}
+.ccpt6[data-theme="blueprint"] .cc-meta{font-family:var(--font-mono);font-size:13px;letter-spacing:.06em;text-transform:uppercase;border-bottom:1px solid var(--rule-strong);padding-bottom:8px;margin-bottom:10px}
+.ccpt6[data-theme="blueprint"] .cc-genre{border-radius:0;background:var(--ink);color:var(--surface)}
+.ccpt6[data-theme="blueprint"] .cc-titlebar h1{font-weight:600;font-size:26px;letter-spacing:-.005em}
+.ccpt6[data-theme="blueprint"] .speak{border-radius:0;border-color:var(--ink);color:var(--ink)}
+.ccpt6[data-theme="blueprint"] .speak[aria-pressed="true"]{background:var(--ink);color:var(--surface)}
+.ccpt6[data-theme="blueprint"] .speed{border-radius:0;font-family:var(--font-mono);border-color:var(--ink)}
+/* sheets with registration ticks at the corners */
+.ccpt6[data-theme="blueprint"] .blk{position:relative;border:1px solid var(--rule-strong);background:var(--surface)}
+.ccpt6[data-theme="blueprint"] .blk::before,.ccpt6[data-theme="blueprint"] .blk::after{content:"";position:absolute;width:12px;height:12px;pointer-events:none}
+.ccpt6[data-theme="blueprint"] .blk::before{left:-5px;top:-5px;border-left:1.5px solid var(--ink);border-top:1.5px solid var(--ink)}
+.ccpt6[data-theme="blueprint"] .blk::after{right:-5px;bottom:-5px;border-right:1.5px solid var(--ink);border-bottom:1.5px solid var(--ink)}
+.ccpt6[data-theme="blueprint"] .blk-lead::before,.ccpt6[data-theme="blueprint"] .blk-lead::after{content:none}
+.ccpt6[data-theme="blueprint"] .blk-label{font-family:var(--font-mono);font-size:13.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink)}
+.ccpt6[data-theme="blueprint"] .blk-label::before{content:"◇ ";color:var(--accent)}
+.ccpt6[data-theme="blueprint"] .lead{border-left:0;padding-left:0;font-weight:500}
+.ccpt6[data-theme="blueprint"] .lead::before{content:"NOTE";display:block;font:700 12.5px/1.2 var(--font-mono);letter-spacing:.14em;color:var(--accent);margin-bottom:6px}
+.ccpt6[data-theme="blueprint"] .def-label{font-family:var(--font-mono);color:var(--accent)}
+.ccpt6[data-theme="blueprint"] .def-term{font-weight:600}
+.ccpt6[data-theme="blueprint"] .tagline{font-family:var(--font-mono)}
+.ccpt6[data-theme="blueprint"] .def-gloss,.ccpt6[data-theme="blueprint"] .steps-given,.ccpt6[data-theme="blueprint"] .steps-goal,.ccpt6[data-theme="blueprint"] .ex-col,.ccpt6[data-theme="blueprint"] .pf,.ccpt6[data-theme="blueprint"] .step-mark-note{border-radius:0}
+/* item balloons */
+.ccpt6[data-theme="blueprint"] .step-n{background:var(--surface);color:var(--ink);border:1.5px solid var(--ink);font-family:var(--font-mono);width:32px;height:32px}
+.ccpt6[data-theme="blueprint"] .subgoal{font-family:var(--font-mono);font-size:15px;letter-spacing:.02em;border-top:1px dashed var(--rule-strong);color:var(--ink)}
+.ccpt6[data-theme="blueprint"] .mark-badge{border-radius:0;font-family:var(--font-mono)}
+.ccpt6[data-theme="blueprint"] .ao-badge{border-radius:0}
+/* dimension-line arrows */
+.ccpt6[data-theme="blueprint"] .ch-node{border-radius:0}
+.ccpt6[data-theme="blueprint"] .ch-rel{font-family:var(--font-mono)}
+.ccpt6[data-theme="blueprint"] .mm-node{border-radius:0}
+.ccpt6[data-theme="blueprint"] .mm-box.has-inline{border-radius:0}
+.ccpt6[data-theme="blueprint"] .mm-label,.ccpt6[data-theme="blueprint"] .mm-rel{font-family:var(--font-mono)}
+.ccpt6[data-theme="blueprint"] .tbl th{font-family:var(--font-mono);font-size:15px;text-transform:uppercase;letter-spacing:.04em;background:var(--surface-2);border-top:1.5px solid var(--ink);border-bottom:1.5px solid var(--ink)}
+.ccpt6[data-theme="blueprint"] .tbl td{border-bottom:1px solid var(--rule)}
+.ccpt6[data-theme="blueprint"] .tbl td+td{border-left:1px solid var(--rule)}
+.ccpt6[data-theme="blueprint"] .tbl tbody tr:last-child td{border-bottom:1.5px solid var(--ink)}
+.ccpt6[data-theme="blueprint"] .sec::before{border-radius:0;font-family:var(--font-mono);border-color:var(--ink);color:var(--ink)}
+.ccpt6[data-theme="blueprint"] .fig-svg .lbl{font-family:var(--font-mono);font-weight:500}
+.ccpt6[data-theme="blueprint"] .fig figcaption{font-family:var(--font-mono);font-size:15px}
+.ccpt6[data-theme="blueprint"] .finish-box{border-radius:0}
+
+/* night: cyanotype */
+.ccpt6[data-theme="blueprint"] .blk-lead{padding:12px 18px;background:var(--surface)}
+@media (max-width:640px){.ccpt6[data-theme="blueprint"] .cc-player{right:12px}}
+
+.nightMode .ccpt6[data-theme="blueprint"],.night_mode .ccpt6[data-theme="blueprint"]{
+ --bg:#0f2b4a;--surface:#123558;--surface-2:#173f68;--rule:#33618f;--rule-strong:#8fb2d8;
+ --ink:#f2f7ff;--ink-2:#bed2eb;--accent:#a9d4ff;--accent-ink:#0f2b4a;--accent-soft:#1c4a78;
+ --wire:#e6f1ff;--kw:#2f6299;--good:#8fe1b6;--good-soft:#174438;--bad:#ffb2a6;--bad-soft:#4a2a35;--pen:#ffa293;
+ --mark-bg:#f2f7ff;--mark-ink:#0f2b4a;--focus:#ffc46b;--focus-soft:rgba(255,196,107,.17);
+ --k-policy:#a9d4ff;--k-cause:#a9d4ff;--k-effect:#f2f7ff;--k-cond:#bed2eb;--k-eval:#ffb2a6;--k-example:#8fe1b6;--k-limit:#ffb2a6;--k-def:#a9d4ff;
+ --c1:#ffb2a6;--c2:#a9d4ff;--c3:#8fe1b6;--c4:#ffc46b;--c-grid:#33618f;
+ background-image:linear-gradient(rgba(230,241,255,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(230,241,255,.07) 1px,transparent 1px)}
+.nightMode .ccpt6[data-theme="blueprint"] .blk,.night_mode .ccpt6[data-theme="blueprint"] .blk{background:rgba(18,53,88,.9)}
+.nightMode .ccpt6[data-theme="blueprint"] .cc-genre,.night_mode .ccpt6[data-theme="blueprint"] .cc-genre{color:var(--bg)}
+.nightMode.card:has(.ccpt6[data-theme="blueprint"]),.night_mode.card:has(.ccpt6[data-theme="blueprint"]),.nightMode .card:has(.ccpt6[data-theme="blueprint"]){background:#0f2b4a}

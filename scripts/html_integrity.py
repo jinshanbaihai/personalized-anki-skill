@@ -6,6 +6,7 @@ https://www.w3.org/TR/SVG2/eltindex.html
 https://www.w3.org/TR/MathML3/appendixi.html
 This is a content-loss guard, not a complete HTML conformance or rendering check.
 """
+import re
 from html.parser import HTMLParser
 
 HTML_TAGS = set("""
@@ -70,15 +71,24 @@ class MarkupIntegrity(HTMLParser):
             elif char == '<':
                 raise AssertionError("Unquoted '<' inside a start tag may swallow teaching text. Escape text '<' as '&lt;' (or use MathML).")
 
+    def check_attributes(self, attrs):
+        # "q<p 且 p>0.5" parses as a <p> tag with attributes "且" and "p": real attribute names are ASCII tokens.
+        for name, _ in attrs:
+            assert re.fullmatch(r'[A-Za-z_:][-A-Za-z0-9_:.]*', name or ''), (
+                f"'{name}' is not an attribute name; a comparison such as 'q<p' may have swallowed teaching text. Escape text '<' as '&lt;'."
+            )
+
     def handle_starttag(self, tag, attrs):
         self.check_tag(tag)
         self.check_start_token()
+        self.check_attributes(attrs)
         if tag not in VOID_TAGS | OPTIONAL_END_TAGS:
             self.required_closings.append(tag)
 
     def handle_startendtag(self, tag, attrs):
         self.check_tag(tag)
         self.check_start_token()
+        self.check_attributes(attrs)
 
     def handle_endtag(self, tag):
         self.check_tag(tag)
@@ -100,3 +110,29 @@ def validate_markup(markup):
     parser = MarkupIntegrity(convert_charrefs=True)
     parser.feed(markup)
     parser.close()
+
+
+def check_svg(svg):
+    """Inline SVG figures stay passive, local and scalable."""
+    import re
+    import xml.etree.ElementTree as ET
+    root = ET.fromstring(svg)
+    assert root.tag.split('}')[-1] == 'svg', 'Figure requires an <svg> root'
+    assert 'viewBox' in root.attrib, 'SVG needs a viewBox so it scales with the card'
+    for element in root.iter():
+        tag = element.tag.split('}')[-1].lower()
+        assert tag not in {'script', 'foreignobject', 'iframe', 'audio', 'video'}, f'Unsupported active SVG element <{tag}>'
+        for key, value in element.attrib.items():
+            key = key.split('}')[-1].lower()
+            assert not key.startswith('on'), 'Inline events are not allowed in figures'
+            assert not re.search(r'(?:https?:|javascript:|file:|data:|@import)', value, re.I), 'Use local content only'
+            if key in {'href', 'src'}:
+                assert value.startswith('#'), 'Only internal SVG references are allowed'
+            assert not re.search(r'url\(\s*["\']?(?!#)[^\s]', value, re.I), 'Only internal SVG references are allowed'
+            if key in {'fill', 'stroke', 'color', 'stop-color'}:
+                assert value.strip().lower() in {'none', 'currentcolor', 'transparent'} or value.strip().startswith('var('), (
+                    f'{key}="{value}" is a fixed colour that disappears in night mode; use a theme class '
+                    '(ax grid guide c1–c4 shade shade-2 bar bar-hi dot dot-hi lbl lbl-2 c1-t…) or var(--token)')
+            if key == 'style':
+                assert not re.search(r'(?:^|;)\s*(?:fill|stroke|color)\s*:\s*(?!none|currentcolor|var\()', value, re.I), 'Use theme classes instead of fixed colours in style'
+    return svg

@@ -1,4 +1,4 @@
-"""Isolated current-format import and media regression, not a learning-effect test."""
+"""Isolated import and media regression for ccpt-6 (and earlier single-face) packages; not a learning-effect test."""
 import argparse, json, sys, tempfile, subprocess
 from pathlib import Path
 from html.parser import HTMLParser
@@ -40,7 +40,10 @@ def main():
         decoded=[];pending=0
         for cid in col.find_cards(''):
             card=col.get_card(cid);note=card.note();q=card.question();name=inspect_page(q,a.allow_text_only_test)
-            assert note['FrontHTML']==note['BackHTML'],'Both templates must expose the same complete lesson'
+            if 'FrontHTML' in note.keys():
+                assert note['FrontHTML']==note['BackHTML'],'Both templates must expose the same complete lesson'
+            else:
+                assert 'Page' in note.keys() and note['Page'].strip(),'ccpt-6 notes carry the complete page in Page'
             assert card.template()['qfmt']==card.template()['afmt']
             if name is None:
                 pending+=1
@@ -63,6 +66,6 @@ def main():
         missing=list(col.media.check().missing);assert not missing,missing
         result={'anki_backend':buildinfo.version,'cards':col.card_count(),'notes':col.note_count(),'decoded_audio':len(set(decoded)),'audio_pending_cards':pending,'repeat_import_preserved_card_identity_schedule_and_review_log':True,'scope':'Isolated backend only; real rendering, sound and shortcuts require native checks.'}
         col.close()
-    a.output.parent.mkdir(parents=True,exist_ok=True);a.output.write_text(json.dumps(result,ensure_ascii=False,indent=2));print(json.dumps(result,ensure_ascii=False))
+    a.output.parent.mkdir(parents=True,exist_ok=True);a.output.write_text(json.dumps(result,ensure_ascii=False,indent=2), encoding='utf-8');print(json.dumps(result,ensure_ascii=False))
 
 if __name__=="__main__":main()

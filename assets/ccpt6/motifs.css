@@ -1,0 +1,22 @@
+/* ccpt6 card-type motifs — one visual idea per card type, drawn only with theme tokens.
+   Loaded after the subject themes (build_cards.asset_css). Selectors start with :root and name the block
+   class twice, so they also outrank the themes' night-mode block rules (.nightMode .ccpt6[data-theme] .blk). */
+/* term = dictionary entry: the definition is an open entry between a double and a single rule, not a boxed panel */
+:root .ccpt6[data-genre="term"] .blk.blk-definition{background:transparent;border:0;border-top:3px double var(--rule-strong);border-bottom:1px solid var(--rule-strong);border-radius:0;box-shadow:none;padding-left:2px;padding-right:2px}
+:root .ccpt6[data-genre="term"] .blk.blk-definition::before,:root .ccpt6[data-genre="term"] .blk.blk-definition::after{display:none}
+:root .ccpt6[data-genre="term"] .def-term{font-size:calc(var(--fs-term) + 4px)}
+/* derivation/method = marked script: a margin rule separates the working from the marks column (desktop) */
+@media (min-width:641px){
+ :root .ccpt6:is([data-genre="derivation"],[data-genre="method"],[data-genre="formula"]) .step{grid-template-columns:var(--step-n-w,36px) minmax(0,1fr) var(--marks-w,84px);
+  background:linear-gradient(var(--rule-strong),var(--rule-strong)) no-repeat right calc(var(--marks-w,84px) + 7px) top 0/1px 100%}
+ :root .ccpt6:is([data-genre="derivation"],[data-genre="method"],[data-genre="formula"]) .step>.mark-badge{justify-self:center;white-space:normal;text-align:center;line-height:1.45;max-width:84px}
+}
+/* chain/map/overview = drafting sheet: a faint dot grid behind the diagram, so the arrows read as a drawn figure */
+:root .ccpt6:is([data-genre="chain"],[data-genre="map"],[data-genre="overview"]) .blk:is(.blk-chain,.blk-map){background-image:radial-gradient(var(--rule) 1.1px,transparent 1.3px);background-size:18px 18px}
+/* essay = answer booklet: paragraph numbers sit in a red margin, like the ruled margin of an exam script */
+:root .ccpt6[data-genre="essay"] .sections{background:linear-gradient(var(--pen),var(--pen)) no-repeat calc(var(--sec-num-w,30px) + 6px) 0/1.5px 100%}
+:root .ccpt6[data-genre="essay"] .sec{padding-left:calc(var(--sec-num-w,30px) + 22px)}
+/* pitfall = corrected script: each item carries a red-pen margin */
+:root .ccpt6[data-genre="pitfall"] .pf{border-left:4px solid var(--pen)}
+/* diagram = plate: the caption sits under a rule like a figure plate */
+:root .ccpt6[data-genre="diagram"] .fig figcaption{border-top:1px solid var(--rule);padding-top:8px;max-width:640px;margin-left:auto;margin-right:auto}
