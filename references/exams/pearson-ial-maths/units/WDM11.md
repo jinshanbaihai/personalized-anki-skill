@@ -1,5 +1,7 @@
 # WDM11 · D1 Decision Mathematics 1：考纲摘要
 
+> **构建溯源，不随包发布**：本文件反引号里的 `registry/…`、`work/…`、`src/…`、`inventory/…`、`scratchpad/…`、`finder/…`、`research/…`、`boards/…` 路径，`*.coverage.part*.md`、`*.questions.part*.json` 等分卷文件，以及审核脚本和它们的输出文件，都是构建登记时沙箱里的工作文件，技能包里没有，只说明结论是怎么核出来的。要看原件，用同目录 `WDM11.questions.json` 各条的 `sources`（公开地址或 Drive 定位，见 [README](../../README.md) “原件怎么取”）。文中写到的缺口是构建时的记录，**缺口以 `python scripts/exam_index.py WDM11 --gaps` 输出为准（快照 2026-10-06）**。
+
 核对日期：2026-10-06。条目编号、措辞和页码以考纲原文为准，本文件的中文是转述，英文关键词照抄考纲。
 
 **来源**
@@ -153,12 +155,12 @@ Preamble 要求熟悉这些术语（p.63）。以下按原文转述，粗体为�
 
 ---
 
-## 6. 逐题索引与审核（2026-10-06）
+## 6. 逐题索引与审核（2026-10-06；构建溯源，不随包发布）
 
 **索引文件**：同目录 `WDM11.questions.json`。它由 `WDM11.questions.part1.json`（2019-06 至 2022-06，8 份卷，56 题）和 `WDM11.questions.part2.json`（2023-01 至 2025-06，6 份卷，44 题）合并而成，按 id 去重（没有重复 id），再按考季、题号排序。构建记录见 `WDM11.coverage.part1.md`、`WDM11.coverage.part2.md`；这两个文件是构建记录，本次没有改，和本节不一致的地方以本节和索引为准。
 
 审核脚本和输出都在 `registry/work/wdm11audit/`：
-- 脚本：`scripts/merge_validate.py`（合并与格式校验）、`completeness.py`（与清单比对）、`markseq.py`（小问分值与印刷的 "(n)" 序列逐题比对）、`cmdcheck.py`（命令词）、`speckw.py`（按算法关键词检查 spec 映射）、`pagecheck.py`（所引 MS 页、ER 页是否落在该题范围内）、`algo_check.py`（装箱、排序、LCM、整数解重算）、`show.py`、`fq.py`、`sec.py`、`apply_fixes.py`、`stats.py`。
+- 脚本：`completeness.py`（与清单比对）、`markseq.py`（小问分值与印刷的 "(n)" 序列逐题比对）、`cmdcheck.py`（命令词）、`speckw.py`（按算法关键词检查 spec 映射）、`pagecheck.py`（所引 MS 页、ER 页是否落在该题范围内）、`algo_check.py`（装箱、排序、LCM、整数解重算）、`show.py`、`fq.py`、`sec.py`、`apply_fixes.py`、`stats.py`。
 - 输出：`validate.txt`、`completeness.txt`、`pagecheck.txt`、`algo_check.txt`、`stats.txt`、`byitem.txt`（按主条目列出全部小问）。
 - 改动清单：`fixes.json`（14 处字段改动）；改动前的两个 part 文件和本文件备份在 `backup/`。渲染核对图在 `img/`。
 
@@ -183,7 +185,7 @@ Preamble 要求熟悉这些术语（p.63）。以下按原文转述，粗体为�
 
 D1 只在 1 月、6 月开考（2020-10、2021-10 是例外），没有 2022-10 及以后的 10 月卷。WDM11/01A 区域卷到 2025-06 为止只有 Exemplar（与 2025-06 /01 逐题相同，不单列，见 `WDM11.coverage.part2.md` §4）。
 
-**格式校验**（`merge_validate.py`，改动后 0 个问题，`validate.txt`）
+**格式校验**（构建时的合并校验脚本，改动后 0 个问题，`validate.txt`）
 - 每条记录字段齐全；各小问分值之和等于题目总分；每卷 75 分，题号连续；id 与考季、卷号、题号一致；series 都是 YYYY-MM。
 - 所有 spec id 都在 `spec-items.stat.json` → `WDM11` 中。合并时有 3 个小问的 spec 是空列表（part 1 把只考 Glossary 术语的小问留空），已按 part 2 的做法补上（见下"改正" F1–F3）。
 - 引号内文字都不超过 25 词。有 MS 的 6 份卷全部 156 个小问都有 MS 要点；`er` 恰好在有 ER 的 3 季（J23、S23、J24，21 题、77 个小问）填写。2019-06 至 2022-06 的 8 份卷没有 MS，`ms`、`er` 为空，`final_form` 只写题目要求的形式，没有自行计算答案。

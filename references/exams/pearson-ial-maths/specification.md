@@ -1,5 +1,7 @@
 # Pearson Edexcel IAL Mathematics / Further Mathematics / Pure Mathematics（2018）规格书共用部分
 
+> **构建溯源，不随包发布**：本文件反引号里的 `registry/…`、`work/…`、`src/…`、`inventory/…`、`scratchpad/…`、`finder/…`、`research/…`、`boards/…` 路径，`*.coverage.part*.md`、`*.questions.part*.json` 等分卷文件，以及审核脚本和它们的输出文件，都是构建登记时沙箱里的工作文件，技能包里没有，只说明结论是怎么核出来的。要看原件，用`units/<单元>.questions.json` 各条的 `sources`（公开地址或 Drive 定位，见 [README](../README.md) “原件怎么取”）。文中写到的缺口是构建时的记录，**缺口以 `python scripts/exam_index.py <单元> --gaps` 输出为准（快照 2026-10-06）**。
+
 单元条目见 `units/<代码>.md`（纯数 P1–P4 由本次写入：`units/WMA11.md`–`units/WMA14.md`）；考纲条目目录见 `spec-items.*.json`；版本与考季核查见 `../versions.md`。登记日期 2026-10-06。
 
 ## 0. 来源与核验

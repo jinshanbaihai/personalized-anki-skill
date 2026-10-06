@@ -1,5 +1,7 @@
 # WME02 · M2 Mechanics 2：考纲摘要
 
+> **构建溯源，不随包发布**：本文件反引号里的 `registry/…`、`work/…`、`src/…`、`inventory/…`、`scratchpad/…`、`finder/…`、`research/…`、`boards/…` 路径，`*.coverage.part*.md`、`*.questions.part*.json` 等分卷文件，以及审核脚本和它们的输出文件，都是构建登记时沙箱里的工作文件，技能包里没有，只说明结论是怎么核出来的。要看原件，用同目录 `WME02.questions.json` 各条的 `sources`（公开地址或 Drive 定位，见 [README](../../README.md) “原件怎么取”）。文中写到的缺口是构建时的记录，**缺口以 `python scripts/exam_index.py WME02 --gaps` 输出为准（快照 2026-10-06）**。
+
 核对日期：2026-10-06。条目编号、措辞和页码以考纲原文为准，本文件的中文是转述，英文术语保留原文。
 
 **来源**
@@ -131,12 +133,12 @@
 
 ---
 
-## 6. 逐题索引与审核（2026-10-06）
+## 6. 逐题索引与审核（2026-10-06；构建溯源，不随包发布）
 
 **索引文件**：同目录 `WME02.questions.json`。它由 `WME02.questions.part1.json`（2020-10 至 2022-10，55 题）和 `WME02.questions.part2.json`（2023-01 至 2025-10，73 题）合并而成，按 id 去重（没有重复），再按考季、卷号（/01 在 /01A 前）、题号排序。构建记录见 `WME02.coverage.part1.md`、`WME02.coverage.part2.md`。
 
 审核脚本和输出都在 `registry/work/wme02audit/`：
-- 脚本：`scripts/merge_validate.py`、`completeness.py`、`show.py`、`ersec.py`、`qpblocks.py`、`markscheck.py`、`cmdcheck.py`、`quotecheck.py`、`er_pagecheck.py`、`ms_pagecheck.py`、`codesum.py`、`acccheck.py`、`formcheck.py`、`apply_fixes.py`、`stats.py`、`stats2.py`、`shapes.py`。
+- 脚本：`completeness.py`、`show.py`、`ersec.py`、`qpblocks.py`、`markscheck.py`、`cmdcheck.py`、`quotecheck.py`、`er_pagecheck.py`、`ms_pagecheck.py`、`codesum.py`、`acccheck.py`、`formcheck.py`、`apply_fixes.py`、`stats.py`、`stats2.py`、`shapes.py`。
 - 输出：`validate.txt`、`completeness.txt`、`checks.txt`、`stats.txt`、`stats2.txt`、`byitem.txt`（按主条目列出全部小问）。`shapes_rough.txt` 是关键词粗筛，有误报，第 7 节的题型计数以 `byitem.txt` 人工核对为准。
 - 改动清单：`fixes.json`（33 条）；改动前的三个文件备份在 `backup/`。
 
@@ -162,7 +164,7 @@
 | 2025-06 | /01A | 7 | Drive（P79507A，第一份 M2 区域卷） | 缺 |
 | 2025-10 | /01 | 7 | Drive | 缺 |
 
-**格式校验**（`merge_validate.py`，结果 0 个问题）
+**格式校验**（构建时的合并校验脚本，结果 0 个问题）
 - 每条记录字段齐全；各小问分值之和等于题目总分；每卷 75 分，题号连续。
 - 所有 spec id 都在 `spec-items.mech.json` → `WME02` 中；series 都是 YYYY-MM，且月份只有 01、06、10；id 与考季、卷号、题号一致。
 - 引号内的文字都不超过 25 词。297 个小问都有 MS 要点；`er` 恰好在有 ER 的 5 季（38 题、94 个小问）填写。

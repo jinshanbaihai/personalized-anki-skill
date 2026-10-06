@@ -1,5 +1,7 @@
 # WME03 · M3 Mechanics 3：考纲摘要
 
+> **构建溯源，不随包发布**：本文件反引号里的 `registry/…`、`work/…`、`src/…`、`inventory/…`、`scratchpad/…`、`finder/…`、`research/…`、`boards/…` 路径，`*.coverage.part*.md`、`*.questions.part*.json` 等分卷文件，以及审核脚本和它们的输出文件，都是构建登记时沙箱里的工作文件，技能包里没有，只说明结论是怎么核出来的。要看原件，用同目录 `WME03.questions.json` 各条的 `sources`（公开地址或 Drive 定位，见 [README](../../README.md) “原件怎么取”）。文中写到的缺口是构建时的记录，**缺口以 `python scripts/exam_index.py WME03 --gaps` 输出为准（快照 2026-10-06）**。
+
 核对日期：2026-10-06。条目编号、措辞和页码以考纲原文为准，本文件的中文是转述，英文术语保留原文。
 
 **来源**
@@ -132,13 +134,13 @@
 
 ---
 
-## 6. 往届真题与审核记录（2026-10-06）
+## 6. 往届真题与审核记录（2026-10-06；构建溯源，不随包发布）
 
 本节与第 7 节中的路径都相对于 `registry/`。审核脚本在 `work/wme03audit/scripts/`，改正清单在 `work/wme03audit/fixes.json`（每条写明原文、证据、改动类型），改动前的文件备份在 `work/wme03audit/backup/`，统计结果在 `work/wme03audit/stats.json`、`work/wme03audit/dump_by_spec.txt`。
 
 **逐题索引（合并版）**：`pearson-ial-maths/units/WME03.questions.json`。由同目录 `WME03.questions.part1.json`（49 题：2020-10 至 2022-06 的 6 份正式卷，加 2022 年 1 月未启用卷 P71979A，id 后缀 `01U`）和 `part2.json`（42 题：2023-01 至 2025-06 的 6 份卷）合并而成。按 id 去重（没有重复），按考季 → 卷别（`01` 在 `01U` 前）→ 题号排序。改正同时写回两个 part 文件，合并文件与两个 part 文件逐条一致。合计 13 份卷、91 题、208 个小问、975 分。各卷来源、文件校验与缺口见 `WME03.coverage.part1.md`、`WME03.coverage.part2.md`。
 
-- **格式校验**（`merge_validate.py`）：字段齐全，没有多余字段；每题各小问分值之和等于题目总分；每份卷 75 分、7 题，题号连续；spec id 全部在 `spec-items.mech.json` → WME03 中；series 全部符合 YYYY-MM；id 与 paper 一致；有 MS 的卷（13 份全有）每个小问都有 `ms`；有 ER 的卷每个小问都有 `er`，没有 ER 的卷 `er` 全空；引号内的原文都不超过 25 词。结果：0 个问题。
+- **格式校验**（构建时的合并校验脚本）：字段齐全，没有多余字段；每题各小问分值之和等于题目总分；每份卷 75 分、7 题，题号连续；spec id 全部在 `spec-items.mech.json` → WME03 中；series 全部符合 YYYY-MM；id 与 paper 一致；有 MS 的卷（13 份全有）每个小问都有 `ms`；有 ER 的卷每个小问都有 `er`，没有 ER 的卷 `er` 全空；引号内的原文都不超过 25 词。结果：0 个问题。
 - **完整性**：对照了 `inventory/fm-mech.json`、`inventory/fm-mech-gaps.md`、`versions.json`（WME03 预期考季 2020-10 至 2026-06，共 14 季；2018 版首考是 2020 年 6 月，那一季取消，试卷改在 2020 年 10 月考；2020-01 及以前属于 2013 版，不收）、Edexcel-Finder 清单 `finder/finder-inventory.tsv`（2020-10 至 2025-01 的 11 份正式卷加未启用卷，P 号与题数都和索引一致）和第三方抓取的 Pearson 链接索引 `finder/gh/grademax_manifest/edexcel_2025.json`、`edexcel_2026.json`。**凡是拿得到 QP 文本的卷都已索引**：2020-10 至 2025-06 每个考季的 /01（12 份），加 2022 年 1 月未启用卷。没有收的：Finder 里的 Sample Assessment（S59765A，不是考季）；2014-01 至 2020-01 同代码的 2013 版旧卷。
   - `inventory/fm-mech.json` 和 `fm-mech-gaps.md` 仍把 2020-10 至 2022-06 的 QP 记为“只有 Finder 文本”、MS 记为缺失。这些 PDF 已在 part 1 从 GitHub `RayZ3R0/papernexus-finder@921bdf4f` 取得并核实（`WME03.coverage.part1.md` “New sources found in this pass”），清单本身尚未更新。
 - **所有来源都拿不到的卷**：

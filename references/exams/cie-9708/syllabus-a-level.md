@@ -1,5 +1,7 @@
 # CIE 9708 Economics：A Level（A2）考纲摘要
 
+> **构建溯源，不随包发布**：本文件反引号里的 `registry/…`、`work/…`、`src/…`、`inventory/…`、`scratchpad/…`、`finder/…`、`research/…`、`boards/…` 路径，`*.coverage.part*.md`、`*.questions.part*.json` 等分卷文件，以及审核脚本和它们的输出文件，都是构建登记时沙箱里的工作文件，技能包里没有，只说明结论是怎么核出来的。要看原件，用同目录 `9708-P3.questions.json`、`9708-P4.questions.json` 各条的 `sources`（公开地址或 Drive 定位，见 [README](../README.md) “原件怎么取”）。文中写到的缺口是构建时的记录，**缺口以 `python scripts/exam_index.py 9708 --gaps` 输出为准（快照 2026-10-06）**。
+
 登记日期 2026-10-06。用途：给 9708 A Level 阶段（Paper 3、Paper 4；考纲 topics 7–11）制卡时，先用本文件确认考纲版本、卷型、评分方式和条目编号，再去真题索引查各条目的考法。机读条目目录在同目录的 `spec-items.json`（键 `9708`；AS 131 条，level `AS`；A Level 122 条，level `A2`）。版本与考季的完整核查记录见 `../versions.md` §2。
 
 ## 0. 来源
@@ -40,7 +42,7 @@
 
 **更早与更晚的版本（均未读）：**
 
-- **2023–2025 版**：WebSearch 结果给出 `cambridgeinternational.org/Images/595463-2023-2025-syllabus.pdf`（结果标题 "Version 2 Syllabus"）与 `cie.org.uk/Images/633788-2023-2025-syllabus-update.pdf`（结果标题 "2023 2025 syllabus update"）。两个主机及 sbac.edu 上的公开副本都被出口代理拦截（2026-10-06，curl 与 WebFetch），用户 Drive 里也没有（标题与全文检索）。
+- **2023–2025 版**：WebSearch 结果给出 `cambridgeinternational.org/Images/595463-2023-2025-syllabus.pdf`（结果标题 "Version 2 Syllabus"）与 `cie.org.uk/Images/633788-2023-2025-syllabus-update.pdf`（结果标题 "2023 2025 syllabus update"）。两个主机及 sbac.edu 上的公开副本都被出口代理拦截（2026-10-06，curl 与 WebFetch），构建登记时可得的 Drive 原件里也没有（标题与全文检索）。
 - **2029 版**：WebSearch 摘要两次称官方 9708 页面列有 "2029 Syllabus"（649 KB），只是指针。文件号、适用年份和内容都不知道（缺口 G2）。为 2029 年及以后的考试制卡前，必须先读到它。
 - **2022 及以前**：例如 `Images/557232-2022-syllabus.pdf`（指针），不属于本登记。
 
@@ -669,9 +671,9 @@ Section A 按点给分。MS p.3 的 "Social Science-Specific Marking Principles 
 
 | 编号 | 缺口 | 影响 | 下一步 |
 |---|---|---|---|
-| G1 | 2023–2025 版考纲（`595463-2023-2025-syllabus.pdf`）与 `633788-2023-2025-syllabus-update.pdf` 未读；条目编号与措辞没有逐条对比 | F/M 2023–O/N 2025 的真题按 SYL V2 编号映射，依据只是官方"no significant changes which affect teaching"等两句说明 | 用户 Drive 或可达镜像出现该文件时，逐条对比 topics 7–11，并在本文件记录差异 |
+| G1 | 2023–2025 版考纲（`595463-2023-2025-syllabus.pdf`）与 `633788-2023-2025-syllabus-update.pdf` 未读；条目编号与措辞没有逐条对比 | F/M 2023–O/N 2025 的真题按 SYL V2 编号映射，依据只是官方"no significant changes which affect teaching"等两句说明 | Drive 或可达镜像出现该文件时，逐条对比 topics 7–11，并在本文件记录差异 |
 | G2 | "2029 Syllabus"只有搜索摘要，文件号与内容未知 | 2029 年及以后考试的范围不能用本文件 | 为 2029 年考试制卡前先取得并通读该文件 |
 | G3 | Version 1（2023 年 9 月，推断）未读 | 只影响版本沿革；V2 声明只改了 p.38 的网址 | 不急 |
 | G4 | 考纲不印 Paper 4 的 levels 表；本文件的 Table A／B 取自 MS | 已核 17 份 Paper 4 MS（F/M 2023–O/N 2025）与 2023 specimen MS，完全相同 | 新考季 MS 出来后复核一次 |
 | G5 | Paper 3 与 Section A 的 AO 逐题分配不公开；§2.3、§2.4 的 AO3 份额是按权重推算的近似值 | 只能作为分配复习时间的参考 | 无官方来源可补 |
-| G6 | F/M 2026、M/J 2026 及以后考季的 QP／MS 本环境不可达（`versions.md` §2.5） | 考法统计只到 O/N 2025 | 定期在 Drive 检索 `9708_m26`、`9708_s26`、`9708_w26` |
+| G6 | F/M 2026、M/J 2026 及以后考季的 QP／MS 本环境不可达（`versions.md` §2.5） | 考法统计只到 O/N 2025 | 定期在 Drive 检索 `9708_m26`、`9708_s26`、`9708_w26`；缺卷以 `python scripts/exam_index.py 9708 --gaps` 为准 |

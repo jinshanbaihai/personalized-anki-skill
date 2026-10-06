@@ -6,7 +6,8 @@ Checked on 2026-10-06. Machine-readable copy: `versions.json` (same folder).
 
 - **Confidence.** **High** means the original document was read here: its cover, printed page and footer agree. **Medium** means an index that carries Pearson or Cambridge file URLs and file names, or an official-domain page seen only through a WebSearch summary. **Low** means a third-party summary or an inference. Every claim that rests only on WebSearch is marked *pointer*.
 - **Page numbers.** Pearson spec pages are printed pages; printed = PDF page − 6. CIE syllabus printed page = PDF page.
-- **Access.** `qualifications.pearson.com`, `cambridgeinternational.org`, `cie.org.uk`, pastpapers.co, papacambridge, xtremepape, britishcouncil.* and similar mirrors are EGRESS_BLOCKED here (re-tested 2026-10-06 with curl and WebFetch). Reachable: Google Drive (user copies), `raw.githubusercontent.com`, WebSearch.
+- **Access.** `qualifications.pearson.com`, `cambridgeinternational.org`, `cie.org.uk`, pastpapers.co, papacambridge, xtremepape, britishcouncil.* and similar mirrors were blocked in the sandbox that built the registry (re-tested 2026-10-06 with curl and WebFetch: proxy CONNECT 403). Reachable there: Google Drive (copies available when the registry was built), the examsolutions S3 mirror (`examsolutions.s3.eu-west-2.amazonaws.com`), `raw.githubusercontent.com`, WebSearch.
+- **Build provenance (not shipped).** Paths under `scratchpad/`, `registry/`, `src/`, `boards/`, `research/`, `dl_drive/`, `finder/` and similar are files of the sandbox that built the registry; they are not in the skill package and only record which copy was read. Public locators for every paper are in the `sources` of the question entries (README, “原件怎么取”). Drive IDs resolve only in the account that built the registry; titles are searchable anywhere.
 - **Source IDs** (full list with paths and hashes in §5): **SPEC** = IAL Maths spec; **FB** = formulae booklet; **SYL** = 9708 syllabus 2026–2028; **MOON** = Grade-Boundaries/moon-papers index; **FINDER** = Edexcel-Finder; **BC-*** = British Council China registration guides and centre timetables (Drive).
 
 ---
@@ -90,7 +91,7 @@ Supporting facts:
    - Under `Mathematics/2013/…`: WFM01 June 2019 and January 2020; WME01 June 2019 and October 2019; WST01 June 2019, October 2019 and January 2020. By the spec these are already 2018-spec first-assessment series, because one paper per code served both cohorts (inference from the identical codes).
    - Under `Mathematics/2018/…`: WME02 January 2020, and WME03 January 2020 (which also has a 2013-folder copy). By the spec these are still legacy series.
    - Use the spec dates, not the folder.
-3. **Validation.** The availability rules above, plus the COVID exceptions in §1.5, reproduce every series that has a QP or MS in MOON for all 14 units from 2019-01 to 2025-01. Nothing is missing. The only extra series are the legacy same-code ones listed above (script `tools/series_check.py`; output `src/expected_series.json`).
+3. **Validation.** The availability rules above, plus the COVID exceptions in §1.5, reproduce every series that has a QP or MS in MOON for all 14 units from 2019-01 to 2025-01. Nothing is missing. The only extra series are the legacy same-code ones listed above. The rules are machine-readable in `versions.json` (`expected_papers`); `python scripts/exam_index.py <unit> --gaps` recomputes the expected papers and lists the ones not indexed.
 
 ### 1.5 Disrupted series (2020–2021)
 
@@ -115,7 +116,7 @@ Supporting facts:
 | Format change | **June 2025 /01A:** the usual combined booklet ("Paper reference WMA14/01A", 32 pp, answer spaces in the booklet). **From October 2025:** a separate "Question paper" plus "Answer book (sent separately)". Examples: WMA13/01A Tuesday 21 October 2025 (P87435A); WMA14/01A Thursday 22 January 2026 (P87595A); WMA14/01A Tuesday 9 June 2026 (P84806A, "Do not return this question paper with the answer book"). Pearson also issued exemplar regional answer books and question papers in 2026 (WMA11, WST01, WME01, WDM11; e.g. S87868A) | Covers read here; Drive exemplar files | High |
 | Specification status | /01A does not appear in the spec. Appendix 1 lists only `/01` unit codes (printed p.78). Same content and rules | SPEC p.78 | High |
 
-### 1.7 Latest series reachable here (summary only; the full per-unit index is a separate task)
+### 1.7 Latest series reachable when the registry was built (summary; per-unit gaps: `exam_index.py <unit> --gaps`)
 
 - **MOON and FINDER:** every unit up to **January 2025** (QP, MS, PEF).
 - **Drive:**
@@ -124,7 +125,7 @@ Supporting facts:
   - January 2026 WMA14/01 and /01A QPs, and WST01/01 and /01A QP and MS.
   - June 2026 WMA14/01A QP.
 - **Gap:** Pearson's own release status for 2025–2026 could not be checked because the site is blocked. Some 2026 files on Drive come from third-party channels; check their identity before use.
-- **Critic update 2026-10-06.** (1) GitHub `EslamAhmedGaber/elite-igcse-math@05b0320d` also holds official January 2026 QPs for WMA11, WMA12 and WME01, and question crops of June 2026 WMA11/01; these are indexed. (2) The scraped Pearson URL index in `finder/gh/grademax_maths_index.json` (pointer, medium) lists every October 2025, January 2026 and June 2026 QP and MS under `content/dam/secure/silver/…` with `gated: true`: from October 2025 Pearson keeps these files behind its secure (centre) login, which is why they are so rarely reachable. (3) The same index lists June 2025 /01A papers for WMA11–WMA14, WFM02 and WME02 only; October 2025 /01A for all eight October units; January and June 2026 /01A for all 14 units. Full per-unit gap list: `CRITIC.md`.
+- **Critic update 2026-10-06.** (1) GitHub `EslamAhmedGaber/elite-igcse-math@05b0320d` also holds official January 2026 QPs for WMA11, WMA12 and WME01, and question crops of June 2026 WMA11/01; these are indexed. (2) The scraped Pearson URL index `ShariarAlamDipto/grademax@9e091168` `data/manifest/edexcel_2025.json` and `edexcel_2026.json` (https://raw.githubusercontent.com/ShariarAlamDipto/grademax/9e091168947cc56a64462e7820a540a15c7012f8/data/manifest/edexcel_2025.json; pointer, medium) lists every October 2025, January 2026 and June 2026 QP and MS under `content/dam/secure/silver/…` with `gated: true`: from October 2025 Pearson keeps these files behind its secure (centre) login, which is why they are so rarely reachable. (3) The same index lists June 2025 /01A papers for WMA11–WMA14, WFM02 and WME02 only; October 2025 /01A for all eight October units; January and June 2026 /01A for all 14 units. Per-unit gaps: `python scripts/exam_index.py <unit> --gaps` (accepted reasons in `versions.json` `gaps`).
 
 ---
 
@@ -151,7 +152,7 @@ Supporting facts:
 ### 2.2 Syllabus for 2029 or later (Medium that it exists; contents unknown)
 
 - Two WebSearch summaries of the **official 9708 programme page** state that a "**2029 Syllabus**" PDF (649 KB) is listed (*pointer*). The document number and the years it covers were not found. Other Cambridge syllabuses for 2029–2031 exist (e.g. `Images/763854-2029-2031-syllabus.pdf`, `764368-2029-syllabus.pdf`; *pointer*). Cambridge also publishes a "Syllabus Changes (International) September 2026 v1.1" list (*pointer*: `Images/663781-syllabus-changes-international-.pdf`).
-- **Update (later on 2026-10-06):** a saved copy of the official 9708 page in the user's Drive lists "2029 Syllabus (PDF, 649KB)" at `/Images/764392-2029-syllabus.pdf` and a "2026 - 2028 Syllabus update" at `/Images/748950-2026-2028-syllabus-update.pdf`; neither PDF could be fetched. Details and the comparison to run once obtained: `cie-9708/syllabus-2029-changes.md`.
+- **Update (later on 2026-10-06):** a saved copy of the official 9708 page on Drive (available when the registry was built) lists "2029 Syllabus (PDF, 649KB)" at `/Images/764392-2029-syllabus.pdf` and a "2026 - 2028 Syllabus update" at `/Images/748950-2026-2028-syllabus-update.pdf`; neither PDF could be fetched. Details and the comparison to run once obtained: `cie-9708/syllabus-2029-changes.md`.
 - **Gap:** the 2029 syllabus was not read. Whether it changes content, and whether its 2029 entry overlaps the "2028" end of the current syllabus, is **unknown**. For exams in 2026–2028, SYL V2 applies.
 
 ### 2.3 First examination of the current content: 2023 (High)
@@ -207,6 +208,9 @@ Supporting facts:
 
 ## 4. Open gaps
 
+Registry gaps (expected papers not indexed, mark schemes or examiner reports not held, papers held only as text or only on Drive) are computed, not listed here: `python scripts/exam_index.py <unit> --gaps`, with the accepted reason for each in `versions.json` `gaps` (`--completeness` keeps the two in step). The version questions below are `versions.json` `open_questions`.
+
+
 1. Pearson site not reachable. Not confirmed: any Pearson news about IAL Maths redevelopment; the official first series of /01A; Pearson's 2025–2026 release status.
 2. The CIE 2029 syllabus (existence from search summaries only; content unknown) and the 2026–2028 V1 change list were not read.
 3. The 2023–2025 9708 syllabus was not read, so there is no line-level comparison with 2026–2028.
@@ -214,6 +218,8 @@ Supporting facts:
 5. Reasons for COVID series changes come from secondary notices (*pointer*). The existence or absence of papers is verified.
 
 ## 5. Source register
+
+The Location column is build provenance (not shipped). Public copies: SPEC and SYL at the official URLs in §1.1 and §2.1; MOON at `github.com/Grade-Boundaries/moon-papers`; FINDER at `github.com/anonymouslyanonymous1/Edexcel-Finder` (commit e3db703420c90046e31b197a504d1ea119e7e771).
 
 | ID | What | Location | Hash / ID |
 |---|---|---|---|

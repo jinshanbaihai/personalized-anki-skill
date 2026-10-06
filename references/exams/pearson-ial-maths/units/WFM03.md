@@ -1,5 +1,7 @@
 # WFM03 · FP3 Further Pure Mathematics 3：考纲摘要
 
+> **构建溯源，不随包发布**：本文件反引号里的 `registry/…`、`work/…`、`src/…`、`inventory/…`、`scratchpad/…`、`finder/…`、`research/…`、`boards/…` 路径，`*.coverage.part*.md`、`*.questions.part*.json` 等分卷文件，以及审核脚本和它们的输出文件，都是构建登记时沙箱里的工作文件，技能包里没有，只说明结论是怎么核出来的。要看原件，用同目录 `WFM03.questions.json` 各条的 `sources`（公开地址或 Drive 定位，见 [README](../../README.md) “原件怎么取”）。文中写到的缺口是构建时的记录，**缺口以 `python scripts/exam_index.py WFM03 --gaps` 输出为准（快照 2026-10-06）**。
+
 核对日期：2026-10-06。条目编号、措辞和页码以考纲原文为准，本文件的中文是转述。
 
 **来源**
@@ -196,10 +198,10 @@
 
 ---
 
-## 6. 逐题索引与审核（2026-10-06）
+## 6. 逐题索引与审核（2026-10-06；构建溯源，不随包发布）
 
 **索引文件**：同目录 `WFM03.questions.json`。它由 `WFM03.questions.part1.json`（2020-10 至 2022-06）和 `WFM03.questions.part2.json`（2023-01 至 2025-06）合并而成，按 id 去重（没有重复）并按考季、题号排序。构建记录见 `WFM03.coverage.part1.md`、`WFM03.coverage.part2.md`。审核脚本和输出在 `registry/work/wfm03audit/`：
-- 脚本：`scripts/merge_validate.py`、`qpblocks.py`、`checks.py`、`pagerange.py`、`quotecheck.py`、`codesum.py`、`numcheck.py`、`matcheck.py`、`stats.py`、`stats2.py`；
+- 脚本：`qpblocks.py`、`checks.py`、`pagerange.py`、`quotecheck.py`、`codesum.py`、`numcheck.py`、`matcheck.py`、`stats.py`、`stats2.py`；
 - 改动清单：`fixes.json`；改动前的备份：`backup/`。
 
 **收录范围**：12 份卷，101 题，249 个小问，900 分，全部是 /01 卷。
@@ -219,7 +221,7 @@
 | 2025-01 | 8 | Drive | 缺 |
 | 2025-06 | 9 | Drive | 缺 |
 
-**格式校验**（`merge_validate.py`，结果 0 个问题）
+**格式校验**（构建时的合并校验脚本，结果 0 个问题）
 - 每条记录字段齐全；各小问分值之和等于题目总分；每卷 75 分，题号连续。
 - 所有 spec id 都在 `spec-items.fm.json` → `WFM03` 中；series 都是 YYYY-MM 格式；id 与考季、卷号一致；引号内的文字都不超过 25 词。
 - `qpblocks.py` 把每题总分与 QP 文本印的 "Total" 逐题核对，全部一致。

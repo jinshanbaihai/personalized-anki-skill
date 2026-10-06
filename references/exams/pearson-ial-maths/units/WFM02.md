@@ -1,5 +1,7 @@
 # WFM02 · FP2 Further Pure Mathematics 2：考纲摘要
 
+> **构建溯源，不随包发布**：本文件反引号里的 `registry/…`、`work/…`、`src/…`、`inventory/…`、`scratchpad/…`、`finder/…`、`research/…`、`boards/…` 路径，`*.coverage.part*.md`、`*.questions.part*.json` 等分卷文件，以及审核脚本和它们的输出文件，都是构建登记时沙箱里的工作文件，技能包里没有，只说明结论是怎么核出来的。要看原件，用同目录 `WFM02.questions.json` 各条的 `sources`（公开地址或 Drive 定位，见 [README](../../README.md) “原件怎么取”）。文中写到的缺口是构建时的记录，**缺口以 `python scripts/exam_index.py WFM02 --gaps` 输出为准（快照 2026-10-06）**。
+
 核对日期：2026-10-06。条目编号、措辞和页码以考纲原文为准，本文件的中文是转述。
 
 **来源**
@@ -117,7 +119,7 @@
 - 公式：极坐标与直角坐标的互化式 x = r cos θ、y = r sin θ，**FB 不给**。
 
 **7.1（第二个，JSON 键为 “7.1#2”）Use of the formula ½∫_α^β r² dθ for area**（p.39）
-- 编号说明：Issue 3 原文这一行也印作 “7.1”，已对照渲染页图确认，并非抽取错误。逻辑上应是 7.2；JSON 里用键 “7.1#2” 区分两个 7.1。
+- 编号说明：Issue 3 原文这一行也印作 “7.1”，已对照渲染页图确认，并非抽取错误。逻辑上应是 7.2；JSON 里用键 “7.1#2” 区分两个 7.1，并记别名 7.2：查询写 `python scripts/exam_index.py WFM02 --spec 7.2`，`--spec 7.1` 只匹配第一个 7.1。
 - 要求：用 ½∫_α^β r² dθ 求极坐标曲线围成的面积。本行指导栏写的是：“The ability to find **tangents parallel to, or at right angles to, the initial line** is expected”，即还要会求与初始线平行或垂直的切线。
 - 公式：FB p.7 “Area of a sector” 给出 A = ½∫r² dθ。求切线所需的关系式 FB 不给。
 

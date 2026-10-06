@@ -1,5 +1,7 @@
 # WST01 · S1 Statistics 1：考纲摘要
 
+> **构建溯源，不随包发布**：本文件反引号里的 `registry/…`、`work/…`、`src/…`、`inventory/…`、`scratchpad/…`、`finder/…`、`research/…`、`boards/…` 路径，`*.coverage.part*.md`、`*.questions.part*.json` 等分卷文件，以及审核脚本和它们的输出文件，都是构建登记时沙箱里的工作文件，技能包里没有，只说明结论是怎么核出来的。要看原件，用同目录 `WST01.questions.json` 各条的 `sources`（公开地址或 Drive 定位，见 [README](../../README.md) “原件怎么取”）。文中写到的缺口是构建时的记录，**缺口以 `python scripts/exam_index.py WST01 --gaps` 输出为准（快照 2026-10-06）**。
+
 核对日期：2026-10-06。条目编号、措辞和页码以考纲原文为准，本文件的中文是转述，英文关键词照抄考纲。
 
 **来源**
@@ -161,7 +163,7 @@
 
 ## 5. 印刷问题与缺口
 
-- **6.1 重号**：主题 6 唯一一条被印成 “5.1”（p.56，已在渲染页核对）。目录键为 `"5.1#2"`，附 note。
+- **6.1 重号**：主题 6 唯一一条被印成 “5.1”（p.56，已在渲染页核对）。目录键为 `"5.1#2"`，附 note 与别名 6.1：查询写 `python scripts/exam_index.py WST01 --spec 6.1`，`--spec 5.1` 不会匹配它。
 - **Appendix 7 编号跳号**：第 10 节从 10.9 直接跳到 10.11，没有 10.10（p.91，渲染页 `registry/work/stat-spec/pg-97.png` 核对）。不影响内容。
 - **FB Issue 2 更正了 r 的公式**（FB p.15；变更说明在 FB PDF p.4，已放大渲染核对，`registry/work/stat-spec/fb-pdf4-r.png`）：第三种写法（展开式）的根号，旧版只盖住分母里的第一个括号，Issue 2 改为盖住两个括号的乘积。用旧版公式册（Issue 1）的学生要注意。
 - 考纲对 2.3 的 “interpercentile ranges”、1.1 的建模思想都没有给出具体考法，要从真题和评分方案里确认。
@@ -169,12 +171,12 @@
 
 ---
 
-## 6. 逐题索引与审核（2026-10-06）
+## 6. 逐题索引与审核（2026-10-06；构建溯源，不随包发布）
 
 **索引文件**：同目录 `WST01.questions.json`。它由 `WST01.questions.part1.json`（2019-06 至 2022-10，10 份卷，63 题）和 `WST01.questions.part2.json`（2023-01 至 2026-01，12 份卷，84 题）合并而成。按 id 去重（没有重复 id），再按考季、卷号（同一考季 /01 在 /01A 前）、题号排序。注意 part 2 文件里 2025-10、2026-01 两季是 /01 与 /01A 按题号交替排列的，合并文件改成了先 /01 后 /01A。构建记录见 `WST01.coverage.part1.md`、`WST01.coverage.part2.md`。
 
 审核脚本和输出都在 `registry/work/wst01audit/`：
-- 脚本：`scripts/merge_validate.py`（合并与格式校验）、`completeness.py`（与清单比对）、`checks.py`（小问分值、评分代码、MS 页码与数值、引文、命令词）、`labelcheck.py`（所引 MS 页是否有该小问的标号）、`er_span.py`（所引 ER 页是否落在该题的评论范围内）、`pua.py`（QP 文本层丢失的私用区字形，如 ⩽ ⩾）、`show.py`、`qtext.py`、`page.py`、`dump.py`（逐题调出索引、QP、所引 MS 页和 ER 页）、`apply_fixes.py`、`stats.py`、`shapes.py`。
+- 脚本：`completeness.py`（与清单比对）、`checks.py`（小问分值、评分代码、MS 页码与数值、引文、命令词）、`labelcheck.py`（所引 MS 页是否有该小问的标号）、`er_span.py`（所引 ER 页是否落在该题的评论范围内）、`pua.py`（QP 文本层丢失的私用区字形，如 ⩽ ⩾）、`show.py`、`qtext.py`、`page.py`、`dump.py`（逐题调出索引、QP、所引 MS 页和 ER 页）、`apply_fixes.py`、`stats.py`、`shapes.py`。
 - 输出：`validate.txt`、`completeness.txt`、`checks.txt`、`pua.txt`、`stats.txt`、`byitem.txt`（按主条目列出全部小问）、`shapes_rough.txt`（关键词粗筛，有误报，第 7 节的题型计数以人工核对为准）。
 - 改动清单：`fixes.json`（16 条）；改动前的两个 part 文件和本文件备份在 `backup/`。渲染核对图在 `img/`。
 
@@ -205,7 +207,7 @@
 | 2026-01 | /01 | 7 | Drive（只找到 MS Final 版） | 缺 |
 | 2026-01 | /01A | 7 | Drive（P87600A；只找到 MS Final 版） | 缺 |
 
-**格式校验**（`merge_validate.py`，结果 0 个问题，`validate.txt`）
+**格式校验**（构建时的合并校验脚本，结果 0 个问题，`validate.txt`）
 - 每条记录字段齐全；各小问分值之和等于题目总分；每卷 75 分，题号连续。
 - 所有 spec id 都在 `spec-items.stat.json` → `WST01` 中（`"5.1#2"` 是考纲第 6 主题被印成 “5.1” 的正态分布条目，见 §2）；series 都是 YYYY-MM，月份只有 01、06、10；id 与考季、卷号、题号一致。
 - 引号内文字都不超过 25 词。有 MS 的 20 份卷全部 586 个小问都有 MS 要点；`er` 恰好在有 ER 的 5 季（O22、J23、S23、O23、J24，34 题、137 个小问）填写；2019-10、2020-01 两份没有 MS，`ms` 为空，`final_form` 只写题目要求的形式，没有自行计算答案。

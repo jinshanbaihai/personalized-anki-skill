@@ -1,5 +1,7 @@
 # WFM01 · FP1 Further Pure Mathematics 1：考纲摘要
 
+> **构建溯源，不随包发布**：本文件反引号里的 `registry/…`、`work/…`、`src/…`、`inventory/…`、`scratchpad/…`、`finder/…`、`research/…`、`boards/…` 路径，`*.coverage.part*.md`、`*.questions.part*.json` 等分卷文件，以及审核脚本和它们的输出文件，都是构建登记时沙箱里的工作文件，技能包里没有，只说明结论是怎么核出来的。要看原件，用同目录 `WFM01.questions.json` 各条的 `sources`（公开地址或 Drive 定位，见 [README](../../README.md) “原件怎么取”）。文中写到的缺口是构建时的记录，**缺口以 `python scripts/exam_index.py WFM01 --gaps` 输出为准（快照 2026-10-06）**。
+
 核对日期：2026-10-06。条目编号、措辞和页码以考纲原文为准，本文件的中文是转述。
 
 **来源**
@@ -192,11 +194,11 @@
 
 逐题索引（合并版）：`WFM01.questions.json`（同一文件夹；由 `WFM01.questions.part1.json` 与 `part2.json` 合并、去重、排序，2026-10-06 审核，改正同步写回两个 part 文件）。各卷来源与缺失文件见第 7 节、`WFM01.coverage.part1.md`、`WFM01.coverage.part2.md`。
 
-## 7. 审核记录（2026-10-06）
+## 7. 审核记录（2026-10-06；构建溯源，不随包发布）
 
 本节与第 8 节中的路径都相对于 `registry/`。脚本在 `work/wfm01audit/scripts/`，改正清单在 `work/wfm01audit/fixes.json`（每条写明改了什么和理由），改动前的 part 文件与本文件备份在 `work/wfm01audit/backup/`。
 
-- **合并**：`WFM01.questions.json` = part1（70 题，2019-06 至 2022-06，8 份卷）+ part2（55 题，2023-01 至 2025-06，6 份卷），按 id 去重（没有重复），按考季、卷别、题号排序，共 125 题、355 个小问、1050 分。`merge_validate.py` 检查：字段齐全；各小问分值之和等于题目总分；spec id 都在 `spec-items.fm.json` → WFM01 中；series 符合 YYYY-MM；id 与 paper 一致；每份卷 75 分且题号连续；引号内原文不超过 25 词。改正后 0 个问题（合并时有 1 个：O21 Q9(i) 的 27 词“引文”，见改正 F02）。
+- **合并**：`WFM01.questions.json` = part1（70 题，2019-06 至 2022-06，8 份卷）+ part2（55 题，2023-01 至 2025-06，6 份卷），按 id 去重（没有重复），按考季、卷别、题号排序，共 125 题、355 个小问、1050 分。构建时的合并校验脚本检查：字段齐全；各小问分值之和等于题目总分；spec id 都在 `spec-items.fm.json` → WFM01 中；series 符合 YYYY-MM；id 与 paper 一致；每份卷 75 分且题号连续；引号内原文不超过 25 词。改正后 0 个问题（合并时有 1 个：O21 Q9(i) 的 27 词“引文”，见改正 F02）。
 - **自动比对**（`checks.py`、`pagecmd.py`，结果在 `work/wfm01audit/checks.txt`）：
   - 12 份有 PDF 的卷：每题总分、各小问分值与 QP 文本印刷的 “(Total …)” 和 (n) 一致；QP 把几个小问合印一个分值、索引按 MS 拆开的共 7 处，都已在 coverage 文件中说明（J21 Q6(c)、O21 Q2(b)、J23 Q4(a)、S23 Q7(c)、S24 Q1(ii)、S24 Q5(a)、S24 Q6(b)）。S19、J20 只有 Finder 文本，分值已在 part 1 对照 Finder 文本核过。
   - `final_form` 里的数值答案（小数和两位以上整数）都能在该卷 MS 文本中找到。
