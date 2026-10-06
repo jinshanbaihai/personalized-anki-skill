@@ -26,9 +26,12 @@ description: 把老师板书、课堂截图、讲评 PDF、讲义做成为考试
 
 从内容判断是哪场考试，精确到**考试局 + 资格 + 单元／试卷代码 + 考纲版本 + 目标考季**（考季决定适用版本，不知道时写推定并标明），写出证据和被排除的近似考试。课程名只是弱线索，要靠印刷代码、版式指纹和排他知识点。`python scripts/exam_fingerprint.py 板书.pdf` 可先列出线索。同时确定这批内容出现在哪些试卷与卷型（`exam.papers`，如 9708 的选择题与 essay），各自标定。证据仍无法区分、且区分结果会改变卡片内容时：用户在场就用选项问一次；要求一次做完时按最强证据制作，并在交付说明第一行写出假设。方法、代码体系、排他知识点表与资料入口见 [exam-lock.md](references/exam-lock.md)。
 
+**已登记的考试先查登记**：[references/exams/](references/exams/README.md) 收录了 CIE 9708 A Level（A2）与 Pearson IAL 数学全部单元（P1–P4、FP1–FP3、M1–M3、S1–S3、D1）的最新考纲条目（编号与印刷页码）和新考纲实施以来全部可得真题的逐题索引（对应考纲条目、分值、终点要求、MS 要点、考官报告要点、原件出处）。登记省掉的是例行调研，**不免除调研纪律**：先核对考纲版本与目标考季仍然适用，补查登记日期之后的新考季，登记里写明的缺口照样去找；登记外的考试、单元或陌生材料，按本节与下一节完整调研。
+
 ### 3. 取证与标定掌握水平
 
 - 读锁定版本的**考纲原文**，把本批范围的每一条拆成考点（定义、关系、方法、图、计算、评价角度），连指导栏一起读。
+- 已登记的考试先用 `python scripts/exam_index.py <单元> --spec <条目> --demands` 拉出真题需求清单的初稿，再回到原 MS／ER 核对要用的每一条；未登记的考试从零开始。
 - 按考季倒序读真题，把考到本批内容的每个小问记进**真题需求清单**（`demands`：考季、题号、命令词、问什么、终点要求、MS 注释、对应考点与卡），读到连续三季没有新问法为止（`coverage.saturation`）。
 - 每个考点读**至少两个不同考季**、问法不同的真题与对应 **mark scheme**；每个单元至少读一份 **examiner report**；essay 类科目找**真实考生的高中低档作答**（Cambridge ECR、Pearson exemplar responses），也可参考官方示范答案（标明不是真实考生）。
 - 从这些材料读出每个考点的掌握水平：定义必含词与拒收说法、单独给分的步骤、终点要求、需要的图、essay 分析要展开到几环、评价写到什么程度。写进考点的 `level`，并在 `evidence` 挂上至少两条不同考季的 MS／ER 出处。**MS 认可的写法优先**：教材的等价说法只作补充，只有 MS 明确拒收的写法才标“不给分”。
@@ -91,6 +94,19 @@ python scripts/validate_package.py out/<牌组>.apkg --output out/validate.json
 
 术语的定义＋例反例、理科的 worked example 与逐步解释、文科的论证图与因果图、加速语音的理解边界、阅读卡 Good 的含义：证据与适用边界见 [learning-science.md](references/learning-science.md)。
 
+## 运行环境
+
+需要 Python 3.10+（`pip install -r scripts/requirements.txt`）。其余条件缺了也能交付，但要在交付说明里写明缺了什么：
+
+| 条件 | 缺少时 |
+|---|---|
+| 能访问 `speech.platform.bing.com`（Edge 语音） | 用 `--audio-pending` 交付图文包；之后在能访问的电脑上去掉该参数重跑同一条命令补语音，同一张卡原位更新 |
+| ffmpeg／ffprobe | 同上，语音待补 |
+| Node 与 Playwright（Chromium） | 跳过 `render_check`，改为人工打开预览 HTML 检查，交付时说明没有做截图检查 |
+| 官方网站或用户 Google Drive | 先用 `references/exams/` 的登记；仍缺的写进 `research_gaps`，不把搜索摘要当作已读原文 |
+
+在 Claude 网页版或桌面版里使用时，把 `python scripts/package_skill.py` 生成的 `anki-ccpt-skill.zip` 上传为技能；沙盒通常不能联网合成语音，按上表交付“语音待补”包。
+
 ## 维护本技能
 
-改规则时同步主文、references、生成器、样例与测试；运行 `python -m pytest scripts -q` 与一个真实小样的预览和截图检查。修改规则不等于授权重写用户已有的全部卡片。旧版生成器（v5 导图卡、teaching、quiz 等）已从当前版本移除，需要维护旧格式时从 git 历史 `4c66000` 取用。
+改规则时同步主文、references、生成器、样例与测试；运行 `python -m pytest scripts -q`（含 `exam_index.py --check` 对全部考试登记的校验）与一个真实小样的预览和截图检查。新增考试登记时沿用 `references/exams/README.md` 的格式。修改规则不等于授权重写用户已有的全部卡片。旧版生成器（v5 导图卡、teaching、quiz 等）已从当前版本移除，需要维护旧格式时从 git 历史 `4c66000` 取用。

@@ -59,6 +59,8 @@
 
 ## 资料从哪里取
 
+**先查技能自带的考试登记**（[exams/README.md](exams/README.md)）：已登记的考试有最新考纲条目与真题逐题索引，`python scripts/exam_index.py` 可按单元、考纲条目、关键词检索。登记是有日期的快照：用之前核对版本与考季，补查登记之后的新考季，缺口照样去找；没有登记的考试从下面的检索顺序开始。
+
 检索顺序：
 
 1. **官方站点**：Pearson `qualifications.pearson.com`（spec、past papers、mark schemes、Examiners' report／PEF、exemplar responses with examiner commentary、SAM model answers）；Cambridge `cambridgeinternational.org/past-papers` 与 School Support Hub（syllabus、MS、Principal Examiner Report for Teachers、Example Candidate Responses、Specimen Paper Answers）；AQA `filestore.aqa.org.uk`；OCR；IB（Follett／Programme Resource Centre）；AP Central（sample responses、scoring commentary、chief reader report）。
