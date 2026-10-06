@@ -1,0 +1,28 @@
+/* manuscript — History, Literature, Philosophy, Politics. A bound book: parchment, serif text
+   for long reading, oxblood rubrics, marginal-note styling for evaluation and judgement. */
+.ccpt6[data-theme="manuscript"]{
+ --bg:#f5efe2;--surface:#fbf7ee;--surface-2:#efe6d3;--ink:#2d241b;--ink-2:#6e5f4c;--rule:#dccdb3;
+ --accent:#7b2a1e;--accent-ink:#fbf7ee;--accent-soft:#f1dfd5;--wire:#6b5a2e;--kw:#ecd28f;
+ --good:#3f6b34;--good-soft:#e6eedc;--bad:#9b2f22;--bad-soft:#f4dfd6;--mark-bg:#2d241b;--mark-ink:#fbf7ee;
+ --focus:#9a6b14;--focus-soft:rgba(154,107,20,.13);
+ --font-latin:"Iowan Old Style","Palatino","Palatino Linotype","Book Antiqua","Songti SC","Noto Serif CJK SC","Source Han Serif SC",serif;
+ --font-head:var(--font-latin);
+ font-size:19px;line-height:1.8;
+}
+.card:has(.ccpt6[data-theme="manuscript"]){background:#f5efe2}
+.ccpt6[data-theme="manuscript"] .cc-head{border-bottom:3px double var(--rule)}
+.ccpt6[data-theme="manuscript"] .cc-genre{background:none;color:var(--accent);border:1px solid var(--accent);font-variant:small-caps;letter-spacing:.12em}
+.ccpt6[data-theme="manuscript"] .cc-titlebar h1{font-size:29px;font-weight:700}
+.ccpt6[data-theme="manuscript"] .blk{background:var(--surface);border:1px solid var(--rule);border-radius:2px;box-shadow:0 1px 0 rgba(45,36,27,.05)}
+.ccpt6[data-theme="manuscript"] .blk-label{font-variant:small-caps;letter-spacing:.14em;color:var(--accent);font-size:16px}
+.ccpt6[data-theme="manuscript"] .lead{border-left:0;padding-left:0;font-size:22px;font-style:italic;text-align:left}
+.ccpt6[data-theme="manuscript"] .lead::first-letter{font-size:1.9em;float:left;line-height:.9;margin:.06em .12em 0 0;color:var(--accent);font-style:normal}
+.ccpt6[data-theme="manuscript"] .chain-node{background:var(--surface);border-color:var(--rule)}
+.ccpt6[data-theme="manuscript"] .chain-rel{color:var(--accent);font-style:italic}
+.ccpt6[data-theme="manuscript"] .note.tone-aside{border-left:2px solid var(--wire);padding-left:12px;font-style:italic}
+.ccpt6[data-theme="manuscript"] :is(.mm-item,.mm-box)[data-kind="evaluation"]>.mm-node{font-style:italic}
+.nightMode .ccpt6[data-theme="manuscript"],.night_mode .ccpt6[data-theme="manuscript"]{
+ --bg:#1c1712;--surface:#241e17;--surface-2:#2e261d;--ink:#eee3cf;--ink-2:#b8a78b;--rule:#4a3e2e;
+ --accent:#e39a7f;--accent-ink:#1c1712;--accent-soft:#3b261f;--wire:#c9b37a;--kw:#6a5320;
+ --good:#9fcf8e;--good-soft:#24311f;--bad:#f39a86;--bad-soft:#3c241e;--mark-bg:#eee3cf;--mark-ink:#1c1712;--focus:#e2b75c;--focus-soft:rgba(226,183,92,.15)}
+.nightMode.card:has(.ccpt6[data-theme="manuscript"]),.nightMode .card:has(.ccpt6[data-theme="manuscript"]){background:#1c1712}

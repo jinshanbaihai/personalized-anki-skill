@@ -1,0 +1,21 @@
+/* blueprint — Physics, Chemistry, engineering. Drafting-table clarity: pale blueprint paper,
+   cobalt construction lines, dimension-style labels; night mode becomes a true blueprint. */
+.ccpt6[data-theme="blueprint"]{
+ --bg:#f2f6fb;--surface:#ffffff;--surface-2:#e8f0f9;--ink:#10243e;--ink-2:#4d6382;--rule:#c9d7e8;
+ --accent:#1b5fa8;--accent-ink:#fff;--accent-soft:#dde9f7;--wire:#1b5fa8;--kw:#cfe3ff;
+ --good:#1d7350;--good-soft:#e0f1e8;--bad:#b3352b;--bad-soft:#f9e2df;--mark-bg:#10243e;--mark-ink:#fff;
+ --focus:#d9821e;--focus-soft:rgba(217,130,30,.13);
+ --font-latin:"Inter","SF Pro Text","Segoe UI","PingFang SC","Microsoft YaHei","Noto Sans CJK SC",sans-serif;
+ --font-head:var(--font-latin);
+}
+.card:has(.ccpt6[data-theme="blueprint"]){background:#f2f6fb}
+.ccpt6[data-theme="blueprint"] .blk{border-radius:4px;border:1px solid var(--rule);position:relative}
+.ccpt6[data-theme="blueprint"] .blk-label{font-family:"SF Mono","Menlo","Consolas","Noto Sans Mono CJK SC",monospace;font-size:13px;letter-spacing:.12em;text-transform:uppercase}
+.ccpt6[data-theme="blueprint"] .cc-genre{border-radius:3px}
+.ccpt6[data-theme="blueprint"] .step-n{border-radius:3px}
+.ccpt6[data-theme="blueprint"] .chain-node{border-style:dashed;border-color:var(--accent)}
+.nightMode .ccpt6[data-theme="blueprint"],.night_mode .ccpt6[data-theme="blueprint"]{
+ --bg:#0e2a47;--surface:#123355;--surface-2:#173d63;--ink:#eaf3ff;--ink-2:#a9c3e3;--rule:#2f5b88;
+ --accent:#8cc8ff;--accent-ink:#0e2a47;--accent-soft:#1b4672;--wire:#8cc8ff;--kw:#2c5f93;
+ --good:#86e0b0;--good-soft:#16443a;--bad:#ffab9e;--bad-soft:#4a2a33;--mark-bg:#eaf3ff;--mark-ink:#0e2a47;--focus:#ffc46b;--focus-soft:rgba(255,196,107,.16)}
+.nightMode.card:has(.ccpt6[data-theme="blueprint"]),.nightMode .card:has(.ccpt6[data-theme="blueprint"]){background:#0e2a47}

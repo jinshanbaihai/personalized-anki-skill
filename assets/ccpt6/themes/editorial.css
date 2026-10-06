@@ -1,0 +1,29 @@
+/* editorial — Economics, Business, social sciences. Broadsheet manners: warm paper,
+   serif headlines, hairline rules, claret kicker labels; diagrams and causes in ink and teal. */
+.ccpt6[data-theme="editorial"]{
+ --bg:#fbf4ec;--surface:#fffaf4;--surface-2:#f4e9dc;--ink:#2a2420;--ink-2:#6b5f55;--rule:#e2d3c2;
+ --accent:#8c1d3a;--accent-ink:#fff;--accent-soft:#f6e1e2;--wire:#0d6e74;--kw:#f5d98a;
+ --good:#2d6a4f;--good-soft:#e5f0e8;--bad:#a4302a;--bad-soft:#f8e3de;--mark-bg:#2a2420;--mark-ink:#fbf4ec;
+ --focus:#0d6e74;--focus-soft:rgba(13,110,116,.12);
+ --font-head:"Iowan Old Style","Charter","Georgia","Songti SC","Noto Serif CJK SC","Source Han Serif SC",serif;
+}
+.card:has(.ccpt6[data-theme="editorial"]){background:#fbf4ec}
+.ccpt6[data-theme="editorial"] .cc-titlebar h1{font-size:30px;font-weight:700;letter-spacing:-.005em}
+.ccpt6[data-theme="editorial"] .cc-genre{background:none;color:var(--accent);padding:0;border-radius:0;font-variant:small-caps;letter-spacing:.14em;font-size:14px;border-bottom:2px solid var(--accent)}
+.ccpt6[data-theme="editorial"] .cc-head{border-bottom:2px solid var(--ink)}
+.ccpt6[data-theme="editorial"] .blk{border:0;border-top:1px solid var(--ink);border-radius:0;background:transparent;padding:14px 2px 6px}
+.ccpt6[data-theme="editorial"] .blk-lead{border:0}
+.ccpt6[data-theme="editorial"] .lead{font-family:var(--font-head);font-size:23px;font-weight:600;border-left:0;padding:0 0 0 0;line-height:1.5}
+.ccpt6[data-theme="editorial"] .lead::before{content:"";display:block;width:56px;height:4px;background:var(--accent);margin-bottom:10px}
+.ccpt6[data-theme="editorial"] .blk-label{font-variant:small-caps;letter-spacing:.12em;font-size:15px}
+.ccpt6[data-theme="editorial"] .def-term{font-size:30px;font-weight:700}
+.ccpt6[data-theme="editorial"] .def-text{font-family:var(--font-head);font-size:21px}
+.ccpt6[data-theme="editorial"] .chain-node{background:var(--surface);border-left:3px solid var(--wire)}
+.ccpt6[data-theme="editorial"] .chain-rel{color:var(--wire)}
+.ccpt6[data-theme="editorial"] .tbl th{color:var(--ink);border-bottom:2px solid var(--ink);font-variant:small-caps;letter-spacing:.06em}
+.nightMode .ccpt6[data-theme="editorial"],.night_mode .ccpt6[data-theme="editorial"]{
+ --bg:#1d1916;--surface:#25201c;--surface-2:#2f2823;--ink:#efe6dc;--ink-2:#b5a89b;--rule:#4a4038;
+ --accent:#e77d93;--accent-ink:#1d1916;--accent-soft:#3a2229;--wire:#5cc3c8;--kw:#7a6224;
+ --good:#7cc79c;--good-soft:#1f3328;--bad:#f08c7d;--bad-soft:#3d2421;--mark-bg:#efe6dc;--mark-ink:#1d1916;--focus:#5cc3c8;--focus-soft:rgba(92,195,200,.16)}
+.nightMode.card:has(.ccpt6[data-theme="editorial"]),.nightMode .card:has(.ccpt6[data-theme="editorial"]){background:#1d1916}
+.ccpt6[data-theme="editorial"] .cc-body>.blk:first-child{border-top:0}

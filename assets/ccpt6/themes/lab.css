@@ -1,0 +1,28 @@
+/* lab — Statistics and data. A clean lab notebook: faint graph-paper grid, tabular figures,
+   teal for the main thread, amber for what a mark scheme rewards. */
+.ccpt6[data-theme="lab"]{
+ --bg:#f6f8f7;--surface:#ffffff;--surface-2:#eef3f1;--ink:#17252a;--ink-2:#55676d;--rule:#d5e0dc;
+ --accent:#0b7366;--accent-ink:#fff;--accent-soft:#dff0ec;--wire:#0b7366;--kw:#ffe08a;
+ --good:#1f7a46;--good-soft:#e2f2e8;--bad:#b3392f;--bad-soft:#fbe4e1;--mark-bg:#b86b00;--mark-ink:#fff;
+ --focus:#b86b00;--focus-soft:rgba(184,107,0,.12);
+ --font-latin:"Inter","SF Pro Text","Segoe UI","PingFang SC","Microsoft YaHei","Noto Sans CJK SC",sans-serif;
+ --font-head:var(--font-latin);
+ font-variant-numeric:tabular-nums;
+}
+.card:has(.ccpt6[data-theme="lab"]){background:#f6f8f7}
+.ccpt6[data-theme="lab"]{background-image:linear-gradient(rgba(11,115,102,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(11,115,102,.045) 1px,transparent 1px);background-size:24px 24px}
+.ccpt6[data-theme="lab"] .cc-head,.ccpt6[data-theme="lab"] .cc-foot{background:rgba(246,248,247,.96)}
+.ccpt6[data-theme="lab"] .cc-genre{border-radius:4px}
+.ccpt6[data-theme="lab"] .blk{border-radius:8px;box-shadow:0 1px 2px rgba(23,37,42,.05)}
+.ccpt6[data-theme="lab"] .blk-label{text-transform:uppercase;letter-spacing:.1em;font-size:13px}
+.ccpt6[data-theme="lab"] .tbl{font-variant-numeric:tabular-nums}
+.ccpt6[data-theme="lab"] .tbl td{text-align:center}
+.ccpt6[data-theme="lab"] .tbl td:first-child,.ccpt6[data-theme="lab"] .tbl th:first-child{text-align:left}
+.ccpt6[data-theme="lab"] .step-n{border-radius:6px}
+.nightMode .ccpt6[data-theme="lab"],.night_mode .ccpt6[data-theme="lab"]{
+ --bg:#121a1c;--surface:#192326;--surface-2:#202d30;--ink:#e3ecea;--ink-2:#9db1ad;--rule:#33454a;
+ --accent:#4fd1bd;--accent-ink:#0f1719;--accent-soft:#173430;--wire:#4fd1bd;--kw:#6b5418;
+ --good:#7fd6a0;--good-soft:#18302a;--bad:#ff998c;--bad-soft:#3a2220;--mark-bg:#f0a640;--mark-ink:#121a1c;--focus:#f0a640;--focus-soft:rgba(240,166,64,.16);
+ background-image:linear-gradient(rgba(79,209,189,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(79,209,189,.05) 1px,transparent 1px)}
+.nightMode .ccpt6[data-theme="lab"] .cc-head,.nightMode .ccpt6[data-theme="lab"] .cc-foot{background:rgba(18,26,28,.96)}
+.nightMode.card:has(.ccpt6[data-theme="lab"]),.nightMode .card:has(.ccpt6[data-theme="lab"]){background:#121a1c}

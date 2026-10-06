@@ -11,9 +11,21 @@ from xml.sax.saxutils import escape, quoteattr
 
 import edge_tts
 
-DEFAULT_VOICE = 'zh-CN-YunxiNeural'
-DEFAULT_SPEED = 1.5
+# Short names authors may use in deck JSON. Unknown full names pass through unchanged.
+VOICES = {
+    'xiaoxiao': 'zh-CN-XiaoxiaoNeural',   # 晓晓：清亮女声，默认
+    'yunyang': 'zh-CN-YunyangNeural',     # 云扬：新闻播音男声
+    'yunxi': 'zh-CN-YunxiNeural',         # 云希：旧版默认男声，仅在维护旧卡时使用
+}
+DEFAULT_VOICE = VOICES['xiaoxiao']
+DEFAULT_SPEED = 2.0
+COMPLEX_SPEED = 1.5
 _voices_task = None
+
+
+def resolve_voice(name):
+    name = (name or DEFAULT_VOICE).strip()
+    return VOICES.get(name.lower(), name)
 
 
 async def edge_voice_names():
@@ -63,7 +75,7 @@ async def inspect_voice(voice):
 
 
 async def synthesize_original(text, voice, output):
-    voice = voice or DEFAULT_VOICE
+    voice = resolve_voice(voice)
     report = await inspect_voice(voice)
     output = Path(output)
     output.parent.mkdir(parents=True, exist_ok=True)
@@ -90,11 +102,12 @@ async def synthesize_original(text, voice, output):
 
 
 async def _cli(args):
+    args.voice = resolve_voice(args.voice)
     report = await inspect_voice(args.voice)
     if args.probe:
         try:
             report['provider'] = await synthesize_original(
-                '语音接口检查。Price 是价格，quantity 是数量。', args.voice, args.probe)
+                '语音接口检查。Marginal social cost 等于 marginal private cost 加上 marginal external cost。', args.voice, args.probe)
             report['synthesis_ok'] = True
             report['bytes'] = args.probe.stat().st_size
         except Exception as exc:
@@ -107,7 +120,7 @@ async def _cli(args):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Check the requested Microsoft voice without silently substituting it.')
-    parser.add_argument('--voice', default=DEFAULT_VOICE)
+    parser.add_argument('--voice', default=DEFAULT_VOICE, help='xiaoxiao, yunyang, yunxi or a full Microsoft voice name')
     parser.add_argument('--check', action='store_true', help='Check providers and configuration; does not synthesize')
     parser.add_argument('--probe', type=Path, help='Actually synthesize a short diagnostic clip to this path')
     asyncio.run(_cli(parser.parse_args()))

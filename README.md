@@ -1,9 +1,20 @@
 # anki-ccpt-skill
 
-从老师板书、课堂资料或教材出发，完整研读相关知识模型，原创提炼关系，以多张范围小、精炼而解释充分的单面 Anki 卡支持轻松阅读复习。适用考纲和多种真实 essay／MCQ／Mark Scheme／人类作答用于整组查漏与应用深度核验。
+把老师板书、课堂截图、讲评 PDF 做成**为考试背诵服务**的单面 Anki 知识卡：
 
-从 [SKILL.md](SKILL.md) 开始。输入处理见 [board-to-knowledge.md](references/board-to-knowledge.md)，教材研究见 [textbook-research.md](references/textbook-research.md)，覆盖见 [syllabus-coverage.md](references/syllabus-coverage.md)，制作数据见 [logic-build.md](references/logic-build.md)。
+1. 从内容锁定排他性的考试（考试局、资格、单元代码、考纲版本、考季）；
+2. 读官方考纲、多年真题与 mark scheme、examiner report、真实考生范文，标定每个考点要掌握到什么程度；
+3. 用范围账本保证考点不漏、不越界；
+4. 术语卡逐词讲透定义，理科推导每一步写清做什么、为什么、依据和得分点，文科用箭头因果链和不限层级的导图；
+5. 按学科选择有美感的版式主题（editorial／paper／lab／blueprint／manuscript），亮色与夜间模式都适配；
+6. 晓晓或云扬配音，默认 2×、复杂卡 1.5×，可随时切换；Space 播音、Enter 继续、1 明天再看。
 
-默认入口 `scripts/build_logic_deck.py`。一页一个播放器，Space 播音／暂停／继续，Enter Good，1 下一学习日再看。语音默认云希实际 1.5×。正式原位修订保留身份、排程与历史；技能改动、验证小样和学习牌组分别交付并核实。
+从 [SKILL.md](SKILL.md) 开始。生成器入口 `scripts/build_cards.py`，数据格式见 [references/deck-json.md](references/deck-json.md)。
 
-实际 externalities 长板书案例与教材关系提炼见 [externality-case-study.md](references/externality-case-study.md)。
+```bash
+pip install -r scripts/requirements.txt     # 另需 ffmpeg；版式检查需要 Node + Playwright
+python scripts/build_cards.py deck.json out/ --preview
+node scripts/render_check.mjs out/ --phone --dark
+python scripts/build_cards.py deck.json out/
+python -m pytest scripts -q
+```

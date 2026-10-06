@@ -100,3 +100,23 @@ def validate_markup(markup):
     parser = MarkupIntegrity(convert_charrefs=True)
     parser.feed(markup)
     parser.close()
+
+
+def check_svg(svg):
+    """Inline SVG figures stay passive, local and scalable."""
+    import re
+    import xml.etree.ElementTree as ET
+    root = ET.fromstring(svg)
+    assert root.tag.split('}')[-1] == 'svg', 'Figure requires an <svg> root'
+    assert 'viewBox' in root.attrib, 'SVG needs a viewBox so it scales with the card'
+    for element in root.iter():
+        tag = element.tag.split('}')[-1].lower()
+        assert tag not in {'script', 'foreignobject', 'iframe', 'audio', 'video'}, f'Unsupported active SVG element <{tag}>'
+        for key, value in element.attrib.items():
+            key = key.split('}')[-1].lower()
+            assert not key.startswith('on'), 'Inline events are not allowed in figures'
+            assert not re.search(r'(?:https?:|javascript:|file:|data:|@import)', value, re.I), 'Use local content only'
+            if key in {'href', 'src'}:
+                assert value.startswith('#'), 'Only internal SVG references are allowed'
+            assert not re.search(r'url\(\s*["\']?(?!#)[^\s]', value, re.I), 'Only internal SVG references are allowed'
+    return svg

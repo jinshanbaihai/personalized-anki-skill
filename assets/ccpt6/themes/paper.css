@@ -1,0 +1,30 @@
+/* paper — Pure Mathematics. A well-set textbook page: white paper, serif text matching the
+   math font, amsthm-style Definition/Step headings, quiet rules, exam mark tags set like a mark scheme. */
+.ccpt6[data-theme="paper"]{
+ --bg:#fdfdfb;--surface:#ffffff;--surface-2:#f3f4f7;--ink:#1b1d22;--ink-2:#5a6070;--rule:#dfe2e8;
+ --accent:#1f3d8a;--accent-ink:#fff;--accent-soft:#e6ecf8;--wire:#1f3d8a;--kw:#d9e4ff;
+ --good:#1e6b45;--good-soft:#e5f2ea;--bad:#b0302b;--bad-soft:#fae5e3;--mark-bg:#1b1d22;--mark-ink:#fff;
+ --focus:#c07a1c;--focus-soft:rgba(192,122,28,.12);
+ --font-latin:"STIX Two Text","Latin Modern Roman","Cambria","Times New Roman","Songti SC","Noto Serif CJK SC",serif;
+ --font-head:"STIX Two Text","Latin Modern Roman","Cambria","Songti SC","Noto Serif CJK SC",serif;
+ --font-body:"Songti SC","Noto Serif CJK SC","Source Han Serif SC",serif;
+ font-size:19px;
+}
+.card:has(.ccpt6[data-theme="paper"]){background:#fdfdfb}
+.ccpt6[data-theme="paper"] .cc-genre{background:none;color:var(--accent);border:1px solid var(--accent);border-radius:4px;font-weight:600}
+.ccpt6[data-theme="paper"] .cc-titlebar h1{font-weight:700;font-size:28px}
+.ccpt6[data-theme="paper"] .blk{border-radius:4px;border-color:var(--rule);box-shadow:0 1px 0 rgba(0,0,0,.02)}
+.ccpt6[data-theme="paper"] .blk-definition{border:0;border-left:3px solid var(--accent);border-radius:0;background:var(--surface)}
+.ccpt6[data-theme="paper"] .def-label{text-transform:none;letter-spacing:0;font-size:16px;font-weight:700;color:var(--ink);font-family:var(--font-head)}
+.ccpt6[data-theme="paper"] .def-label::after{content:"."}
+.ccpt6[data-theme="paper"] .def-text{font-style:italic}
+.ccpt6[data-theme="paper"] .def-text :is(.math,mark){font-style:normal}
+.ccpt6[data-theme="paper"] .step-n{background:none;color:var(--accent);border:1.5px solid var(--accent);font-family:var(--font-head)}
+.ccpt6[data-theme="paper"] .mark-badge{background:none;color:var(--ink);border:1.5px solid var(--ink);font-family:var(--font-head);border-radius:3px}
+.ccpt6[data-theme="paper"] .blk-label{font-family:var(--font-head);font-variant:small-caps;letter-spacing:.08em;font-size:16px}
+.ccpt6[data-theme="paper"] .lead{border-left:0;padding-left:0;font-style:italic;font-family:var(--font-head)}
+.nightMode .ccpt6[data-theme="paper"],.night_mode .ccpt6[data-theme="paper"]{
+ --bg:#16181d;--surface:#1d2026;--surface-2:#252932;--ink:#e8eaf0;--ink-2:#a3a9b8;--rule:#363b47;
+ --accent:#8fb0ff;--accent-ink:#16181d;--accent-soft:#232c45;--wire:#8fb0ff;--kw:#2c3a63;
+ --good:#7fd1a2;--good-soft:#1c3026;--bad:#ff9a8f;--bad-soft:#3b2220;--mark-bg:#e8eaf0;--mark-ink:#16181d;--focus:#f0b45c;--focus-soft:rgba(240,180,92,.16)}
+.nightMode.card:has(.ccpt6[data-theme="paper"]),.nightMode .card:has(.ccpt6[data-theme="paper"]){background:#16181d}
