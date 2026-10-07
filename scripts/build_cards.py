@@ -572,7 +572,8 @@ def preflight(voice):
         return
     if report.get('edge_list_available') is False:
         print(f'✗ network_blocked: the Edge voice service could not be reached ({report.get("edge_error")}) and no Azure Speech is configured.\n'
-              '  Deliver now with --audio-pending; run the same command without it on a machine that can reach speech.platform.bing.com.', file=sys.stderr)
+              '  这台电脑现在连不上微软语音服务（speech.platform.bing.com）：换一个网络（例如关掉学校或公司的代理）或换一台电脑，再运行同一条命令。\n'
+              '  Card makers: deliver now with --audio-pending; run the same command without it where the service is reachable.', file=sys.stderr)
         sys.exit(2)
     print(f'✗ voice_missing: {voice} is not offered by the Edge service; no voice was substituted.', file=sys.stderr)
     sys.exit(3)
