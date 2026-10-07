@@ -1,5 +1,7 @@
 # 9708 Paper 3（A Level Multiple Choice）：真题需求概览
 
+> **构建溯源，不随包发布**：本文件反引号里的 `registry/…`、`work/…`、`src/…`、`inventory/…`、`scratchpad/…`、`finder/…`、`research/…`、`boards/…` 路径，`*.coverage.part*.md`、`*.questions.part*.json` 等分卷文件，以及审核脚本和它们的输出文件，都是构建登记时沙箱里的工作文件，技能包里没有，只说明结论是怎么核出来的。要看原件，用同目录 `9708-P3.questions.json`、`9708-P4.questions.json` 各条的 `sources`（公开地址或 Drive 定位，见 [README](../README.md) “原件怎么取”）。文中写到的缺口是构建时的记录，**缺口以 `python scripts/exam_index.py 9708 --gaps` 输出为准（快照 2026-10-06）**。
+
 逐题索引（合并版）：`9708-P3.questions.json`（同一文件夹）。最初由 `9708-P3.questions.part1.json` 与 `part2.json` 合并（15 份卷，2026-10-06 审核），同日又并入补建的 `9708-P3.questions.gap2023.json` 与 `gap2024.json`（8 份卷），去重、排序后共 690 条。最初 15 份卷的来源与建索引时的检查见 `9708-P3.coverage.part1.md`、`9708-P3.coverage.part2.md`；补建的 8 份卷的来源写在各条的 `sources` 里，检查记录见第 7 节。考纲条目与印刷页码见 `syllabus-a-level.md` 与 `spec-items.json`。本文件的统计都由脚本从合并后的索引算出（`work/p3audit/scripts/`：`stats.py`、`render_table.py`、`overview_stats.py`、`build_overview.py`），问法与结论的文字是人工归纳（`desc.py`），引用的 key 都已对过 MS。
 
 ## 真题需求概览
@@ -284,7 +286,7 @@
 - M25/32："Candidates performed significantly better on the microeconomic questions compared to the macroeconomic ones."（PER 2025-03 p.6）
 - 反复出现的失分原因：没看到 NOT（W23/31 Q4、M23/32 Q26、S24/32 Q18）；把 TU 当 MU、把 TR 当利润（W23/32 Q1、M25/32 Q4）；短期与长期条件混淆（S23/32 Q4、S23/31 Q6）；只记住一半条件（“缺乏弹性”就能价格歧视，W23/31 Q6；长期无超额利润就以为有配置效率，M23/32 Q6；只选教育、漏了资本品税收减免，W23/33 Q12）；不认识术语（poverty trap、optimum population，S24/31 Q13、Q29）；Keynes 与古典假设混淆（S24/31 Q19）；计算漏掉自主消费（M25/32 Q19）；国际机构职能分不清（M25/32 Q29、W23/33 Q28）。做选择题辨析卡时，这些干扰项就是现成的“错误说法”。
 
-### 7. 来源状态与审核
+### 7. 来源状态与审核（构建溯源，不随包发布）
 
 **Paper 3 来源（2026-10-06）**
 
@@ -320,7 +322,7 @@
 **补卷合并与复核（2026-10-06，新增 8 份卷、240 条）**
 
 - 合并：`gap2023.json`（S23/31、S23/33、W23/33，90 条）与 `gap2024.json`（S24/31、S24/33、W24/31、W24/32、W24/33，150 条）并入合并版，与已有 450 条无重复 id，按考季、卷号、题号排序，共 690 条（`work/p3audit/scripts/merge_gaps.py`；合并前的文件存于 `work/p3gap/`）。原有 450 条没有改动。
-- 校验：`merge_validate.py` 0 错误（23 份卷，每份题号 1–30 齐全）；把 `spec-items.json` 与两份合并索引放进 `references/exams/cie-9708/` 结构，调用 `scripts/exam_index.py` 的 `check()`：P3 690 条、P4 115 条，0 problems（`check_packaged.py`）。
+- 校验：构建时的合并校验脚本 0 错误（23 份卷，每份题号 1–30 齐全）；把 `spec-items.json` 与两份合并索引放进 `references/exams/cie-9708/` 结构，调用 `scripts/exam_index.py` 的 `check()`：P3 690 条、P4 115 条，0 problems（`check_packaged.py`）。
 - key：690 条与 23 份 MS 文本和 key 清单逐条比对，0 不符（`keycheck.py`）。key 清单补了 S24/31、S24/33、W24/31–33 五个 key 串，S24/31、S24/33、S24/32 的 MS 与 PER 答案表逐字母一致；S23/31、S23/33、W23/33 原来只有 PER 答案表，现在也对过 MS。
 - 页码：新增 240 条的 QP 页码全对；MS 页码有 6 条错（S23/31、S23/33、W23/33 的 Q29、Q30 在 MS 第 3 页，原写 p.2），已改。
 - 选项转述与条目关键词扫描：`optcheck.py` 对新增条目只报 S23/31（= /33）Q1 一处，是转述里带了解释造成的误报；`specscan.py` 对新增条目报 12 处，逐条看过都是题干或选项里的词触发的，映射不需要因此改动。

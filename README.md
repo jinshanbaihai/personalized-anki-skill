@@ -11,12 +11,16 @@
 
 从 [SKILL.md](SKILL.md) 开始。生成器入口 `scripts/build_cards.py`，数据格式见 [references/deck-json.md](references/deck-json.md)。
 
-依赖：Python 3.10+（`pip install -r scripts/requirements.txt`）、ffmpeg／ffprobe；板书识别另需 poppler（pdftoppm、pdftotext）与 tesseract（含 `chi_sim`）；版式检查需要 Node 与 Playwright（Chromium）。
+依赖：Python 3.10+（`pip install -r scripts/requirements.txt`）、ffmpeg／ffprobe；板书识别另需 poppler（pdftoppm、pdftotext、pdfimages）与 tesseract（含 `chi_sim`）；导入验证需要 `pip install -r scripts/requirements-validate.txt`；版式检查需要 Node 与 Playwright（Chromium，可用 `CHROMIUM_PATH` 指定）。缺了哪一项怎么办见 SKILL.md 的“运行环境”。
 
 ```bash
 pip install -r scripts/requirements.txt
 python scripts/build_cards.py deck.json out/ --preview
 node scripts/render_check.mjs out/ --phone --dark
 python scripts/build_cards.py deck.json out/
-python -m pytest scripts -q
+python scripts/validate_package.py out/<牌组>.apkg
+python scripts/package_skill.py dist/        # 上传给 Claude 的 anki-ccpt-skill.zip
+
+# 只在源码仓库：
+pip install -r scripts/requirements-dev.txt && python -m pytest scripts -q
 ```

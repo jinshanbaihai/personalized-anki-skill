@@ -6,3 +6,4 @@ __pycache__/
 *.apkg
 *.anki2
 outputs/
+.claude/worktrees/

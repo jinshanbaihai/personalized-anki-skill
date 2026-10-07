@@ -31,7 +31,7 @@
    "legacy_statement": "Further, Mechanics and Statistics units have not changed from the legacy (2013) qualification; D1 updated; Core split into P1-P4 (printed p.1)",
    "unit_format": "each unit 1h30, 75 marks, externally assessed (printed p.7)",
    "pdf": {
-    "local": "scratchpad/research/dl/ial-maths-spec.pdf",
+    "build_copy_not_shipped": "scratchpad/research/dl/ial-maths-spec.pdf",
     "md5": "06d01a11b53e1e03d25a0df0a265510d",
     "pdf_created": "2019-04-11",
     "pdf_modified": "2025-04-07",
@@ -63,7 +63,7 @@
    ],
    "newer_issue_found": false,
    "md5": "a1c61b665dcae1af155e289c78b74019",
-   "local": "scratchpad/boards/B-S2/src/ial_formulae_booklet.pdf",
+   "build_copy_not_shipped": "scratchpad/boards/B-S2/src/ial_formulae_booklet.pdf",
    "drive_id": "15sPDu75A0NElxpZoGu4aQayK0804RG1e",
    "confidence": "high"
   },
@@ -698,7 +698,7 @@
     ],
     "2026-01": "all 14 units",
     "2026-06": "all 14 units",
-    "confidence": "medium (scraped index of Pearson URLs, finder/gh/grademax_maths_index.json)"
+    "confidence": "medium (scraped index of Pearson URLs: ShariarAlamDipto/grademax@9e091168 data/manifest/edexcel_2025.json and edexcel_2026.json)"
    }
   },
   "latest_series_reachable": {
@@ -722,7 +722,7 @@
    "v1_date_inferred": "September 2023 (back-page copyright line)",
    "series": "June and November; March series in India only (cover; p.38)",
    "pdf": {
-    "local": "scratchpad/research/dl/cie9708-2026-2028.pdf",
+    "build_copy_not_shipped": "scratchpad/research/dl/cie9708-2026-2028.pdf",
     "md5": "36981a13a95397a443c80fb22ad394d0",
     "pages": 44,
     "pdf_created": "2025-12-08",
@@ -909,11 +909,1347 @@
   },
   "file_naming": "9708_<m|s|w><yy>_<qp|ms|er|gt|in>_<component>; one ER per series"
  },
- "gaps": [
+ "expected_papers": {
+  "about": "Machine-readable rules behind exam_index.py --gaps and --completeness. Pearson IAL: a unit sits every series in ial.units.<unit>.pre_june_2020_availability_2018_spec, then from regular_from every month in its series_offered, plus the all-unit autumn series, minus cancelled series; the regional /01A variant per variants. CIE 9708: the components sat in each series (from cie9708.variants). Indexed extras (2024-06 /01R papers, unused January 2022 papers) are not expected papers.",
+  "through": "2026-06",
+  "through_note": "Latest series whose papers can exist at the snapshot (October 2026 and November 2026 not yet sat or released).",
+  "pearson-ial-maths": {
+   "regular_from": "2020-06",
+   "cancelled": [
+    "2020-06"
+   ],
+   "all_units": [
+    "2020-10",
+    "2021-10"
+   ],
+   "variants": {
+    "01A": {
+     "2025-06": [
+      "WMA11",
+      "WMA12",
+      "WMA13",
+      "WMA14",
+      "WFM02",
+      "WME02"
+     ],
+     "2025-10": [
+      "WMA11",
+      "WMA12",
+      "WMA13",
+      "WMA14",
+      "WME01",
+      "WME02",
+      "WST01",
+      "WST02"
+     ],
+     "2026-01": "all",
+     "2026-06": "all"
+    }
+   },
+   "variants_basis": "ial.regional_01A: series_by_unit_per_grademax (medium, scraped index of Pearson URLs); British Council China entry codes agree for October 2025 and January/June 2026. Earliest /01A seen: June 2025.",
+   "check": "For every unit this rule reproduces ial.units.<unit>.expected_series_through_2026_06 (tested in scripts/test_exam_index.py)."
+  },
+  "cie-9708": {
+   "9708/3": {
+    "2023-03": [
+     "32"
+    ],
+    "2023-06": [
+     "31",
+     "32",
+     "33"
+    ],
+    "2023-11": [
+     "31",
+     "32",
+     "33"
+    ],
+    "2024-03": [
+     "32"
+    ],
+    "2024-06": [
+     "31",
+     "32",
+     "33"
+    ],
+    "2024-11": [
+     "31",
+     "32",
+     "33"
+    ],
+    "2025-03": [
+     "32"
+    ],
+    "2025-06": [
+     "31",
+     "32",
+     "33",
+     "34"
+    ],
+    "2025-11": [
+     "31",
+     "32",
+     "33",
+     "34"
+    ],
+    "2026-03": [
+     "32"
+    ],
+    "2026-06": [
+     "31",
+     "32",
+     "33",
+     "34"
+    ]
+   },
+   "9708/4": {
+    "2023-03": [
+     "42"
+    ],
+    "2023-06": [
+     "41",
+     "42",
+     "43"
+    ],
+    "2023-11": [
+     "41",
+     "42",
+     "43"
+    ],
+    "2024-03": [
+     "42"
+    ],
+    "2024-06": [
+     "41",
+     "42",
+     "43"
+    ],
+    "2024-11": [
+     "41",
+     "42",
+     "43"
+    ],
+    "2025-03": [
+     "42"
+    ],
+    "2025-06": [
+     "41",
+     "42",
+     "43",
+     "44"
+    ],
+    "2025-11": [
+     "41",
+     "42",
+     "43",
+     "44"
+    ],
+    "2026-03": [
+     "42"
+    ],
+    "2026-06": [
+     "41",
+     "42",
+     "43",
+     "44"
+    ]
+   },
+   "basis": "cie9708.variants: February/March 32/42 only; May/June and October/November 31-33/41-43 to 2024 and 31-34/41-44 from June 2025. 2026-03 assumed 32/42 as in every F/M series; 2026-06: 34/44 confirmed (British Council China), 31-33/41-43 assumed as in May/June 2025."
+  }
+ },
+ "open_questions": [
   "Pearson site blocked: IAL maths redevelopment news, official /01A start, 2025-26 release status unverified",
   "CIE 2029 syllabus not read; 2026-2028 V1 change list not read",
   "9708 2023-2025 syllabus not read (no line diff)",
   "CIE variant table 2025-26 not read; M/J 2026 full variant set unverified (O/N 2025 31-34/41-44 now all read)",
   "COVID-series reasons from secondary notices (papers existence verified)"
- ]
+ ],
+ "gaps": {
+  "about": "Known, accepted gaps of the question registry at the snapshot, one record per unit, gap kind and reason. exam_index.py computes the gaps from expected_papers and the index; --gaps shows them for one unit and --completeness fails when a computed gap is missing here or a listed one has been filled. Kinds: paper (expected paper not indexed), ms / er (indexed paper whose mark scheme / examiner report is not held), ms-partial / er-partial (held for some of its questions only), qp-text (question paper only as extracted text), qp-drive-only / ms-drive-only / er-drive-only (held only as a Drive copy; no public copy located for at least one of its questions). Version research questions are in open_questions.",
+  "snapshot": "2026-10-06",
+  "reasons": {
+   "pearson_secure": "From October 2025 Pearson serves IAL question papers and mark schemes from its secure (centre-login) area (scraped Pearson URL index ShariarAlamDipto/grademax data/manifest, files under content/dam/secure/silver, gated: true; medium). No public mirror held them at the snapshot; examiner reports for these series were not found either.",
+   "not_reached": "Published by the board as far as known (Pearson files up to January 2025 are listed in the Grade-Boundaries/moon-papers index; later ones are assumed published as usual), but the official site and the common mirrors were blocked in the build sandbox and no public copy (examsolutions S3 mirror, GitHub) or Drive copy was found.",
+   "not_published": "No such document exists: Pearson published no Principal Examiner Feedback for June 2021 (exams not sat, teacher-assessed grades), and the unused January 2022 papers were never sat.",
+   "variant_er_unconfirmed": "Regional /01A and 2024-06 /01R papers: no separate examiner report has been seen for any variant paper; whether Pearson publishes one is unconfirmed.",
+   "cie_2026_not_reached": "February/March and May/June 2026 Cambridge papers are probably released (pastpapers.co pointers via WebSearch), but the hosts were blocked in the build sandbox and no Drive or GitHub copy of a whole paper was found (only three pages of the M/J 2026 9708/41 mark scheme, see cie-9708/syllabus-2029-changes.md, appendix). Expected variants for 2026 follow versions.json expected_papers.cie-9708.basis.",
+   "cie_er_not_reached": "Cambridge publishes one Principal Examiner Report per series; the 2024-03, 2024-11, 2025-06 and 2025-11 reports were not obtained (OpenPastPapers has no file for these series; the Drive files named 9708_s24_er / 9708_w24_er / 9708_s25_er are saved PapaCambridge HTML pages, not reports).",
+   "text_only": "Only the Edexcel-Finder per-page text (lower-cased; fractions, roots and diagrams lost) was reachable; no PDF of the question paper was found. Check numbers against a PDF before using the question.",
+   "partial": "Only part of the document was found (WME01 June 2019: per-question mark-scheme crops in ShariarAlamDipto/grademax cover Q1 and Q3-Q8; the Q2 page was not found). Questions without it have an empty ms.",
+   "drive_only": "The original was read from a Drive copy available when the registry was built; no public copy was located. With a Drive connector search the quoted title (the Drive id resolves only in the building account)."
+  },
+  "items": [
+   {
+    "unit": "9708/3",
+    "kind": "paper",
+    "reason": "cie_2026_not_reached",
+    "papers": [
+     "2026-03 9708/32",
+     "2026-06 9708/31",
+     "2026-06 9708/32",
+     "2026-06 9708/33",
+     "2026-06 9708/34"
+    ]
+   },
+   {
+    "unit": "9708/3",
+    "kind": "er",
+    "reason": "cie_er_not_reached",
+    "papers": [
+     "2024-03 9708/32",
+     "2024-11 9708/31",
+     "2024-11 9708/32",
+     "2024-11 9708/33",
+     "2025-06 9708/31",
+     "2025-06 9708/32",
+     "2025-06 9708/33",
+     "2025-06 9708/34",
+     "2025-11 9708/31",
+     "2025-11 9708/32",
+     "2025-11 9708/33",
+     "2025-11 9708/34"
+    ]
+   },
+   {
+    "unit": "9708/3",
+    "kind": "er-drive-only",
+    "reason": "drive_only",
+    "papers": [
+     "2024-06 9708/31",
+     "2024-06 9708/32",
+     "2024-06 9708/33"
+    ]
+   },
+   {
+    "unit": "9708/4",
+    "kind": "paper",
+    "reason": "cie_2026_not_reached",
+    "papers": [
+     "2026-03 9708/42",
+     "2026-06 9708/41",
+     "2026-06 9708/42",
+     "2026-06 9708/43",
+     "2026-06 9708/44"
+    ]
+   },
+   {
+    "unit": "9708/4",
+    "kind": "er",
+    "reason": "cie_er_not_reached",
+    "papers": [
+     "2024-03 9708/42",
+     "2024-11 9708/41",
+     "2024-11 9708/42",
+     "2024-11 9708/43",
+     "2025-06 9708/41",
+     "2025-06 9708/42",
+     "2025-06 9708/43",
+     "2025-06 9708/44",
+     "2025-11 9708/41",
+     "2025-11 9708/42",
+     "2025-11 9708/43",
+     "2025-11 9708/44"
+    ]
+   },
+   {
+    "unit": "9708/4",
+    "kind": "er-drive-only",
+    "reason": "drive_only",
+    "papers": [
+     "2024-06 9708/41",
+     "2024-06 9708/42",
+     "2024-06 9708/43"
+    ]
+   },
+   {
+    "unit": "WDM11",
+    "kind": "paper",
+    "reason": "pearson_secure",
+    "papers": [
+     "2026-01 WDM11/01",
+     "2026-01 WDM11/01A",
+     "2026-06 WDM11/01",
+     "2026-06 WDM11/01A"
+    ]
+   },
+   {
+    "unit": "WDM11",
+    "kind": "ms",
+    "reason": "not_reached",
+    "papers": [
+     "2019-06 WDM11/01",
+     "2020-01 WDM11/01",
+     "2020-10 WDM11/01",
+     "2021-01 WDM11/01",
+     "2021-06 WDM11/01",
+     "2021-10 WDM11/01",
+     "2022-01 WDM11/01",
+     "2022-06 WDM11/01"
+    ]
+   },
+   {
+    "unit": "WDM11",
+    "kind": "er",
+    "reason": "not_reached",
+    "papers": [
+     "2019-06 WDM11/01",
+     "2020-01 WDM11/01",
+     "2020-10 WDM11/01",
+     "2021-01 WDM11/01",
+     "2021-10 WDM11/01",
+     "2022-01 WDM11/01",
+     "2022-06 WDM11/01",
+     "2024-06 WDM11/01",
+     "2025-01 WDM11/01",
+     "2025-06 WDM11/01"
+    ]
+   },
+   {
+    "unit": "WDM11",
+    "kind": "qp-text",
+    "reason": "text_only",
+    "papers": [
+     "2019-06 WDM11/01",
+     "2020-01 WDM11/01",
+     "2020-10 WDM11/01",
+     "2021-01 WDM11/01",
+     "2021-06 WDM11/01",
+     "2021-10 WDM11/01",
+     "2022-01 WDM11/01",
+     "2022-06 WDM11/01"
+    ]
+   },
+   {
+    "unit": "WDM11",
+    "kind": "er",
+    "reason": "not_published",
+    "papers": [
+     "2021-06 WDM11/01"
+    ]
+   },
+   {
+    "unit": "WDM11",
+    "kind": "ms-drive-only",
+    "reason": "drive_only",
+    "papers": [
+     "2024-06 WDM11/01",
+     "2025-01 WDM11/01",
+     "2025-06 WDM11/01"
+    ]
+   },
+   {
+    "unit": "WDM11",
+    "kind": "qp-drive-only",
+    "reason": "drive_only",
+    "papers": [
+     "2025-06 WDM11/01"
+    ]
+   },
+   {
+    "unit": "WFM01",
+    "kind": "paper",
+    "reason": "pearson_secure",
+    "papers": [
+     "2026-01 WFM01/01",
+     "2026-01 WFM01/01A",
+     "2026-06 WFM01/01",
+     "2026-06 WFM01/01A"
+    ]
+   },
+   {
+    "unit": "WFM01",
+    "kind": "ms",
+    "reason": "not_reached",
+    "papers": [
+     "2019-06 WFM01/01",
+     "2020-01 WFM01/01"
+    ]
+   },
+   {
+    "unit": "WFM01",
+    "kind": "er",
+    "reason": "not_reached",
+    "papers": [
+     "2019-06 WFM01/01",
+     "2020-01 WFM01/01",
+     "2020-10 WFM01/01",
+     "2021-01 WFM01/01",
+     "2021-10 WFM01/01",
+     "2022-01 WFM01/01",
+     "2022-06 WFM01/01",
+     "2024-06 WFM01/01",
+     "2025-01 WFM01/01",
+     "2025-06 WFM01/01"
+    ]
+   },
+   {
+    "unit": "WFM01",
+    "kind": "qp-text",
+    "reason": "text_only",
+    "papers": [
+     "2019-06 WFM01/01",
+     "2020-01 WFM01/01"
+    ]
+   },
+   {
+    "unit": "WFM01",
+    "kind": "er",
+    "reason": "not_published",
+    "papers": [
+     "2021-06 WFM01/01"
+    ]
+   },
+   {
+    "unit": "WFM01",
+    "kind": "ms-drive-only",
+    "reason": "drive_only",
+    "papers": [
+     "2024-06 WFM01/01",
+     "2025-01 WFM01/01",
+     "2025-06 WFM01/01"
+    ]
+   },
+   {
+    "unit": "WFM01",
+    "kind": "qp-drive-only",
+    "reason": "drive_only",
+    "papers": [
+     "2025-06 WFM01/01"
+    ]
+   },
+   {
+    "unit": "WFM02",
+    "kind": "paper",
+    "reason": "pearson_secure",
+    "papers": [
+     "2026-01 WFM02/01",
+     "2026-01 WFM02/01A",
+     "2026-06 WFM02/01",
+     "2026-06 WFM02/01A"
+    ]
+   },
+   {
+    "unit": "WFM02",
+    "kind": "er",
+    "reason": "not_reached",
+    "papers": [
+     "2020-10 WFM02/01",
+     "2021-01 WFM02/01",
+     "2021-10 WFM02/01",
+     "2022-01 WFM02/01",
+     "2022-06 WFM02/01",
+     "2024-06 WFM02/01",
+     "2025-01 WFM02/01",
+     "2025-06 WFM02/01"
+    ]
+   },
+   {
+    "unit": "WFM02",
+    "kind": "er",
+    "reason": "not_published",
+    "papers": [
+     "2021-06 WFM02/01"
+    ]
+   },
+   {
+    "unit": "WFM02",
+    "kind": "ms-drive-only",
+    "reason": "drive_only",
+    "papers": [
+     "2024-06 WFM02/01",
+     "2025-01 WFM02/01",
+     "2025-06 WFM02/01",
+     "2025-06 WFM02/01A"
+    ]
+   },
+   {
+    "unit": "WFM02",
+    "kind": "qp-drive-only",
+    "reason": "drive_only",
+    "papers": [
+     "2025-06 WFM02/01",
+     "2025-06 WFM02/01A"
+    ]
+   },
+   {
+    "unit": "WFM02",
+    "kind": "er",
+    "reason": "variant_er_unconfirmed",
+    "papers": [
+     "2025-06 WFM02/01A"
+    ]
+   },
+   {
+    "unit": "WFM03",
+    "kind": "paper",
+    "reason": "pearson_secure",
+    "papers": [
+     "2026-01 WFM03/01",
+     "2026-01 WFM03/01A",
+     "2026-06 WFM03/01",
+     "2026-06 WFM03/01A"
+    ]
+   },
+   {
+    "unit": "WFM03",
+    "kind": "er",
+    "reason": "not_reached",
+    "papers": [
+     "2020-10 WFM03/01",
+     "2021-01 WFM03/01",
+     "2021-10 WFM03/01",
+     "2022-01 WFM03/01",
+     "2022-06 WFM03/01",
+     "2024-06 WFM03/01",
+     "2025-01 WFM03/01",
+     "2025-06 WFM03/01"
+    ]
+   },
+   {
+    "unit": "WFM03",
+    "kind": "er",
+    "reason": "not_published",
+    "papers": [
+     "2021-06 WFM03/01"
+    ]
+   },
+   {
+    "unit": "WFM03",
+    "kind": "ms-drive-only",
+    "reason": "drive_only",
+    "papers": [
+     "2024-06 WFM03/01",
+     "2025-01 WFM03/01",
+     "2025-06 WFM03/01"
+    ]
+   },
+   {
+    "unit": "WFM03",
+    "kind": "qp-drive-only",
+    "reason": "drive_only",
+    "papers": [
+     "2025-06 WFM03/01"
+    ]
+   },
+   {
+    "unit": "WMA11",
+    "kind": "paper",
+    "reason": "pearson_secure",
+    "papers": [
+     "2025-10 WMA11/01A",
+     "2026-01 WMA11/01A",
+     "2026-06 WMA11/01A"
+    ]
+   },
+   {
+    "unit": "WMA11",
+    "kind": "er",
+    "reason": "not_reached",
+    "papers": [
+     "2019-01 WMA11/01",
+     "2019-06 WMA11/01",
+     "2019-10 WMA11/01",
+     "2020-01 WMA11/01",
+     "2020-10 WMA11/01",
+     "2021-01 WMA11/01",
+     "2021-10 WMA11/01",
+     "2022-01 WMA11/01",
+     "2022-06 WMA11/01",
+     "2024-06 WMA11/01",
+     "2024-10 WMA11/01",
+     "2025-01 WMA11/01",
+     "2025-06 WMA11/01"
+    ]
+   },
+   {
+    "unit": "WMA11",
+    "kind": "qp-drive-only",
+    "reason": "drive_only",
+    "papers": [
+     "2020-10 WMA11/01",
+     "2024-06 WMA11/01",
+     "2024-06 WMA11/01R",
+     "2024-10 WMA11/01",
+     "2025-01 WMA11/01",
+     "2025-06 WMA11/01",
+     "2025-06 WMA11/01A",
+     "2025-10 WMA11/01"
+    ]
+   },
+   {
+    "unit": "WMA11",
+    "kind": "er",
+    "reason": "not_published",
+    "papers": [
+     "2021-06 WMA11/01"
+    ]
+   },
+   {
+    "unit": "WMA11",
+    "kind": "ms-drive-only",
+    "reason": "drive_only",
+    "papers": [
+     "2024-06 WMA11/01",
+     "2024-06 WMA11/01R",
+     "2024-10 WMA11/01",
+     "2025-01 WMA11/01",
+     "2025-06 WMA11/01",
+     "2025-06 WMA11/01A",
+     "2025-10 WMA11/01"
+    ]
+   },
+   {
+    "unit": "WMA11",
+    "kind": "er",
+    "reason": "variant_er_unconfirmed",
+    "papers": [
+     "2024-06 WMA11/01R",
+     "2025-06 WMA11/01A"
+    ]
+   },
+   {
+    "unit": "WMA11",
+    "kind": "er",
+    "reason": "pearson_secure",
+    "papers": [
+     "2025-10 WMA11/01",
+     "2026-01 WMA11/01",
+     "2026-06 WMA11/01"
+    ]
+   },
+   {
+    "unit": "WMA11",
+    "kind": "ms",
+    "reason": "pearson_secure",
+    "papers": [
+     "2026-01 WMA11/01",
+     "2026-06 WMA11/01"
+    ]
+   },
+   {
+    "unit": "WMA12",
+    "kind": "paper",
+    "reason": "pearson_secure",
+    "papers": [
+     "2025-10 WMA12/01A",
+     "2026-01 WMA12/01A",
+     "2026-06 WMA12/01",
+     "2026-06 WMA12/01A"
+    ]
+   },
+   {
+    "unit": "WMA12",
+    "kind": "er",
+    "reason": "not_reached",
+    "papers": [
+     "2019-06 WMA12/01",
+     "2019-10 WMA12/01",
+     "2020-01 WMA12/01",
+     "2020-10 WMA12/01",
+     "2021-01 WMA12/01",
+     "2021-10 WMA12/01",
+     "2022-01 WMA12/01",
+     "2022-06 WMA12/01",
+     "2024-06 WMA12/01",
+     "2024-10 WMA12/01",
+     "2025-01 WMA12/01",
+     "2025-06 WMA12/01"
+    ]
+   },
+   {
+    "unit": "WMA12",
+    "kind": "qp-drive-only",
+    "reason": "drive_only",
+    "papers": [
+     "2019-06 WMA12/01",
+     "2024-06 WMA12/01",
+     "2024-06 WMA12/01R",
+     "2024-10 WMA12/01",
+     "2025-01 WMA12/01",
+     "2025-06 WMA12/01",
+     "2025-06 WMA12/01A",
+     "2025-10 WMA12/01"
+    ]
+   },
+   {
+    "unit": "WMA12",
+    "kind": "er",
+    "reason": "not_published",
+    "papers": [
+     "2021-06 WMA12/01"
+    ]
+   },
+   {
+    "unit": "WMA12",
+    "kind": "ms-drive-only",
+    "reason": "drive_only",
+    "papers": [
+     "2024-06 WMA12/01",
+     "2024-06 WMA12/01R",
+     "2024-10 WMA12/01",
+     "2025-01 WMA12/01",
+     "2025-06 WMA12/01",
+     "2025-06 WMA12/01A",
+     "2025-10 WMA12/01"
+    ]
+   },
+   {
+    "unit": "WMA12",
+    "kind": "er",
+    "reason": "variant_er_unconfirmed",
+    "papers": [
+     "2024-06 WMA12/01R",
+     "2025-06 WMA12/01A"
+    ]
+   },
+   {
+    "unit": "WMA12",
+    "kind": "er",
+    "reason": "pearson_secure",
+    "papers": [
+     "2025-10 WMA12/01",
+     "2026-01 WMA12/01"
+    ]
+   },
+   {
+    "unit": "WMA12",
+    "kind": "ms",
+    "reason": "pearson_secure",
+    "papers": [
+     "2026-01 WMA12/01"
+    ]
+   },
+   {
+    "unit": "WMA13",
+    "kind": "paper",
+    "reason": "pearson_secure",
+    "papers": [
+     "2026-01 WMA13/01",
+     "2026-01 WMA13/01A",
+     "2026-06 WMA13/01",
+     "2026-06 WMA13/01A"
+    ]
+   },
+   {
+    "unit": "WMA13",
+    "kind": "er",
+    "reason": "not_reached",
+    "papers": [
+     "2020-01 WMA13/01",
+     "2020-10 WMA13/01",
+     "2021-01 WMA13/01",
+     "2021-10 WMA13/01",
+     "2022-01 WMA13/01",
+     "2022-06 WMA13/01",
+     "2024-06 WMA13/01",
+     "2024-10 WMA13/01",
+     "2025-01 WMA13/01",
+     "2025-06 WMA13/01"
+    ]
+   },
+   {
+    "unit": "WMA13",
+    "kind": "er",
+    "reason": "not_published",
+    "papers": [
+     "2021-06 WMA13/01"
+    ]
+   },
+   {
+    "unit": "WMA13",
+    "kind": "qp-drive-only",
+    "reason": "drive_only",
+    "papers": [
+     "2022-01 WMA13/01",
+     "2022-06 WMA13/01",
+     "2024-06 WMA13/01",
+     "2024-10 WMA13/01",
+     "2025-01 WMA13/01",
+     "2025-06 WMA13/01",
+     "2025-06 WMA13/01A",
+     "2025-10 WMA13/01",
+     "2025-10 WMA13/01A"
+    ]
+   },
+   {
+    "unit": "WMA13",
+    "kind": "ms-drive-only",
+    "reason": "drive_only",
+    "papers": [
+     "2022-01 WMA13/01",
+     "2022-06 WMA13/01",
+     "2024-06 WMA13/01",
+     "2024-10 WMA13/01",
+     "2025-01 WMA13/01",
+     "2025-06 WMA13/01",
+     "2025-06 WMA13/01A",
+     "2025-10 WMA13/01",
+     "2025-10 WMA13/01A"
+    ]
+   },
+   {
+    "unit": "WMA13",
+    "kind": "er",
+    "reason": "variant_er_unconfirmed",
+    "papers": [
+     "2025-06 WMA13/01A",
+     "2025-10 WMA13/01A"
+    ]
+   },
+   {
+    "unit": "WMA13",
+    "kind": "er",
+    "reason": "pearson_secure",
+    "papers": [
+     "2025-10 WMA13/01"
+    ]
+   },
+   {
+    "unit": "WMA14",
+    "kind": "paper",
+    "reason": "pearson_secure",
+    "papers": [
+     "2025-10 WMA14/01A",
+     "2026-06 WMA14/01"
+    ]
+   },
+   {
+    "unit": "WMA14",
+    "kind": "er",
+    "reason": "not_reached",
+    "papers": [
+     "2020-10 WMA14/01",
+     "2021-01 WMA14/01",
+     "2021-10 WMA14/01",
+     "2022-01 WMA14/01",
+     "2022-06 WMA14/01",
+     "2024-06 WMA14/01",
+     "2024-10 WMA14/01",
+     "2025-01 WMA14/01",
+     "2025-06 WMA14/01"
+    ]
+   },
+   {
+    "unit": "WMA14",
+    "kind": "er",
+    "reason": "not_published",
+    "papers": [
+     "2021-06 WMA14/01",
+     "2022-01 WMA14/01 (unused January 2022 paper, never sat)"
+    ]
+   },
+   {
+    "unit": "WMA14",
+    "kind": "qp-drive-only",
+    "reason": "drive_only",
+    "papers": [
+     "2024-06 WMA14/01",
+     "2024-10 WMA14/01",
+     "2025-01 WMA14/01",
+     "2025-06 WMA14/01",
+     "2025-06 WMA14/01A",
+     "2025-10 WMA14/01",
+     "2026-01 WMA14/01",
+     "2026-01 WMA14/01A",
+     "2026-06 WMA14/01A"
+    ]
+   },
+   {
+    "unit": "WMA14",
+    "kind": "ms-drive-only",
+    "reason": "drive_only",
+    "papers": [
+     "2024-06 WMA14/01",
+     "2024-10 WMA14/01",
+     "2025-01 WMA14/01",
+     "2025-06 WMA14/01",
+     "2025-06 WMA14/01A",
+     "2025-10 WMA14/01"
+    ]
+   },
+   {
+    "unit": "WMA14",
+    "kind": "er",
+    "reason": "variant_er_unconfirmed",
+    "papers": [
+     "2025-06 WMA14/01A",
+     "2026-01 WMA14/01A",
+     "2026-06 WMA14/01A"
+    ]
+   },
+   {
+    "unit": "WMA14",
+    "kind": "er",
+    "reason": "pearson_secure",
+    "papers": [
+     "2025-10 WMA14/01",
+     "2026-01 WMA14/01"
+    ]
+   },
+   {
+    "unit": "WMA14",
+    "kind": "ms",
+    "reason": "pearson_secure",
+    "papers": [
+     "2026-01 WMA14/01",
+     "2026-01 WMA14/01A",
+     "2026-06 WMA14/01A"
+    ]
+   },
+   {
+    "unit": "WME01",
+    "kind": "paper",
+    "reason": "pearson_secure",
+    "papers": [
+     "2026-01 WME01/01A",
+     "2026-06 WME01/01",
+     "2026-06 WME01/01A"
+    ]
+   },
+   {
+    "unit": "WME01",
+    "kind": "ms-partial",
+    "reason": "partial",
+    "papers": [
+     "2019-06 WME01/01"
+    ]
+   },
+   {
+    "unit": "WME01",
+    "kind": "er",
+    "reason": "not_reached",
+    "papers": [
+     "2019-06 WME01/01",
+     "2019-10 WME01/01",
+     "2020-01 WME01/01",
+     "2020-10 WME01/01",
+     "2021-01 WME01/01",
+     "2021-10 WME01/01",
+     "2022-01 WME01/01",
+     "2022-06 WME01/01",
+     "2024-06 WME01/01",
+     "2024-10 WME01/01",
+     "2025-01 WME01/01",
+     "2025-06 WME01/01"
+    ]
+   },
+   {
+    "unit": "WME01",
+    "kind": "qp-text",
+    "reason": "text_only",
+    "papers": [
+     "2019-06 WME01/01"
+    ]
+   },
+   {
+    "unit": "WME01",
+    "kind": "ms",
+    "reason": "not_reached",
+    "papers": [
+     "2019-10 WME01/01"
+    ]
+   },
+   {
+    "unit": "WME01",
+    "kind": "er",
+    "reason": "not_published",
+    "papers": [
+     "2021-06 WME01/01"
+    ]
+   },
+   {
+    "unit": "WME01",
+    "kind": "ms-drive-only",
+    "reason": "drive_only",
+    "papers": [
+     "2024-06 WME01/01",
+     "2024-10 WME01/01",
+     "2025-01 WME01/01",
+     "2025-06 WME01/01",
+     "2025-10 WME01/01",
+     "2025-10 WME01/01A"
+    ]
+   },
+   {
+    "unit": "WME01",
+    "kind": "qp-drive-only",
+    "reason": "drive_only",
+    "papers": [
+     "2025-06 WME01/01",
+     "2025-10 WME01/01",
+     "2025-10 WME01/01A"
+    ]
+   },
+   {
+    "unit": "WME01",
+    "kind": "er",
+    "reason": "pearson_secure",
+    "papers": [
+     "2025-10 WME01/01",
+     "2026-01 WME01/01"
+    ]
+   },
+   {
+    "unit": "WME01",
+    "kind": "er",
+    "reason": "variant_er_unconfirmed",
+    "papers": [
+     "2025-10 WME01/01A"
+    ]
+   },
+   {
+    "unit": "WME01",
+    "kind": "ms",
+    "reason": "pearson_secure",
+    "papers": [
+     "2026-01 WME01/01"
+    ]
+   },
+   {
+    "unit": "WME02",
+    "kind": "paper",
+    "reason": "pearson_secure",
+    "papers": [
+     "2025-10 WME02/01A",
+     "2026-01 WME02/01",
+     "2026-01 WME02/01A",
+     "2026-06 WME02/01",
+     "2026-06 WME02/01A"
+    ]
+   },
+   {
+    "unit": "WME02",
+    "kind": "er",
+    "reason": "not_reached",
+    "papers": [
+     "2020-10 WME02/01",
+     "2021-01 WME02/01",
+     "2021-10 WME02/01",
+     "2022-01 WME02/01",
+     "2022-06 WME02/01",
+     "2024-06 WME02/01",
+     "2024-10 WME02/01",
+     "2025-01 WME02/01",
+     "2025-06 WME02/01"
+    ]
+   },
+   {
+    "unit": "WME02",
+    "kind": "er",
+    "reason": "not_published",
+    "papers": [
+     "2021-06 WME02/01"
+    ]
+   },
+   {
+    "unit": "WME02",
+    "kind": "ms-drive-only",
+    "reason": "drive_only",
+    "papers": [
+     "2024-06 WME02/01",
+     "2024-10 WME02/01",
+     "2025-01 WME02/01",
+     "2025-06 WME02/01",
+     "2025-06 WME02/01A",
+     "2025-10 WME02/01"
+    ]
+   },
+   {
+    "unit": "WME02",
+    "kind": "qp-drive-only",
+    "reason": "drive_only",
+    "papers": [
+     "2025-06 WME02/01",
+     "2025-06 WME02/01A",
+     "2025-10 WME02/01"
+    ]
+   },
+   {
+    "unit": "WME02",
+    "kind": "er",
+    "reason": "variant_er_unconfirmed",
+    "papers": [
+     "2025-06 WME02/01A"
+    ]
+   },
+   {
+    "unit": "WME02",
+    "kind": "er",
+    "reason": "pearson_secure",
+    "papers": [
+     "2025-10 WME02/01"
+    ]
+   },
+   {
+    "unit": "WME03",
+    "kind": "paper",
+    "reason": "pearson_secure",
+    "papers": [
+     "2026-01 WME03/01",
+     "2026-01 WME03/01A",
+     "2026-06 WME03/01",
+     "2026-06 WME03/01A"
+    ]
+   },
+   {
+    "unit": "WME03",
+    "kind": "er",
+    "reason": "not_reached",
+    "papers": [
+     "2020-10 WME03/01",
+     "2021-01 WME03/01",
+     "2021-10 WME03/01",
+     "2022-01 WME03/01",
+     "2022-06 WME03/01",
+     "2024-06 WME03/01",
+     "2025-01 WME03/01",
+     "2025-06 WME03/01"
+    ]
+   },
+   {
+    "unit": "WME03",
+    "kind": "er",
+    "reason": "not_published",
+    "papers": [
+     "2021-06 WME03/01",
+     "2022-01 WME03/01 (unused January 2022 paper, never sat)"
+    ]
+   },
+   {
+    "unit": "WME03",
+    "kind": "ms-drive-only",
+    "reason": "drive_only",
+    "papers": [
+     "2024-06 WME03/01",
+     "2025-01 WME03/01",
+     "2025-06 WME03/01"
+    ]
+   },
+   {
+    "unit": "WME03",
+    "kind": "qp-drive-only",
+    "reason": "drive_only",
+    "papers": [
+     "2025-06 WME03/01"
+    ]
+   },
+   {
+    "unit": "WST01",
+    "kind": "paper",
+    "reason": "pearson_secure",
+    "papers": [
+     "2026-06 WST01/01",
+     "2026-06 WST01/01A"
+    ]
+   },
+   {
+    "unit": "WST01",
+    "kind": "er",
+    "reason": "not_reached",
+    "papers": [
+     "2019-06 WST01/01",
+     "2019-10 WST01/01",
+     "2020-01 WST01/01",
+     "2020-10 WST01/01",
+     "2021-01 WST01/01",
+     "2021-10 WST01/01",
+     "2022-01 WST01/01",
+     "2022-06 WST01/01",
+     "2024-06 WST01/01",
+     "2024-10 WST01/01",
+     "2025-01 WST01/01",
+     "2025-06 WST01/01"
+    ]
+   },
+   {
+    "unit": "WST01",
+    "kind": "ms",
+    "reason": "not_reached",
+    "papers": [
+     "2019-10 WST01/01",
+     "2020-01 WST01/01"
+    ]
+   },
+   {
+    "unit": "WST01",
+    "kind": "qp-text",
+    "reason": "text_only",
+    "papers": [
+     "2019-10 WST01/01",
+     "2020-01 WST01/01"
+    ]
+   },
+   {
+    "unit": "WST01",
+    "kind": "er",
+    "reason": "not_published",
+    "papers": [
+     "2021-06 WST01/01"
+    ]
+   },
+   {
+    "unit": "WST01",
+    "kind": "ms-drive-only",
+    "reason": "drive_only",
+    "papers": [
+     "2024-06 WST01/01",
+     "2024-10 WST01/01",
+     "2025-01 WST01/01",
+     "2025-06 WST01/01",
+     "2025-10 WST01/01",
+     "2025-10 WST01/01A",
+     "2026-01 WST01/01",
+     "2026-01 WST01/01A"
+    ]
+   },
+   {
+    "unit": "WST01",
+    "kind": "qp-drive-only",
+    "reason": "drive_only",
+    "papers": [
+     "2025-06 WST01/01",
+     "2025-10 WST01/01",
+     "2025-10 WST01/01A",
+     "2026-01 WST01/01",
+     "2026-01 WST01/01A"
+    ]
+   },
+   {
+    "unit": "WST01",
+    "kind": "er",
+    "reason": "pearson_secure",
+    "papers": [
+     "2025-10 WST01/01",
+     "2026-01 WST01/01"
+    ]
+   },
+   {
+    "unit": "WST01",
+    "kind": "er",
+    "reason": "variant_er_unconfirmed",
+    "papers": [
+     "2025-10 WST01/01A",
+     "2026-01 WST01/01A"
+    ]
+   },
+   {
+    "unit": "WST02",
+    "kind": "paper",
+    "reason": "pearson_secure",
+    "papers": [
+     "2025-10 WST02/01A",
+     "2026-01 WST02/01",
+     "2026-01 WST02/01A",
+     "2026-06 WST02/01",
+     "2026-06 WST02/01A"
+    ]
+   },
+   {
+    "unit": "WST02",
+    "kind": "er",
+    "reason": "not_reached",
+    "papers": [
+     "2020-10 WST02/01",
+     "2021-01 WST02/01",
+     "2021-10 WST02/01",
+     "2022-01 WST02/01",
+     "2022-06 WST02/01",
+     "2024-06 WST02/01",
+     "2024-10 WST02/01",
+     "2025-01 WST02/01",
+     "2025-06 WST02/01"
+    ]
+   },
+   {
+    "unit": "WST02",
+    "kind": "er",
+    "reason": "not_published",
+    "papers": [
+     "2021-06 WST02/01"
+    ]
+   },
+   {
+    "unit": "WST02",
+    "kind": "ms-drive-only",
+    "reason": "drive_only",
+    "papers": [
+     "2024-06 WST02/01",
+     "2024-10 WST02/01",
+     "2025-01 WST02/01",
+     "2025-06 WST02/01",
+     "2025-10 WST02/01"
+    ]
+   },
+   {
+    "unit": "WST02",
+    "kind": "qp-drive-only",
+    "reason": "drive_only",
+    "papers": [
+     "2025-06 WST02/01",
+     "2025-10 WST02/01"
+    ]
+   },
+   {
+    "unit": "WST02",
+    "kind": "er",
+    "reason": "pearson_secure",
+    "papers": [
+     "2025-10 WST02/01"
+    ]
+   },
+   {
+    "unit": "WST03",
+    "kind": "paper",
+    "reason": "pearson_secure",
+    "papers": [
+     "2026-01 WST03/01",
+     "2026-01 WST03/01A",
+     "2026-06 WST03/01",
+     "2026-06 WST03/01A"
+    ]
+   },
+   {
+    "unit": "WST03",
+    "kind": "er",
+    "reason": "not_reached",
+    "papers": [
+     "2020-10 WST03/01",
+     "2021-01 WST03/01",
+     "2021-10 WST03/01",
+     "2022-01 WST03/01",
+     "2022-06 WST03/01",
+     "2024-06 WST03/01",
+     "2025-01 WST03/01",
+     "2025-06 WST03/01"
+    ]
+   },
+   {
+    "unit": "WST03",
+    "kind": "er",
+    "reason": "not_published",
+    "papers": [
+     "2021-06 WST03/01",
+     "2022-01 WST03/01 (unused January 2022 paper, never sat)"
+    ]
+   },
+   {
+    "unit": "WST03",
+    "kind": "ms-drive-only",
+    "reason": "drive_only",
+    "papers": [
+     "2024-06 WST03/01",
+     "2025-01 WST03/01",
+     "2025-06 WST03/01"
+    ]
+   },
+   {
+    "unit": "WST03",
+    "kind": "qp-drive-only",
+    "reason": "drive_only",
+    "papers": [
+     "2025-06 WST03/01"
+    ]
+   }
+  ]
+ }
 }

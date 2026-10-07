@@ -97,7 +97,11 @@
 
 ## 易错卡（pitfall）
 
-来源：老师批注、ER、MS 的 SC 与 B0 说明、用户自己卷面的逐分记录。每条写错误写法、正确写法、为什么、丢哪一分、来源，并用 `source_type` 标来源种类（`er` 考官报告、`ms` 评分方案、`ecr` 真实考生答卷的考官评语（Cambridge Example Candidate Responses、Pearson exemplar）、`specimen` 考试局撰写的示范答案（不是真实考生）、`teacher` 老师批注、`user-script` 你的卷面、`textbook` 教材、`author` 归纳）；卡面印出种类标签，老师批注不冒称考官报告。一张易错卡聚焦一个方法或一道题的错误群，不做成全书错误大全。
+来源：老师批注、ER、MS 的 SC 与 B0 说明、本卷批改的逐分记录。每条写错误写法、正确写法、为什么、丢哪一分、来源，并用 `source_type` 标来源种类（`er` 考官报告、`ms` 评分方案、`ecr` 真实考生答卷的考官评语（Cambridge Example Candidate Responses、Pearson exemplar）、`specimen` 考试局撰写的示范答案（不是真实考生）、`teacher` 老师批注、`user-script` 本卷批改记录（只记题号、分点、得失，不写姓名和总分）、`textbook` 教材、`author` 归纳）；卡面印出种类标签，老师批注不冒称考官报告。一张易错卡聚焦一个方法或一道题的错误群，不做成全书错误大全。
+
+## 案例卡（case）
+
+一个真实案例（某国的碳税、某城市的拥堵收费、某题材料里的政策）怎样对应到考纲理论：先一句话交代案例事实（出处写进 `sources`），再用 chain 或 map 把“案例里的事实 → 理论里的哪个变量 → 结论与评价条件”连起来，或用 sections 写成 essay 可直接调用的一段。案例卡不替代理论卡：它链接（`links`）到讲理论的因果链卡或导图卡，卡面上的数字与年份要有出处。生成器要求案例卡至少有一个 chain、map 或 sections 块。
 
 ## 全景卡（overview）
 

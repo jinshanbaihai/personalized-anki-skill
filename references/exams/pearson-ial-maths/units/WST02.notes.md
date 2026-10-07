@@ -40,7 +40,7 @@
 
 | 考季 | QP（P 号） | MS | 与 4.1–4.2 相关的题 | 取得途径 |
 |---|---|---|---|---|
-| Oct 2025 | P78847A p.2、p.8 | pp.6、9 | Q1 frame/unit/优缺点；Q3 Explain sampling distribution、list、反求 p、mode | 用户 Drive |
+| Oct 2025 | P78847A p.2、p.8 | pp.6、9 | Q1 frame/unit/优缺点；Q3 Explain sampling distribution、list、反求 p、mode | Drive |
 | Jun 2025 | P79509A p.14 | p.9 | Q4 总分分布 + P(Y ⩾ 1) > 0.95 | Drive |
 | Jan 2025 | P76200A p.6 | pp.5、8–9 | Q2 μ/x̄ 是否 statistic；两次独立观测；不放回有序 | Drive |
 | Oct 2024 | P78915A p.20 | p.11 | Q6 两总体 total 与 median | Drive（MS 文件名 24_10_MS_S2） |
@@ -52,7 +52,7 @@
 | Oct 2022 | P72155A p.20 | p.13 | Q6 range、含 a 的方程 | 镜像 |
 | SAM 2018 | S59768A p.10 | pp.505–506 | Q3 Explain statistic / sampling distribution；列举样本；mean 分布 | 官方 SAMs（Edexcel-Finder 仓库副本） |
 
-Oct 2020–Jun 2022 只取得题干文本（Edexcel-Finder JSON，指向官方 QP/MS 链接）：Oct 2020 Q6、Jan 2021 Q6、Jun 2021 Q4、Oct 2021 Q5、Jan 2022 Q6、Jun 2022 Q7。Jan 2026、Jun 2026 未取得。
+上表“取得途径”里的 Drive 指构建登记时可得的 Drive 原件，公开副本见 `WST02.questions.json` 各条的 `sources`。Oct 2020–Jun 2022 与本主题相关的题：Oct 2020 Q6、Jan 2021 Q6、Jun 2021 Q4、Oct 2021 Q5、Jan 2022 Q6、Jun 2022 Q7（这几季的 QP 与 MS 现已作为 PDF 收录）。缺口以 `python scripts/exam_index.py WST02 --gaps` 输出为准（快照 2026-10-06）。
 
 ### 考官报告（Principal Examiner Feedback）
 
@@ -64,7 +64,7 @@ Oct 2020–Jun 2022 只取得题干文本（Edexcel-Finder JSON，指向官方 Q
 | Jan 2023 | wst02-01-pef-20230302.pdf | p.3 | 树状图代替 list；漏乘系数 3；mode 求成 median；概率不和为 1 |
 | Oct 2022 | wst02-01-pef-20230112.pdf | p.5 | 两种顺序；R = 0 漏掉；show that 少一行 |
 
-镜像：`https://examsolutions.s3.eu-west-2.amazonaws.com/exam+papers/maths/IAL/<文件名>`，2026-10-06 实测可取 Oct 2022 – Jan 2024 的 PEF 与部分 QP/MS；2024-06 之后与 2022-06 之前的 PEF、MS 返回 403。官方文件名规则：`wst02-01-que-YYYYMMDD.pdf`、`wst02-01-rms-YYYYMMDD.pdf`、`wst02-01-pef-YYYYMMDD.pdf`（2021 年前为 `WST02_01_que_…`、`WST02_01_msc_…`）。qualifications.pearson.com 在本环境被拦截。
+镜像：`https://examsolutions.s3.eu-west-2.amazonaws.com/exam+papers/maths/IAL/<文件名>`，2026-10-06 实测可取 Oct 2022 – Jan 2024 的 PEF 与部分 QP/MS；2024-06 之后与 2022-06 之前的 PEF、MS 按官方文件名试取返回 403。官方文件名规则：`wst02-01-que-YYYYMMDD.pdf`、`wst02-01-rms-YYYYMMDD.pdf`、`wst02-01-pef-YYYYMMDD.pdf`（2021 年前为 `WST02_01_que_…`、`WST02_01_msc_…`）。qualifications.pearson.com 在构建登记的沙箱中被拦截。
 
 真实考生作答：未见 Pearson 为 IAL S2 发布带评语的 exemplar responses；以 PEF 的转述为准。
 
@@ -125,7 +125,8 @@ population、census、sample、sampling unit 的完整定义句：本单元 MS �
 
 ## 未取得与待补
 
-- Jan 2026、Jun 2026 的 QP/MS/PEF；Jun 2024、Oct 2024、Jan 2025、Jun 2025、Oct 2025 的 PEF；Oct 2020 – Jun 2022 的 MS。
-- 任何一季 WST02/01A 原卷。
+缺口以 `python scripts/exam_index.py WST02 --gaps` 输出为准（快照 2026-10-06）。
+
+登记之外仍待补：
 - Pearson IAL Statistics 2 Student Book 原文（定义句与章节号）。
-- 规范是否有 Issue 3 之后的新版（官方站点被拦，本地副本 PDF 修改日期 2025-04-07，正文仍为 Issue 3）。
+- 规范是否有 Issue 3 之后的新版（官方站点在构建沙箱中被拦；构建时所读规范 PDF 的修改日期为 2025-04-07，正文仍为 Issue 3）。

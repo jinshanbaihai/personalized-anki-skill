@@ -11,14 +11,19 @@ covers, so a board point can be cited as "p2 slice 3, rows 1800–2600" and noth
 between slices is skipped.
 
 Input quality gate: chat apps often recompress a long board to a few hundred pixels wide.
-Each raster page gets a legibility verdict from its width. Below about 800 px wide, small
+Each raster page gets a legibility verdict from its width; for a PDF, from the width of the largest
+image embedded in each page (a scanned or exported board is an image inside the PDF, and rendering it
+at a high dpi does not add detail). Pure vector pages pass. Below about 800 px wide, small
 handwriting is no longer reliably readable: mark the affected board points legibility "low", confirm
 their content from official sources (confirmed_by), never fill in guessed words, and ask
 the user for the original export in the delivery note.
 """
 import argparse
 import json
+import re
+import shutil
 import subprocess
+import sys
 import tempfile
 from pathlib import Path
 
@@ -45,15 +50,74 @@ def slices_for(image, target_width=1200, aspect=1.25, overlap=0.15):
 MIN_WIDTH = 800
 
 
-def legibility(image, rendered_pdf=False):
+def legibility(image, embedded_width=None, pdf=False):
     """Width-based gate. Line-height estimates proved unreliable across white, green and dark boards,
     so the verdict uses the one robust signal: a full-width board line holds 20–40 handwritten characters,
-    and below ~800 px that leaves fewer than ~20 px per character."""
-    if rendered_pdf:
-        return {'width': image.width, 'verdict': 'ok', 'why': 'PDF page rendered at the requested dpi'}
-    low = image.width < MIN_WIDTH
-    why = f'width {image.width}px < {MIN_WIDTH}px: probably recompressed by a chat app' if low else ''
-    return {'width': image.width, 'verdict': 'low' if low else 'ok', 'why': why}
+    and below ~800 px that leaves fewer than ~20 px per character. For a PDF page the source pixels are
+    those of its largest embedded image, not the rendered page."""
+    if pdf and embedded_width is None:
+        return {'width': image.width, 'verdict': 'ok', 'why': 'vector PDF page (no large embedded image)'}
+    width = embedded_width if pdf else image.width
+    low = width < MIN_WIDTH
+    source = 'embedded image (effective)' if pdf else 'image'
+    why = f'{source} width {width}px < {MIN_WIDTH}px: probably recompressed by a chat app or a low-resolution scan' if low else ''
+    return {'width': width, 'verdict': 'low' if low else 'ok', 'why': why}
+
+
+INSTALL_POPPLER = ('  macOS: brew install poppler    Linux: sudo apt install poppler-utils    '
+                   'Windows: install a Poppler build and add its bin folder to PATH, or  pip install pymupdf\n'
+                   '  Without either, read the PDF pages directly by eye and say so in the delivery note.')
+
+
+SIGNIFICANT = 0.15  # an image covering less of the page (a logo, an icon) says nothing about the board's legibility
+
+
+def page_sizes(path):
+    """{page: (width_in, height_in)} from pdfinfo."""
+    out = subprocess.run(['pdfinfo', '-f', '1', '-l', '100000', str(path)], capture_output=True, text=True, encoding='utf-8', errors='replace').stdout
+    return {int(m.group(1)): (float(m.group(2)) / 72, float(m.group(3)) / 72)
+            for m in re.finditer(r'Page\s+(\d+) size:\s*([\d.]+) x ([\d.]+) pts', out)}
+
+
+def embedded_widths(path):
+    """{page: effective pixels across the page width} for pages whose content is a raster (a scan, an exported board).
+    The effective width is the image's resolution (ppi) times the page width, so a board split into tiles counts as
+    one board and a small logo on a typed handout is ignored. Pages that are vector only are absent (legible).
+    pdfimages/pdfinfo (poppler) first, PyMuPDF when poppler is missing; None when neither is installed."""
+    if shutil.which('pdfimages') and shutil.which('pdfinfo'):
+        sizes = page_sizes(path)
+        out = subprocess.run(['pdfimages', '-list', str(path)], capture_output=True, text=True, encoding='utf-8', errors='replace').stdout
+        widths = {}
+        for line in out.splitlines()[2:]:
+            cols = line.split()
+            if len(cols) < 14 or not cols[0].isdigit() or cols[2] not in ('image', 'stencil'):
+                continue
+            page, w, h = int(cols[0]), int(cols[3]), int(cols[4])
+            try:
+                xppi, yppi = float(cols[12]), float(cols[13])
+            except ValueError:
+                continue
+            pw, ph = sizes.get(page, (8.27, 11.69))
+            if not (xppi and yppi) or (w / xppi) * (h / yppi) < SIGNIFICANT * pw * ph:
+                continue
+            effective = round(xppi * pw)
+            widths[page] = min(widths.get(page, effective), effective)
+        return widths
+    try:
+        import fitz  # PyMuPDF
+    except ImportError:
+        return None
+    widths = {}
+    with fitz.open(str(path)) as doc:
+        for i, page in enumerate(doc, 1):
+            area = page.rect.width * page.rect.height
+            for info in page.get_image_info():
+                box = fitz.Rect(info['bbox'])
+                if box.width <= 0 or box.width * box.height < SIGNIFICANT * area:
+                    continue
+                effective = round(info['width'] / box.width * page.rect.width)
+                widths[i] = min(widths.get(i, effective), effective)
+    return widths
 
 
 def upright_rgb(image):
@@ -68,16 +132,29 @@ def upright_rgb(image):
 
 
 def pages(path, dpi):
+    """(name, page number or None, image) for an image file or every page of a PDF."""
     if path.suffix.lower() != '.pdf':
-        yield path.stem, upright_rgb(Image.open(path))
+        yield path.stem, None, upright_rgb(Image.open(path))
         return
-    with tempfile.TemporaryDirectory() as tmp:
-        subprocess.run(['pdftoppm', '-r', str(dpi), '-png', str(path), f'{tmp}/p'], check=True)
-        for page in sorted(Path(tmp).glob('p*.png')):
-            yield f'{path.stem}-{page.stem}', upright_rgb(Image.open(page))
+    if shutil.which('pdftoppm'):
+        with tempfile.TemporaryDirectory() as tmp:
+            subprocess.run(['pdftoppm', '-r', str(dpi), '-png', str(path), f'{tmp}/p'], check=True)
+            for page in sorted(Path(tmp).glob('p*.png'), key=lambda p: int(re.findall(r'\d+', p.stem)[-1])):
+                yield f'{path.stem}-{page.stem}', int(re.findall(r'\d+', page.stem)[-1]), upright_rgb(Image.open(page))
+        return
+    try:
+        import fitz  # PyMuPDF renders pages when poppler is not installed
+    except ImportError:
+        sys.exit('✗ poppler_missing: pdftoppm is needed to render PDF pages.\n' + INSTALL_POPPLER)
+    with fitz.open(str(path)) as doc:
+        for i, page in enumerate(doc, 1):
+            pix = page.get_pixmap(dpi=dpi)
+            yield f'{path.stem}-p-{i}', i, upright_rgb(Image.frombytes('RGB', (pix.width, pix.height), pix.samples))
 
 
 def main():
+    if hasattr(sys.stdout, 'reconfigure'):
+        sys.stdout.reconfigure(encoding='utf-8', errors='replace')
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument('inputs', nargs='+', type=Path)
     ap.add_argument('output', type=Path)
@@ -87,8 +164,13 @@ def main():
     a.output.mkdir(parents=True, exist_ok=True)
     index, quality = [], {}
     for path in a.inputs:
-        for name, image in pages(path, a.dpi):
-            quality[name] = legibility(image, rendered_pdf=path.suffix.lower() == '.pdf')
+        pdf = path.suffix.lower() == '.pdf'
+        widths = embedded_widths(path) if pdf else {}
+        if pdf and widths is None:
+            print('⚠ pdfimages (poppler) and PyMuPDF are both missing: embedded image sizes of this PDF were not checked;'
+                  ' judge legibility by eye and record it.', file=sys.stderr)
+        for name, number, image in pages(path, a.dpi):
+            quality[name] = legibility(image, (widths or {}).get(number), pdf=pdf and widths is not None)
             for i, (crop, top, bottom) in enumerate(slices_for(image, a.width), 1):
                 file = a.output / f'{name}-s{i:02d}.png'
                 crop.save(file)

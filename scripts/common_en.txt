@@ -1,0 +1,91 @@
+# General high-frequency English words the term ledger skips (written for this skill; function words, everyday
+# vocabulary and exam-instruction words). Subject terms are deliberately absent: a word that names a concept a
+# learner must be taught (elasticity, externality, variance, integral, sampling…) is never listed here.
+a able about above according across act action actually add added adding addition after again against ago agree ahead
+all allow allowed almost alone along already also although always am among amount an and another answer answers any anyone
+anything anyway apart appear appears apply applied approach are area areas around as ask asked asking at away back bad
+based basic basis be became because become becomes been before began begin beginning behind being below beside besides
+best better between beyond big bit both bottom box brief briefly bring brought build but by call called calls came can
+cannot care carefully carry case cases cause caused certain certainly chance change changed changes changing check checked
+choice choose chosen claim clear clearly close come comes coming common compare compared comparing complete completely
+consider considered considering contain contains context continue copy correct correctly could course cover create
+current currently daily data date day days deal decide decided decision deep describe described detail details did
+different difference differences difficult direct directly do does doing done down draw drawing drawn due during each
+early easily easy effect effects either else end ends enough ensure entire especially even ever every everything
+exact exactly example examples except expect expected explain explained explains explanation extra fact facts fail fall
+false far few figure figures fill final finally find finding finds first fit five follow followed following follows
+for form forms found four free from front full fully further gain gave general generally get gets getting give given
+gives giving go goes going gone got great group groups had half hand happen happens hard has have having he hence her
+here high higher highest him his hold holds how however i idea ideas if important in include included includes
+including increase increased increases indeed instead into is issue issues it item items its itself just keep kept
+key kind kinds know known knowledge known large larger largest last late later least leave left less let level levels
+like likely line lines list listed little long longer look looking looks lot low lower lowest made main mainly make
+makes making many mark marks may me meaning measure meet method methods might mind minus missing mistake mistakes
+more moreover most mostly move moved much must my name named near nearly necessary need needed needs never new next no
+none nor not note noted notes nothing notice now number numbers obtain obtained obvious obviously of off often on once
+one ones only onto open or order other others otherwise our out outside over overall own page pages paper part
+particular particularly parts pass past per perhaps place plan play plus point points possible possibly practice
+present previous previously probably problem problems produce provide provided put question questions quick quickly
+quite rather reach read reading ready real really reason reasons recall record reduce refer related remain remember
+reply report required requires rest result results return right round rule rules run said same say saying says second
+section see seen select sense set sets several shall she short should show showed showing shown shows side similar
+simple simply since single six small smaller so some something sometimes soon sort space specific start started state
+stated statement statements states step steps still stop student students study such suggest suitable sum support sure
+table take taken takes taking task tell ten than that the their them themselves then there therefore these they
+thing things think third this those though thought three through throughout thus time times to together told too took
+top total toward towards true try turn two type types under understand unless until up upon us use used useful uses
+using usual usually very via view want was way ways we well went were what whatever when where whether which while who
+whole whom whose why will with within without word words work worked working works would write writes writing written
+wrong year years yes yet you your
+# exam instructions and document furniture
+answer box calculator candidates centre continued examiner examiners exam exams instructions marks mark question
+questions paper papers page pages section sections part parts total turn over blank space diagram diagrams figure
+figures table tables source sources example examples guidance accept award allow ignore condone penalise penalty
+correct incorrect acceptable alternative alternatives working workings attempt attempts seen implied implies
+state explain calculate show prove find hence otherwise describe identify suggest write give determine verify
+deduce sketch draw label plot estimate compare discuss assess evaluate analyse consider justify comment outline
+simplest form forms exact following below above overleaf
+# everyday nouns, verbs and adjectives
+ability access account activity address age air amount animal art article attention author bag bank bar base
+bed bill bird blood blue board boat body book bottle boy brain bread breakfast brother building bus business buy car
+card cards care carry cat centre century chair chapter child children city class clock club coat coffee cold colour
+company computer cook corner country couple cover cup cut dark daughter dead dinner doctor dog door dream dress drink
+drive driver drop dry ear earth east eat edge education egg engine evening event exercise eye face family farm
+father fear feel feeling field fight film fine fire fish floor flower fly food foot football forest friend fruit game
+garden girl glass gold green ground grow guess gun hair hall happy hat head health hear heart heat heavy help hill
+history home horse hospital hot hotel hour house human husband ice image inside island job join judge kill king
+kitchen knife lady lake land language laugh law lead learn leg letter library life light listen live local lose love
+lunch machine man manager map master meal meat member memory message metal middle milk minute modern moment money month
+morning mother mountain mouth movie music nation natural nature news newspaper night noise north nose office oil old
+paint pair parent park party pay peace pen person phone picture piece plant plate player pocket police poor
+president press pretty prison program project pull push queen radio rain reach red region rich
+ring river road rock role room run safe salt school science sea season seat secret send serve ship shoe shop show
+sign silver sing sister sit skin sky sleep smile snow society soft soldier son song sound south speak special speech
+sport spring staff stage stand star station stay stone store story street strong student style summer sun
+sweet swim system talk teach teacher team television test theatre thin ticket tired today tomorrow tonight tool tooth
+town toy track train travel tree trip trouble truck uncle university upper vehicle village visit voice wait walk
+wall war warm wash watch water wear weather week weekend west wheel white wife wind window wine winter wish woman
+women wonder wood world yellow young
+# frequent academic verbs, adjectives and connectives
+achieve acquire adapt adjust affect alter analyse appropriate argue assume assumed assumption attach attempt attribute
+available aware briefly capable category challenge characteristic cite clarify classic coherent combine comment
+commit compensate complex concept concern conclude conclusion conduct confirm conflict consequence consequently
+consist construct contrast contribute convert core correspond criteria crucial define definite definitely
+demonstrate denote derive design despite detect device differ distinct distinguish document domain dominant
+draft emerge emphasis enable encounter enhance establish estimate evaluate evident evidence exceed exclude exhibit
+expand explicit expose extend extract facilitate feature final focus formal format former
+fundamental generate goal grade guarantee highlight identical identify ignore illustrate imply impose
+indicate individual infer initial insert insight instance intend interpret intrinsic involve
+justify label layer likewise link locate logic maintain major minor modify monitor namely
+nevertheless notion numerous obtain occur offset ongoing option orient outcome
+overall participate perceive period persist perspective phase phenomenon potential precise
+predict preliminary primary principal prior procedure process proceed prompt pursue
+react recover refine regard relevant rely remove represent require research resolve respond respectively restrict
+retain reveal reverse revise role scope secure seek select shift significant similar simulate sole specify
+stable strategy structure subsequent substitute sufficient summary suppose survey sustain target technique
+theme thereby thesis topic trace transfer transform trend trigger ultimate undergo underlie unique
+valid vary version visible whereas whereby widespread
+giving taking rather would whole based known rise rises fall falls listed
+june january february march april july august september october november december monday tuesday wednesday thursday
+friday saturday sunday
+government people country countries world

@@ -53,18 +53,18 @@
 | permutations／combinations、geometric distribution | 9709 P5；IAL 全无 | CIE vs Pearson IAL |
 | complex numbers | 9709 P3；IAL 只在 FP1／FP2 | 纯数卷出现即 CIE P3 或 Pearson FP |
 | large data set | UK 9MA0 统计；IAL 全无 | UK vs IAL |
-| property rights、pollution permits、nudge、regulation／deregulation | 9708 A Level 8.1.1（p.27） | 9708 A Level vs AS（AS 3.2 只有 subsidies、direct provision、information 等） |
+| property rights、pollution permits、nudge、regulation／deregulation | 9708 A Level 8.1.1（p.27） | 只区分同局单元：9708 A Level vs AS（AS 3.2 只有 subsidies、direct provision、information 等）；其他考试局的经济学考纲也有这些内容，不能用来区分考试局（`exam_fingerprint.py` 因此不把它算作考试局级排他点） |
 
 搜索摘要得来的条目（9MA0 Topic 10、9709 条目号）在正式锁定前要读到考纲原文页码。
 
 ## 资料从哪里取
 
-**先查技能自带的考试登记**（[exams/README.md](exams/README.md)）：已登记的考试有最新考纲条目与真题逐题索引，`python scripts/exam_index.py` 可按单元、考纲条目、关键词检索。登记是有日期的快照：用之前核对版本与考季，补查登记之后的新考季，缺口照样去找；没有登记的考试从下面的检索顺序开始。
+**先查技能自带的考试登记**（[exams/README.md](exams/README.md)）：已登记的考试有最新考纲条目与真题逐题索引，`python scripts/exam_index.py` 可按单元、考纲条目、关键词检索。登记是有日期的快照：用之前核对版本与考季，补查登记之后的新考季，缺口（以 `exam_index.py <单元> --gaps` 为准）照样去找；没有登记的考试从下面的检索顺序开始。
 
 检索顺序：
 
 1. **官方站点**：Pearson `qualifications.pearson.com`（spec、past papers、mark schemes、Examiners' report／PEF、exemplar responses with examiner commentary、SAM model answers）；Cambridge `cambridgeinternational.org/past-papers` 与 School Support Hub（syllabus、MS、Principal Examiner Report for Teachers、Example Candidate Responses、Specimen Paper Answers）；AQA `filestore.aqa.org.uk`；OCR；IB（Follett／Programme Resource Centre）；AP Central（sample responses、scoring commentary、chief reader report）。
-2. **用户 Google Drive**：按代码与 Publications Code 搜文件名和全文（如 `WST02`、`9708_s23_er`）。用户已积累大量官方 PDF，官方站点打不开时这是首选。
+2. **用户提供的文件**（上传的 PDF，或已连接的 Google Drive 等云盘）：按代码与 Publications Code 搜文件名和全文（如 `WST02`、`9708_s23_er`）。官方站点打不开时先问一句或直接搜用户已连接的云盘；不假设用户有哪些文件。
 3. **官方 PDF 的公开镜像**（papacambridge、physicsandmathstutor、examsolutions 等），先做“三点一致”核验：文件名代码＝页眉页脚印刷代码＝封面科目与考季；再核版权行（`© UCLES 年份`／`© 年份 Pearson Education Ltd.`）与页数（CIE 写明页数，Pearson 条码末两位是总页数）。
 4. **第三方总结**（复习网站、题库小程序、AI 摘要）只作为找原文的指针，不作考纲或评分证据；题库小程序版本可能重排或加水印，要回到原件。
 

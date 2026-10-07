@@ -572,6 +572,20 @@ def ao_attr(node):
     return f' data-ao="{node["ao"]}"' if node.get('ao') in ('AO1', 'AO2', 'AO3', 'AO4') else ''
 
 
+ECHO = [(re.compile(r'^(如果|若|假如|倘若)$'), re.compile(r'^\s*(如果|若(?!干)|假如|倘若)\s*[，,]?\s*')),
+        (re.compile(r'^(因为|由于)$'), re.compile(r'^\s*(因为|由于)\s*[，,]?\s*'))]
+
+
+def drop_echo(rel, text):
+    """Narration only: a node whose relation already says 如果/因为 is not read with it twice ("如果，若需求上升").
+    The card keeps the author's text; 若干 (several) is never cut."""
+    rel = strip_tags(rel or '').strip()
+    for rel_rule, lead in ECHO:
+        if rel_rule.match(rel) and lead.match(text or '') and lead.sub('', text, count=1).strip():
+            return lead.sub('', text, count=1)
+    return text
+
+
 def r_chain(b, bid, where):
     """A causal chain with optional forks (parallel branches that rejoin) and condition notes."""
     items = need_list(b, 'items', where)
@@ -585,6 +599,7 @@ def r_chain(b, bid, where):
         if not isinstance(d, dict):
             d = {'text': d}
         text = inline(need_text(d, 'text', w), w)
+        heard = text if first else inline(drop_echo(d.get('rel'), need_text(d, 'text', w)), w)
         rel = inline(d.get('rel'), w)
         cond = inline(d.get('cond'), w)
         note = inline(d.get('note'), w)
@@ -603,7 +618,7 @@ def r_chain(b, bid, where):
         counter[0] += 1
         link = '' if first else (rel.speech or '导致')
         lead = f'{link}{cond.speech}，' if cond else (f'{link}，' if link else '')
-        spoken = joined(pending[0], lead + text.speech, note.speech)
+        spoken = joined(pending[0], lead + heard.speech, note.speech)
         pending[0] = ''
         parts.append(Part(nid, spoken, text.unspoken + rel.unspoken + cond.unspoken + note.unspoken))
         return (f'<li class="ch-item" data-kind="{kind}" data-arrow="{arrow}" data-line="{line}" data-tone="{tone}">'
@@ -668,6 +683,7 @@ def r_map(b, bid, where):
         if not isinstance(n, dict):
             fail(w, 'map nodes are objects {text, rel?, kind?, ao?, children?}')
         text = inline(need_text(n, 'text', w), w)
+        heard = inline(drop_echo(n.get('rel'), need_text(n, 'text', w)), w)
         rel = inline(n.get('rel'), w)
         kind = n.get('kind', 'root' if depth == 0 else 'topic')
         if kind not in MAP_KINDS:
@@ -679,7 +695,7 @@ def r_map(b, bid, where):
         children = n.get('children', [])
         if not isinstance(children, list):
             fail(w, '"children" must be a list')
-        spoken = joined((rel.speech + '，') + text.speech if rel else text.speech)
+        spoken = joined((rel.speech + '，') + heard.speech if rel else heard.speech)
         # One segment per node, depth first, so the highlight and follow-scroll reach deep nodes too.
         parts.append(Part(nid, spoken, text.unspoken + rel.unspoken))
         kids = ''.join(node(c, f'{w}.children[{i}]', depth + 1, i if depth == 0 else branch) for i, c in enumerate(children))
@@ -728,7 +744,7 @@ def r_figure(b, bid, where):
 
 # Where a pitfall comes from; a teacher's note is never presented as an examiner's report.
 SOURCE_TYPES = {'er': '考官报告', 'ms': '评分方案', 'ecr': '考生答卷评语', 'specimen': '官方示范答案', 'teacher': '老师批注',
-                'user-script': '你的卷面', 'textbook': '教材', 'author': '归纳'}
+                'user-script': '本卷批改记录', 'textbook': '教材', 'author': '归纳'}
 
 
 def r_pitfall(b, bid, where):

@@ -5,11 +5,11 @@ import json
 import tempfile
 import os
 import re
+import shutil
+import sys
 import urllib.request
 from pathlib import Path
 from xml.sax.saxutils import escape, quoteattr
-
-import edge_tts
 
 # Short names authors may use in deck JSON. Unknown full names pass through unchanged.
 VOICES = {
@@ -28,8 +28,18 @@ def resolve_voice(name):
     return VOICES.get(name.lower(), name)
 
 
+def _edge():
+    """edge-tts is imported only when speech is needed, so --preview, --audio-pending and the checks run without it."""
+    try:
+        import edge_tts
+    except ImportError:
+        raise RuntimeError('edge-tts is not installed: run  pip install -r scripts/requirements.txt  in the skill folder') from None
+    return edge_tts
+
+
 async def edge_voice_names():
     global _voices_task
+    edge_tts = _edge()
     if (_voices_task is None or _voices_task.get_loop() is not asyncio.get_running_loop() or _voices_task.cancelled() or (_voices_task.done() and _voices_task.exception() is not None)):
         _voices_task = asyncio.create_task(edge_tts.list_voices())
     return {v['ShortName'] for v in await _voices_task}
@@ -71,7 +81,8 @@ async def inspect_voice(voice):
         name = type(exc).__name__
         blocked = name in ('SkewAdjustmentError', 'ClientHttpProxyError', 'ClientProxyConnectionError') or '403' in str(exc)
         report.update(edge_list_available=False, edge_voice_available=None,
-                      edge_error='network_blocked (proxy or firewall refused speech.platform.bing.com)' if blocked else name)
+                      edge_error='network_blocked (proxy or firewall refused speech.platform.bing.com)' if blocked
+                      else str(exc) if isinstance(exc, RuntimeError) else name)
     report['route'] = ('edge' if report['edge_voice_available'] else
                        'azure' if report['azure_configured'] else 'unavailable')
     return report
@@ -87,7 +98,7 @@ async def synthesize_original(text, voice, output):
         pending = Path(tmp) / 'speech.mp3'
         if report['edge_voice_available']:
             try:
-                await edge_tts.Communicate(text, voice, rate='+0%').save(str(pending))
+                await _edge().Communicate(text, voice, rate='+0%').save(str(pending))
                 if pending.stat().st_size < 100:
                     raise RuntimeError('Edge returned no usable audio')
                 pending.replace(output)
@@ -125,11 +136,17 @@ async def write_samplers(folder):
 
 
 async def _cli(args):
+    if hasattr(sys.stdout, 'reconfigure'):
+        sys.stdout.reconfigure(encoding='utf-8', errors='replace')
     args.voice = resolve_voice(args.voice)
     if args.sampler:
         print(json.dumps({'samplers': await write_samplers(args.sampler), 'text': SAMPLER_TEXT}, ensure_ascii=False, indent=2))
         return
     report = await inspect_voice(args.voice)
+    # The voice is only half of narration: ffmpeg/ffprobe trim, speed up and join every clip.
+    report['ffmpeg_missing'] = [t for t in ('ffmpeg', 'ffprobe') if not shutil.which(t)]
+    if report['ffmpeg_missing']:
+        report['ffmpeg_install'] = 'Windows: winget install Gyan.FFmpeg | macOS: brew install ffmpeg | Linux: sudo apt install ffmpeg'
     if args.probe:
         try:
             report['provider'] = await synthesize_original(
@@ -142,6 +159,8 @@ async def _cli(args):
     print(json.dumps(report, ensure_ascii=False, indent=2))
     if report['route'] == 'unavailable' or report.get('synthesis_ok') is False:
         raise SystemExit(2)
+    if report['ffmpeg_missing']:
+        raise SystemExit(4)
 
 
 if __name__ == '__main__':

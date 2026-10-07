@@ -1,5 +1,7 @@
 # CIE 9708 Paper 4（A Level Data Response and Essays）：真题索引总览
 
+> **构建溯源，不随包发布**：本文件反引号里的 `registry/…`、`work/…`、`src/…`、`inventory/…`、`scratchpad/…`、`finder/…`、`research/…`、`boards/…` 路径，`*.coverage.part*.md`、`*.questions.part*.json` 等分卷文件，以及审核脚本和它们的输出文件，都是构建登记时沙箱里的工作文件，技能包里没有，只说明结论是怎么核出来的。要看原件，用同目录 `9708-P3.questions.json`、`9708-P4.questions.json` 各条的 `sources`（公开地址或 Drive 定位，见 [README](../README.md) “原件怎么取”）。文中写到的缺口是构建时的记录，**缺口以 `python scripts/exam_index.py 9708 --gaps` 输出为准（快照 2026-10-06）**。
+
 登记日期 2026-10-06（审核轮）。数据文件：同目录 `9708-P4.questions.json`；考纲条目：`spec-items.json`（键 `9708`）与 `syllabus-a-level.md`；分卷说明：`9708-P4.coverage.part1.md`（2023–2024，审核前写成）与 `9708-P4.coverage.part2.md`（2025）。本文件的统计与表格由 `work/p4audit/scripts/overview.py` 生成，审核脚本与新下载文件见 `work/p4audit/`。
 
 ## 0. 收录范围与缺口
@@ -38,7 +40,7 @@
 
 **审核记录（本轮）**：
 
-1. 合并 part1（40 条）与 part2（45 条）为 85 条，无重复 id；字段、id 格式、考季格式、每题 20 分、小问分值之和、spec id 均通过脚本校验（`merge_validate.py`）。
+1. 合并 part1（40 条）与 part2（45 条）为 85 条，无重复 id；字段、id 格式、考季格式、每题 20 分、小问分值之和、spec id 均通过脚本校验（构建时的合并校验脚本）。
 2. 独立复核：脚本逐份比对 Section A 各小问分值与 QP 方括号分值、MS 表头分值（全部一致）；核对每条记录所引 QP/MS 页确实含该题（`page_check.py`）；核对每条 `er` 所引 PER 页落在对应卷号的章节内并提到该题（`er_check.py`，88 处引用）；所有单引号引文在 MS/PER/QP 原文中逐字找到且不超过 25 词（`quotes.py`，150 处）；essay 命令词与 MS 题干一致。
 3. 人工逐条对原文复核 25 条（覆盖 2023-03 至 2025-11 每个考季、Section A 与 essay、part1 与 part2）：2023-03/42 Q1、Q3；2023-06/42 Q1、Q4；2023-11/42 Q1、Q2、Q4；2024-03/42 Q1、Q5；2024-06/41 Q1；2024-06/42 Q3；2024-11/41 Q1；2024-11/42 Q1、Q4；2025-03/42 Q1；2025-06/41 Q1、Q2；2025-06/42 Q1、Q3、Q4；2025-06/44 Q1；2025-11/41 Q1、Q4；2025-11/42 Q1；2025-11/43 Q1；2025-11/44 Q1。分值、MS 要点、ER 转述、终点要求均与原文相符，图形读数（2023-03 Fig. 1、2024-11/41 Fig. 1.1）与渲染图一致，2025-06/44 1(d) 的 MS 算术错误已在记录中注明。没有发现成片错误。
 4. 修正 4 处考纲映射：2023-06/42 Q4 主考点由 AS 6.4.5 改为 11.2.5（6.4.5 保留为次要）；2024-11/42 1(b) 主考点由 AS 1.5.3 改为 9.2.1（问的是生产潜力）；2025-11/42 Q2 主考点由 7.3.1 改为 8.1.1（题目要评价两项政府政策）；2023-11/42 1(d) 增加 8.1.1（政府直接提供）。
@@ -397,9 +399,9 @@ Paper 4 把 AS 内容当作已知前提，下列 AS 条目以定义或分析工�
 - 2025-11/42 1(c)：MS 把 price maker 也列为农户（垄断竞争）的特征。2025-11/41 Q2 部分要点按正外部性写，题目是气候变化（负外部性）。2025-11/43 Q4、Q5 写 'No diagram Max L3'，与其他题的 L2 封顶不一致。
 - 2024-11/43 1(c)：QP 问 “supported by the article and by economic theory”，MS 题干写 “or”。
 
-## 2. 复现
+## 2. 复现（构建溯源，不随包发布）
 
-- `work/p4audit/scripts/merge_validate.py <cie-9708>`：合并两个 part 文件并校验；`--no-merge` 只校验。
+- 构建时的合并校验脚本：合并两个 part 文件并校验；`--no-merge` 只校验。
 - `work/p4audit/scripts/apply.py <cie-9708>`：在合并结果上做本轮修改（考纲映射修正、新卷号、/43 照抄、QP 补全），新条目写在 `new_entries.py`。
 - `marks_check.py`、`page_check.py`、`er_check.py`、`quotes.py`（参数都是 `registry` 目录）：分值、页码、PER 引用、引文核对。
 - `stats.py`、`overview.py`：统计与本文件。

@@ -20,22 +20,26 @@ description: 把老师板书、课堂截图、讲评 PDF、讲义做成为考试
 
 ### 1. 读全输入
 
-完整读入板书、讲评或讲义：每页每块的文字、公式、图、箭头、圈画、颜色批注和老师改写，建立板书点清单（`B01…`，写位置与内容）。长图与 PDF 用 `scripts/slice_board.py` 切成重叠切片逐片读；老师批注（“粗心”“过程不充分”“忘记最终要求”）照录，用户卷面上的逐分记录（`Q01A2 0`）每个 0 分记成一个板书点并连到补救它的卡（M0 → 方法与完整推导卡，A0 → 易错卡与交卷前检查，B0 → 术语或结论句卡），这些都是易错卡的来源。板书通常清楚，以板书为准；但聊天软件常把长图压到几百像素宽，`slice_board.py` 会报告宽度不足 800 px 的图：受影响的板书点标 `legibility: low`，用官方材料确认后写 `confirmed_by`，**不猜字**，不中途停下等用户，交付时请用户补原图。板书上的每道印刷题都去找官方出处（`source_paper`）。方法见 [coverage-ledger.md](references/coverage-ledger.md)。
+完整读入板书、讲评或讲义：每页每块的文字、公式、图、箭头、圈画、颜色批注和老师改写，建立板书点清单（`B01…`，写位置与内容）。长图与 PDF 用 `scripts/slice_board.py` 切成重叠切片逐片读；老师批注（“粗心”“过程不充分”“忘记最终要求”）照录，批改卷上的逐分记录（`Q01A2 0`）每个 0 分记成一个板书点并连到补救它的卡（M0 → 方法与完整推导卡，A0 → 易错卡与交卷前检查，B0 → 术语或结论句卡），这些都是易错卡的来源。板书通常清楚，以板书为准；但聊天软件常把长图压到几百像素宽，`slice_board.py` 会报告宽度不足 800 px 的图（扫描或导出的 PDF 按其中内嵌图片的像素判断，同样适用）：受影响的板书点标 `legibility: low`，用官方材料确认后写 `confirmed_by`，**不猜字**，不中途停下等用户，交付时请用户补原图。板书上的每道印刷题都去找官方出处（`source_paper`）。方法见 [coverage-ledger.md](references/coverage-ledger.md)。
+
+**隐私**：讲评卷、批改卷和课堂截图上常有学生姓名、考生号、中心号、上课日期和总分。这些**一律不转录**进卡片、deck.json、研究记录、文件名或交付说明；批改卷只按“题号 + 分点 + 是否得分”中性记录（如“本卷批改记录：Q9(a) M1、A1 未得”），卡面不用“你”指称做卷人，不写个人总分。生成器会拦下“你的卷面”“你在 Q5 丢了 1 分”式写法、卷面总分（“总分 49／75”“本卷得分 49 分（满分 75）”）、考生号、中心号和邮箱；姓名它认不出，要自己查。真被误拦的单条字符串（例如概率 13/125 旁边恰好有“试卷”）把报错给出的路径写进 `privacy_reviewed`，不要整副关掉检查。学习者明确要做只给自己看的个人化讲评时，才在 deck.json 写 `"personal": true`，这类卡组不外传。
 
 ### 2. 锁定考试
 
 从内容判断是哪场考试，精确到**考试局 + 资格 + 单元／试卷代码 + 考纲版本 + 目标考季**（考季决定适用版本，不知道时写推定并标明），写出证据和被排除的近似考试。课程名只是弱线索，要靠印刷代码、版式指纹和排他知识点。`python scripts/exam_fingerprint.py 板书.pdf` 可先列出线索。同时确定这批内容出现在哪些试卷与卷型（`exam.papers`，如 9708 的选择题与 essay），各自标定。证据仍无法区分、且区分结果会改变卡片内容时：用户在场就用选项问一次；要求一次做完时按最强证据制作，并在交付说明第一行写出假设。方法、代码体系、排他知识点表与资料入口见 [exam-lock.md](references/exam-lock.md)。
 
-**已登记的考试先查登记**：[references/exams/](references/exams/README.md) 收录了 CIE 9708 A Level（A2）与 Pearson IAL 数学全部单元（P1–P4、FP1–FP3、M1–M3、S1–S3、D1）的最新考纲条目（编号与印刷页码）和新考纲实施以来全部可得真题的逐题索引（对应考纲条目、分值、终点要求、MS 要点、考官报告要点、原件出处）。登记省掉的是例行调研，**不免除调研纪律**：先核对考纲版本与目标考季仍然适用，补查登记日期之后的新考季，登记里写明的缺口照样去找；登记外的考试、单元或陌生材料，按本节与下一节完整调研。
+**已登记的考试先查登记**：[references/exams/](references/exams/README.md) 收录了 CIE 9708 A Level（A2）与 Pearson IAL 数学全部单元（P1–P4、FP1–FP3、M1–M3、S1–S3、D1）的最新考纲条目（编号与印刷页码）和新考纲实施以来全部可得真题的逐题索引（对应考纲条目、分值、终点要求、MS 要点、考官报告要点、原件出处）。登记省掉的是例行调研，**不免除调研纪律**：先核对考纲版本与目标考季仍然适用，补查登记日期之后的新考季，缺口（以 `python scripts/exam_index.py <单元> --gaps` 的输出为准）照样去找；登记外的考试、单元或陌生材料，按本节与下一节完整调研。
 
 ### 3. 取证与标定掌握水平
 
 - 读锁定版本的**考纲原文**，把本批范围的每一条拆成考点（定义、关系、方法、图、计算、评价角度），连指导栏一起读。
-- 已登记的考试先用 `python scripts/exam_index.py <单元> --spec <条目> --demands` 拉出真题需求清单的初稿，再回到原 MS／ER 核对要用的每一条；未登记的考试从零开始。
+- 已登记的考试先跑 `python scripts/exam_index.py <单元> --gaps`：stderr 第一行是快照提示（快照日期、最新收录考季、未收录的预期考季数），stdout 列出应有而未收录的卷、没有 MS／考官报告的卷、只有抽取文本或只有 Drive 副本的原件。这些缺口与快照日期之后的新考季照样调研，仍缺的写进 `research_gaps`。再用 `python scripts/exam_index.py <单元> --spec <条目> --demands` 拉出真题需求清单初稿：`ms_source: registry summary` 的要点引用前回到原 MS 核对，`ms_source: not held` 的要自己找 MS。未登记的考试从零开始。
+- 登记条目的 `sources` 依次是中性出处、公开地址（examsolutions S3 镜像、raw.githubusercontent.com，可直接下载）、Drive 标题与 id（id 只在构建登记的账号里有效，换账号按标题搜）、构建记录；`local:src/…` 等是构建溯源，不随包发布。取法见 [references/exams/README.md](references/exams/README.md)“原件怎么取”。
+- 调研中找到登记里没有的题、MS 或考官报告：在仓库里工作就补进 `references/exams/`，跑 `--check` 与 `--completeness`；技能以上传的 zip 运行、没有仓库时，写进交付文件夹的 `registry-additions/<单元>.questions.json`（与 `units/<单元>.questions.json` 同格式，补全已有条目沿用原 `id`），用 `python scripts/exam_index.py --check-file registry-additions/<单元>.questions.json` 校验，并在交付说明里请用户把它合并进仓库、更新 `versions.json` 的 `gaps`、重新打包技能。
 - 按考季倒序读真题，把考到本批内容的每个小问记进**真题需求清单**（`demands`：考季、题号、命令词、问什么、终点要求、MS 注释、对应考点与卡），读到连续三季没有新问法为止（`coverage.saturation`）。
 - 每个考点读**至少两个不同考季**、问法不同的真题与对应 **mark scheme**；每个单元至少读一份 **examiner report**；essay 类科目找**真实考生的高中低档作答**（Cambridge ECR、Pearson exemplar responses），也可参考官方示范答案（标明不是真实考生）。
 - 从这些材料读出每个考点的掌握水平：定义必含词与拒收说法、单独给分的步骤、终点要求、需要的图、essay 分析要展开到几环、评价写到什么程度。写进考点的 `level`，并在 `evidence` 挂上至少两条不同考季的 MS／ER 出处。**MS 认可的写法优先**：教材的等价说法只作补充，只有 MS 明确拒收的写法才标“不给分”。
-- 检索顺序：官方站点 → 用户 Google Drive 中的官方文件 → 经核验的官方 PDF 镜像 → 第三方总结（只作指针）。读不到的写进 `research_gaps`，说明用什么替代。
+- 检索顺序：官方站点 → 用户上传或已连接云盘里的官方文件 → 经核验的官方 PDF 镜像 → 第三方总结（只作指针）。读不到的写进 `research_gaps`，说明用什么替代。ECR、exemplar 这类手写答卷多是扫描图：用 `pdftoppm` 渲染后看图逐页读，在 `read` 里写明页码；“是图片、没有 OCR”不算取不到。
 - 教材用考试局认可的教材核对讲法；大学教材只帮助制作者自己理解，不决定范围。
 
 方法与 Pearson／Cambridge 的评分记号、定义采分、essay levels 见 [mark-scheme-calibration.md](references/mark-scheme-calibration.md)。
@@ -69,14 +73,16 @@ description: 把老师板书、课堂截图、讲评 PDF、讲义做成为考试
 python scripts/build_cards.py deck.json out/ --preview      # 预览页
 node scripts/render_check.mjs out/ --phone --dark           # 真实浏览器截图与版式体检
 python scripts/build_cards.py deck.json out/                # 合成语音并打包 .apkg
-python scripts/validate_package.py out/<牌组>.apkg --output out/validate.json
+python scripts/build_cards.py deck.json out/ --audio-pending # 语音服务不可达时：先打包图文，写出 deck.json 与 补语音.txt
+pip install -r scripts/requirements-validate.txt            # 一次性：导入验证要用的 anki 后端
+python scripts/validate_package.py out/<牌组>.apkg --output out/validate.json   # 语音待补的包也能验证；成品包加 --require-audio
 ```
 
-生成器检查：考试已锁定、读过考纲与 MS（每种卷型都有来源）、考点与真题需求双向覆盖、术语定义有出处、每个公式有读法、推导每步有理由、关键词逐字出现在定义中、HTML 不吞字；另对复述式“为什么”、空泛箭头、缺条件的评价、过宽的导图、未解释的 English 词给出警告。它不能证明内容讲对了，内容审查见下一步。
+生成器检查：考试已锁定、读过考纲与 MS（每种卷型都有来源）、考点与真题需求双向覆盖、术语定义有出处、每个公式有读法、推导每步有理由、关键词逐字出现在定义中、HTML 不吞字；另对复述式“为什么”、空泛箭头、缺条件的评价、过宽的导图、未解释的 English 词（`report.json` 给出全量术语台账）、`$…$` 之外的纯文本数学、难读符号与拼接错读给出警告；哪些必须改、哪些在交付说明里交代，见 [review-and-delivery.md](references/review-and-delivery.md) 的警告处理表。它不能证明内容讲对了，内容审查见下一步。
 
 ### 7. 审查与交付
 
-先冷读与关键词复现测试，再交给独立审阅者找遗漏、误读、超纲和讲不透的地方，修改后复查；然后看截图、听语音、做导入验证与桌面操作测试。交付物包括 `.apkg`、双击安装的 `ccpt_single_face.ankiaddon`，并提醒用户一次性用插件菜单把牌组设为阅读预设（否则按 1 不是隔天再看）。交付时说明锁定的考试与证据（假设放第一行）、实际读过的资料与缺口、覆盖统计与留给下一批的相邻考点、板书看不清或更正处（请用户补原图）、语音状态。见 [review-and-delivery.md](references/review-and-delivery.md)。
+先冷读与关键词复现测试，再交给独立审阅者找遗漏、误读、超纲和讲不透的地方，修改后复查；然后看截图、听语音、做导入验证与桌面操作测试。交付物是整个输出文件夹：`.apkg`、双击安装的 `ccpt_single_face.ankiaddon`、`deck.json`、`report.json`，语音待补时还有 `补语音.txt`；并告诉用户：插件在第一次复习 CCPT 卡时会自动把该牌组设为阅读预设（学习与重学步长 1 天，按 1 = 下一学习日再看），右下角提示一次，不想要可用“工具 → CCPT：撤销阅读预设”恢复；只用手机复习的用户要在牌组选项里手动把学习与重学步长设为 1d。交付时说明锁定的考试与证据（假设放第一行）、实际读过的资料与缺口、真题回查与冷读的记录、覆盖统计与留给下一批的相邻考点、板书看不清或更正处（请用户补原图）、语音状态，以及哪些检查真的做了（导入验证、截图、真实 Anki 里的按键）；交付文件不写学习者姓名、日期与总分。见 [review-and-delivery.md](references/review-and-delivery.md)。
 
 ## 版式与美感
 
@@ -84,11 +90,11 @@ python scripts/validate_package.py out/<牌组>.apkg --output out/validate.json
 
 ## 语音
 
-每页一个播放器，讲解覆盖卡面全部内容，朗读到哪里就高亮哪里。一副牌组一个声音（单独学习的子牌组可以各自指定）：默认晓晓（`xiaoxiao`），男声选云扬（`yunyang`，Edge 中唯一的新闻播音定位男声）。得分点（M1、A1*、丢的分）、评分注意与表注都读出来，出处引用不读。默认 **2×**；生成器按可计算的规则只把真正复杂的卡（多步带公式的推导、公式读法占比高、证明结构、需同时记住多个数值）降到 **1.5×** 并写出理由，篇幅长或导图深不算复杂；播放时点速度按钮可临时在 2× 与 1.5× 之间切换。原速合成并全局缓存、修剪首尾静音、ffmpeg 一次加速、设计停顿、离线随卡；读音不对的术语用 `speech_lexicon` 修正，`--term-sampler` 出一分钟术语试听。语音服务不可达时预检立即说明原因，先交付图文包并明示“语音待补”，不静默换声音。见 [narration.md](references/narration.md)。
+每页一个播放器，讲解覆盖卡面全部内容，朗读到哪里就高亮哪里。一副牌组一个声音（单独学习的子牌组可以各自指定）：默认晓晓（`xiaoxiao`），男声选云扬（`yunyang`，Edge 中唯一的新闻播音定位男声）。得分点（M1、A1*、丢的分）、评分注意与表注都读出来，出处引用不读。默认 **2×**；生成器按可计算的规则只把真正复杂的卡降到 **1.5×** 并写出理由：要同时有**要跟住的推导结构**（4 步以上有依赖的推导，或证明）和**耳朵的重负荷**（公式读法占朗读三成半以上、每步约 6 处以上公式读法、要同时记住多个数值，或新术语多且 English 密），只有一类、篇幅长或导图深都不算；一副卡组超过三成判为 1.5× 时，打包前要在 `style.speed_review` 写明理由；播放时点速度按钮可临时在 2× 与 1.5× 之间切换。原速合成并全局缓存、修剪首尾静音、ffmpeg 一次加速、设计停顿、离线随卡；读音不对的术语用 `speech_lexicon` 修正，`--term-sampler` 出一分钟术语试听。语音服务不可达时预检立即说明原因，先交付图文包并明示“语音待补”，不静默换声音。见 [narration.md](references/narration.md)。
 
 ## 操作方式
 
-单面卡：打开即见完整内容。**Space** 播放／暂停语音，**Enter** 记 Good 并继续，**1** 下一学习日再看。没有翻面、输入答案、选择题或“听完才能继续”。桌面端由 `scripts/single_face_addon.py` 实现，见 [review-and-delivery.md](references/review-and-delivery.md)；复习安排只在用户要求时调整（插件第一次遇到学习步长短于 1 天的牌组时问一次，默认“否”，只有用户选“是”才改），见 [review-planning.md](references/review-planning.md)。
+单面卡：打开即见完整内容。**Space** 播放／暂停语音，**Enter** 记 Good 并继续，**1** 下一学习日再看。没有翻面、输入答案、选择题或“听完才能继续”。桌面端由 `scripts/single_face_addon.py` 实现，见 [review-and-delivery.md](references/review-and-delivery.md)。为满足“1 = 下一学习日再看”，插件第一次复习某牌组的 CCPT 卡、且其学习或重学步长短于 1 天时，自动改用 CCPT 阅读预设（只改步长为 1 天与 leech 只加标签），不弹窗，可从工具菜单撤销，撤销后不再自动改；其余复习安排只在用户要求时调整，见 [review-planning.md](references/review-planning.md)。
 
 ## 学习研究依据
 
@@ -100,13 +106,16 @@ python scripts/validate_package.py out/<牌组>.apkg --output out/validate.json
 
 | 条件 | 缺少时 |
 |---|---|
-| 能访问 `speech.platform.bing.com`（Edge 语音） | 用 `--audio-pending` 交付图文包；之后在能访问的电脑上去掉该参数重跑同一条命令补语音，同一张卡原位更新 |
-| ffmpeg／ffprobe | 同上，语音待补 |
-| Node 与 Playwright（Chromium） | 跳过 `render_check`，改为人工打开预览 HTML 检查，交付时说明没有做截图检查 |
-| 官方网站或用户 Google Drive | 先用 `references/exams/` 的登记；仍缺的写进 `research_gaps`，不把搜索摘要当作已读原文 |
+| 能访问 `speech.platform.bing.com`（Edge 语音） | 预检以 `network_blocked` 停止（没装 edge-tts 是另一类：`edge_tts_missing`，退出码 5）；用 `--audio-pending` 交付图文包，同时写出 `deck.json`、编号步骤的 `补语音.txt` 和补语音要用的 `skill/` 程序副本，整个输出文件夹一起交付；学习者在这个文件夹里照着补（虚拟环境、三平台命令都写好了），同一张卡原位更新 |
+| ffmpeg／ffprobe | 构建以 `ffmpeg_missing`（退出码 4）停止并给出安装命令：Windows `winget install Gyan.FFmpeg`，macOS `brew install ffmpeg`，Linux `sudo apt install ffmpeg`；装不了就同上交付“语音待补” |
+| poppler（`pdftoppm`／`pdftotext`／`pdfimages`） | `slice_board.py` 会改用 PyMuPDF（`pip install pymupdf`）；两者都没有时直接看图逐页读 PDF，长图仍记录行范围，并在交付说明写明 |
+| tesseract（含 `chi_sim`） | `exam_fingerprint.py` 读不了图片：直接看切片，把转写的文字用 `-` 管道传给它；OCR 几乎为空时它也会提示这样做 |
+| `anki` Python 包（`pip install -r scripts/requirements-validate.txt`，约 30 MB） | 跳过 `validate_package.py`，交付说明写“未做导入验证” |
+| Node、Playwright 与 Chromium | 先 `which chromium chromium-browser google-chrome`，找到就设 `CHROMIUM_PATH`；仍没有时按 [review-and-delivery.md](references/review-and-delivery.md) §二 冷读可见文本、跑 `contrast_check.py`、请用户先打开一两张预览页，并写明未做截图检查 |
+| 官方网站或用户的云盘 | 先用 `references/exams/` 的登记（原件链接见那里的“原件怎么取”）；仍缺的写进 `research_gaps`，不把搜索摘要当作已读原文 |
 
-在 Claude 网页版或桌面版里使用时，把 `python scripts/package_skill.py` 生成的 `anki-ccpt-skill.zip` 上传为技能；沙盒通常不能联网合成语音，按上表交付“语音待补”包。
+在 Claude 网页版或桌面版里使用时，把 `python scripts/package_skill.py` 生成的 `anki-ccpt-skill.zip` 上传为技能；沙盒通常不能联网合成语音，按上表交付“语音待补”包。每次对话都从用户给的材料重新开始：不假设这位用户与以前的对话是同一个人，接着做时请用户提供上次的 `deck.json` 或 `.apkg`。
 
 ## 维护本技能
 
-改规则时同步主文、references、生成器、样例与测试；运行 `python -m pytest scripts -q`（含 `exam_index.py --check` 对全部考试登记的校验）与一个真实小样的预览和截图检查。新增考试登记时沿用 `references/exams/README.md` 的格式。修改规则不等于授权重写用户已有的全部卡片。旧版生成器（v5 导图卡、teaching、quiz 等）已从当前版本移除，需要维护旧格式时从 git 历史 `4c66000` 取用。
+以下只适用于**源码仓库**（上传的 zip 不含测试与 git 历史）：改规则时同步主文、references、生成器与测试；运行 `pip install -r scripts/requirements-dev.txt` 后 `python -m pytest scripts -q`（含 `exam_index.py --check` 与 `--completeness` 对全部考试登记的校验），再用一个真实小样做预览和截图检查；打包用 `python scripts/package_skill.py`，它只收 git 跟踪的文件，遇到未提交的文件、邮箱、云盘链接或密钥会拒绝打包。在上传的 zip 里补充考试登记后，至少运行 `python scripts/exam_index.py --check` 与 `--completeness`。新增考试登记时沿用 `references/exams/README.md` 的格式。修改规则不等于授权重写用户已有的全部卡片。旧版生成器（v5 导图卡、teaching、quiz 等）已从当前版本移除，需要时到源码仓库的 git 历史里取。

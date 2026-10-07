@@ -84,7 +84,8 @@
    "title": "The Normal distribution including the mean, variance and use of tables of the cumulative distribution function",
    "page": 56,
    "level": "AS",
-   "note": "Printed as a second '5.1' in Issue 3, under the heading '6. The Normal distribution' (printed p.56, checked on the rendered page); the intended number is 6.1. Key suffixed '#2' to keep JSON keys unique, following WFM02 '7.1#2' in spec-items.fm.json."
+   "note": "Printed as a second '5.1' in Issue 3, under the heading '6. The Normal distribution' (printed p.56, checked on the rendered page); the intended number is 6.1. Key suffixed '#2' to keep JSON keys unique, following WFM02 '7.1#2' in spec-items.fm.json. Query it as '6.1' (exam_index.py maps the alias).",
+   "alias": "6.1"
   }
  },
  "WST02": {

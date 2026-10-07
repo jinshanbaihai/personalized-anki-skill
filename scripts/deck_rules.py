@@ -24,6 +24,53 @@ class DeckError(ValueError):
     pass
 
 
+# Deliverables leave the learner's machine: marked scripts are recorded as question + mark + scored or not,
+# never as one identified person's script (SKILL.md step 1). Names cannot be detected; these patterns can.
+SCRIPT = r'(?:答卷|卷面|试卷|卷子|本卷|模考|mock|script|paper)'
+PRIVATE = [
+    (re.compile(r'你的(?:卷面|答卷|试卷|卷子)|你(?:在|这)[^。；\n]{0,8}(?:丢|被扣|扣了|漏了)|你丢了?\s*\d+\s*分|你被扣'),
+     'addresses the author of a marked script as 你'),
+    (re.compile(r'\byour (?:script|exam paper|answer sheet|answer booklet|mock)\b|\byou (?:lost|dropped) (?:the |a |an )?(?:\d+ marks?|[BMA]\d)', re.I),
+     'addresses the author of a marked script as "you"'),
+    (re.compile(r'考生号|准考证号|中心号|candidate (?:no\.?|number)|cand\.\s*no\b|cent(?:re|er) (?:no\.?|number)|(?:centre|center|candidate)\s*[:：#]\s*\d{3,}', re.I),
+     'a candidate or centre number'),
+    (re.compile(r'[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}'), 'an e-mail address'),
+    # a total on a script: "总分 49/75", "卷面 49／75", "本卷得分 49 分（满分 75）", "Total: 49 out of 75"
+    (re.compile(SCRIPT + r'[^。；\n]{0,8}?(?<![\d/])\d{1,3}\s*(?:/|／|out of)\s*\d{2,3}(?![\d/])|总分[^。；\n]{0,6}?(?<![\d/])\d{1,3}\s*(?:分|/|／)'
+                r'|' + SCRIPT + r'[^。；\n]{0,6}?得分?\s*(?<![\d/])\d{1,3}\s*分\s*[（(]\s*满分|\b(?:total(?: score)?|scored)\s*[:：]?\s*(?<![\d/])\d{1,3}\s*(?:/|／|out of)\s*\d{2,3}\b'
+                r'|(?<![\d/])\d{1,3}\s*[/／]\s*\d{2,3}(?![\d/])[^。\n]{0,6}?(?:丢\s*[MABC]?\s*\d|失分|扣\s*[MABC]?\s*\d|lost)|(?<![\d/])\d{1,3}\s*[/／]\s*\d{2,3}(?![\d/])[^。\n]{0,12}?(?:模考|卷面|答卷|本卷)', re.I),
+     'a total score on a script'),
+]
+
+
+def walk_strings(value, path=''):
+    if isinstance(value, str):
+        yield path, value
+    elif isinstance(value, dict):
+        for k, v in value.items():
+            yield from walk_strings(v, f'{path}.{k}' if path else str(k))
+    elif isinstance(value, list):
+        for i, v in enumerate(value):
+            yield from walk_strings(v, f'{path}[{i}]')
+
+
+def check_privacy(data):
+    """Personal framing, IDs, e-mails and script totals stop the build. A deck only for the learner themselves may set
+    "personal": true; a single reviewed false positive is listed by path in privacy_reviewed instead."""
+    if data.get('personal') is True:
+        return
+    reviewed = data.get('privacy_reviewed', [])
+    need(texts(reviewed, nonempty=False), 'privacy_reviewed lists the paths (as printed by the error) of strings checked by hand and found not personal')
+    for path, value in walk_strings(data):
+        if path in reviewed or path.startswith('privacy_reviewed'):
+            continue
+        for pattern, what in PRIVATE:
+            m = pattern.search(value)
+            need(not m, f'{path}: "{m.group(0) if m else ""}" looks like {what}. Record a marked script neutrally — question, mark, scored or not '
+                        '(e.g. "本卷批改记录：Q9(a) M1、A1 未得") — never "你", never a name, ID or total. If this string is not personal '
+                        f'(e.g. a probability), add "{path}" to privacy_reviewed; a deck only for the learner themselves may set "personal": true')
+
+
 def need(cond, message):
     if not cond:
         raise DeckError(message)
@@ -57,11 +104,15 @@ def check_deck(data):
          'style.speed: "auto" (default: 2× unless the card is genuinely dense), or 2.0 / 1.5 for the whole deck')
     if speed != 'auto' and float(speed) == 1.5:
         need(text(style.get('speed_reason')), 'style.speed 1.5 for a whole deck needs style.speed_reason')
-    voices = ('xiaoxiao', 'yunyang', 'zh-CN-XiaoxiaoNeural', 'zh-CN-YunyangNeural', 'yunxi', 'zh-CN-YunxiNeural')
-    need(style.get('voice', 'xiaoxiao') in voices, 'style.voice: xiaoxiao (default) or yunyang (yunxi only for maintaining old cards)')
+    voices = ('xiaoxiao', 'yunyang', 'zh-CN-XiaoxiaoNeural', 'zh-CN-YunyangNeural')
+    if style.get('legacy_voice') is True:  # Yunxi only where old cards are maintained in their original voice
+        voices += ('yunxi', 'zh-CN-YunxiNeural')
+    need(style.get('voice', 'xiaoxiao') in voices, 'style.voice: xiaoxiao (default) or yunyang (yunxi only with style.legacy_voice: true, for maintaining old cards)')
     by_sub = style.get('voice_by_subdeck', {})
     need(isinstance(by_sub, dict) and all(text(k) and v in voices for k, v in by_sub.items()),
          'style.voice_by_subdeck maps a subdeck name to xiaoxiao or yunyang (one voice per subdeck)')
+    if 'speed_review' in style:
+        need(text(style['speed_review']), 'style.speed_review: say why this deck is dense enough that over 30% of its cards are 1.5×')
     lexicon = data.get('speech_lexicon', {})
     need(isinstance(lexicon, dict) and all(text(k) and isinstance(v, str) for k, v in lexicon.items()),
          'speech_lexicon maps written forms to how they should be read, e.g. {"λ": "lambda"}')
@@ -98,9 +149,16 @@ def check_research(data):
             need(text(r.get(key)), f'research[{i}].{key} must say what was read and how it changed the cards')
         kinds.add(r['type'])
     need('spec' in kinds, 'research: read the official specification/syllabus for the locked units')
-    need('ms' in kinds, 'research: read mark schemes for this content to calibrate the required level')
     gaps = data.get('research_gaps', '')
     need(isinstance(gaps, str), 'research_gaps must be text')
+    for i, r in enumerate(records):
+        if 'via' in r:
+            need(r['via'] in ('original', 'registry'), f'research[{i}].via: "original" (the document itself) or "registry" (the skill\'s registry summary; give the paper and series in ref)')
+    if 'ms' not in kinds:
+        # Without any mark scheme the required level is a guess: allowed only for a partial deck that says why.
+        need((data.get('coverage') or {}).get('status') == 'partial' and gaps.strip(),
+             'research: read mark schemes for this content (the original or, for registered exams, the registry summary with via: "registry"); '
+             'if none exists anywhere, set coverage.status "partial" and explain in research_gaps (and put it in the first line of the delivery note)')
     if not kinds & {'er', 'exemplar', 'specimen'}:
         need(gaps.strip(), 'research: read examiner reports or real/specimen answers, or state in research_gaps what could not be obtained')
     # Every paper format that examines this content is calibrated separately (an MCQ asks for different mastery than an essay).
@@ -112,9 +170,28 @@ def check_research(data):
         named_in_gaps = re.search(r'(?<![A-Za-z0-9/])' + re.escape(p['code']) + r'(?![A-Za-z0-9/])', gaps)
         need(p['code'] in read_papers or named_in_gaps,
              f'research: no source tagged paper "{p["code"]}" ({p["format"]}); read its mark scheme or examiner report, or name the gap in research_gaps')
+    return research_warnings(data, records, gaps)
 
 
-def check_coverage(data, card_ids, card_covers):
+SCRIPT_PAGES = re.compile(r'\bpp?\.\s*\d|第\s*\d+\s*(?:[–—-]\s*\d+\s*)?页|\d+\s*[–—-]\s*\d+\s*页|script\s*pp?\.?\s*\d', re.I)
+# "it is only an image" is not a reason the scripts could not be read
+NOT_A_GAP = re.compile(r'no ocr|without ocr|无\s*OCR|没有\s*OCR|image[- ]only|only (?:as )?images?|(?:只有|只是|是|仅有)(?:扫描)?图片|没有文字层', re.I)
+
+
+def research_warnings(data, records, gaps):
+    """Advisory: essay and data-response papers are calibrated against real scripts read page by page."""
+    out = []
+    formats = {p.get('format') for p in (data.get('exam') or {}).get('papers', []) if isinstance(p, dict)}
+    if formats & {'essay', 'data-response'}:
+        read_scripts = any(r.get('type') in ('exemplar', 'specimen') and SCRIPT_PAGES.search(r.get('read', '')) for r in records)
+        explained = re.search(r'exemplar|ECR|example candidate|范文|答卷|样卷', gaps, re.I) and not NOT_A_GAP.search(gaps)
+        if not read_scripts and not explained:
+            out.append('essay／数据题：没有读真实答卷的记录（exemplar／specimen 的 read 要写明读了哪几页，例如 "script pp.15–21 read"）；'
+                       '扫描图要用 pdftoppm 渲染后看图读，“是图片／无 OCR”不算取不到；原件确实拿不到时写进 research_gaps')
+    return out
+
+
+def check_coverage(data, card_ids, card_covers, planning=False, preview=False):
     cov = data.get('coverage')
     need(isinstance(cov, dict), 'coverage: list the syllabus points in scope and how they are taught')
     need(text(cov.get('scope')), 'coverage.scope must name the syllabus boundary of this deck')
@@ -155,13 +232,13 @@ def check_coverage(data, card_ids, card_covers):
     missing = [k for k, v in by_id.items() if v['class'] in ('core', 'prerequisite') and k not in taught and not text(v.get('existing'))]
     structure = {c['id']: {b.get('type') for b in c['blocks'] if isinstance(b, dict)} for c in data['cards']}
     for k, v in by_id.items():
-        if k not in taught or text(v.get('existing')):
+        if planning or k not in taught or text(v.get('existing')):
             continue
         if v.get('kind') in ('term', 'command'):
             need(any(genres[c] == 'term' for c in taught[k]), f'coverage item {k} is a {v["kind"]}: give it its own term card, not only a mention inside another card')
         if v.get('kind') == 'chain':
             need(any(structure[c] & {'chain', 'map'} for c in taught[k]), f'coverage item {k} is a causal chain: teach it with a chain or map block (arrows), not paragraphs')
-    if status == 'complete':
+    if status == 'complete' and not planning:
         need(not missing, f'coverage is complete but these points have no card: {missing}')
     board = data.get('board', [])
     need(isinstance(board, list), 'board must be a list of board points')
@@ -172,21 +249,61 @@ def check_coverage(data, card_ids, card_covers):
         need(isinstance(mapped, list) and all(m in by_id for m in mapped), f'board[{i}].items must reference coverage item ids')
         need(mapped or text(point.get('note')), f'board[{i}] maps to no syllabus point; explain in note (correction, digression or out of scope)')
         need(point.get('legibility', 'ok') in ('ok', 'low'), f'board[{i}].legibility: ok or low')
-        if re.fullmatch(r'Q\d+[BMAC]\d*', point['id']):
-            need('lost' in point, f'board[{i}] {point["id"]} is a per-mark score from the learner\'s script: add "lost" (e.g. "A1") for a 0, and the card that fixes it')
+        score = point.get('score')
+        need(score is None or (isinstance(score, int) and not isinstance(score, bool) and score >= 0), f'board[{i}].score is a whole number of marks scored')
+        if (PER_MARK.fullmatch(point['id']) and score is None) or score == 0:
+            need('lost' in point, f'board[{i}] {point["id"]} is a per-mark record from a marked script: add "lost" (e.g. "A1") for a 0, and the card that fixes it')
         if 'lost' in point:  # a mark the learner lost on their own script (e.g. Q01A2 = 0)
             need(text(point['lost']), f'board[{i}].lost names the lost mark, e.g. "A1"')
             linked = point.get('cards', [])
-            need(isinstance(linked, list) and all(c in set(genres) for c in linked), f'board[{i}].cards must list card ids')
-            need(linked or text(point.get('not_carded')), f'board[{i}] records a lost mark: name the card that fixes it (M0 → method/derivation card, A0 → pitfall and finish item, B0 → term card) or explain not_carded')
+            need(isinstance(linked, list) and (planning or all(c in set(genres) for c in linked)), f'board[{i}].cards must list card ids')
+            need(planning or linked or text(point.get('not_carded')), f'board[{i}] records a lost mark: name the card that fixes it (M0 → method/derivation card, A0 → pitfall and finish item, B0 → term card) or explain not_carded')
         if point.get('legibility') == 'low':
             need(text(point.get('confirmed_by')), f'board[{i}] is hard to read: say which source confirmed the content (confirmed_by); never fill in guessed words')
-    undemanded = check_demands(data, by_id, set(genres))
+    need(board or text(data.get('board_waived')), 'board: list the board points (B01…), or say in board_waived why this deck has no board (e.g. made from a syllabus section only)')
+    undemanded = check_demands(data, by_id, set(genres), planning)
     adjacent = [k for k, v in by_id.items() if v['class'] == 'adjacent']
-    return {'items': len(by_id), 'taught': len(taught), 'missing': missing, 'undemanded': undemanded, 'adjacent': adjacent}
+    # The omission tests are run on finished cards, so a plan is not asked for them yet.
+    backcheck, coldread = (None, None) if planning else check_trail(cov, status, set(genres), preview)
+    return {'items': len(by_id), 'taught': len(taught), 'missing': missing, 'undemanded': undemanded, 'adjacent': adjacent,
+            'backcheck': backcheck, 'coldread': coldread}
 
 
-def check_demands(data, by_id, card_ids):
+def check_trail(cov, status, card_ids, preview=False):
+    """Omission tests leave a record: past questions answered only from the cards, and the cold-read keyword test."""
+    backcheck = cov.get('backcheck', [])
+    need(isinstance(backcheck, list), 'coverage.backcheck must be a list')
+    for i, b in enumerate(backcheck):
+        w = f'coverage.backcheck[{i}]'
+        need(isinstance(b, dict) and text(b.get('paper')) and text(b.get('series')) and text(str(b.get('q', ''))),
+             f'{w}: give paper, series and q of the past question answered using only the cards')
+        need(b.get('result') in ('pass', 'gap'), f'{w}.result: pass (every mark supported by a card) or gap')
+        fixed = b.get('fixed_by', [])
+        need(isinstance(fixed, list) and all(c in card_ids for c in fixed), f'{w}.fixed_by must list card ids')
+        if b['result'] == 'gap':
+            need(fixed, f'{w}: a gap names the cards added or changed to close it (fixed_by)')
+    if status == 'complete' and not preview:
+        need(len({b['series'] for b in backcheck}) >= 2,
+             'coverage.backcheck: a complete deck records at least two past questions from different series answered using only the cards '
+             '(paper, series, q, result pass/gap, fixed_by); see references/review-and-delivery.md §一')
+    coldread = cov.get('coldread', [])
+    need(isinstance(coldread, list), 'coverage.coldread must be a list')
+    for i, c in enumerate(coldread):
+        w = f'coverage.coldread[{i}]'
+        need(isinstance(c, dict) and c.get('card') in card_ids, f'{w}.card must be a card id')
+        missing = c.get('missing', [])
+        need(isinstance(missing, list) and all(text(m) for m in missing), f'{w}.missing lists the keywords that could not be recalled from the card')
+        fixed = c.get('fixed_by', [])
+        need(isinstance(fixed, list) and all(f in card_ids for f in fixed), f'{w}.fixed_by must list card ids')
+        need(not missing or fixed, f'{w}: missing keywords need the card that now carries them (fixed_by)')
+    return ({'records': len(backcheck), 'gaps': sum(b['result'] == 'gap' for b in backcheck), 'series': sorted({b['series'] for b in backcheck})},
+            {'records': len(coldread), 'missing': sum(len(c.get('missing', [])) for c in coldread)})
+
+
+PER_MARK = re.compile(r'Q\d+(?:[a-z]|\([a-z]+\)|\([ivx]+\))*\s*[BMAC]\d*\*?')
+
+
+def check_demands(data, by_id, card_ids, planning=False):
     """The past-paper demand inventory: every way the locked papers have asked about this content."""
     demands = data.get('demands')
     need(isinstance(demands, list) and demands,
@@ -203,8 +320,8 @@ def check_demands(data, by_id, card_ids):
         points = d.get('points')
         need(texts(points) and all(p in by_id for p in points), f'demands[{i}].points must list coverage item ids')
         cards = d.get('cards', [])
-        need(isinstance(cards, list) and all(c in card_ids for c in cards), f'demands[{i}].cards must list card ids')
-        need(cards or text(d.get('not_carded')), f'demands[{i}] has no card: name the card that prepares it, or explain not_carded')
+        need(isinstance(cards, list) and (planning or all(c in card_ids for c in cards)), f'demands[{i}].cards must list card ids')
+        need(planning or cards or text(d.get('not_carded')), f'demands[{i}] has no card: name the card that prepares it, or explain not_carded')
         used |= set(points)
     return [k for k, v in by_id.items() if v['class'] == 'core' and k not in used]
 
@@ -232,6 +349,17 @@ def check_cards(data):
         need(c.get('theme', 'editorial') in THEMES, f'card {c["id"]}: theme must be one of {sorted(THEMES)}')
         check_genre(c, data.get('academic', True))
     genres = {c['id']: c['genre'] for c in cards}
+    known = data.get('terms_known', [])
+    need(isinstance(known, list), 'terms_known must be a list')
+    for i, t in enumerate(known):
+        if isinstance(t, dict):
+            need(text(t.get('term')), f'terms_known[{i}].term must be text')
+            taught = t.get('taught_in', [])
+            need(isinstance(taught, list) and taught and all(x in ids for x in taught),
+                 f'terms_known[{i}] ({t.get("term")}): taught_in lists the cards of this deck that teach it; a word taught elsewhere gets a gloss "word（中文）" on the card')
+        else:
+            need(text(t), f'terms_known[{i}] must be text or {{term, taught_in}}')
+    need(texts(data.get('ignore_words', []), nonempty=False), 'ignore_words lists function words the term ledger should skip')
     for c in cards:
         links = c.get('links', [])
         need(isinstance(links, list) and all(l in ids for l in links), f'card {c["id"]}: links must list card ids')
@@ -276,9 +404,30 @@ def check_genre(c, academic=True):
     if c['genre'] == 'derivation':
         need(blocks_of(c, 'steps'), f'card {cid}: a derivation card works through steps')
         need(blocks_of(c, 'finish'), f'card {cid}: end a derivation with a finish block (exact form, accuracy, range, conclusion)')
+    if c['genre'] == 'method':
+        need(blocks_of(c, 'steps'), f'card {cid}: a method card works through its steps (a steps block), each with why')
+    if c['genre'] == 'formula':
+        need(blocks_of(c, 'unpack') or blocks_of(c, 'steps'), f'card {cid}: a formula card explains each part (unpack) or derives it (steps)')
+        need(not academic or c.get('formula_booklet') in FORMULA_BOOKLET,
+             f'card {cid}: say whether the exam formula booklet gives this formula (formula_booklet: given, memorise or derive)')
+    if c['genre'] == 'case':
+        need(blocks_of(c, 'chain') or blocks_of(c, 'map') or blocks_of(c, 'sections'),
+             f'card {cid}: a case card ties the real case to the theory with a chain, map or sections block')
 
 
-def check(data):
+def check_plan(data):
+    """Before cards exist: privacy, exam lock, research trail and the coverage/demand plan (cards may be empty)."""
+    check_privacy(data)
+    check_exam(data)
+    warnings = check_research(data)
+    cards = [c for c in data.get('cards', []) if isinstance(c, dict) and text(c.get('id'))]
+    plan = dict(data, cards=[{'id': c['id'], 'genre': c.get('genre', 'term'), 'blocks': c.get('blocks', [])} for c in cards])
+    covers = {c['id']: c.get('covers', []) for c in cards}
+    return {'cards': len(cards), 'coverage': check_coverage(plan, set(covers), covers, planning=True), 'warnings': warnings}
+
+
+def check(data, preview=False):
+    check_privacy(data)
     if data.get('academic', True) is False:
         need(not data.get('exam') and not any(c.get('covers') for c in data.get('cards', []) if isinstance(c, dict)),
              'academic: false is only for non-exam material; a deck with an exam target needs research, coverage and demands')
@@ -287,10 +436,12 @@ def check(data):
     summary = {'cards': len(ids)}
     if data.get('academic', True):
         check_exam(data)
-        check_research(data)
+        summary['warnings'] = check_research(data)
         covers = {}
         for c in data['cards']:
             need(texts(c.get('covers')), f'card {c["id"]}: covers must list the coverage item ids it teaches')
             covers[c['id']] = c['covers']
-        summary['coverage'] = check_coverage(data, ids, covers)
+        summary['coverage'] = check_coverage(data, ids, covers, preview=preview)
+        if preview and (data.get('coverage') or {}).get('status') == 'complete' and summary['coverage']['backcheck']['records'] < 2:
+            summary['warnings'].append('预览：complete 卡组打包前要有两道不同考季的真题回查（coverage.backcheck），见 review-and-delivery.md §一')
     return summary

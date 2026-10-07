@@ -14,7 +14,7 @@
 | 卷别 | WMA14/01（全球卷）与 WMA14/01A（区域卷，独立答题册，版式与分值相同）；1 h 30 min，75 分，全部为结构题；随卷提供 formulae booklet；‘Inexact answers should be given to three significant figures unless otherwise stated’ |
 | 考季 | January、June、October 三季；2026 Oct/Nov 季英国文化教育协会中国考点信息表列 WMA14A：28 October 2026 16:00 |
 | 规格版本 | Issue 3，April 2019，ISBN 978 1 446 94981 8；first teaching September 2018；Unit P4 first assessment June 2020 |
-| 官方规格地址 | https://qualifications.pearson.com/content/dam/pdf/International%20Advanced%20Level/Mathematics/2018/Specification-and-Sample-Assessment/international-a-level-maths-spec.pdf（研究时 Pearson 域名被网络策略拦截，读的是 Drive 上字节一致的副本：2,438,609 字节） |
+| 官方规格地址 | https://qualifications.pearson.com/content/dam/pdf/International%20Advanced%20Level/Mathematics/2018/Specification-and-Sample-Assessment/international-a-level-maths-spec.pdf（构建登记时 Pearson 域名被网络策略拦截，读的是 Drive 上字节一致的副本：2,438,609 字节） |
 
 区分要点：UK 9MA0 的纯数卷是 100 分 2 小时、没有 /01A；Cambridge 9709 P3 用 [n] 分值和 © UCLES；P4 的 partial fractions、rational-n binomial、parametric/implicit differentiation、3D vector lines、separable DE 都不在 WMA13 P3 或 WFM01 FP1。
 
@@ -45,7 +45,7 @@ P4 考纲七节：1 Proof（1.1 proof by contradiction，含 √2 无理、素�
 
 ## 题卷、评分方案与考官报告
 
-页码为印刷页；无印刷页码处用 PDF 页序。全部原件取自用户 Google Drive（Pearson 域名在研究环境中被拦）。
+页码为印刷页；无印刷页码处用 PDF 页序。本节所引原件读自构建登记时可得的 Drive 原件（Pearson 域名在构建环境中被拦）；公开副本见 `WMA14.questions.json` 各条的 `sources`。
 
 ### 题卷（QP，倒序）
 
@@ -86,11 +86,11 @@ P4 考纲七节：1 Proof（1.1 proof by contradiction，含 √2 无理、素�
 |---|---|---|---|
 | ER-J24W | Jan 2024 /01 | 全文 pp.1–12 | binomial 代错整体项、漏常数；第二个 ln 未除系数；体积不会平方；分部第二次符号；位置向量当方向向量；取钝角或只给 2 s.f.；show that 漏步骤；‘no solutions’ 不给理由；矛盾后不回指原命题；dx/dt 除反；切线当法线 |
 
-其余各季的 WMA14 ER 在 Drive 中未取得。真实考生作答：IAL 数学没有公开 exemplar（WMA11 01A 的 exemplar 文件是空白答题册）；可用的真实作答是用户自己的阅卷答卷与 ER 的转述。
+登记另收录了 October 2022、January 2023、June 2023、October 2023 的 WMA14 考官报告要点（见 `WMA14.questions.json` 的 `er`）；缺口以 `python scripts/exam_index.py WMA14 --gaps` 输出为准（快照 2026-10-06）。真实考生作答：IAL 数学没有公开 exemplar（WMA11 01A 的 exemplar 文件是空白答题册）；可用的只有 ER 对考生作答的转述。
 
 ### 第三方指针（不作评分依据）
 
-Edexcel-Finder（GitHub，第三方从官方 QP 抽取的题干 JSON，October 2020–January 2025 共 16 份）：只用来确认原题出处和找到更早季的问法，例如 skew lines（January 2021、October 2022）、unit vector（June 2021）、‘no greatest odd integer’（January 2021）。这些季的 MS 未取得。
+Edexcel-Finder（GitHub，第三方从官方 QP 抽取的题干 JSON，October 2020–January 2025 共 16 份）：只用来确认原题出处和找到更早季的问法，例如 skew lines（January 2021、October 2022）、unit vector（June 2021）、‘no greatest odd integer’（January 2021）。这些季的 QP 与 MS 现已作为 PDF 收录在 `WMA14.questions.json`。
 
 ## 已核的评分规则（跨季一致）
 
@@ -107,8 +107,7 @@ Edexcel-Finder（GitHub，第三方从官方 QP 抽取的题干 JSON，October 2
 ## 区域卷 /01A 说明
 
 - 题型、分值、版式与 /01 相同；答题册独立（板书答卷页印 ‘Write the answer to Question n on these k pages’）。
-- /01A 的 MS 只读到 June 2025 一份；June 2026 /01A 的 MS 与 ER 均未取得。该卷各小问的得分点结构只能由 ePEN 栏位＋同类题 MS 推断（标“按同类题推断”）。
-- January 2026 两份 QP 无 MS。
+- 没有 MS 的 /01A 卷（以 `--gaps` 为准），各小问的得分点结构只能由同类题 MS 推断（标“按同类题推断”）。
 
 ## 需求覆盖统计（13 季 263 条 demands）
 
@@ -116,7 +115,4 @@ Edexcel-Finder（GitHub，第三方从官方 QP 抽取的题干 JSON，October 2
 
 ## 缺口
 
-1. June 2026 /01A MS 与 ER；January 2026 /01A 与 /01 MS。
-2. WMA14 ER 只取得 January 2024 一份。
-3. 2020–2022 各季 MS（skew lines、unit vector、整数性质证明的评分措辞）。
-4. IAL 数学没有公开的真实考生 exemplar。
+缺口以 `python scripts/exam_index.py WMA14 --gaps` 输出为准（快照 2026-10-06）。登记之外：IAL 数学没有公开的真实考生 exemplar。

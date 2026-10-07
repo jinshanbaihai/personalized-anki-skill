@@ -35,7 +35,10 @@ def deck():
         ],
         'board': [{'id': 'B01', 'where': 'p1', 'point': 'statistic definition', 'items': ['S-1']}],
         'demands': [{'id': 'D1', 'series': 'Jan 2025', 'q': 'Q2(a)', 'ask': 'Explain why X is a statistic', 'points': ['S-1'], 'cards': ['T01']}],
-        'coverage': {'scope': 'synthetic 4.2', 'status': 'complete', 'remaining': '', 'saturation': 'synthetic: 4 series, last 3 added nothing new', 'items': [
+        'coverage': {'scope': 'synthetic 4.2', 'status': 'complete', 'remaining': '', 'saturation': 'synthetic: 4 series, last 3 added nothing new',
+                     'backcheck': [{'paper': 'WST02/01', 'series': '2024-06', 'q': '3(a)', 'result': 'pass', 'fixed_by': []},
+                                   {'paper': 'WST02/01', 'series': '2023-01', 'q': '5(b)', 'result': 'gap', 'fixed_by': ['T01']}],
+                     'coldread': [{'card': 'T01', 'missing': [], 'fixed_by': []}], 'items': [
             {'id': 'S-1', 'spec': '4.2', 'point': 'statistic', 'class': 'core', 'level': 'MS keywords', 'kind': 'term',
              'evidence': ['WST02 Jan 2025 Q2 MS', 'WST02 Jun 2023 ER Q2']},
             {'id': 'X-1', 'spec': 'S3 3.6', 'point': 'CLT', 'class': 'excluded', 'reason': 'other unit'}]},
@@ -172,9 +175,9 @@ def test_preview_and_pending_package(tmp_path):
     assert 'data-theme="lab"' in page and '<math' in page and 'mark class="kw"' in page
     build_cards.main([str(src), str(tmp_path / 'pending'), '--audio-pending'])
     pages = json.loads((tmp_path / 'pending' / 'pages.json').read_text(encoding='utf-8'))
-    assert inspect_page(pages['T01'], allow_pending=True) is None
+    assert inspect_page(pages['T01']) is None  # pending pages are recognised by default
     with pytest.raises(AssertionError, match='Audio pending'):
-        inspect_page(pages['T01'])
+        inspect_page(pages['T01'], allow_pending=False)  # --require-audio
     report = json.loads((tmp_path / 'pending' / 'report.json').read_text(encoding='utf-8'))
     assert report['audio'] == 'pending' and list((tmp_path / 'pending').glob('*.apkg'))
 
@@ -273,8 +276,42 @@ def test_speed_rule():
     assert narration.decide_speed(m)[0] == 1.5 and '5 步推导' in narration.decide_speed(m)[1]
     term = {'genre': 'term', 'title': 'Statistic', 'blocks': [{'type': 'definition', 'term': 'Statistic', 'text': 'A quantity'}]}
     assert narration.decide_speed(narration.speed_metrics(term, '一个只用样本算出来的量' * 30, set()))[0] == 2.0
+    # One signal alone keeps 2×: a three-step proof with no spoken formulas is a structure, not a dense page.
     proof = {'genre': 'derivation', 'title': 'Proof by contradiction', 'blocks': [{'type': 'steps', 'items': [{'do': 'a', 'why': 'b'}] * 3}]}
-    assert narration.decide_speed(narration.speed_metrics(proof, '证明', set()))[1] == '证明结构'
+    m = narration.speed_metrics(proof, '证明', set())
+    assert m['signals'] == {'structure': ['证明结构'], 'load': []} and narration.decide_speed(m) == (2.0, '')
+    # "show that" is a command word, not a proof.
+    shown = {'genre': 'derivation', 'title': 'Show that x = 2', 'blocks': [{'type': 'steps', 'items': [{'do': 'a', 'why': 'b'}] * 3}]}
+    assert not narration.speed_metrics(shown, 'x', set())['proof']
+
+
+def test_speed_rule_needs_two_signals():
+    def steps(dos, genre='method'):
+        return {'genre': genre, 'title': 't', 'blocks': [{'type': 'steps', 'items': [{'do': d, 'why': '为了把未知量单独留下'} for d in dos]}]}
+    # Structure without load: four formula steps, long Chinese reasoning, few values → 2×.
+    plain = steps([f'$x_{i}$〔x {i}〕，然后两边同时除以系数，留意符号与定义域的限制条件' for i in range(4)])
+    m = narration.speed_metrics(plain, '讲解' * 60, set())
+    assert m['signals']['structure'] and not m['signals']['load'] and narration.decide_speed(m)[0] == 2.0, m
+    # The same steps carrying many values to hold → structure + load → 1.5×.
+    values = steps([f'$x = {a}$〔x 等于 {a}〕，代入 {b} 与 {c}' for a, b, c in ((14, 25, 36), (47, 58, 69), (71, 82, 93), (104, 115, 126))])
+    m = narration.speed_metrics(values, '讲解' * 60, set())
+    assert narration.decide_speed(m)[0] == 1.5 and '需同时记住' in narration.decide_speed(m)[1], m
+    # Symbolic algebra with many readings per step is heavy too, without any numbers (the reviewer's M-binomial case).
+    algebra = steps([' '.join(f'$a_{j}$〔a {j}〕' for j in range(7)) + '，整理' for _ in range(5)])
+    m = narration.speed_metrics(algebra, '讲解' * 60, set())
+    assert narration.decide_speed(m)[0] == 1.5 and '每步约' in narration.decide_speed(m)[1], m
+    # Load without structure: a formula-heavy three-step page stays 2×.
+    short = steps([' '.join(f'$b_{j}$〔b 的 {j} 次项〕' for j in range(9)) for _ in range(3)])
+    m = narration.speed_metrics(short, 'x', set())
+    assert m['signals']['load'] and not m['signals']['structure'] and narration.decide_speed(m)[0] == 2.0, m
+    # Formulas inside a table are read on screen, and a block whose own speech replaces its readings adds none.
+    table = {'genre': 'formula', 'title': 't', 'blocks': [{'type': 'lead', 'text': '下表列出常用结果，讲解只读标题。'},
+             {'type': 'table', 'head': ['f', 'F'], 'rows': [[f'$x^{i}$〔x 的 {i} 次方〕', f'$x^{i+1}$〔x 的 {i+1} 次方〕'] for i in range(6)]}]}
+    assert narration.speed_metrics(table, 'x', set())['m_share'] < 0.35
+    spoken = {'genre': 'formula', 'title': 't', 'blocks': [{'type': 'lead', 'speech': '看图。',
+              'text': '$x^2$〔x 的平方，也就是 x 乘以 x 的这个很长的读法〕 和 $y^2$〔y 的平方，也是一段很长的读法〕'}]}
+    assert narration.speed_metrics(spoken, 'x', set())['m_share'] <= 1.0
+
 
 
 def test_lexicon_and_lint():
@@ -482,7 +519,7 @@ def test_pitfall_source_types_are_labelled():
     with pytest.raises(blocks.BlockError, match='source_type'):
         blocks.render_block({'type': 'pitfall', 'items': [{'wrong': 'a', 'right': 'b', 'source': 'x', 'source_type': 'rumour'}]}, 'b0', 'w')
     html, _ = blocks.render_block({'type': 'pitfall', 'items': [{'wrong': 'a', 'right': 'b', 'source': 'Q01 A2 = 0', 'source_type': 'user-script'}]}, 'b0', 'w')
-    assert '你的卷面' in html
+    assert '本卷批改记录' in html
 
 
 def test_theme_by_subdeck_and_formula_booklet():
@@ -503,7 +540,21 @@ def test_board_legibility_gate_flags_recompressed_images():
     from slice_board import legibility
     assert legibility(Image.new('RGB', (259, 2000), 'white'))['verdict'] == 'low'
     assert legibility(Image.new('RGB', (1600, 2000), 'white'))['verdict'] == 'ok'
-    assert legibility(Image.new('RGB', (600, 800), 'white'), rendered_pdf=True)['verdict'] == 'ok'
+    # A PDF is judged by its embedded image, not by the page rendered at a high dpi; vector pages pass.
+    assert legibility(Image.new('RGB', (1680, 2000), 'white'), embedded_width=420, pdf=True)['verdict'] == 'low'
+    assert legibility(Image.new('RGB', (1680, 2000), 'white'), embedded_width=None, pdf=True)['verdict'] == 'ok'
+
+
+def test_slice_board_reads_embedded_pdf_image_width(tmp_path):
+    import shutil, subprocess, sys
+    if not (shutil.which('pdftoppm') and shutil.which('pdfimages')):
+        pytest.skip('poppler not installed')
+    from PIL import Image
+    pdf = tmp_path / 'board.pdf'
+    Image.new('RGB', (420, 900), 'white').save(pdf, 'PDF', resolution=50)  # a chat-recompressed board wrapped in a PDF
+    out = subprocess.run([sys.executable, str(ROOT / 'scripts' / 'slice_board.py'), str(pdf), str(tmp_path / 's')], capture_output=True, text=True, encoding='utf-8')
+    quality = json.loads((tmp_path / 's' / 'index.json').read_text(encoding='utf-8'))['quality']
+    assert [v['verdict'] for v in quality.values()] == ['low'] and quality[next(iter(quality))]['width'] == 420, out.stdout + out.stderr
 
 
 def test_inline_integrals_are_text_style():
@@ -733,7 +784,7 @@ def test_paper_gap_next_to_chinese_text():
 def test_per_mark_board_ids_need_lost():
     d = deck()
     d['board'].append({'id': 'Q01A2', 'where': 'p1', 'point': '没乘回 2', 'note': '粗心'})
-    with pytest.raises(deck_rules.DeckError, match='per-mark score'):
+    with pytest.raises(deck_rules.DeckError, match='per-mark record'):
         deck_rules.check(d)
 
 
@@ -745,10 +796,28 @@ def test_term_ledger_skips_chrome_and_glosses():
     d = deck()
     pages = {'T01': ('<main><article><span class="def-label">Definition</span><p class="def-src">June 2024 MS</p>'
                      '<span class="ex-text">population mean</span><span class="ex-why">unknown parameter</span>'
-                     '<p>integrand（被积函数）与 exact 值，MPC 上移</p></article></main>')}
+                     '<p>integrand（被积函数）与 separable 方程，MPC 上移，MS（评分方案）给分</p></article></main>')}
     terms = [x['term'] for x in build_cards.term_ledger(d, pages)]
-    assert 'definition' not in terms and 'june' not in terms and 'integrand' not in terms
-    assert 'exact' in terms and 'MPC' in terms and not any('meanunknown' in t for t in terms)
+    assert 'definition' not in terms and 'june' not in terms and 'integrand' not in terms and 'MS' not in terms
+    assert 'separable' in terms and 'MPC' in terms and not any('meanunknown' in t for t in terms)
+    # The ledger is uncapped, plurals fold onto the singular, and taught terms_known / ignore_words are honoured.
+    many = {'T01': '<p>' + '，'.join(f'zork{chr(97 + i)}{chr(97 + j)}' for i in range(6) for j in range(6)) + '，integrands，residuals</p>'}
+    d['terms_known'] = [{'term': 'residual', 'taught_in': ['T01']}]
+    d['ignore_words'] = ['zorkaa']
+    terms = [x['term'] for x in build_cards.term_ledger(d, many)]
+    assert len(terms) == 36 and 'residual' not in terms and 'zorkaa' not in terms and 'integrand' in terms
+
+
+def test_untranslated_quotes_and_plain_math_are_flagged():
+    pages = {'A': '<p>Explain why the government might tax goods with a negative externality.</p>',
+             'B': '<p>Explain why the government might tax goods with a negative externality.</p><p>解释政府为何对负外部性商品征税。</p>'}
+    assert set(build_cards.untranslated(pages)) == {'A'}
+    card = {'id': 'x', 'genre': 'method', 'title': 't', 'blocks': [{'type': 'lead', 'text': '先算 P(X = 2)，再用 √n 与 3/8；只得 7/14 分，满分 14'},
+                                                               {'type': 'lead', 'text': '$\\frac{3}{8}$〔八分之三〕', 'source': 'MS p.3 3/8'}]}
+    hits = build_cards.plain_math(card)
+    assert len(hits) == 3, hits  # P(, √ and 3/8; the mark tally and the source citation are not maths
+    tally = {'id': 'y', 'genre': 'essay', 'title': 't', 'blocks': [{'type': 'lead', 'text': '只得 7/14 分；at least 4/6 marks'}]}
+    assert build_cards.plain_math(tally) == []
 
 
 def test_exam_registries_are_valid():
@@ -785,7 +854,155 @@ def test_exam_index_queries(tmp_path):
 
 def test_skill_package_is_uploadable(tmp_path):
     import package_skill
-    out, count = package_skill.package(tmp_path)
+    out, count = package_skill.package(tmp_path, files=package_skill.tracked_files(strict=False))
     names = zipfile.ZipFile(out).namelist()
     assert 'anki-ccpt-skill/SKILL.md' in names and any(n.startswith('anki-ccpt-skill/assets/ccpt6/fonts/') for n in names)
-    assert not any('test_ccpt6' in n or '__pycache__' in n for n in names)
+    assert not any('/test_' in n or '__pycache__' in n or n.endswith('.env') for n in names)
+    # Personal data and secrets stop the packer.
+    assert package_skill.leaks('references/x.md', b'contact someone@example.com')
+    assert package_skill.leaks('references/x.md', b'see https://drive.google.com/file/d/abc')
+    assert package_skill.leaks('scripts/x.txt', b'AZURE_SPEECH_KEY=3f9c2a7be1d04c55a0')
+    assert not package_skill.leaks('scripts/x.py', b"key = os.environ.get('AZURE_SPEECH_KEY')")
+
+
+def test_exam_fingerprint_grades_follow_exam_lock():
+    import exam_fingerprint
+    lone = exam_fingerprint.scan('Negative externalities (Total for Question 3 is 8 marks)')
+    assert lone['board_candidates'][0]['best_grade'].startswith('B-partial') and not lone['board_candidates'][0]['lockable']
+    assert lone['topics'][0]['grade'].startswith('C')
+    full = exam_fingerprint.scan('(Total for Question 3 is 8 marks) r = a + λb, partial fractions')
+    assert full['board_candidates'][0]['best_grade'] == 'B' and full['board_candidates'][0]['lockable']
+    coded = exam_fingerprint.scan('Paper reference WMA14/01A')
+    assert coded['board_candidates'][0]['best_grade'] == 'A'
+
+
+def test_privacy_blocks_personal_framing_ids_and_scores():
+    d = deck()
+    d['cards'][0]['blocks'][0]['text'] = '你的卷面 Q4 丢了 A1：终点没写成最简形式'
+    with pytest.raises(deck_rules.DeckError, match='你'):
+        deck_rules.check(d)
+    # One reviewed false positive is listed by path instead of switching the whole gate off.
+    d['privacy_reviewed'] = ['cards[0].blocks[0].text']
+    deck_rules.check(d)
+    del d['privacy_reviewed']
+    d['personal'] = True  # a deck only for the learner themselves
+    deck_rules.check(d)
+    d = deck()
+    d['research'][0]['used_for'] = '总分 49/75，丢分集中在 A 分'
+    with pytest.raises(deck_rules.DeckError, match='total score'):
+        deck_rules.check(d)
+    d = deck()
+    d['research'][0]['read'] = 'cover page: candidate number 0123'
+    with pytest.raises(deck_rules.DeckError, match='candidate'):
+        deck_rules.check(d)
+    d = deck()
+    # Neutral records, generic teaching phrases and probabilities pass.
+    d['cards'][0]['blocks'][0]['text'] = ('本卷批改记录：Q9(a) M1、A1 未得；如果不写 +c，你丢 A1；Expected score E(S) = 13/125；'
+                                          'a total of 3/100 of the output is defective；只得 7 分（满分 14）')
+    deck_rules.check(d)
+    for personal in ('卷面总分 49／75', '本卷得分 49 分（满分 75）', 'Total: 49 out of 75', '你在 Q5 丢了 1 分', 'On your script you lost the A1',
+                     'Candidate No. 0123'):
+        d = deck()
+        d['research'][0]['read'] = personal
+        with pytest.raises(deck_rules.DeckError):
+            deck_rules.check(d)
+
+
+def test_backcheck_trail_and_planning_mode(tmp_path, capsys):
+    d = deck()
+    d['coverage']['backcheck'] = d['coverage']['backcheck'][:1]
+    with pytest.raises(deck_rules.DeckError, match='two past questions'):
+        deck_rules.check(d)
+    d['coverage']['backcheck'] = [{'paper': 'WST02/01', 'series': '2024-06', 'q': '3', 'result': 'gap', 'fixed_by': []},
+                                  {'paper': 'WST02/01', 'series': '2023-01', 'q': '5', 'result': 'pass', 'fixed_by': []}]
+    with pytest.raises(deck_rules.DeckError, match='fixed_by'):
+        deck_rules.check(d)
+    # Before any card exists the research and coverage plan can be checked on its own.
+    plan = deck()
+    plan['cards'] = []
+    plan['demands'][0]['cards'] = []
+    src = tmp_path / 'plan.json'
+    src.write_text(json.dumps(plan, ensure_ascii=False), encoding='utf-8')
+    build_cards.main([str(src), '--check-research'])
+    out = json.loads(capsys.readouterr().out)
+    assert out['cards'] == 0 and out['coverage']['missing'] == ['S-1']
+
+
+def test_genre_structure_and_legacy_voice():
+    d = deck()
+    d['cards'].append({'id': 'M01', 'genre': 'method', 'title': 'm', 'covers': ['S-1'], 'blocks': [{'type': 'lead', 'text': 'x'}]})
+    with pytest.raises(deck_rules.DeckError, match='method card'):
+        deck_rules.check(d)
+    d = deck()
+    d['cards'].append({'id': 'F01', 'genre': 'formula', 'title': 'f', 'covers': ['S-1'],
+                       'blocks': [{'type': 'unpack', 'items': [{'key': 'a', 'explain': 'b'}, {'key': 'c', 'explain': 'd'}]}]})
+    with pytest.raises(deck_rules.DeckError, match='formula_booklet'):
+        deck_rules.check(d)
+    d = deck()
+    d['style']['voice'] = 'yunxi'
+    with pytest.raises(deck_rules.DeckError, match='legacy_voice'):
+        deck_rules.check(d)
+    d['style']['legacy_voice'] = True
+    deck_rules.check(d)
+
+
+def test_audio_note_tag_and_package_name(tmp_path):
+    d = deck()
+    d['deck']['name'] = 'Pearson IAL Statistics 2 WST02 Populations samples and statistics extended edition'
+    d['exam']['code'], d['exam']['units'] = '9708', ['9708/3', '9708/4']
+    assert build_cards.card_tag(d, d['cards'][0]) == '9708 · P3 · P4'
+    src = tmp_path / 'deck.json'
+    src.write_text(json.dumps(d, ensure_ascii=False), encoding='utf-8')
+    build_cards.main([str(src), str(tmp_path / 'out'), '--audio-pending'])
+    note = (tmp_path / 'out' / '补语音.txt').read_text(encoding='utf-8')
+    for needed in ('Python 3.10', 'python3 -m venv .venv', '.venv/bin/python -m pip install -r skill/scripts/requirements.txt',
+                   r'.\.venv\Scripts\python', 'winget install Gyan.FFmpeg', 'brew install ffmpeg', 'sudo apt install ffmpeg',
+                   'speech_backend.py --check', 'build_cards.py deck.json . --term-sampler', 'Claude Code'):
+        assert needed in note, needed
+    assert str(tmp_path) not in note and (tmp_path / 'out' / 'deck.json').is_file()
+    # The delivered folder alone can rebuild: its bundled skill copy builds the bundled deck.json.
+    bundled = tmp_path / 'out' / 'skill' / 'scripts' / 'build_cards.py'
+    assert bundled.is_file() and (tmp_path / 'out' / 'skill' / 'assets' / 'ccpt6' / 'base.css').is_file()
+    import subprocess, sys
+    run = subprocess.run([sys.executable, str(bundled), 'deck.json', 'rebuilt', '--audio-pending'], cwd=tmp_path / 'out',
+                         capture_output=True, text=True, encoding='utf-8')
+    assert run.returncode == 0, run.stderr
+    assert list((tmp_path / 'out' / 'rebuilt').glob('*.apkg'))
+    pkg = next((tmp_path / 'out').glob('*.apkg')).stem
+    assert len(pkg) <= 60 and not pkg.endswith('_') and pkg.split('_')[-1] in d['deck']['name'].split()
+
+
+def test_review_round_regressions(tmp_path):
+    # A lost mark written with brackets is still a per-mark record that needs its card.
+    d = deck()
+    d['board'].append({'id': 'Q9(a)M1', 'where': 'p2', 'point': 'Q9(a) M1 未得', 'items': ['S-1'], 'score': 0})
+    with pytest.raises(deck_rules.DeckError, match='lost'):
+        deck_rules.check(d)
+    # Preview of a complete deck without the trail warns instead of failing; a package still requires it.
+    d = deck()
+    d['coverage']['backcheck'] = []
+    assert any('回查' in w for w in deck_rules.check(d, preview=True)['warnings'])
+    with pytest.raises(deck_rules.DeckError, match='two past questions'):
+        deck_rules.check(d)
+    # Planning mode accepts planned card ids that do not exist yet.
+    plan = deck()
+    plan['cards'] = []
+    assert deck_rules.check_plan(plan)['coverage']['items'] == 2
+    # Exemplar pages must be real page numbers; "only images" is not a gap, a real absence is.
+    d = deck()
+    d['exam']['papers'] = [{'code': 'WST02', 'format': 'essay'}]
+    d['research'].append({'type': 'exemplar', 'ref': 'ECR', 'read': '封面页与目录', 'used_for': 'x', 'paper': 'WST02'})
+    assert deck_rules.check(d)['warnings']
+    d['research'][-1]['read'] = 'script pp.15–21 read: high, middle, low'
+    assert not deck_rules.check(d)['warnings']
+    d['research'][-1]['read'] = '封面页与目录'
+    d['research_gaps'] = 'ECR 原件网上连扫描图片版也找不到'
+    assert not deck_rules.check(d)['warnings']
+    d['research_gaps'] = 'ECR 只有扫描图片，无 OCR'
+    assert deck_rules.check(d)['warnings']
+    # Reports carry no absolute build paths.
+    src = tmp_path / 'deck.json'
+    src.write_text(json.dumps(deck(), ensure_ascii=False), encoding='utf-8')
+    build_cards.main([str(src), str(tmp_path / 'out'), '--audio-pending'])
+    report = json.loads((tmp_path / 'out' / 'report.json').read_text(encoding='utf-8'))
+    assert str(tmp_path) not in json.dumps(report, ensure_ascii=False)

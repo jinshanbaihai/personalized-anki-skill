@@ -13,7 +13,9 @@ import hashlib
 import json
 import os
 import re
+import shutil
 import subprocess
+import sys
 import tempfile
 from pathlib import Path
 
@@ -37,15 +39,42 @@ DEFAULT_LEXICON = {'λ': 'lambda', 'μ': 'mu', 'σ': 'sigma', 'θ': 'theta', 'π
                    'e.g.': '例如', 'i.e.': '也就是', 'vs': '对比', '<': '小于', '>': '大于', '×': '乘以', '÷': '除以'}
 
 
+INSTALL_FFMPEG = ('  Windows: winget install Gyan.FFmpeg    macOS: brew install ffmpeg    Linux: sudo apt install ffmpeg\n'
+                  '  Then open a new terminal so ffmpeg and ffprobe are on PATH, and run the same command again.')
+
+
+class ToolMissing(RuntimeError):
+    pass
+
+
+def missing_tools():
+    return [t for t in ('ffmpeg', 'ffprobe') if not shutil.which(t)]
+
+
+def require_tools():
+    """Narration needs ffmpeg and ffprobe; say so plainly instead of blaming the voice service later."""
+    missing = missing_tools()
+    if missing:
+        print(f'✗ ffmpeg_missing: {" and ".join(missing)} not found on PATH (needed to trim, speed up and join narration).\n'
+              + INSTALL_FFMPEG, file=sys.stderr)
+        sys.exit(4)
+
+
 def cache_root():
     return Path(os.environ.get('CCPT_TTS_CACHE') or Path(os.environ.get('XDG_CACHE_HOME') or Path.home() / '.cache') / 'ccpt-tts' / 'v1')
 
 
+# A lexicon entry applied without context can garble a sentence that already says the same thing in words
+# ("只得 7/14" + {"7/14": "14 分里得 7 分"} → "只得 14 分里得 7 分"); flag the result instead of reading it.
+GARBLED = re.compile(r'得\s*\d+\s*分里得|分里得\s*\d+\s*分\s*marks?|如果\s*[，,]?\s*(?:若(?!干)|如果|假如)|因为\s*[，,]?\s*(?:因为|由于)')
+
+
 def speech_lint(text, lexicon=None):
-    """Symbols a voice reads badly or not at all; write them as words in 〔读法〕 or speech."""
+    """Symbols a voice reads badly or not at all, and readings that came out garbled; rewrite them as words."""
     odd = set(m.group(0) for m in SYMBOLS.finditer(text))
     spoken = apply_lexicon(text, lexicon)
     odd |= {ch for ch in spoken if not PLAIN.match(ch)}
+    odd |= {m.group(0) for m in GARBLED.finditer(spoken)}
     return sorted(odd)
 
 
@@ -62,7 +91,8 @@ def apply_lexicon(text, lexicon):
             text = re.sub(r'(?<![A-Za-z0-9])' + re.escape(written) + r'(?![A-Za-z0-9])', merged[written], text)
         else:
             text = text.replace(written, merged[written])
-    return text
+    # Empty slots (a formula with no reading, a dropped relation word) leave comma runs the voice pauses on twice.
+    return re.sub(r'[，,]\s*(?:[，,]\s*)+', '，', text)
 
 
 def original_key(voice, text):
@@ -85,7 +115,7 @@ def page_name(voice, parts, speed):
 
 
 def duration(path):
-    out = subprocess.check_output(['ffprobe', '-v', 'error', '-show_entries', 'format=duration', '-of', 'default=noprint_wrappers=1:nokey=1', str(path)], text=True)
+    out = subprocess.check_output(['ffprobe', '-v', 'error', '-show_entries', 'format=duration', '-of', 'default=noprint_wrappers=1:nokey=1', str(path)], text=True, encoding='utf-8', errors='replace')
     return float(out.strip())
 
 
@@ -98,6 +128,8 @@ def decodes(path):
         if not duration(path) > 0:
             return False
         return subprocess.run(['ffmpeg', '-v', 'error', '-i', str(path), '-f', 'null', '-'], capture_output=True).returncode == 0
+    except FileNotFoundError as error:  # ffprobe/ffmpeg itself is missing: not a bad file, and not the voice service
+        raise ToolMissing(f'ffmpeg_missing: {error.filename or "ffmpeg"} not found on PATH\n{INSTALL_FFMPEG}') from None
     except (OSError, ValueError, subprocess.SubprocessError):
         return False
 
@@ -229,10 +261,12 @@ def assemble(p, media):
 
 
 # ---------------------------------------------------------------- speed rule
-# Default 2×. 1.5× only when a card is genuinely dense (references/narration.md):
-# hard triggers H1–H4, or a soft score of 3+. Length or map depth alone never slows a card.
+# Default 2×. 1.5× only when a card is genuinely dense (references/narration.md): a dependent structure to follow
+# (4+ steps, or a proof) AND a heavy load on the ear (formula-heavy narration, many readings per step, many values,
+# or several new terms in dense English). Either one alone never slows a card.
 NUMBER = re.compile(r'(?<![\w.])(\d+(?:\.\d+)?(?:/\d+)?)(?![\w.])')
-PROOF = re.compile(r'contradiction|induction|反证|归纳|show that|证明', re.I)
+PROOF = re.compile(r'contradiction|induction|反证|归纳|证明', re.I)  # "show that" is a command word, not a proof structure
+ON_SCREEN = ('table', 'figure', 'chain', 'map', 'exam')  # read on the page; their numbers and formulas are not held by ear
 
 
 def strings(value):
@@ -255,16 +289,40 @@ def block_speech(block):
         return ''
 
 
+UNSPOKEN_KEYS = {'source', 'sources', 'marks_basis', 'ref', 'alt', 'svg', 'source_type', 'speech'}
+
+
+def spoken_readings(block):
+    """Formula readings the listener actually hears in one block: none when the block's own speech replaces them,
+    and none from citations or other fields that are shown but not read."""
+    from blocks import MATH
+    if isinstance(block.get('speech'), str) and block['speech'].strip():
+        return []
+    def fields(value):
+        if isinstance(value, dict):
+            for k, v in value.items():
+                if k not in UNSPOKEN_KEYS:
+                    yield from fields(v)
+        elif isinstance(value, list):
+            for v in value:
+                yield from fields(v)
+        elif isinstance(value, str):
+            yield value
+    return [m.group(4) for t in fields(block) for m in MATH.finditer(t) if m.group(4) and m.group(4).strip()]
+
+
 def speed_metrics(card, narration_text, seen_terms):
     from blocks import MATH
-    source = '\n'.join(strings(card.get('blocks', []))) + '\n' + card.get('title', '')
-    spoken = [m.group(4) for m in MATH.finditer(source) if m.group(4) and m.group(4).strip()]  # inline $…$ and display $$…$$
-    explicit = sum(b.get('speech', '') != '' and '$' in json.dumps(b, ensure_ascii=False) for b in card['blocks'] if isinstance(b, dict))
+    heard_blocks = [b for b in card['blocks'] if isinstance(b, dict) and b.get('type') not in ON_SCREEN]
+    # Formula readings and values are counted on the same footing: only what the listener hears.
+    spoken = [r for b in heard_blocks for r in spoken_readings(b)]
+    spoken += [m.group(4) for m in MATH.finditer(card.get('title', '')) if m.group(4) and m.group(4).strip()]
+    explicit = sum(b.get('speech', '') != '' and '$' in json.dumps(b, ensure_ascii=False) for b in heard_blocks)
     # Only dependent derivation steps count; causal chains and maps carry their structure visibly.
     steps = sum(len([i for i in b.get('items', []) if isinstance(i, dict) and not i.get('trivial')]) for b in card['blocks'] if b.get('type') == 'steps')
-    # Numbers the listener must hold, from the narration only: tables, figures, chains and maps are on screen,
-    # exam blocks list where a point was examined, and step numbers, mark badges and years are not values.
-    heard = [block_speech(b) for b in card['blocks'] if b.get('type') not in ('table', 'figure', 'chain', 'map', 'exam')]
+    # Numbers the listener must hold, from the narration only: exam blocks list where a point was examined,
+    # and step numbers, mark badges and years are not values.
+    heard = [block_speech(b) for b in heard_blocks]
     values = [re.sub(r'第\d+步|(?<![A-Za-z])[MABCD] \d+|(?<!\d)(?:19|20)\d\d(?!\d)', ' ', t) for t in heard]
     numbers = max([len({n for n in NUMBER.findall(t) if n not in ('0', '1', '2', '3')}) for t in values] or [0])
     conditional = sum(len(re.findall(r'仅当|除非|前提是|取决于', t)) for t in heard)
@@ -272,26 +330,36 @@ def speed_metrics(card, narration_text, seen_terms):
     seen_terms.update(terms)
     han = len(re.findall(r'[\u4e00-\u9fff]', narration_text)) or 1
     english = len(re.findall(r'[A-Za-z]{2,}', narration_text))
-    m_share = sum(len(s) for s in spoken) / max(1, len(narration_text))
-    proof = bool(PROOF.search(source)) and card['genre'] in ('derivation', 'method')
-    return {'S': steps, 'M': len(spoken) + explicit, 'm_share': round(m_share, 3), 'T': len(terms), 'E': round(english * 100 / han, 1),
-            'N': numbers, 'C': conditional, 'proof': proof, 'worked': card['genre'] in ('derivation', 'method', 'formula')}
+    heard_text = '\n'.join(heard) + '\n' + card.get('title', '')
+    m_share = min(1.0, sum(len(s) for s in spoken) / max(1, len(heard_text)))
+    proof = bool(PROOF.search('\n'.join(strings(card.get('blocks', []))) + card.get('title', ''))) and card['genre'] in ('derivation', 'method')
+    m = {'S': steps, 'M': len(spoken) + explicit, 'm_share': round(m_share, 3), 'T': len(terms), 'E': round(english * 100 / han, 1),
+         'N': numbers, 'C': conditional, 'proof': proof, 'worked': card['genre'] in ('derivation', 'method', 'formula')}
+    m['signals'] = speed_signals(m)
+    return m
+
+
+def speed_signals(m):
+    """Two independent dimensions: a dependent structure the listener must follow, and a heavy load on the ear.
+    1.5× needs one of each; many steps alone, or many formulas alone, keep 2×."""
+    structure, load = [], []
+    if m['S'] >= 4:
+        structure.append(f'{m["S"]} 步推导')
+    if m['proof'] and m['S'] >= 3:
+        structure.append('证明结构')
+    if m['m_share'] >= 0.35:
+        load.append(f'公式读法占 {round(m["m_share"] * 100)}%')
+    if m['S'] and m['M'] >= 6 * m['S']:
+        load.append(f'{m["M"]} 处公式读法（每步约 {round(m["M"] / m["S"])} 处）')
+    if m['N'] >= 4 and m.get('worked', True):  # values matter in worked problems, not in term or essay cards
+        load.append(f'需同时记住 {m["N"]} 个数值')
+    if m['T'] >= 3 and m['E'] >= 8:
+        load.append(f'{m["T"]} 个新术语、English 密度 {m["E"]}')
+    return {'structure': structure, 'load': load}
 
 
 def decide_speed(m):
-    reasons = []
-    if m['S'] >= 4 and m['M'] >= 4:
-        reasons.append(f'{m["S"]} 步推导 · {m["M"]} 处公式读法')
-    if m['m_share'] >= 0.35:
-        reasons.append(f'公式读法占 {round(m["m_share"] * 100)}%')
-    if m['proof'] and m['S'] >= 3:
-        reasons.append('证明结构')
-    if m['N'] >= 4 and m.get('worked', True):  # values to hold matter in worked problems, not in term or essay cards
-        reasons.append(f'需同时记住 {m["N"]} 个数值')
-    if reasons:
-        return 1.5, '；'.join(reasons)
-    # Steps weigh 2 only when they carry spoken formulas; a formula-free procedure needs more traits to slow down.
-    score = ((2 if m['M'] >= 1 else 1) if m['S'] >= 3 else 0) + (m['M'] >= 3) + (m['T'] >= 3) + (m['E'] >= 8) + (m['C'] >= 2)
-    if score >= 3:
-        return 1.5, f'密度分 {score}（步骤 {m["S"]}、公式 {m["M"]}、新术语 {m["T"]}、English 密度 {m["E"]}、条件 {m["C"]}）'
+    signals = m.get('signals') or speed_signals(m)
+    if signals['structure'] and signals['load']:
+        return 1.5, '；'.join(signals['structure'] + signals['load'])
     return 2.0, ''
