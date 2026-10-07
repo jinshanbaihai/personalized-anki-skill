@@ -249,6 +249,12 @@ def map_nodes(node, depth=0):
             yield from map_nodes(child, depth + 1)
 
 
+def reading_units(text):
+    """Length as a reader feels it: each Chinese character and each English word counts once."""
+    t = plain(text)
+    return len(HAN.findall(t)) + len(re.findall(r'[A-Za-z]+', t))
+
+
 def plain(text):
     """Author text as words: formulas replaced by their readings, tags removed (lint input)."""
     return strip_tags(MATH.sub(lambda m: ' ' + (m.group(4) or m.group(2) or m.group(3) or '') + ' ', text or ''))
@@ -372,10 +378,10 @@ def lint_card(card, academic=True, theme='editorial'):
             whys = [plain(i['why']) for i in items if i.get('why')]
             if len(whys) >= 3 and len(set(whys)) == 1:
                 out.append('每一步的“为什么”都一样：逐步写出这一步的目的或依据')
-        if b.get('type') == 'sections' and any(isinstance(i, dict) and len(plain(i.get('text', ''))) > 60 for i in b.get('items', [])):
+        if b.get('type') == 'sections' and any(isinstance(i, dict) and reading_units(i.get('text', '')) > 60 for i in b.get('items', [])):
             out.append('sections 有超过 60 字的长段：文科展开改用 chain 或 map 的箭头结构')
-        if b.get('type') in ('lead', 'note') and prose_limit and len(plain(b.get('text', ''))) > 80:
-            out.append(f'{b["type"]} 超过 80 字：因果展开写进 chain 或 map 的节点，不写成段落')
+        if b.get('type') in ('lead', 'note') and prose_limit and reading_units(b.get('text', '')) > 80:
+            out.append(f'{b["type"]} 超过约 80 字（汉字与英文词合计）：因果展开写进 chain 或 map 的节点，不写成段落')
         if b.get('type') == 'chain':
             causal_lint(((n, 0) for n in chain_nodes(b.get('items', []))), out, 'chain')
         if b.get('type') == 'map':
@@ -446,8 +452,9 @@ def term_ledger(data, pages):
         # a quoted sentence (8+ English words) with its Chinese rendering beside it is explained as a whole
         segments = text_segments(body)
         visible = ' '.join(seg for i, seg in enumerate(segments) if not translated_quote(segments, i))
-        # a gloss written right after the word counts as an explanation: integrand（被积函数）, MS（评分方案）
-        defined_here |= {m.lower().strip() for m in GLOSS.findall(visible)} | {m.lower() for m in ABBR_GLOSS.findall(visible)}
+        # a gloss anywhere on the card counts as an explanation: integrand（被积函数）, MS（评分方案）
+        whole = ' '.join(segments)
+        defined_here |= {m.lower().strip() for m in GLOSS.findall(whole)} | {m.lower() for m in ABBR_GLOSS.findall(whole)}
         # compare glossed phrases in the same reduced form as the keys ("youth club members" → "youth member")
         defined_here |= {' '.join(singular(w) for w in d.split() if singular(w) not in stop and w not in stop) for d in list(defined_here)}
         for phrase in re.findall(r'\b[A-Za-z][a-z]{3,}(?: [a-z]{2,}){0,2}\b|\b[A-Z]{2,5}\b', visible):
