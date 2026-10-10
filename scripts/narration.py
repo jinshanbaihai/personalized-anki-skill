@@ -320,6 +320,10 @@ def speed_metrics(card, narration_text, seen_terms):
     explicit = sum(b.get('speech', '') != '' and '$' in json.dumps(b, ensure_ascii=False) for b in heard_blocks)
     # Only dependent derivation steps count; causal chains and maps carry their structure visibly.
     steps = sum(len([i for i in b.get('items', []) if isinstance(i, dict) and not i.get('trivial')]) for b in card['blocks'] if b.get('type') == 'steps')
+    # On a board card the derivation is the teacher's own working: spots marked "step" are its dependent steps.
+    board_steps = sum(1 for b in card['blocks'] if isinstance(b, dict) and b.get('type') == 'board'
+                      for c in b.get('crops', []) if isinstance(c, dict) for s in c.get('spots', []) or [] if isinstance(s, dict) and s.get('step'))
+    steps += board_steps
     # Numbers the listener must hold, from the narration only: exam blocks list where a point was examined,
     # and step numbers, mark badges and years are not values.
     heard = [block_speech(b) for b in heard_blocks]
@@ -332,9 +336,10 @@ def speed_metrics(card, narration_text, seen_terms):
     english = len(re.findall(r'[A-Za-z]{2,}', narration_text))
     heard_text = '\n'.join(heard) + '\n' + card.get('title', '')
     m_share = min(1.0, sum(len(s) for s in spoken) / max(1, len(heard_text)))
-    proof = bool(PROOF.search('\n'.join(strings(card.get('blocks', []))) + card.get('title', ''))) and card['genre'] in ('derivation', 'method')
+    worked = card['genre'] in ('derivation', 'method', 'formula') or bool(board_steps)
+    proof = bool(PROOF.search('\n'.join(strings(card.get('blocks', []))) + card.get('title', ''))) and (card['genre'] in ('derivation', 'method') or bool(board_steps))
     m = {'S': steps, 'M': len(spoken) + explicit, 'm_share': round(m_share, 3), 'T': len(terms), 'E': round(english * 100 / han, 1),
-         'N': numbers, 'C': conditional, 'proof': proof, 'worked': card['genre'] in ('derivation', 'method', 'formula')}
+         'N': numbers, 'C': conditional, 'proof': proof, 'worked': worked}
     m['signals'] = speed_signals(m)
     return m
 

@@ -10,6 +10,7 @@ import re
 GENRES = {
     'term': '术语', 'derivation': '推导', 'method': '方法', 'chain': '因果', 'map': '导图', 'diagram': '图解',
     'compare': '辨析', 'essay': '论述', 'pitfall': '易错', 'overview': '全景', 'formula': '公式', 'case': '案例',
+    'board': '板书',
 }
 THEMES = {'editorial', 'paper', 'lab', 'blueprint', 'manuscript'}
 RESEARCH_TYPES = {'spec', 'qp', 'ms', 'er', 'exemplar', 'specimen', 'textbook', 'board', 'teacher', 'other'}
@@ -234,10 +235,14 @@ def check_coverage(data, card_ids, card_covers, planning=False, preview=False):
     for k, v in by_id.items():
         if planning or k not in taught or text(v.get('existing')):
             continue
+        # A board card counts when the learner's own board shows the definition or the arrows (references/card-genres.md);
+        # when it does not, the deck adds a term or chain card after it.
         if v.get('kind') in ('term', 'command'):
-            need(any(genres[c] == 'term' for c in taught[k]), f'coverage item {k} is a {v["kind"]}: give it its own term card, not only a mention inside another card')
+            need(any(genres[c] in ('term', 'board') for c in taught[k]),
+                 f'coverage item {k} is a {v["kind"]}: give it its own term card (or a board card whose board shows it), not only a mention inside another card')
         if v.get('kind') == 'chain':
-            need(any(structure[c] & {'chain', 'map'} for c in taught[k]), f'coverage item {k} is a causal chain: teach it with a chain or map block (arrows), not paragraphs')
+            need(any(structure[c] & {'chain', 'map', 'board'} for c in taught[k]),
+                 f'coverage item {k} is a causal chain: teach it with a chain or map block (arrows), or a board card showing the board\'s own arrows, not paragraphs')
     if status == 'complete' and not planning:
         need(not missing, f'coverage is complete but these points have no card: {missing}')
     board = data.get('board', [])
@@ -260,6 +265,7 @@ def check_coverage(data, card_ids, card_covers, planning=False, preview=False):
             need(planning or linked or text(point.get('not_carded')), f'board[{i}] records a lost mark: name the card that fixes it (M0 → method/derivation card, A0 → pitfall and finish item, B0 → term card) or explain not_carded')
         if point.get('legibility') == 'low':
             need(text(point.get('confirmed_by')), f'board[{i}] is hard to read: say which source confirmed the content (confirmed_by); never fill in guessed words')
+    check_board_shown(data, board, planning)
     need(board or text(data.get('board_waived')), 'board: list the board points (B01…), or say in board_waived why this deck has no board (e.g. made from a syllabus section only)')
     undemanded = check_demands(data, by_id, set(genres), planning)
     adjacent = [k for k, v in by_id.items() if v['class'] == 'adjacent']
@@ -298,6 +304,38 @@ def check_trail(cov, status, card_ids, preview=False):
         need(not missing or fixed, f'{w}: missing keywords need the card that now carries them (fixed_by)')
     return ({'records': len(backcheck), 'gaps': sum(b['result'] == 'gap' for b in backcheck), 'series': sorted({b['series'] for b in backcheck})},
             {'records': len(coldread), 'missing': sum(len(c.get('missing', [])) for c in coldread)})
+
+
+def board_crops(data):
+    for c in data.get('cards', []):
+        for b in c.get('blocks', []) if isinstance(c, dict) else []:
+            if isinstance(b, dict) and b.get('type') == 'board':
+                yield c, b, [x for x in b.get('crops', []) if isinstance(x, dict)]
+
+
+def check_board_shown(data, board, planning=False):
+    """Board mode: the learner read the whole board once, so every board point that teaches something appears on a board card
+    (a crop lists it in "points"), or says in not_shown why it does not (an aside, a corrected slip, a mark record)."""
+    if planning:
+        return
+    ids = {p.get('id') for p in board if isinstance(p, dict)}
+    shown = set()
+    any_board = False
+    for card, block, crops in board_crops(data):
+        any_board = True
+        for j, crop in enumerate(crops):
+            points = crop.get('points', [])
+            need(isinstance(points, list) and all(x in ids for x in points),
+                 f'card {card["id"]}: crops[{j}].points must list board point ids (B01…) shown in that crop')
+            shown |= set(points)
+    if not any_board:
+        return
+    for i, point in enumerate(board):
+        if 'lost' in point or point.get('id') in shown:
+            continue
+        need(text(point.get('not_shown')),
+             f'board[{i}] {point.get("id")} is on the board but on no board card: add it to the "points" of the crop that shows it, '
+             'or say in not_shown why it is left out (an aside, a corrected slip, outside the exam)')
 
 
 PER_MARK = re.compile(r'Q\d+(?:[a-z]|\([a-z]+\)|\([ivx]+\))*\s*[BMAC]\d*\*?')
@@ -413,6 +451,13 @@ def check_genre(c, academic=True):
     if c['genre'] == 'case':
         need(blocks_of(c, 'chain') or blocks_of(c, 'map') or blocks_of(c, 'sections'),
              f'card {cid}: a case card ties the real case to the theory with a chain, map or sections block')
+    if c['genre'] == 'board':
+        need(blocks_of(c, 'board'), f'card {cid}: a board card shows the learner\'s own board: give it a board block (src + crops)')
+    for b in blocks_of(c, 'board'):
+        need(text(b.get('src')), f'card {cid}: a board block names its image in "src" (relative to deck.json)')
+        crops = b.get('crops')
+        need(isinstance(crops, list) and crops and all(isinstance(x, dict) for x in crops),
+             f'card {cid}: a board block lists its crops (the parts of the board this knowledge point needs)')
 
 
 def check_plan(data):

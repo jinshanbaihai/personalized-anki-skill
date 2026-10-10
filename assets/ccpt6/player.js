@@ -31,10 +31,20 @@
    const el=cue&&target(cue.target);
    if(el){el.classList.add('narrating');
     // Keep the narrated part visible, but never fight a reader who just scrolled.
-    if(!audio.paused&&!inView(el)&&Date.now()-lastUserScroll>2500)el.scrollIntoView({block:'center',behavior:reduce?'auto':'smooth'});}
+    const free=!audio.paused&&Date.now()-lastUserScroll>2500;
+    if(free&&!inView(el))el.scrollIntoView({block:'center',behavior:reduce?'auto':'smooth'});
+    // A framed spot on a board that pans sideways (phone): bring it into the visible part of the board.
+    const pan=el.closest('.bd-scroll');
+    if(free&&pan){const r=el.getBoundingClientRect(),b=pan.getBoundingClientRect();
+     if(r.left<b.left||r.right>b.right)pan.scrollTo({left:pan.scrollLeft+(r.left-b.left)-Math.max(0,(b.width-r.width)/2),behavior:reduce?'auto':'smooth'});}}
   }
   root.classList.toggle('narration-paused',audio.paused&&!!active);
  }
+ // Board crops: a tap switches between the whole board and the legible size; boards wider than the column say they pan.
+ function markPan(){root.querySelectorAll('.bd-crop').forEach(c=>{const s=c.querySelector('.bd-scroll');c.classList.toggle('bd-pan',!!s&&s.scrollWidth>s.clientWidth+2);});}
+ on(root,'click',e=>{const s=e.target.closest&&e.target.closest('.bd-scroll');if(!s)return;s.closest('.bd-crop').classList.toggle('bd-alt');markPan();});
+ root.querySelectorAll('.bd-img').forEach(img=>on(img,'load',markPan));
+ on(window,'resize',markPan);markPan();
  on(window,'wheel',()=>{lastUserScroll=Date.now();},{passive:true});
  on(window,'touchmove',()=>{lastUserScroll=Date.now();},{passive:true});
  on(button,'click',async()=>{
@@ -76,7 +86,7 @@
    const rg=document.createRange();rg.selectNodeContents(node);const b=rg.getBoundingClientRect();if(!b.width||!b.height)continue;
    let k=1;const sc=el.closest('[data-scale]');if(sc)k=parseFloat(sc.dataset.scale)||1;
    if(el instanceof SVGElement){const m=el.getScreenCTM();if(m)k=Math.hypot(m.c,m.d);}
-   const chrome=!!el.closest('.cc-meta,.cc-foot,.mark-badge,.tagline,.def-label,.def-src,.pf-src,.tbl-cap,.cc-player,.mm-rel,.blk-label,.mm-label,.ao-badge,.def-lists h4,.subgoal-mark,.step-n,.step-mark,.ch-rel-cond,.pf-src-type,.cc-fb,.heur-ex');
+   const chrome=!!el.closest('.cc-meta,.cc-foot,.mark-badge,.tagline,.def-label,.def-src,.pf-src,.tbl-cap,.cc-player,.mm-rel,.blk-label,.mm-label,.ao-badge,.def-lists h4,.subgoal-mark,.step-n,.step-mark,.ch-rel-cond,.pf-src-type,.cc-fb,.heur-ex,.bd-where');
    const math=!!el.closest('math');
    runs.push({text:node.textContent.trim().slice(0,60),font:+(parseFloat(st.fontSize)*k).toFixed(1),kind:math?'math':chrome?'chrome':'content'});
   }
@@ -92,6 +102,8 @@
    lineStartPunct:(()=>{const bad=[];root.querySelectorAll('.cc-body p,.cc-body li,.cc-body dd,.cc-body .mm-node,.cc-body .ch-node').forEach(el=>{const w=document.createTreeWalker(el,NodeFilter.SHOW_TEXT);let lastTop=null;while(w.nextNode()){const t=w.currentNode;for(let i=0;i<t.length;i++){if(!'，。；：、）'.includes(t.data[i]))continue;const r=document.createRange();r.setStart(t,i);r.setEnd(t,i+1);const b=r.getBoundingClientRect();const prev=document.createRange();if(i>0){prev.setStart(t,i-1);prev.setEnd(t,i);const pb=prev.getBoundingClientRect();if(pb.top<b.top-4&&b.left<=el.getBoundingClientRect().left+24)bad.push(t.data.slice(Math.max(0,i-6),i+1));}}}});return bad.slice(0,6);})(),
    fontsFailed:document.fonts?[...document.fonts].filter(f=>f.status==='error').map(f=>f.family):[],
    mapOverlaps:overlaps.length+(window.CCMap?CCMap.audit(document).overlaps.length:0),maps:[...root.querySelectorAll('.mm')].map(m=>({layout:m.dataset.applied||m.dataset.layout,depth:+m.dataset.depth})),
+   images:root.querySelectorAll('img').length,brokenImages:[...root.querySelectorAll('img')].filter(i=>i.complete&&!i.naturalWidth).map(i=>i.getAttribute('src')).slice(0,6),
+   boardScale:Math.min(...[...root.querySelectorAll('.bd-img')].filter(i=>i.naturalWidth).map(i=>+(i.getBoundingClientRect().width/i.naturalWidth).toFixed(2)),9),
    players:root.querySelectorAll('.speak').length,math:root.querySelectorAll('math').length,cues:cues.length,speed,encoded,pending};
  };
  window.ccptCleanup=()=>{cleaned=true;ctl.abort();try{audio.pause();audio.currentTime=0;}catch(e){}clearCue();if(window.ccptLayoutCleanup)window.ccptLayoutCleanup();if(window.ccptSingleCleanup)window.ccptSingleCleanup();};

@@ -742,6 +742,61 @@ def r_figure(b, bid, where):
     return out, parts or [Part(bid, '', 0)]
 
 
+def r_board(b, bid, where):
+    """The learner's own board, cut by knowledge point (board cards). build_cards.py fills each crop's "_media"
+    (board_images.prepare); without it (lint, speed metrics) the crops render as empty frames with the same narration.
+    Narration: each crop's speech, then each spot's speech; a spot is a box on the crop that is framed while it is read."""
+    crops = need_list(b, 'crops', where)
+    label = inline(b.get('label'), where)
+    out = (f'<h3 class="blk-label">{label.html}</h3>' if label else '') + '<div class="bd">'
+    parts, prev = [], None
+    for j, crop in enumerate(crops):
+        w = f'{where}.crops[{j}]'
+        need_object(crop, w)
+        speech = crop.get('speech')
+        if speech is not None and not isinstance(speech, str):
+            fail(w, '"speech" is the narration that explains this part of the board')
+        spots = crop.get('spots', []) or []
+        if not isinstance(spots, list):
+            fail(w, '"spots" is a list of {"box": [x0, y0, x1, y1], "speech": "…"}')
+        if not (speech or '').strip() and not spots:
+            fail(w, 'a crop needs "speech" (what this part of the board teaches) or spots with speech: the narration explains the board, '
+                    'it does not leave the reader alone with the picture')
+        locator = inline(crop.get('where'), w)
+        box = crop.get('box') if isinstance(crop.get('box'), list) and len(crop.get('box')) == 4 else None
+        if prev is not None:
+            pbox, psrc = prev
+            joined_on = box and pbox and psrc == b.get('src') and 0 <= box[1] - pbox[3] <= 40 and box[0] < pbox[2] and box[2] > pbox[0]
+            if not joined_on:  # the next crop comes from somewhere else on the board
+                out += '<div class="bd-sep" aria-hidden="true"></div>'
+        prev = (box, b.get('src'))
+        nid = f'{bid}-c{j}'
+        media = crop.get('_media')
+        alt = esc(crop.get('alt') or strip_tags(locator.html) or '板书片段')
+        spot_html = ''
+        if (speech or '').strip():  # the crop as a whole first, then each framed spot in order
+            parts.append(Part(nid, strip_tags(dollars(speech)), 0))
+        for k, spot in enumerate(spots):
+            sw = f'{w}.spots[{k}]'
+            text = need_text(spot, 'speech', sw)
+            sid = f'{nid}-s{k}'
+            if media:
+                pos = media['spots'][k]
+                spot_html += (f'<span class="bd-spot" data-node="{sid}" style="left:{pos["left"]}%;top:{pos["top"]}%;'
+                              f'width:{pos["width"]}%;height:{pos["height"]}%"></span>')
+            parts.append(Part(sid, strip_tags(dollars(text)), 0))
+        if media:
+            frame = (f'<div class="bd-frame" style="--bd-w:{media["w"]}px"><img class="bd-img" src="{esc(media["file"])}" width="{media["w"]}" '
+                     f'height="{media["h"]}" alt="{alt}" data-tone="{esc(media["tone"])}" decoding="async">{spot_html}</div>')
+        else:
+            frame = '<div class="bd-frame bd-unprepared"></div>'
+        out += (f'<figure class="bd-crop" data-node="{nid}">' + (f'<figcaption class="bd-where">{locator.html}</figcaption>' if locator else '')
+                + f'<div class="bd-scroll" title="点图切换：整幅／放大">{frame}</div></figure>')
+    if label and parts:
+        parts[0].text = joined(label.speech, parts[0].text)
+    return out + '</div>', parts
+
+
 # Where a pitfall comes from; a teacher's note is never presented as an examiner's report.
 SOURCE_TYPES = {'er': '考官报告', 'ms': '评分方案', 'ecr': '考生答卷评语', 'specimen': '官方示范答案', 'teacher': '老师批注',
                 'user-script': '本卷批改记录', 'textbook': '教材', 'author': '归纳'}
@@ -834,7 +889,7 @@ def r_html(b, bid, where):
 RENDERERS = {
     'lead': r_lead, 'note': r_note, 'definition': r_definition, 'unpack': r_unpack, 'examples': r_examples,
     'table': r_table, 'steps': r_steps, 'chain': r_chain, 'map': r_map, 'figure': r_figure, 'pitfall': r_pitfall,
-    'exam': r_exam, 'finish': r_finish, 'sections': r_sections, 'html': r_html,
+    'exam': r_exam, 'finish': r_finish, 'sections': r_sections, 'html': r_html, 'board': r_board,
 }
 
 

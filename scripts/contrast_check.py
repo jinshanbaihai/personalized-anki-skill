@@ -5,6 +5,10 @@ Usage: python scripts/contrast_check.py [assets/ccpt6/themes]
 Text pairs must reach 4.5:1 (SC 1.4.3); meaningful non-text marks (map wires, node edges, chart
 lines, control borders, narration focus ring) must reach 3:1 (SC 1.4.11). Prints a markdown table
 and exits non-zero on any failure.
+
+Dry-eye rule (light mode): no large-area colour (page, panels, tinted boxes, the Anki card behind the page)
+may be brighter than the reference paper #f6f1e7 (relative luminance 0.883). A near-white page is the
+brightest thing on the desk; capping it lowers glare without touching the inks, accents or night palettes.
 """
 import re
 import sys
@@ -21,6 +25,11 @@ NONTEXT = [('rule-strong', 'bg'), ('rule-strong', 'surface'), ('wire', 'surface-
            ('accent', 'surface'), ('c1', 'surface'), ('c2', 'surface'), ('c3', 'surface'), ('c1', 'bg'), ('c2', 'bg'), ('c3', 'bg'),
            ('k-policy', 'surface'), ('k-effect', 'surface'), ('k-cond', 'surface'), ('k-eval', 'accent-soft'),
            ('k-example', 'good-soft'), ('k-limit', 'bad-soft')]
+
+
+# The reference paper #f6f1e7 is 0.883; the cap leaves rounding room, not room for white.
+PAPER_CAP = 0.885
+LARGE_AREAS = ('bg', 'surface', 'surface-2', 'accent-soft', 'good-soft', 'bad-soft', 'kw')
 
 
 def lum(hexv):
@@ -46,6 +55,13 @@ for theme in ['editorial', 'paper', 'lab', 'blueprint', 'manuscript']:
     css = (THEMES / f'{theme}.css').read_text(encoding='utf-8')
     light = re.search(r'\.ccpt6\[data-theme="%s"\]\{([^}]*)\}' % theme, css).group(1)
     dark = re.search(r'\.nightMode \.ccpt6\[data-theme="%s"\],\.night_mode \.ccpt6\[data-theme="%s"\]\{([^}]*)\}' % (theme, theme), css).group(1)
+    t_light = tokens(light)
+    for name in LARGE_AREAS:
+        if name in t_light and lum(t_light[name]) > PAPER_CAP:
+            fails.append(f'{theme}/light: --{name} {t_light[name]} is brighter than the dry-eye paper cap ({lum(t_light[name]):.3f} > {PAPER_CAP})')
+    card = re.search(r'^\.card:has\(\.ccpt6\[data-theme="%s"\]\)\{background:(#[0-9a-fA-F]{3,6})\}' % theme, css, re.M)
+    if not card or lum(card.group(1)) > PAPER_CAP:
+        fails.append(f'{theme}/light: the Anki card background behind the page is missing or brighter than the dry-eye paper cap')
     for mode, block in (('light', light), ('night', dark)):
         t = tokens(block)
         worst_text, worst_non = (99, ''), (99, '')
@@ -66,7 +82,8 @@ for theme in ['editorial', 'paper', 'lab', 'blueprint', 'manuscript']:
 print('| theme | mode | bg | ink | ink-2 | accent | 最低文字对比（对） | 最低非文字对比（对） |')
 print('|---|---|---|---|---|---|---|---|')
 print('\n'.join(rows))
-print(f'\n{len(TEXT)} text pairs (≥4.5) + {len(NONTEXT)} non-text pairs (≥3.0) per theme×mode')
+print(f'\n{len(TEXT)} text pairs (≥4.5) + {len(NONTEXT)} non-text pairs (≥3.0) per theme×mode; '
+      f'light large areas ({", ".join(LARGE_AREAS)}) and the card background ≤ luminance {PAPER_CAP} (dry-eye paper cap, #f6f1e7)')
 if fails:
     print('\nFAILURES:\n' + '\n'.join(fails))
     sys.exit(1)
