@@ -1006,3 +1006,227 @@ def test_review_round_regressions(tmp_path):
     build_cards.main([str(src), str(tmp_path / 'out'), '--audio-pending'])
     report = json.loads((tmp_path / 'out' / 'report.json').read_text(encoding='utf-8'))
     assert str(tmp_path) not in json.dumps(report, ensure_ascii=False)
+
+
+# ---------------------------------------------------------------- dry-eye paper and board cards
+
+def test_light_themes_stay_below_the_dry_eye_paper(tmp_path):
+    """No light-mode page, panel or tinted box is brighter than the reference paper #f6f1e7; a white panel fails."""
+    themes = tmp_path / 'themes'
+    shutil.copytree(ROOT / 'assets/ccpt6/themes', themes)
+    paper = themes / 'paper.css'
+    text = paper.read_text(encoding='utf-8')
+    assert '--surface:#f6f1e7' in text and '#ffffff;--surface-2' not in text
+    paper.write_text(text.replace('--surface:#f6f1e7', '--surface:#ffffff', 1), encoding='utf-8')
+    result = subprocess.run([sys.executable, str(ROOT / 'scripts/contrast_check.py'), str(themes)], capture_output=True, text=True)
+    assert result.returncode == 1 and 'dry-eye paper cap' in result.stdout
+    for css in (ROOT / 'assets/ccpt6/themes').glob('*.css'):  # night palettes were not part of the change
+        assert re.search(r'\.nightMode \.ccpt6\[data-theme="[a-z]+"\],\.night_mode', css.read_text(encoding='utf-8'))
+
+
+def board_png(path, name_row=True):
+    """A white 1300-px board: an optional private header, then three ink blocks of two lines each."""
+    from PIL import Image, ImageDraw
+    image = Image.new('RGB', (1300, 1400), (255, 255, 255))
+    draw = ImageDraw.Draw(image)
+    if name_row:
+        draw.rectangle((60, 30, 500, 70), fill=(90, 90, 90))           # the "student name" line to be masked
+    for top, colour in ((200, (20, 20, 20)), (600, (210, 30, 30)), (1000, (20, 70, 200))):
+        for line in range(2):
+            y = top + line * 60
+            draw.rectangle((80, y, 700, y + 30), fill=colour)
+    image.save(path)
+    return path
+
+
+def board_deck(tmp_path):
+    board_png(tmp_path / 'board.png')
+    d = deck()
+    d['board'] = [{'id': 'B01', 'where': '板书上方', 'point': 'statistic 的定义', 'items': ['S-1']},
+                  {'id': 'B02', 'where': '板书中部', 'point': '红笔：参数不是统计量', 'items': ['S-1']},
+                  {'id': 'B03', 'where': '板书下方', 'point': '离题例子', 'items': [], 'note': '离题', 'not_shown': '老师的题外话'}]
+    d['cards'] = [{'id': 'BD1', 'genre': 'board', 'title': 'Statistic：只用样本算出的量', 'covers': ['S-1'], 'sources': ['本课板书'],
+                   'blocks': [{'type': 'board', 'src': 'board.png', 'masks': [[50, 20, 520, 80]], 'crops': [
+                       {'box': [40, 10, 760, 300], 'where': '板书上方', 'points': ['B01'], 'speech': '这一块是定义。',
+                        'spots': [{'box': [70, 190, 720, 240], 'speech': '第一行：只用样本。', 'step': True},
+                                  {'box': [70, 250, 720, 300], 'speech': '第二行：不含未知参数。'}]},
+                       {'box': [60, 580, 720, 700], 'where': '板书中部', 'points': ['B02'], 'speech': '红笔提醒：总体参数不是统计量。'}]}]}]
+    d['demands'][0]['cards'] = ['BD1']
+    d['coverage']['backcheck'][1]['fixed_by'] = ['BD1']
+    d['coverage']['coldread'] = [{'card': 'BD1', 'missing': [], 'fixed_by': []}]
+    return d
+
+
+def test_board_card_builds_masks_and_delivers_crop_only_sources(tmp_path):
+    from PIL import Image
+    d = board_deck(tmp_path)
+    assert deck_rules.check(d)['coverage']['missing'] == []        # a term point is taught by the board that shows it
+    src = tmp_path / 'deck.json'
+    src.write_text(json.dumps(d, ensure_ascii=False), encoding='utf-8')
+    out = tmp_path / 'out'
+    build_cards.main([str(src), str(out), '--audio-pending'])
+    page = json.loads((out / 'pages.json').read_text(encoding='utf-8'))['BD1']
+    names = re.findall(r'src="(ccpt6-board-[0-9a-f]{16}\.png)"', page)
+    assert len(names) == 2 and 'data-tone="light"' in page and page.count('class="bd-spot"') == 2 and 'bd-sep' in page
+    assert 'data-genre="board"' in page and '板书' in page
+    with zipfile.ZipFile(next(out.glob('*.apkg'))) as z:
+        assert set(names) <= set(json.loads(z.read('media')).values())
+    # The masked header is painted out in the crop that overlaps it.
+    first = Image.open(out / 'media' / names[0]).convert('RGB')
+    assert first.getpixel((100, 40)) == (255, 255, 255)
+    # Narration: the crop first, then its spots in order, then the next crop.
+    manifest = json.loads((out / 'speech-manifest.json').read_text(encoding='utf-8'))[0]
+    assert [s['target'] for s in manifest['segments']] == [None, 'b0-c0', 'b0-c0-s0', 'b0-c0-s1', 'b0-c1']
+    # The delivered folder rebuilds alone, and its board copy holds only the cropped areas (header masked).
+    delivered = json.loads((out / 'deck.json').read_text(encoding='utf-8'))
+    copy = delivered['cards'][0]['blocks'][0]['src']
+    assert copy.startswith('board/') and 'masks' not in delivered['cards'][0]['blocks'][0]
+    sheet = Image.open(out / copy).convert('RGB')
+    assert sheet.getpixel((100, 40)) == (255, 255, 255) and sheet.getpixel((300, 1010)) == (255, 255, 255)  # name, uncropped block
+    assert sheet.getpixel((300, 210)) == (20, 20, 20)
+    build_cards.main([str(out / 'deck.json'), str(tmp_path / 'again'), '--preview'])
+    preview = (tmp_path / 'again' / 'BD1.html').read_text(encoding='utf-8')
+    assert sorted(re.findall(r'src="media/(ccpt6-board-[0-9a-f]{16}\.png)"', preview)) == sorted(names)
+    # Speed rule: spots marked "step" are the teacher's derivation steps.
+    report = json.loads((out / 'report.json').read_text(encoding='utf-8'))
+    assert report['cards'][0]['metrics']['S'] == 1 and report['cards'][0]['metrics']['worked']
+
+
+@pytest.mark.parametrize('mutate, error, message', [
+    (lambda d: d['board'][1].update(not_shown=None) or d['cards'][0]['blocks'][0]['crops'][1].update(points=[]), deck_rules.DeckError, 'not_shown'),
+    (lambda d: d['cards'][0]['blocks'][0]['crops'][0].update(points=['B99']), deck_rules.DeckError, 'board point ids'),
+    (lambda d: d['cards'][0].update(blocks=[{'type': 'lead', 'text': '只有文字'}]), deck_rules.DeckError, 'board block'),
+    (lambda d: d['cards'][0]['blocks'][0]['crops'][1].update(speech=''), blocks.BlockError, 'narration explains the board'),
+    (lambda d: d['cards'][0]['blocks'][0]['crops'][1].update(box=[60, 580, 1720, 700]), SystemExit, 'outside the image'),
+    (lambda d: d['cards'][0]['blocks'][0]['crops'][0]['spots'][0].update(box=[70, 900, 720, 950]), SystemExit, 'outside its crop'),
+    (lambda d: d['cards'][0]['blocks'][0].update(src='missing.png'), SystemExit, 'not found'),
+    # A board point where the reader may need help (aid, or low legibility) needs an annotation on the crop that shows it.
+    (lambda d: d['board'][1].update(aid='unfinished', aid_note='红笔只写了结论，评分方案要求说出原因'), deck_rules.DeckError, 'add "annotate"'),
+    (lambda d: d['board'][1].update(aid='slip', aid_note='x'), deck_rules.DeckError, 'board\\[1\\].aid'),
+    (lambda d: d['board'][1].update(aid='vague'), deck_rules.DeckError, 'aid_note'),
+    (lambda d: d['cards'][0]['blocks'][0]['crops'][1].update(annotate=dict(NOTE, **{'from': ['B01']})), deck_rules.DeckError, 'annotate.from'),
+    (lambda d: d['cards'][0]['blocks'][0]['crops'][1].update(annotate=dict(NOTE, aid='slip')), blocks.BlockError, '"aid"'),
+    # An annotation names its sources: board points or official material from research, never the maker's own.
+    (lambda d: d['cards'][0]['blocks'][0]['crops'][1].update(annotate=dict(NOTE, **{'from': []})), deck_rules.DeckError, 'annotate.from'),
+    (lambda d: d['cards'][0]['blocks'][0]['crops'][1].update(annotate=dict(NOTE, **{'from': ['我的理解']})), deck_rules.DeckError, 'annotate.from'),
+    (lambda d: d['cards'][0]['blocks'][0]['crops'][1].update(annotate=dict(NOTE, exam='')), blocks.BlockError, 'exam'),
+    (lambda d: d['cards'][0]['blocks'][0]['crops'][1].update(annotate=dict(NOTE, root={'text': '只有根'})), blocks.BlockError, 'small mind map'),
+])
+def test_board_rules(tmp_path, mutate, error, message, capsys):
+    d = board_deck(tmp_path)
+    mutate(d)
+    if error is SystemExit:
+        src = tmp_path / 'deck.json'
+        src.write_text(json.dumps(d, ensure_ascii=False), encoding='utf-8')
+        with pytest.raises(SystemExit) as stop:
+            build_cards.main([str(src), str(tmp_path / 'out'), '--preview'])
+        assert message in str(stop.value)
+    elif error is blocks.BlockError:
+        with pytest.raises(blocks.BlockError, match=message):
+            blocks.render_block(d['cards'][0]['blocks'][0], 'b0', 'w')
+    else:
+        with pytest.raises(error, match=message):
+            deck_rules.check(d)
+
+
+NOTE = {'aid': 'unfinished', 'exam': '9708 MS：statistic 只用样本数据', 'from': ['synthetic MS', 'B01'],
+        'root': {'text': '红笔：参数不是统计量', 'children': [
+            {'rel': '因为', 'text': '参数描述总体，通常未知'},
+            {'rel': '所以', 'kind': 'definition', 'text': '含未知参数的式子不是 statistic'}]}}
+
+
+def test_board_annotation_sits_beside_its_crop_and_is_read_after_it(tmp_path):
+    d = board_deck(tmp_path)
+    d['board'][1].update(aid='unfinished', aid_note='红笔只写了结论，评分方案要求说出原因')
+    d['cards'][0]['blocks'][0]['crops'][1]['annotate'] = NOTE
+    deck_rules.check(d)
+    src = tmp_path / 'deck.json'
+    src.write_text(json.dumps(d, ensure_ascii=False), encoding='utf-8')
+    out = tmp_path / 'out'
+    build_cards.main([str(src), str(out), '--audio-pending'])
+    page = json.loads((out / 'pages.json').read_text(encoding='utf-8'))['BD1']
+    pair = page[page.index('class="bd-pair"'):]
+    assert pair.index('class="bd-crop"') < pair.index('class="bd-note"') and '批注 · 未竟处' in pair and '考试要求：' in pair
+    assert pair.count('class="mm-node"') == 3
+    manifest = json.loads((out / 'speech-manifest.json').read_text(encoding='utf-8'))[0]
+    targets = [s['target'] for s in manifest['segments']]
+    assert targets[-4:] == ['b0-c1', 'b0-c1-a-n0', 'b0-c1-a-n1', 'b0-c1-a-n2']
+    assert manifest['segments'][-3]['text'].startswith('批注，把这里讲完')
+    report = json.loads((out / 'report.json').read_text(encoding='utf-8'))
+    assert not any('批注' in w for c in report['cards'] for w in c['warnings'])
+
+
+def test_board_annotation_stays_small_and_relational():
+    many = {'aid': 'unfinished', 'exam': 'MS', 'root': {'text': '根', 'children': [{'text': f'节点{i}'} for i in range(8)]}}
+    card = {'id': 'BD1', 'genre': 'board', 'title': 't', 'blocks': [
+        {'type': 'board', 'src': 'b.png', 'crops': [{'box': [0, 0, 10, 10], 'speech': '这一块。', 'annotate': many}]}]}
+    warnings = build_cards.lint_card(card)
+    assert any('9 个节点' in w and '补充卡' in w for w in warnings) and any('没有关系词' in w for w in warnings)
+
+
+def test_board_cards_explain_the_mark_scheme_and_board_never_correct_them():
+    fixing = {'aid': 'unfinished', 'exam': 'MS', 'root': {'text': '评分方案：tax 使 demand 下降', 'children': [
+        {'rel': '更准确的说法', 'text': '供给上移，需求量沿 D 下降'}]}}
+    card = {'id': 'BD1', 'genre': 'board', 'title': 't', 'blocks': [
+        {'type': 'board', 'src': 'b.png', 'crops': [{'box': [0, 0, 10, 10], 'speech': '板书这里是笔误。', 'annotate': fixing}]}]}
+    warnings = build_cards.lint_card(card)
+    assert any('纠错说法' in w and '笔误' in w and '更准确' in w for w in warnings)
+    typed = {'id': 'T1', 'genre': 'term', 'title': 't', 'blocks': [{'type': 'note', 'text': '评分方案这里写得不准确，应画成供给上移。'}]}
+    assert any('评分方案或考纲有问题' in w for w in build_cards.lint_card(typed))
+    helping = {'aid': 'unfinished', 'exam': 'MS', 'root': {'text': '评分方案：tax 使 demand 下降', 'children': [
+        {'rel': '即', 'text': 'demand 曲线向左移动'}, {'rel': '所以', 'kind': 'effect', 'text': '均衡航班数减少到 Q*'}]}}
+    card['blocks'][0]['crops'][0].update(speech='评分方案的路径：税提高成本，demand 下降。', annotate=helping)
+    assert not any('纠错' in w for w in build_cards.lint_card(card))
+
+
+def test_board_lint_keeps_the_board_central():
+    card = {'id': 'BD1', 'genre': 'board', 'title': 't', 'blocks': [
+        {'type': 'note', 'text': '这是一段很长的打字讲解，' * 14},
+        {'type': 'board', 'src': 'b.png', 'crops': [{'box': [0, 0, 10, 10], 'speech': '讲解这一块板书的每一行内容，' * 8}]}]}
+    warnings = build_cards.lint_card(card)
+    assert any('以板书为主' in w for w in warnings) and any('spots' in w for w in warnings)
+    # A crop only a couple of board lines tall is itself the line being explained: no spots needed.
+    short = [dict(card['blocks'][1], crops=[dict(card['blocks'][1]['crops'][0], _media={'lines': 2})])]
+    assert not any('spots' in w for w in build_cards.lint_card(card, prepared=[card['blocks'][0]] + short))
+
+
+def test_board_regions_follow_blank_rows(tmp_path):
+    import board_images
+    from PIL import Image
+    board_png(tmp_path / 'b.png', name_row=False)
+    image = Image.open(tmp_path / 'b.png').convert('RGB')
+    bg, regions = board_images.propose(image)
+    assert bg == (255, 255, 255) and board_images.tone_of(bg) == 'light'
+    assert [r['box'][1] // 100 for r in regions] == [1, 5, 9]          # three blocks; the two lines of each stay together
+    out = tmp_path / 'regions'
+    board_images.main([str(tmp_path / 'b.png'), str(out)])
+    info = json.loads((out / 'regions.json').read_text(encoding='utf-8'))
+    assert len(info['regions']) == 3 and info['pages'] and Path(info['pages'][0]['file']).is_file()
+    assert info['crop_template'][0]['box'] == info['regions'][0]['box']
+    assert board_images.union([r['box'] for r in regions[:2]]) == [regions[0]['box'][0], regions[0]['box'][1], regions[1]['box'][2], regions[1]['box'][3]]
+    assert board_images.tone_of((25, 60, 40)) == 'dark' and board_images.tone_of((128, 128, 128)) == 'keep'
+
+
+def test_board_first_typed_cards_only_fill_gaps(tmp_path):
+    """Where the board shows a point, a board card teaches it; a typed card says what the board lacks and is marked on the page."""
+    d = board_deck(tmp_path)
+    term = copy.deepcopy(deck()['cards'][0])
+    d['cards'].append(term)                                     # typed term card beside the board card
+    with pytest.raises(deck_rules.DeckError, match='board_gap'):
+        deck_rules.check(d)
+    term['board_gap'] = '板书没有 MS 认可的定义原句与拒收说法'
+    assert deck_rules.check(d)['coverage']['missing'] == []
+    # The typed card alone may not stand in for the board.
+    d['cards'][0]['covers'] = ['S-1']
+    only_typed = copy.deepcopy(d)
+    only_typed['cards'][0]['genre'] = 'term'
+    only_typed['cards'][0]['board_gap'] = 'x'
+    only_typed['cards'][0]['blocks'] = copy.deepcopy(term['blocks']) + [only_typed['cards'][0]['blocks'][0]]
+    with pytest.raises(deck_rules.DeckError, match='on the board'):
+        deck_rules.check(only_typed)
+    src = tmp_path / 'deck.json'
+    src.write_text(json.dumps(d, ensure_ascii=False), encoding='utf-8')
+    build_cards.main([str(src), str(tmp_path / 'out'), '--preview'])
+    page = (tmp_path / 'out' / 'T01.html').read_text(encoding='utf-8')
+    assert 'class="cc-gap"' in page and '补充 · 板书未写' in page
+    assert json.loads(build_cards.source_record(d, term, 2.0))['board_gap'].startswith('板书没有')

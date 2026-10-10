@@ -12,7 +12,7 @@
 @font-face{font-family:"CCPT6 Editorial Sans";src:url("_ccpt6-ssans-700.woff2") format("woff2");font-weight:600 800;font-display:block;unicode-range:U+0000-00B6,U+00B8-00FF,U+0131,U+0152-0153,U+02C6,U+02DA,U+02DC,U+0300-03FF,U+2000-2013,U+2015-201B,U+201E-2025,U+2027-209F,U+20AC,U+2122,U+2190-21FF,U+2212,U+2264-2265}
 
 .ccpt6[data-theme="editorial"]{
- --bg:#fcefe2;--surface:#fff8f0;--surface-2:#f5e3d1;--rule:#e2cbb6;--rule-strong:#8c7664;
+ --bg:#fcefe2;--surface:#f9efe3;--surface-2:#f5e3d1;--rule:#e2cbb6;--rule-strong:#8c7664;
  --ink:#22252b;--ink-2:#5a504a;--accent:#990f3d;--accent-ink:#fff7ef;--accent-soft:#f6dcdc;
  --wire:#0b6670;--kw:#f4cf92;--good:#2a6446;--good-soft:#e2eddd;--bad:#a3261e;--bad-soft:#f8dcd3;--pen:#b01e1e;
  --mark-bg:#22252b;--mark-ink:#fff1e5;--focus:#0f5499;--focus-soft:rgba(15,84,153,.13);

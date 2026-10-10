@@ -11,7 +11,7 @@
 @font-face{font-family:"CCPT6 Lab Mono";src:url("_ccpt6-plexmono-600.woff2") format("woff2");font-weight:600 800;font-display:block;unicode-range:U+0000-00FF,U+2000-206F,U+2190-21FF,U+2212}
 
 .ccpt6[data-theme="lab"]{
- --bg:#f3f7f5;--surface:#ffffff;--surface-2:#e9f1ed;--rule:#cfdcd6;--rule-strong:#728a83;
+ --bg:#e8efea;--surface:#f0f2ec;--surface-2:#e0e9e4;--rule:#cfdcd6;--rule-strong:#728a83;
  --ink:#13232a;--ink-2:#465a61;--accent:#09695d;--accent-ink:#ffffff;--accent-soft:#dbefe9;
  --wire:#09695d;--kw:#ffe196;--good:#1d7243;--good-soft:#e0f1e6;--bad:#b2372b;--bad-soft:#fbe2de;--pen:#b2261e;
  --mark-bg:#8a4f00;--mark-ink:#ffffff;--focus:#c06a00;--focus-soft:rgba(192,106,0,.13);
@@ -27,8 +27,8 @@
   linear-gradient(rgba(9,105,93,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(9,105,93,.045) 1px,transparent 1px);
  background-size:120px 120px,120px 120px,24px 24px,24px 24px;background-position:-1px -1px;
 }
-.card:has(.ccpt6[data-theme="lab"]){background:#f3f7f5}
-.ccpt6[data-theme="lab"] .cc-head,.ccpt6[data-theme="lab"] .cc-foot{background:rgba(243,247,245,.97)}
+.card:has(.ccpt6[data-theme="lab"]){background:#e8efea}
+.ccpt6[data-theme="lab"] .cc-head,.ccpt6[data-theme="lab"] .cc-foot{background:rgba(232,239,234,.97)}
 .ccpt6[data-theme="lab"] .cc-meta{font-family:var(--font-mono);font-size:13px;letter-spacing:.02em}
 .ccpt6[data-theme="lab"] .cc-genre{border-radius:3px}
 .ccpt6[data-theme="lab"] .cc-titlebar h1{font-weight:600;font-size:27px}

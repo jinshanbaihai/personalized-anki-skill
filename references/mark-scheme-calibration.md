@@ -64,7 +64,7 @@ ER 给出的硬门槛：
 
 **同一题三档真实作答的差距**（ECR 2023 Paper 42 Q2，16／10／5 分）：低档把税画成 minimum price、定义没写出 private 与 social 的差；中档图缺坐标标签、评价不展开；高档图标注完整并在正文引用，但第二个政策分析不足仍被扣分。由此得到卡片的目标线：**高档已做到的＋高档被扣分的缺口**，也就是 Level 3 上沿。超过这条线的大学层次推导只留在研究记录。
 
-**Indicative content**（“Responses may include … Accept all valid responses”）是可接受路径，进覆盖账本用于查漏，不是每篇必写清单。**MS 认可的写法优先**：卡面先给 MS 的说法，教材里的等价画法用一句“另一种画法”补充；只有 MS 明确拒收（B0、reject 列表、ER 点名扣分）的写法才放进 `reject`。例：9708/42 F/M 2023 MS 写 “a tax … will decrease demand”。对消费征收的税既可画成需求（MPB）向下移动到 MPB − t，也可画成供给向上移动、在价格上形成楔子；两种画法数量结果相同，卡面以 MS 的写法为主，另一种作补充，不暗示 MS 写错。
+**Indicative content**（“Responses may include … Accept all valid responses”）是可接受路径，进覆盖账本用于查漏，不是每篇必写清单。**卡面按 MS 的写法**（SKILL.md“内容以谁为准”）：卡面讲 MS 写出的说法；MS 没写的画法或说法不上卡，只有 MS 的 accept／oe 列表点名接受的写法才能并列给出，笼统的 “Accept all valid responses” 不作为另加说法的理由；只有 MS 明确拒收（B0、reject 列表、ER 点名扣分）的写法才放进 `reject`。例：9708/42 F/M 2023 MS 写 “A tax will increase the cost of air travel which will decrease demand. A decrease in demand will decrease the equilibrium number of flights and achieve allocative efficiency”，卡面就讲税使成本上升、demand 下降（demand 曲线向左移动）、均衡航班数减少到 allocatively efficient 的数量。
 
 ## 把评分材料变成卡片内容
 

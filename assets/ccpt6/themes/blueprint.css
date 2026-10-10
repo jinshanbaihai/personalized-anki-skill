@@ -12,7 +12,7 @@
 @font-face{font-family:"CCPT6 Drafting Mono";src:url("_ccpt6-jbmono-700.woff2") format("woff2");font-weight:600 800;font-display:block;unicode-range:U+0000-00FF,U+2000-206F,U+2190-21FF,U+2212}
 
 .ccpt6[data-theme="blueprint"]{
- --bg:#f0f5fa;--surface:#ffffff;--surface-2:#e5eef8;--rule:#c3d4e8;--rule-strong:#5f7ea3;
+ --bg:#e6edf4;--surface:#edf1f4;--surface-2:#e5eef8;--rule:#c3d4e8;--rule-strong:#5f7ea3;
  --ink:#0d2240;--ink-2:#42587a;--accent:#1a55a0;--accent-ink:#ffffff;--accent-soft:#dae7f7;
  --wire:#1a55a0;--kw:#cfe1fa;--good:#1a6a49;--good-soft:#ddefe6;--bad:#ae3429;--bad-soft:#f9e1dd;--pen:#b2261e;
  --mark-bg:#0d2240;--mark-ink:#ffffff;--focus:#c06a00;--focus-soft:rgba(192,106,0,.14);
@@ -26,7 +26,7 @@
  background-image:linear-gradient(rgba(26,85,160,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(26,85,160,.07) 1px,transparent 1px);
  background-size:20px 20px;background-position:-1px -1px;
 }
-.card:has(.ccpt6[data-theme="blueprint"]){background:#f0f5fa}
+.card:has(.ccpt6[data-theme="blueprint"]){background:#e6edf4}
 /* title block */
 .ccpt6[data-theme="blueprint"] .cc-head{background:var(--bg);border:1.5px solid var(--ink);border-top:0;padding:12px 14px 12px;margin:0 0 10px}
 .ccpt6[data-theme="blueprint"] .cc-meta{font-family:var(--font-mono);font-size:13px;letter-spacing:.06em;text-transform:uppercase;border-bottom:1px solid var(--rule-strong);padding-bottom:8px;margin-bottom:10px}

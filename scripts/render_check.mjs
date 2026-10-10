@@ -72,6 +72,9 @@ for (const file of pages) {
         const hiddenMath = (audit.scrollers || []).filter(s => s.startsWith('math:'));
         if (mode.name === 'phone' && hiddenMath.length) issues.push('formula wider than the phone (end hidden): ' + hiddenMath.join(', ') + ' — break the chain with <br> or shorter steps');
         if (audit.players !== 1) issues.push('page needs exactly one player');
+        if (audit.brokenImages && audit.brokenImages.length) issues.push('board images missing: ' + audit.brokenImages.join(', '));
+        // Handwriting shrunk below 45% of its pixels is hard to read: crop narrower, or split the crop.
+        if (audit.boardScale < 0.45) issues.push(`board crop shown at ${audit.boardScale}× of its pixels: crop narrower or split it`);
         if (audit.fontsFailed && audit.fontsFailed.length) issues.push('fonts failed to load: ' + [...new Set(audit.fontsFailed)].join(', '));
         if (audit.lineStartPunct && audit.lineStartPunct.length) issues.push('punctuation starts a line: ' + audit.lineStartPunct.join(' | '));
       }

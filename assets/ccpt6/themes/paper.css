@@ -10,7 +10,7 @@
 @font-face{font-family:"CCPT6 Paper Text";src:url("_ccpt6-stix-700.woff2") format("woff2");font-weight:600 800;font-style:normal;font-display:block;unicode-range:U+0000-00B6,U+00B8-00FF,U+0131,U+0152-0153,U+02C6,U+02DA,U+02DC,U+0300-03FF,U+2000-2013,U+2015-201B,U+201E-2025,U+2027-209F,U+20AC,U+2122,U+2190-21FF,U+2212,U+2264-2265}
 
 .ccpt6[data-theme="paper"]{
- --bg:#fdfcf8;--surface:#ffffff;--surface-2:#f3f2ec;--rule:#dcd9cf;--rule-strong:#827d6f;
+ --bg:#f6f1e7;--surface:#f6f1e7;--surface-2:#ede6d9;--rule:#dcd9cf;--rule-strong:#827d6f;
  --ink:#17191e;--ink-2:#4b515e;--accent:#1c3d8c;--accent-ink:#ffffff;--accent-soft:#e6ecf8;
  --wire:#1c3d8c;--kw:#d8e3fb;--good:#1c6a43;--good-soft:#e5f1e9;--bad:#a62d27;--bad-soft:#fbe5e2;--pen:#b2261e;
  --mark-bg:#17191e;--mark-ink:#ffffff;--focus:#b86e10;--focus-soft:rgba(184,110,16,.13);
@@ -22,7 +22,7 @@
  --font-math:"CCPT6 Math","STIX Two Math","Latin Modern Math","Cambria Math",math;
  --fs:19px;--lh:1.78;--radius:3px;--radius-sm:3px;--gap:22px;--col:780px;
 }
-.card:has(.ccpt6[data-theme="paper"]){background:#fdfcf8}
+.card:has(.ccpt6[data-theme="paper"]){background:#f6f1e7}
 .ccpt6[data-theme="paper"] .cc-head{border-bottom:1px solid var(--ink)}
 .ccpt6[data-theme="paper"] .cc-meta{font-family:var(--font-ui);font-size:14px;letter-spacing:.04em}
 .ccpt6[data-theme="paper"] .cc-genre{background:none;color:var(--accent);border:1px solid var(--accent);border-radius:2px;padding:1px 8px}

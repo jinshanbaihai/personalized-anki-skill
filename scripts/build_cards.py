@@ -27,6 +27,7 @@ from deck_rules import check, check_plan, GENRES, DeckError
 from speech_backend import resolve_voice, inspect_voice, configured_azure, DEFAULT_VOICE
 import narration
 from package_addon import write_addon
+import board_images
 
 ROOT = Path(__file__).resolve().parent.parent
 ASSETS = ROOT / 'assets' / 'ccpt6'
@@ -86,13 +87,14 @@ def card_tag(data, card):
     return ' · '.join(parts[:4]) + (' …' if len(parts) > 4 else '')
 
 
-def render_card(data, card, style):
+def render_card(data, card, style, blocks=None):
+    """blocks: the card's blocks with board crops prepared (board_images.prepare); defaults to the card's own."""
     where = f'card {card["id"]}'
     title = inline(card['title'], f'{where}.title')
     if title.unspoken and not card.get('title_speech'):
         raise BlockError(f'{where}.title: add 〔读法〕 after each formula or give title_speech')
     sections, parts = [], [(None, card.get('title_speech') or title.speech)]
-    for i, block in enumerate(card['blocks']):
+    for i, block in enumerate(blocks or card['blocks']):
         section, block_parts = render_block(block, f'b{i}', f'{where}.blocks[{i}]')
         sections.append(section)
         parts += [(p.target, p.text) for p in block_parts]
@@ -141,6 +143,7 @@ def page(data, card, r, audio_name, cues, pending_message=None):
     out = (f'<main {attrs}><header class="cc-head"><div class="cc-meta"><span class="cc-genre">{GENRES[genre]}</span>'
            f'<span class="cc-tag">{esc(card_tag(data, card))}</span>'
            + (f'<span class="cc-fb" data-fb="{card["formula_booklet"]}">{FORMULA_BOOKLET[card["formula_booklet"]]}</span>' if card.get('formula_booklet') else '')
+           + (f'<span class="cc-gap" title="{esc(card["board_gap"])}">补充 · 板书未写</span>' if card.get('board_gap') else '')
            + '</div>'
            f'<div class="cc-titlebar"><h1 data-node="title">{r["title_html"]}</h1><div class="cc-player">{player}</div></div></header>'
            f'<article class="cc-body">{"".join(r["sections"])}</article>'
@@ -158,6 +161,8 @@ def source_record(data, card, speed=None, speed_reason=''):
               'covers': card.get('covers', []), 'sources': card.get('sources', []), 'speed': speed}
     if speed_reason:
         record['speed_reason'] = speed_reason
+    if card.get('board_gap'):
+        record['board_gap'] = card['board_gap']
     # Anki stores fields as HTML; JSON escapes keep json.loads exact without HTML-escaping.
     return json.dumps(record, ensure_ascii=False).replace('<', r'\u003c').replace('>', r'\u003e').replace('&', r'\u0026')
 
@@ -299,7 +304,8 @@ def causal_lint(nodes, out, where):
 
 PROSE_THEMES = {'editorial', 'manuscript'}  # humanities themes: paragraphs become arrows on every card type
 SKIP_KEYS = {'source', 'sources', 'marks_basis', 'ref', 'speech', 'type', 'id', 'kind', 'rel', 'arrow', 'ao', 'mark', 'marks', 'lost',
-             'cards', 'covers', 'src', 'alt', 'svg', 'html', 'source_type', 'layout', 'edge', 'direction', 'theme', 'cond_speech'}
+             'cards', 'covers', 'src', 'alt', 'svg', 'html', 'source_type', 'layout', 'edge', 'direction', 'theme', 'cond_speech',
+             'box', 'masks', 'tone', 'where', 'aid'}
 PLAIN_MATH = re.compile(r'[Σ∑√∫∏]|[⁰¹²³⁴⁵⁶⁷⁸⁹⁻]|(?<![A-Za-z])(?:P|E|Var|Cov)\s*\(|\d\s*×\s*\d|(?<![\d./A-Za-z])(\d{1,3})\s*/\s*(\d{1,3})(?![\d/])')
 MARK_AFTER = re.compile(r'^\s*(?:分|marks?\b|个?得分点)', re.I)
 # a tally or page reference, not maths: "Level 2（10/14）", "ECR 低档 4/14", "AO3 至少 4/6", "p. 12/13", "只得 7/14"
@@ -340,8 +346,9 @@ def derived_speech(block):
         return ''
 
 
-def lint_card(card, academic=True, theme='editorial'):
-    """Advisory checks that keep cards explained, readable and in the user's preferred shape."""
+def lint_card(card, academic=True, theme='editorial', prepared=None):
+    """Advisory checks that keep cards explained, readable and in the user's preferred shape.
+    prepared: the card's blocks with board crops prepared (board_images.prepare), when there are any."""
     out = []
     worked = card.get('genre') in ('derivation', 'method', 'formula')
     if worked and academic and not card.get('formula_booklet'):
@@ -400,10 +407,67 @@ def lint_card(card, academic=True, theme='editorial'):
             for i, br in enumerate(branches):
                 if count(br) > 12:
                     out.append(f'导图第 {i + 1} 个分支有 {count(br)} 个命题，超过 12 个时考虑把这一支拆成子图卡')
+    if card.get('genre') == 'board':
+        board_lint(card, out, prepared)
+    doubted = sorted({m.group(0) for t in walk_text(card.get('title', ''), card.get('blocks', [])) for m in DOUBTING_SOURCE.finditer(plain(t))})
+    if doubted:
+        out.append('卡上说评分方案或考纲有问题（' + '｜'.join(doubted[:3]) + '）：考纲与评分方案是最高依据，卡面按它们的说法讲，'
+                   '不写成“更准确的说法”（SKILL.md“内容以谁为准”）')
     hits = plain_math(card)
     if hits:
         out.append(f'{len(hits)} 处数学写成了纯文本（不排版、不按读法朗读），改成 $…$〔读法〕：' + '｜'.join(hits[:3]))
     return out
+
+
+BOARD_TEXT_LIMIT = 120   # reading units of typed text a board card may carry beside the board
+SPOT_HINT = 90           # a crop explained at this length without spots leaves the eye searching
+SHORT_CROP_LINES = 3     # ...unless the crop is itself only a few lines: then it is the line being explained
+NOTE_NODES = 7           # an annotation helps read one crop; more than this is new content for a supplementary card
+# The syllabus and mark scheme are never wrong and the board almost never is (SKILL.md, 内容以谁为准): narration and
+# annotations on a board card explain them and never correct them.
+CORRECTING = re.compile(r'笔误|写错|应为|应改|应是|更正|有误|不准确|说得过|过强|不严谨|准确说|更准确|改述|不暗示|其实是')
+DOUBTING_SOURCE = re.compile(r'(?:评分方案|考纲|mark scheme|syllabus|\bMS\b)[^。；;]{0,14}(?:写错|有误|不准确|不严谨|错了|不对|宽泛|粗糙)', re.I)
+
+
+def board_lint(card, out, prepared=None):
+    """The board is the card: typed text beside it repeats what the learner already read (redundancy), and a long
+    explanation with nothing framed on the board leaves the eye searching for the line being explained (signaling).
+    prepared: the card's blocks after board_images.prepare, whose crops know their height in board lines."""
+    typed = sum(reading_units(derived_speech(b)) for b in card['blocks'] if isinstance(b, dict) and b.get('type') != 'board')
+    if typed > BOARD_TEXT_LIMIT:
+        out.append(f'板书卡的文字块约 {typed} 字：卡面以板书为主，讲解放进语音；板书没有、考试要的内容另做补充卡放在这张后面')
+    for b in prepared or card['blocks']:
+        if not isinstance(b, dict) or b.get('type') != 'board':
+            continue
+        for j, crop in enumerate(b.get('crops', [])):
+            if not isinstance(crop, dict) or crop.get('_media', {}).get('lines', SHORT_CROP_LINES + 1) <= SHORT_CROP_LINES:
+                continue
+            if not crop.get('spots') and reading_units(crop.get('speech', '')) > SPOT_HINT:
+                out.append(f'第 {j + 1} 块板书讲解约 {reading_units(crop.get("speech", ""))} 字却没有 spots：用 spots 框出正在讲的那几行，语音读到哪里就框到哪里')
+        heard = []
+        for j, crop in enumerate(b.get('crops', [])):
+            if isinstance(crop, dict):
+                heard.append(crop.get('speech') or '')
+                heard += [s.get('speech') or '' for s in crop.get('spots', []) or [] if isinstance(s, dict)]
+                note = crop.get('annotate')
+                if isinstance(note, dict) and isinstance(note.get('root'), dict):
+                    heard += [plain(n.get('text', '')) + ' ' + plain(n.get('rel', '') or '') for n, _ in map_nodes(note['root'])]
+        heard += [b2.get('text', '') for b2 in card['blocks'] if isinstance(b2, dict) and b2.get('type') == 'note']
+        hits = sorted({m.group(0) for t in heard for m in CORRECTING.finditer(t)})
+        if hits:
+            out.append('板书卡的讲解或批注里有纠错说法（' + '、'.join(hits) + '）：考纲与评分方案最高、板书其次、制作者的判断最低；'
+                       '讲解和批注帮读者理解上一级的说法，不纠正它（SKILL.md“内容以谁为准”）')
+        for j, crop in enumerate(b.get('crops', [])):
+            note = crop.get('annotate') if isinstance(crop, dict) else None
+            if not isinstance(note, dict) or not isinstance(note.get('root'), dict):
+                continue
+            nodes = list(map_nodes(note['root']))
+            if len(nodes) > NOTE_NODES:
+                out.append(f'第 {j + 1} 块板书的批注有 {len(nodes)} 个节点（超过 {NOTE_NODES} 个）：批注只帮读懂这块板书，'
+                           '板书没讲、考试又要的内容另做补充卡（board_gap）')
+            causal_lint(nodes[1:], out, f'第 {j + 1} 块板书的批注')
+            if not any(n.get('rel') for n, _ in nodes[1:]):
+                out.append(f'第 {j + 1} 块板书的批注没有关系词：子节点写 rel（因为、所以、不是、而是、仅当…），否则只是并列的笔记')
 
 
 def known_terms(data):
@@ -446,7 +510,7 @@ def term_ledger(data, pages):
     for cid, body in pages.items():
         # chrome, citations and the definition sentence itself are not teaching vocabulary
         body = re.sub(r'<header[\s\S]*?</header>|<footer[\s\S]*?</footer>|<div hidden[\s\S]*?</div>', ' ', body)
-        body = re.sub(r'<(p|span|div) class="(?:def-text|def-label|def-src|pf-src|tbl-cap|marks-basis)[^"]*"[^>]*>[\s\S]*?</\1>', ' ', body)
+        body = re.sub(r'<(p|span|div) class="(?:def-text|def-label|def-src|pf-src|tbl-cap|marks-basis|bd-note-exam)[^"]*"[^>]*>[\s\S]*?</\1>', ' ', body)
         body = re.sub(r'<math[\s\S]*?</math>', ' ', body)
         defined_here = {m.lower() for m in re.findall(r'<abbr[^>]*>(.*?)</abbr>', body)}
         # a quoted sentence (8+ English words) with its Chinese rendering beside it is explained as a whole
@@ -484,7 +548,7 @@ def walk_text(*values):
 def text_segments(body):
     """Visible text of a page split at block-level tags (paragraphs, list items, cells, nodes)."""
     body = re.sub(r'<header[\s\S]*?</header>|<footer[\s\S]*?</footer>|<div hidden[\s\S]*?</div>|<math[\s\S]*?</math>', ' ', body)
-    body = re.sub(r'<(p|span|div) class="(?:def-src|pf-src|tbl-cap|marks-basis)[^"]*"[^>]*>[\s\S]*?</\1>', ' ', body)
+    body = re.sub(r'<(p|span|div) class="(?:def-src|pf-src|tbl-cap|marks-basis|bd-note-exam)[^"]*"[^>]*>[\s\S]*?</\1>', ' ', body)
     segments = [strip_tags(re.sub(r'<[^>]+>', ' ', x)).strip() for x in re.split(r'</?(?:p|li|div|td|th|dd|dt|h1|h2|h3|section|tr)\b[^>]*>', body)]
     return [x for x in segments if x]
 
@@ -544,7 +608,7 @@ macOS 或 Linux（终端）：
 也可以在自己电脑上的 Claude Code 里说“按 补语音.txt 给这副卡补语音”，让 Claude 代为执行。
 """
 RUNTIME = ('build_cards.py', 'blocks.py', 'deck_rules.py', 'narration.py', 'speech_backend.py', 'package_addon.py',
-           'single_face_addon.py', 'html_integrity.py', 'common_en.txt', 'requirements.txt')
+           'single_face_addon.py', 'html_integrity.py', 'board_images.py', 'slice_board.py', 'common_en.txt', 'requirements.txt')
 
 
 def bundle_runtime(out):
@@ -601,21 +665,24 @@ def main(argv=None):
         return
     if a.output is None:
         ap.error('give an output folder (or --check-research)')
+    out = a.output
+    media = out / 'media'
     try:
         summary = check(data, preview=a.preview)
+        # Board crops are cut from the original pixels before rendering; the delivered folder keeps crop-only copies.
+        boards, board_files, board_warnings, delivered = board_images.prepare(
+            data, a.input.resolve().parent, media, deliver=None if a.preview else out / 'board')
         rendered = {}
         for c in data['cards']:
             try:
-                rendered[c['id']] = render_card(data, c, data['style'])
+                rendered[c['id']] = render_card(data, c, data['style'], boards.get(c['id']))
             except (DeckError, BlockError):
                 raise
             except Exception as error:  # noqa: BLE001 - name the card instead of a bare traceback
                 raise BlockError(f'card {c["id"]}: {type(error).__name__}: {error}') from error
-    except (DeckError, BlockError) as error:
+    except (DeckError, BlockError, board_images.BoardError) as error:
         sys.exit(f'✗ {error}')
 
-    out = a.output
-    media = out / 'media'
     out.mkdir(parents=True, exist_ok=True)
     media.mkdir(exist_ok=True)
     lexicon = data.get('speech_lexicon', {})
@@ -681,6 +748,7 @@ def main(argv=None):
         deck.add_note(genanki.Note(model=model, fields=[card['id'], title_text, body, source_record(data, card, r['speed'], r['speed_reason']), p['text']],
                                    guid=genanki.guid_for(deck_info['namespace'], card['id']), tags=tags, due=i + 1))
         preview = body.replace(f'data-audio="{p["file"]}"', f'data-audio="media/{p["file"]}"').replace(f'src="{p["file"]}"', f'src="media/{p["file"]}"')
+        preview = preview.replace(f'src="{board_images.MEDIA_PREFIX}', f'src="media/{board_images.MEDIA_PREFIX}')
         (out / f'{card["id"]}.html').write_text(
             '<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
             f'<title>{esc(title_text)}</title><style>{css}</style><body class="card">{preview}<script>{js}</script></body></html>', encoding='utf-8')
@@ -692,7 +760,8 @@ def main(argv=None):
         nodes = len(re.findall(r'class="mm-node"', body))
         if nodes > 60:
             warn.append(f'导图 {nodes} 个节点，超过 60 个：拆成全景图加分支子图')
-        warn += lint_card(card, data.get('academic', True), r['theme'])
+        warn += board_warnings.get(card['id'], [])
+        warn += lint_card(card, data.get('academic', True), r['theme'], boards.get(card['id']))
         odd = narration.speech_lint(p['text'], lexicon)
         if odd:
             warn.append('朗读文本含难读符号 ' + ' '.join(odd) + '：改写成文字读法')
@@ -708,7 +777,8 @@ def main(argv=None):
     package = None
     if not a.preview:
         pkg = genanki.Package(list(decks.values()))
-        pkg.media_files = [str(out / hashed) for _, hashed in fonts] + ([] if a.audio_pending else [str(media / p['file']) for p in plans.values()])
+        pkg.media_files = ([str(out / hashed) for _, hashed in fonts] + [str(media / name) for name in board_files]
+                           + ([] if a.audio_pending else [str(media / p['file']) for p in plans.values()]))
         safe = re.sub(r'[^\w一-鿿.-]+', '_', deck_info['name'])
         if len(safe) > 60:  # cut at a word boundary, not inside a word ("…_stati")
             cut = safe[:60]
@@ -720,7 +790,9 @@ def main(argv=None):
         (out / '补语音.txt').unlink(missing_ok=True)  # audio is complete now; the old note would mislead
     # The deck as built travels with every output: a later session continues from it, and 补语音.txt rebuilds from it.
     if not a.preview:
-        (out / 'deck.json').write_text(json.dumps(data, ensure_ascii=False, indent=1), encoding='utf-8')
+        # Board sources point at the crop-only copies in out/board/, so the folder rebuilds on its own.
+        delivered_data = board_images.delivered_deck(data, a.input.resolve().parent, delivered) if board_files else data
+        (out / 'deck.json').write_text(json.dumps(delivered_data, ensure_ascii=False, indent=1), encoding='utf-8')
     if a.audio_pending:
         (out / '补语音.txt').write_text(AUDIO_NOTE, encoding='utf-8')
         bundle_runtime(out)

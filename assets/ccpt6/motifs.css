@@ -20,3 +20,6 @@
 :root .ccpt6[data-genre="pitfall"] .pf{border-left:4px solid var(--pen)}
 /* diagram = plate: the caption sits under a rule like a figure plate */
 :root .ccpt6[data-genre="diagram"] .fig figcaption{border-top:1px solid var(--rule);padding-top:8px;max-width:640px;margin-left:auto;margin-right:auto}
+/* board = the board itself: no panel around it, only the paper frame of each crop, so the learner's own page is what they see */
+:root .ccpt6[data-genre="board"] .blk.blk-board{background:transparent;border:0;border-radius:0;box-shadow:none;padding:0}
+:root .ccpt6[data-genre="board"] .blk.blk-board::before,:root .ccpt6[data-genre="board"] .blk.blk-board::after{display:none}

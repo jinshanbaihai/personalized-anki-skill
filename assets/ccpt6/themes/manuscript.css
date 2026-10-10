@@ -11,7 +11,7 @@
 @font-face{font-family:"CCPT6 Garamond";src:url("_ccpt6-garamond-700.woff2") format("woff2");font-weight:600 800;font-style:normal;font-display:block;unicode-range:U+0000-00B6,U+00B8-00FF,U+0131,U+0152-0153,U+02C6,U+02DA,U+02DC,U+0300-03FF,U+2000-2013,U+2015-201B,U+201E-2025,U+2027-209F,U+20AC,U+2122,U+2190-21FF,U+2212,U+2264-2265,U+2766-2767}
 
 .ccpt6[data-theme="manuscript"]{
- --bg:#f3ecdf;--surface:#faf6ec;--surface-2:#eee4d0;--rule:#d8c8ab;--rule-strong:#857358;
+ --bg:#f3ecdf;--surface:#f6f1e7;--surface-2:#eee4d0;--rule:#d8c8ab;--rule-strong:#857358;
  --ink:#2a2118;--ink-2:#5f503b;--accent:#8b2a1c;--accent-ink:#fbf7ee;--accent-soft:#f1ddd2;
  --wire:#6a5426;--kw:#ead29a;--good:#3c6932;--good-soft:#e4ecd9;--bad:#982c1f;--bad-soft:#f3ddd4;--pen:#a2231a;
  --mark-bg:#2a2118;--mark-ink:#faf6ec;--focus:#986a10;--focus-soft:rgba(152,106,16,.15);
