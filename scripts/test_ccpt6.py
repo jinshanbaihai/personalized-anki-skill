@@ -1100,11 +1100,15 @@ def test_board_card_builds_masks_and_delivers_crop_only_sources(tmp_path):
     (lambda d: d['cards'][0]['blocks'][0]['crops'][1].update(box=[60, 580, 1720, 700]), SystemExit, 'outside the image'),
     (lambda d: d['cards'][0]['blocks'][0]['crops'][0]['spots'][0].update(box=[70, 900, 720, 950]), SystemExit, 'outside its crop'),
     (lambda d: d['cards'][0]['blocks'][0].update(src='missing.png'), SystemExit, 'not found'),
-    # A board point that may be misread (issue, or low legibility) needs an annotation on the crop that shows it.
-    (lambda d: d['board'][1].update(issue='slip', issue_note='参数写成了统计量'), deck_rules.DeckError, 'add "annotate"'),
-    (lambda d: d['board'][1].update(issue='typo', issue_note='x'), deck_rules.DeckError, 'board\\[1\\].issue'),
-    (lambda d: d['board'][1].update(issue='slip'), deck_rules.DeckError, 'issue_note'),
-    (lambda d: d['cards'][0]['blocks'][0]['crops'][1].update(annotate=dict(NOTE, need='why')), blocks.BlockError, '"need"'),
+    # A board point where the reader may need help (aid, or low legibility) needs an annotation on the crop that shows it.
+    (lambda d: d['board'][1].update(aid='unfinished', aid_note='红笔只写了结论，评分方案要求说出原因'), deck_rules.DeckError, 'add "annotate"'),
+    (lambda d: d['board'][1].update(aid='slip', aid_note='x'), deck_rules.DeckError, 'board\\[1\\].aid'),
+    (lambda d: d['board'][1].update(aid='vague'), deck_rules.DeckError, 'aid_note'),
+    (lambda d: d['cards'][0]['blocks'][0]['crops'][1].update(annotate=dict(NOTE, **{'from': ['B01']})), deck_rules.DeckError, 'annotate.from'),
+    (lambda d: d['cards'][0]['blocks'][0]['crops'][1].update(annotate=dict(NOTE, aid='slip')), blocks.BlockError, '"aid"'),
+    # An annotation names its sources: board points or official material from research, never the maker's own.
+    (lambda d: d['cards'][0]['blocks'][0]['crops'][1].update(annotate=dict(NOTE, **{'from': []})), deck_rules.DeckError, 'annotate.from'),
+    (lambda d: d['cards'][0]['blocks'][0]['crops'][1].update(annotate=dict(NOTE, **{'from': ['我的理解']})), deck_rules.DeckError, 'annotate.from'),
     (lambda d: d['cards'][0]['blocks'][0]['crops'][1].update(annotate=dict(NOTE, exam='')), blocks.BlockError, 'exam'),
     (lambda d: d['cards'][0]['blocks'][0]['crops'][1].update(annotate=dict(NOTE, root={'text': '只有根'})), blocks.BlockError, 'small mind map'),
 ])
@@ -1125,7 +1129,7 @@ def test_board_rules(tmp_path, mutate, error, message, capsys):
             deck_rules.check(d)
 
 
-NOTE = {'need': 'ambiguous', 'exam': '9708 MS：statistic 只用样本数据',
+NOTE = {'aid': 'unfinished', 'exam': '9708 MS：statistic 只用样本数据', 'from': ['synthetic MS', 'B01'],
         'root': {'text': '红笔：参数不是统计量', 'children': [
             {'rel': '因为', 'text': '参数描述总体，通常未知'},
             {'rel': '所以', 'kind': 'definition', 'text': '含未知参数的式子不是 statistic'}]}}
@@ -1133,7 +1137,7 @@ NOTE = {'need': 'ambiguous', 'exam': '9708 MS：statistic 只用样本数据',
 
 def test_board_annotation_sits_beside_its_crop_and_is_read_after_it(tmp_path):
     d = board_deck(tmp_path)
-    d['board'][1].update(issue='ambiguous', issue_note='“参数”与“统计量”容易混')
+    d['board'][1].update(aid='unfinished', aid_note='红笔只写了结论，评分方案要求说出原因')
     d['cards'][0]['blocks'][0]['crops'][1]['annotate'] = NOTE
     deck_rules.check(d)
     src = tmp_path / 'deck.json'
@@ -1142,22 +1146,37 @@ def test_board_annotation_sits_beside_its_crop_and_is_read_after_it(tmp_path):
     build_cards.main([str(src), str(out), '--audio-pending'])
     page = json.loads((out / 'pages.json').read_text(encoding='utf-8'))['BD1']
     pair = page[page.index('class="bd-pair"'):]
-    assert pair.index('class="bd-crop"') < pair.index('class="bd-note"') and '批注 · 易混' in pair and '考试要求：' in pair
+    assert pair.index('class="bd-crop"') < pair.index('class="bd-note"') and '批注 · 未竟处' in pair and '考试要求：' in pair
     assert pair.count('class="mm-node"') == 3
     manifest = json.loads((out / 'speech-manifest.json').read_text(encoding='utf-8'))[0]
     targets = [s['target'] for s in manifest['segments']]
     assert targets[-4:] == ['b0-c1', 'b0-c1-a-n0', 'b0-c1-a-n1', 'b0-c1-a-n2']
-    assert manifest['segments'][-3]['text'].startswith('批注，易混')
+    assert manifest['segments'][-3]['text'].startswith('批注，把这里讲完')
     report = json.loads((out / 'report.json').read_text(encoding='utf-8'))
     assert not any('批注' in w for c in report['cards'] for w in c['warnings'])
 
 
 def test_board_annotation_stays_small_and_relational():
-    many = {'need': 'skipped', 'exam': 'MS', 'root': {'text': '根', 'children': [{'text': f'节点{i}'} for i in range(8)]}}
+    many = {'aid': 'unfinished', 'exam': 'MS', 'root': {'text': '根', 'children': [{'text': f'节点{i}'} for i in range(8)]}}
     card = {'id': 'BD1', 'genre': 'board', 'title': 't', 'blocks': [
         {'type': 'board', 'src': 'b.png', 'crops': [{'box': [0, 0, 10, 10], 'speech': '这一块。', 'annotate': many}]}]}
     warnings = build_cards.lint_card(card)
     assert any('9 个节点' in w and '补充卡' in w for w in warnings) and any('没有关系词' in w for w in warnings)
+
+
+def test_board_cards_explain_the_mark_scheme_and_board_never_correct_them():
+    fixing = {'aid': 'unfinished', 'exam': 'MS', 'root': {'text': '评分方案：tax 使 demand 下降', 'children': [
+        {'rel': '更准确的说法', 'text': '供给上移，需求量沿 D 下降'}]}}
+    card = {'id': 'BD1', 'genre': 'board', 'title': 't', 'blocks': [
+        {'type': 'board', 'src': 'b.png', 'crops': [{'box': [0, 0, 10, 10], 'speech': '板书这里是笔误。', 'annotate': fixing}]}]}
+    warnings = build_cards.lint_card(card)
+    assert any('纠错说法' in w and '笔误' in w and '更准确' in w for w in warnings)
+    typed = {'id': 'T1', 'genre': 'term', 'title': 't', 'blocks': [{'type': 'note', 'text': '评分方案这里写得不准确，应画成供给上移。'}]}
+    assert any('评分方案或考纲有问题' in w for w in build_cards.lint_card(typed))
+    helping = {'aid': 'unfinished', 'exam': 'MS', 'root': {'text': '评分方案：tax 使 demand 下降', 'children': [
+        {'rel': '即', 'text': 'demand 曲线向左移动'}, {'rel': '所以', 'kind': 'effect', 'text': '均衡航班数减少到 Q*'}]}}
+    card['blocks'][0]['crops'][0].update(speech='评分方案的路径：税提高成本，demand 下降。', annotate=helping)
+    assert not any('纠错' in w for w in build_cards.lint_card(card))
 
 
 def test_board_lint_keeps_the_board_central():

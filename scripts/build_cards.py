@@ -305,7 +305,7 @@ def causal_lint(nodes, out, where):
 PROSE_THEMES = {'editorial', 'manuscript'}  # humanities themes: paragraphs become arrows on every card type
 SKIP_KEYS = {'source', 'sources', 'marks_basis', 'ref', 'speech', 'type', 'id', 'kind', 'rel', 'arrow', 'ao', 'mark', 'marks', 'lost',
              'cards', 'covers', 'src', 'alt', 'svg', 'html', 'source_type', 'layout', 'edge', 'direction', 'theme', 'cond_speech',
-             'box', 'masks', 'tone', 'where', 'need'}
+             'box', 'masks', 'tone', 'where', 'aid'}
 PLAIN_MATH = re.compile(r'[Σ∑√∫∏]|[⁰¹²³⁴⁵⁶⁷⁸⁹⁻]|(?<![A-Za-z])(?:P|E|Var|Cov)\s*\(|\d\s*×\s*\d|(?<![\d./A-Za-z])(\d{1,3})\s*/\s*(\d{1,3})(?![\d/])')
 MARK_AFTER = re.compile(r'^\s*(?:分|marks?\b|个?得分点)', re.I)
 # a tally or page reference, not maths: "Level 2（10/14）", "ECR 低档 4/14", "AO3 至少 4/6", "p. 12/13", "只得 7/14"
@@ -409,6 +409,10 @@ def lint_card(card, academic=True, theme='editorial', prepared=None):
                     out.append(f'导图第 {i + 1} 个分支有 {count(br)} 个命题，超过 12 个时考虑把这一支拆成子图卡')
     if card.get('genre') == 'board':
         board_lint(card, out, prepared)
+    doubted = sorted({m.group(0) for t in walk_text(card.get('title', ''), card.get('blocks', [])) for m in DOUBTING_SOURCE.finditer(plain(t))})
+    if doubted:
+        out.append('卡上说评分方案或考纲有问题（' + '｜'.join(doubted[:3]) + '）：考纲与评分方案是最高依据，卡面按它们的说法讲，'
+                   '不写成“更准确的说法”（SKILL.md“内容以谁为准”）')
     hits = plain_math(card)
     if hits:
         out.append(f'{len(hits)} 处数学写成了纯文本（不排版、不按读法朗读），改成 $…$〔读法〕：' + '｜'.join(hits[:3]))
@@ -419,6 +423,10 @@ BOARD_TEXT_LIMIT = 120   # reading units of typed text a board card may carry be
 SPOT_HINT = 90           # a crop explained at this length without spots leaves the eye searching
 SHORT_CROP_LINES = 3     # ...unless the crop is itself only a few lines: then it is the line being explained
 NOTE_NODES = 7           # an annotation helps read one crop; more than this is new content for a supplementary card
+# The syllabus and mark scheme are never wrong and the board almost never is (SKILL.md, 内容以谁为准): narration and
+# annotations on a board card explain them and never correct them.
+CORRECTING = re.compile(r'笔误|写错|应为|应改|应是|更正|有误|不准确|说得过|过强|不严谨|准确说|更准确|改述|不暗示|其实是')
+DOUBTING_SOURCE = re.compile(r'(?:评分方案|考纲|mark scheme|syllabus|\bMS\b)[^。；;]{0,14}(?:写错|有误|不准确|不严谨|错了|不对|宽泛|粗糙)', re.I)
 
 
 def board_lint(card, out, prepared=None):
@@ -436,6 +444,19 @@ def board_lint(card, out, prepared=None):
                 continue
             if not crop.get('spots') and reading_units(crop.get('speech', '')) > SPOT_HINT:
                 out.append(f'第 {j + 1} 块板书讲解约 {reading_units(crop.get("speech", ""))} 字却没有 spots：用 spots 框出正在讲的那几行，语音读到哪里就框到哪里')
+        heard = []
+        for j, crop in enumerate(b.get('crops', [])):
+            if isinstance(crop, dict):
+                heard.append(crop.get('speech') or '')
+                heard += [s.get('speech') or '' for s in crop.get('spots', []) or [] if isinstance(s, dict)]
+                note = crop.get('annotate')
+                if isinstance(note, dict) and isinstance(note.get('root'), dict):
+                    heard += [plain(n.get('text', '')) + ' ' + plain(n.get('rel', '') or '') for n, _ in map_nodes(note['root'])]
+        heard += [b2.get('text', '') for b2 in card['blocks'] if isinstance(b2, dict) and b2.get('type') == 'note']
+        hits = sorted({m.group(0) for t in heard for m in CORRECTING.finditer(t)})
+        if hits:
+            out.append('板书卡的讲解或批注里有纠错说法（' + '、'.join(hits) + '）：考纲与评分方案最高、板书其次、制作者的判断最低；'
+                       '讲解和批注帮读者理解上一级的说法，不纠正它（SKILL.md“内容以谁为准”）')
         for j, crop in enumerate(b.get('crops', [])):
             note = crop.get('annotate') if isinstance(crop, dict) else None
             if not isinstance(note, dict) or not isinstance(note.get('root'), dict):

@@ -63,7 +63,7 @@ python scripts/validate_package.py out/<牌组>.apkg --output out/validate.json 
 
 ## board：板书点
 
-`[{id:"B07", where:"p3 左下", point:"proof by contradiction 三步", items:["P4-1.1"], note:"…", source_paper:"WMA14 Jan 2026 Q7", legibility:"ok"}]`。每个板书点要么映射到考点，要么在 `note` 说明为什么不进卡（老师口误已更正、离题、超纲）。卡组里有板书卡（`genre: "board"`）时，每个不是丢分记录的板书点还要出现在某个 crop 的 `points` 里，或写 `not_shown` 说明为什么不上卡（章节标题、题外话、已更正的笔误）。`source_paper` 写印刷题的官方出处（找不到写“未找到官方出处”）；批改卷上丢的分（如 `Q01A2 0`，也可写 `Q9(a)M1`、`Q9(a)(ii)A1` 这类带小问的 id）也记成板书点，写 `lost`（“A1”）与 `cards`（补救它的卡）或 `not_carded`；只记题号、分点与是否得分，不写姓名、日期和总分。可选 `score`（这一分点得了几分），`score` 大于 0 时不需要 `lost`：M0 → 方法卡与完整推导卡，A0 → 易错卡与 finish 检查项，B0 → 术语或结论句卡；看不清的板书点写 `"legibility": "low"` 和 `confirmed_by`（用哪份官方材料确认了内容），不猜字。板书本身可能让人读错的点写 `issue`（`slip`／`illegible`／`skipped`／`ambiguous`／`overstated`／`shorthand`）和一句 `issue_note`；有板书卡时，展示这类点（含 `legibility: low`）的区块必须写 `annotate`。卡组不是从板书做的（例如只按考纲某节制作）时，`board` 可为空，但要写 `board_waived` 说明。
+`[{id:"B07", where:"p3 左下", point:"proof by contradiction 三步", items:["P4-1.1"], note:"…", source_paper:"WMA14 Jan 2026 Q7", legibility:"ok"}]`。每个板书点要么映射到考点，要么在 `note` 说明为什么不进卡（老师自己划掉改写的内容、离题、超纲）。卡组里有板书卡（`genre: "board"`）时，每个不是丢分记录的板书点还要出现在某个 crop 的 `points` 里，或写 `not_shown` 说明为什么不上卡（章节标题、题外话、老师自己划掉的内容）。`source_paper` 写印刷题的官方出处（找不到写“未找到官方出处”）；批改卷上丢的分（如 `Q01A2 0`，也可写 `Q9(a)M1`、`Q9(a)(ii)A1` 这类带小问的 id）也记成板书点，写 `lost`（“A1”）与 `cards`（补救它的卡）或 `not_carded`；只记题号、分点与是否得分，不写姓名、日期和总分。可选 `score`（这一分点得了几分），`score` 大于 0 时不需要 `lost`：M0 → 方法卡与完整推导卡，A0 → 易错卡与 finish 检查项，B0 → 术语或结论句卡；看不清的板书点写 `"legibility": "low"` 和 `confirmed_by`（用哪份官方材料确认了内容），不猜字。对照考纲与评分方案，板书模糊或未竟的点写 `aid`（`vague`／`unfinished`）和一句 `aid_note`（对照第一级缺在哪）；有板书卡时，展示这类点（含 `legibility: low`）的区块必须写 `annotate`。卡组不是从板书做的（例如只按考纲某节制作）时，`board` 可为空，但要写 `board_waived` 说明。
 
 ## demands：真题需求清单
 
@@ -129,7 +129,7 @@ python scripts/validate_package.py out/<牌组>.apkg --output out/validate.json 
 | `sections` | items[{head, text, mark}], label | essay 段落骨架、分点论述 |
 | `note` | text, label, tone(plain/key/aside/warn/heuristic), exceptions[] | 补充说明；`heuristic` 是老师口诀（ILATE 等），必须写 `exceptions`，卡面注明不是评分要求 |
 | `html` | html, speech | 特殊被动 HTML 的出口，必须自带 speech |
-| `board` | src, crops[{box, speech, where, points[], spots[{box, speech, step}], annotate{need, exam, root, layout}, alt, tone}], masks[], tone, label | 板书卡：`src` 是板书原图（相对 deck.json 的路径；PDF 先用 `pdftoppm -r 200 -png` 转成 PNG）；`crops` 按阅读顺序列出这个知识点需要的区块，`box` 是原图像素 `[x0, y0, x1, y1]`（取自 `board_images.py` 的 `regions.json`）；每块要有 `speech` 或带 speech 的 `spots`；`spots` 是块内的行框，读到它时框出来，推导步写 `step: true`（计入语速规则的推导步数）；`points` 写这块展示的板书点；`where` 是印在块上方的小字位置；`masks` 是要涂掉的框（姓名、日期、学号），对同一原图的所有区块生效；`tone`：`auto`（默认，按底色判断）／`light`（白底，亮色融进纸色、夜间反相）／`dark`（黑板绿板，原样显示）／`keep`（照片，原样显示）；`annotate` 是这块旁边的批注：`need` 为什么需要（`slip` 笔误／`illegible` 字迹不清／`skipped` 跳步／`ambiguous` 易混／`overstated` 说得过满／`shorthand` 简写），`exam` 它服务的考试要求（印在批注底部），`root` 是一张小导图（与 `map` 块的节点相同：text、rel、kind、children；根节点写板书这里写的是什么，至少一个子节点），`layout` 同 `map` |
+| `board` | src, crops[{box, speech, where, points[], spots[{box, speech, step}], annotate{aid, from[], exam, root, layout}, alt, tone}], masks[], tone, label | 板书卡：`src` 是板书原图（相对 deck.json 的路径；PDF 先用 `pdftoppm -r 200 -png` 转成 PNG）；`crops` 按阅读顺序列出这个知识点需要的区块，`box` 是原图像素 `[x0, y0, x1, y1]`（取自 `board_images.py` 的 `regions.json`）；每块要有 `speech` 或带 speech 的 `spots`；`spots` 是块内的行框，读到它时框出来，推导步写 `step: true`（计入语速规则的推导步数）；`points` 写这块展示的板书点；`where` 是印在块上方的小字位置；`masks` 是要涂掉的框（姓名、日期、学号），对同一原图的所有区块生效；`tone`：`auto`（默认，按底色判断）／`light`（白底，亮色融进纸色、夜间反相）／`dark`（黑板绿板，原样显示）／`keep`（照片，原样显示）；`annotate` 是这块旁边的批注，从考纲、评分方案等第一级材料取材，补全板书模糊或未竟的地方（不纠正板书或评分方案）：`aid` 为什么需要（`vague` 模糊／`unfinished` 未竟），`from` 取材出处（至少一条 `research` 里类型为 spec／qp／ms／er／specimen／textbook 的条目的 `ref`，可再加板书点 id；不能是制作者自己的来源），`exam` 它服务的考试要求（印在批注底部），`root` 是一张小导图（与 `map` 块的节点相同：text、rel、kind、children；根节点写板书这里写的是什么，至少一个子节点），`layout` 同 `map` |
 
 `map`／`chain` 的 `kind`：`root topic definition cause effect condition evaluation example step contrast policy limit note`，决定节点小标签、边框与底色；关系本身写在 `rel` 上，读者不靠颜色猜关系。`rel` 是短连接词（不超过约 8 个汉字），它决定连线：导致／所以／因此 → 正向箭头；因为／由于／取决于 → 反向箭头；仅当／如果／若 → 虚线；但是／然而 → 点线；例如 → 细线（规则与 `assets/ccpt6/layout.js` 的 `REL_RULES` 一致）；需要时用 `arrow`（forward/back/none）与 `line`（solid/dashed/dotted/thin）覆盖。长条件写成 condition 节点或 `cond` 旁注。
 
@@ -142,7 +142,7 @@ python scripts/validate_package.py out/<牌组>.apkg --output out/validate.json 
     "spots": [{"box": [60, 1062, 680, 1120], "speech": "用总面积为 1：k x 从 0 积到 2，得到 2k 等于 1。这一步是方法分 M 1。", "step": true},
               {"box": [60, 1120, 680, 1178], "speech": "解出 k 等于二分之一，这是 A 1。", "step": true}]},
    {"box": [68, 1560, 700, 1630], "where": "板书约 87% 处", "points": ["B07"], "speech": "老师的红笔批注：漏写范围 0 到 2 会扣 A 1。",
-    "annotate": {"need": "shorthand", "exam": "WMA14 MS：答案要带取值范围才给 A 1",
+    "annotate": {"aid": "vague", "from": ["WMA14 Jan 2026 mark scheme", "B07"], "exam": "WMA14 MS：答案要带取值范围才给 A 1",
                  "root": {"text": "红笔只写了“范围!”", "children": [
                    {"rel": "指的是", "text": "f(x) 只在 0 ≤ x ≤ 2 上等于 k x"},
                    {"rel": "所以", "kind": "effect", "text": "写 P(X < 1) 时积分上下限取 0 到 1"}]}}}]}]}

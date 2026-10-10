@@ -277,9 +277,9 @@ def check_coverage(data, card_ids, card_covers, planning=False, preview=False):
             need(planning or linked or text(point.get('not_carded')), f'board[{i}] records a lost mark: name the card that fixes it (M0 → method/derivation card, A0 → pitfall and finish item, B0 → term card) or explain not_carded')
         if point.get('legibility') == 'low':
             need(text(point.get('confirmed_by')), f'board[{i}] is hard to read: say which source confirmed the content (confirmed_by); never fill in guessed words')
-        if 'issue' in point:  # where the board itself gets in the way of understanding what the exam needs
-            need(point['issue'] in BOARD_ISSUES, f'board[{i}].issue says what is wrong with the board here: one of {sorted(BOARD_ISSUES)}')
-            need(text(point.get('issue_note')), f'board[{i}].issue_note says in one line what the problem is (e.g. "the shifted supply is labelled MPC + subsidy")')
+        if 'aid' in point:  # where the board is vague or stops short of the official material (never a correction of it)
+            need(point['aid'] in BOARD_AIDS, f'board[{i}].aid says why the board needs completing here: one of {sorted(BOARD_AIDS)} (vague or unfinished)')
+            need(text(point.get('aid_note')), f'board[{i}].aid_note says in one line what is vague or unfinished, measured against the syllabus and mark scheme (e.g. "the MS line goes from more output straight to allocative efficiency")')
     check_board_shown(data, board, planning)
     need(board or text(data.get('board_waived')), 'board: list the board points (B01…), or say in board_waived why this deck has no board (e.g. made from a syllabus section only)')
     undemanded = check_demands(data, by_id, set(genres), planning)
@@ -321,8 +321,10 @@ def check_trail(cov, status, card_ids, preview=False):
             {'records': len(coldread), 'missing': sum(len(c.get('missing', [])) for c in coldread)})
 
 
-# Kept in step with blocks.BOARD_NEEDS (the annotation's "need"); deck_rules does not import the renderer.
-BOARD_ISSUES = ('slip', 'illegible', 'skipped', 'ambiguous', 'overstated', 'shorthand')
+# What an annotation may be built from, besides the board itself: the exam's own official material (SKILL.md, 内容以谁为准).
+ANNOTATION_SOURCES = ('spec', 'qp', 'ms', 'er', 'specimen', 'textbook')
+# Kept in step with blocks.BOARD_AIDS (the annotation's "aid"); deck_rules does not import the renderer.
+BOARD_AIDS = ('vague', 'unfinished')
 
 
 def board_crops(data):
@@ -334,14 +336,16 @@ def board_crops(data):
 
 def check_board_shown(data, board, planning=False):
     """Board mode: the learner read the whole board once, so every board point that teaches something appears on a board card
-    (a crop lists it in "points"), or says in not_shown why it does not (an aside, a corrected slip, a mark record)."""
+    (a crop lists it in "points"), or says in not_shown why it does not (an aside, the teacher's own crossing-out, a mark record).
+    An annotation is built from the board and the official material read for the deck, never from the maker's own sources."""
     if planning:
         return
     ids = {p.get('id') for p in board if isinstance(p, dict)}
-    # A board point that is wrong, illegible, skips a step, reads two ways, overstates or uses unlabelled shorthand is
-    # exactly where the learner may misread the board: the crop that shows it carries an annotation beside it.
-    troubled = {p['id']: p.get('issue', 'illegible') for p in board if isinstance(p, dict) and p.get('id')
-                and ('issue' in p or p.get('legibility') == 'low')}
+    official = {r.get('ref') for r in data.get('research', []) if isinstance(r, dict) and r.get('type') in ANNOTATION_SOURCES}
+    # A board point that is vague or unfinished against the official material (aid), or hard to read (legibility: low),
+    # is completed by an annotation beside the crop that shows it.
+    troubled = {p['id']: p.get('aid', 'vague') for p in board if isinstance(p, dict) and p.get('id')
+                and ('aid' in p or p.get('legibility') == 'low')}
     shown = set()
     any_board = False
     for card, block, crops in board_crops(data):
@@ -352,10 +356,20 @@ def check_board_shown(data, board, planning=False):
                  f'card {card["id"]}: crops[{j}].points must list board point ids (B01…) shown in that crop')
             shown |= set(points)
             hard = [x for x in points if x in troubled]
-            if hard and not isinstance(crop.get('annotate'), dict):
+            note = crop.get('annotate')
+            if isinstance(note, dict):
+                sources = note.get('from')
+                need(isinstance(sources, list) and any(x in official for x in sources if isinstance(x, str))
+                     and all(isinstance(x, str) and (x in ids or x in official) for x in sources),
+                     f'card {card["id"]}: crops[{j}].annotate.from lists where the note takes its material: at least one "ref" of a research '
+                     f'entry of type {sorted(ANNOTATION_SOURCES)} (the first tier: syllabus, question paper, mark scheme, examiner report, '
+                     'specimen, textbook), plus board point ids (B01…) if the board itself is used. Read the board, match it with the official '
+                     'material, see what the answer must contain, then complete what is vague or unfinished; the maker\'s own knowledge and '
+                     'third-party notes are not sources')
+            if hard and not isinstance(note, dict):
                 need(False, f'card {card["id"]}: crops[{j}] shows board point {", ".join(f"{x} ({troubled[x]})" for x in hard)}, '
-                            'where the board itself may be misread: add "annotate", a small mind map beside the crop that says what the board '
-                            'means here, limited to what the exam needs (references/card-genres.md, 板书卡)')
+                            'where the board is vague or unfinished: add "annotate", a small mind map beside the crop that completes it with '
+                            'material from the syllabus, mark scheme or other official source (references/card-genres.md, 板书卡)')
     if not any_board:
         return
     for i, point in enumerate(board):

@@ -742,29 +742,31 @@ def r_figure(b, bid, where):
     return out, parts or [Part(bid, '', 0)]
 
 
-# Why a crop of the board needs a note beside it. The board is the card, so a note is added only where the board itself
-# gets in the way of understanding what the exam needs; anything the board does not teach goes on a supplementary card.
-# Kept in step with deck_rules.BOARD_ISSUES (a board point's "issue").
-BOARD_NEEDS = {'slip': '笔误', 'illegible': '字迹不清', 'skipped': '跳步', 'ambiguous': '易混', 'overstated': '说得过满', 'shorthand': '简写'}
+# Two tiers of authority: the official material (syllabus, mark scheme, examiner report, textbook) first, the board second.
+# The board should cover the official material or make it thorough; where it is vague or stops short of what the official
+# material asks, a note beside it completes the explanation with material from the first tier. It never corrects either.
+# Kept in step with deck_rules.BOARD_AIDS (a board point's "aid").
+BOARD_AIDS = {'vague': '模糊处', 'unfinished': '未竟处'}
+AID_SPEECH = {'vague': '批注，把这里说清楚', 'unfinished': '批注，把这里讲完'}
 
 
 def r_annotation(note, nid, where):
     """A crop's annotation: a small mind map beside the board ("root" = what the board says there, children = what it
-    means for the exam, linked by relation words), headed by why it is needed and footed by the exam requirement it serves."""
+    means, linked by relation words), headed by the kind of help it gives and footed by the exam requirement it serves."""
     need_object(note, where)
-    need = note.get('need')
-    if need not in BOARD_NEEDS:
-        fail(where, f'"need" says why the board needs a note here: one of {sorted(BOARD_NEEDS)} '
-                    '(slip = written wrong, illegible, skipped = a step the exam wants is missing, ambiguous = easily read as something else, '
-                    'overstated = a conditional point written as always true, shorthand = unlabelled symbol, curve or abbreviation)')
+    aid = note.get('aid')
+    if aid not in BOARD_AIDS:
+        fail(where, f'"aid" says why the board needs completing here: one of {sorted(BOARD_AIDS)} '
+                    '(vague = the board is unclear here: a terse line, an unlabelled or hard-to-read label, a symbol not explained; '
+                    'unfinished = the board stops short of what the syllabus or mark scheme asks: a step, a link or the diagram is not finished)')
     exam = inline(need_text(note, 'exam', where), where)
     root = note.get('root')
     if not isinstance(root, dict) or not isinstance(root.get('children'), list) or not root['children']:
-        fail(where, 'an annotation is a small mind map: "root" (what the board says here) with "children" (what it means for the exam), '
-                    'each child linked by a "rel" word (因为、所以、不是、而是、仅当…)')
+        fail(where, 'an annotation is a small mind map: "root" (what the board says here) with "children" (what it means), '
+                    'each child linked by a "rel" word (即、因为、所以、例如、仅当…)')
     html, parts = r_map({'root': root, 'layout': note.get('layout', 'auto')}, f'{nid}-a', where)
-    parts[0].text = joined(f'批注，{BOARD_NEEDS[need]}', parts[0].text)
-    return (f'<aside class="bd-note" data-need="{need}"><div class="bd-note-head">批注 · {BOARD_NEEDS[need]}</div>{html}'
+    parts[0].text = joined(AID_SPEECH[aid], parts[0].text)
+    return (f'<aside class="bd-note" data-aid="{aid}"><div class="bd-note-head">批注 · {BOARD_AIDS[aid]}</div>{html}'
             f'<div class="bd-note-exam">考试要求：{exam.html}</div></aside>'), parts
 
 
