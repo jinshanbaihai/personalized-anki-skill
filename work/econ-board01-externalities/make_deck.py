@@ -347,7 +347,7 @@ research = [
  {'type': 'ms', 'ref': '9708/32 F/M 2024 与 O/N 2025 选择题答案；9708/33 O/N 2017 Q16', 'read': 'QP 与 key（2026-10-03 制作记录）', 'used_for': 'BD-I04（persuasion 而非强制）、BD-S04、BD-P01', 'paper': '9708/3'},
  {'type': 'er', 'ref': ER_EDU, 'read': 'Paper 41 Section B Question 2 一段全文（p22；2026-10-10 下载 9708_s23_er.pdf 逐字读）', 'used_for': 'BD-I03、BD-POS-ESSAY 批注：merit good、positive externalities 与 allocative efficiency 的联系', 'paper': ['9708/3', '9708/4']},
  {'type': 'textbook', 'ref': 'Varian, Intermediate Microeconomics 8e Ch16、33、34、36', 'read': '2026-10-03 制作记录所列页', 'used_for': '只作旧卡考点的证据；本包卡面、讲解与批注未用'},
- {'type': 'other', 'ref': '旧卡组研究记录《板书与考试证据.md》（2026-10-03）', 'read': '2026-10-10 全文', 'used_for': '只用来定位真题与评分方案的出处；其中对板书和评分方案的“更正”属于第三方判断，没有采用'},
+ {'type': 'other', 'ref': '旧卡组研究记录《板书与考试证据.md》（2026-10-03）', 'read': '2026-10-10 全文', 'used_for': '只用来定位真题与评分方案的出处'},
  {'type': 'other', 'ref': '旧卡组制作源 cards.json（53 张，已核对内容复评）', 'read': '2026-10-10 全部 53 张的朗读文本', 'used_for': '板书卡旁白沿用已复评的讲解；29 张板书未覆盖的卡保留原卡（existing）'},
 ]
 

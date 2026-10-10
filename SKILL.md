@@ -16,6 +16,12 @@ description: 把老师板书、课堂截图、讲评 PDF、讲义做成为考试
 
 一切取舍以“读者理解透彻、记得住、考场用得上”为准，版式和流程服务这个目标。**讲透优先于简短**：卡的长短由讲透所需决定；内容多时拆成几张讲透的卡，不删理由来压缩篇幅。
 
+## 定性要求留给判断
+
+本技能里“讲透”“有美感”“读着顺”“一眼可辨”“直观”“记得住”这类定性说法是**有意写的**：它们说的是要达到的效果，怎样做到由制作者看材料、学科和读者去判断、去发挥。不要把它们改写成数字阈值或固定清单，也不要因为它们不精确就略过；同一个要求，在不同的板书和卡上可以有不同的好做法。
+
+规则也有意写得松：文中的数字（打字约 120 字、批注约 7 个节点、导图节点约 25 个汉字、一级分支约 7 个……）大多是生成器的**提醒线**，越过时想一想值不值得，值得就保留。必须遵守的只有两种：一是下文的“内容以谁为准”；二是生成器报错拦下的几类——考试锁定与证据、考点覆盖与板书优先、批注出处、隐私、对比度与干眼上限。其余地方，判断与创造的空间是留给制作者的。
+
 ## 内容以谁为准
 
 判断卡上内容对不对，依据分三级，**上一级说了算**：
@@ -65,7 +71,7 @@ description: 把老师板书、课堂截图、讲评 PDF、讲义做成为考试
 - 调研中找到登记里没有的题、MS 或考官报告：在仓库里工作就补进 `references/exams/`，跑 `--check` 与 `--completeness`；技能以上传的 zip 运行、没有仓库时，写进交付文件夹的 `registry-additions/<单元>.questions.json`（与 `units/<单元>.questions.json` 同格式，补全已有条目沿用原 `id`），用 `python scripts/exam_index.py --check-file registry-additions/<单元>.questions.json` 校验，并在交付说明里请用户把它合并进仓库、更新 `versions.json` 的 `gaps`、重新打包技能。
 - 按考季倒序读真题，把考到本批内容的每个小问记进**真题需求清单**（`demands`：考季、题号、命令词、问什么、终点要求、MS 注释、对应考点与卡），读到连续三季没有新问法为止（`coverage.saturation`）。
 - 每个考点读**至少两个不同考季**、问法不同的真题与对应 **mark scheme**；每个单元至少读一份 **examiner report**；essay 类科目找**真实考生的高中低档作答**（Cambridge ECR、Pearson exemplar responses），也可参考官方示范答案（标明不是真实考生）。
-- 从这些材料读出每个考点的掌握水平：定义必含词与拒收说法、单独给分的步骤、终点要求、需要的图、essay 分析要展开到几环、评价写到什么程度。写进考点的 `level`，并在 `evidence` 挂上至少两条不同考季的 MS／ER 出处。**MS 认可的写法优先**：教材的等价说法只作补充，只有 MS 明确拒收的写法才标“不给分”。
+- 从这些材料读出每个考点的掌握水平：定义必含词与拒收说法、单独给分的步骤、终点要求、需要的图、essay 分析要展开到几环、评价写到什么程度。写进考点的 `level`，并在 `evidence` 挂上至少两条不同考季的 MS／ER 出处。**卡面按 MS 的写法**：MS 没写的说法不上卡（MS 的 accept／oe 列表点名接受的可以并列），只有 MS 明确拒收的写法才标“不给分”（见上文“内容以谁为准”）。
 - 检索顺序：官方站点 → 用户上传或已连接云盘里的官方文件 → 经核验的官方 PDF 镜像 → 第三方总结（只作指针）。读不到的写进 `research_gaps`，说明用什么替代。ECR、exemplar 这类手写答卷多是扫描图：用 `pdftoppm` 渲染后看图逐页读，在 `read` 里写明页码；“是图片、没有 OCR”不算取不到。
 - 教材用考试局认可的教材核对讲法；大学教材只帮助制作者自己理解，不决定范围。
 
@@ -146,4 +152,4 @@ python scripts/validate_package.py out/<牌组>.apkg --output out/validate.json 
 
 ## 维护本技能
 
-以下只适用于**源码仓库**（上传的 zip 不含测试与 git 历史）：改规则时同步主文、references、生成器与测试；运行 `pip install -r scripts/requirements-dev.txt` 后 `python -m pytest scripts -q`（含 `exam_index.py --check` 与 `--completeness` 对全部考试登记的校验），再用一个真实小样做预览和截图检查；打包用 `python scripts/package_skill.py`，它只收 git 跟踪的文件，遇到未提交的文件、邮箱、云盘链接或密钥会拒绝打包。在上传的 zip 里补充考试登记后，至少运行 `python scripts/exam_index.py --check` 与 `--completeness`。新增考试登记时沿用 `references/exams/README.md` 的格式。修改规则不等于授权重写用户已有的全部卡片。旧版生成器（v5 导图卡、teaching、quiz 等）已从当前版本移除，需要时到源码仓库的 git 历史里取。
+以下只适用于**源码仓库**（上传的 zip 不含测试与 git 历史）：改规则时同步主文、references、生成器与测试；运行 `pip install -r scripts/requirements-dev.txt` 后 `python -m pytest scripts -q`（含 `exam_index.py --check` 与 `--completeness` 对全部考试登记的校验），再用一个真实小样做预览和截图检查；打包用 `python scripts/package_skill.py`，它只收 git 跟踪的文件，遇到未提交的文件、邮箱、云盘链接或密钥会拒绝打包。在上传的 zip 里补充考试登记后，至少运行 `python scripts/exam_index.py --check` 与 `--completeness`。新增考试登记时沿用 `references/exams/README.md` 的格式。修改规则不等于授权重写用户已有的全部卡片。本技能只生成 ccpt-6 单面卡；更早格式的旧卡（v5 导图卡等）按 [review-and-delivery.md](references/review-and-delivery.md) §六 换 notetype 后再更新。

@@ -102,7 +102,7 @@ def main(argv=None):
     p=argparse.ArgumentParser(description=__doc__,formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument('package',type=Path);p.add_argument('--anki-packages',type=Path,help='folder holding the anki package if it is not installed')
     p.add_argument('--require-audio',action='store_true',help='fail on audio-pending pages (use for a finished package)')
-    p.add_argument('--allow-text-only-test',action='store_true',help=argparse.SUPPRESS)  # old flag: pending packages are now accepted by default
+    p.add_argument('--allow-text-only-test',action='store_true',help=argparse.SUPPRESS)  # accepted for compatibility; audio-pending packages pass by default
     p.add_argument('--output',type=Path,help='also write the result as JSON here')
     a=p.parse_args(argv)
     try:
