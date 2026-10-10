@@ -742,10 +742,37 @@ def r_figure(b, bid, where):
     return out, parts or [Part(bid, '', 0)]
 
 
+# Why a crop of the board needs a note beside it. The board is the card, so a note is added only where the board itself
+# gets in the way of understanding what the exam needs; anything the board does not teach goes on a supplementary card.
+# Kept in step with deck_rules.BOARD_ISSUES (a board point's "issue").
+BOARD_NEEDS = {'slip': '笔误', 'illegible': '字迹不清', 'skipped': '跳步', 'ambiguous': '易混', 'overstated': '说得过满', 'shorthand': '简写'}
+
+
+def r_annotation(note, nid, where):
+    """A crop's annotation: a small mind map beside the board ("root" = what the board says there, children = what it
+    means for the exam, linked by relation words), headed by why it is needed and footed by the exam requirement it serves."""
+    need_object(note, where)
+    need = note.get('need')
+    if need not in BOARD_NEEDS:
+        fail(where, f'"need" says why the board needs a note here: one of {sorted(BOARD_NEEDS)} '
+                    '(slip = written wrong, illegible, skipped = a step the exam wants is missing, ambiguous = easily read as something else, '
+                    'overstated = a conditional point written as always true, shorthand = unlabelled symbol, curve or abbreviation)')
+    exam = inline(need_text(note, 'exam', where), where)
+    root = note.get('root')
+    if not isinstance(root, dict) or not isinstance(root.get('children'), list) or not root['children']:
+        fail(where, 'an annotation is a small mind map: "root" (what the board says here) with "children" (what it means for the exam), '
+                    'each child linked by a "rel" word (因为、所以、不是、而是、仅当…)')
+    html, parts = r_map({'root': root, 'layout': note.get('layout', 'auto')}, f'{nid}-a', where)
+    parts[0].text = joined(f'批注，{BOARD_NEEDS[need]}', parts[0].text)
+    return (f'<aside class="bd-note" data-need="{need}"><div class="bd-note-head">批注 · {BOARD_NEEDS[need]}</div>{html}'
+            f'<div class="bd-note-exam">考试要求：{exam.html}</div></aside>'), parts
+
+
 def r_board(b, bid, where):
     """The learner's own board, cut by knowledge point (board cards). build_cards.py fills each crop's "_media"
     (board_images.prepare); without it (lint, speed metrics) the crops render as empty frames with the same narration.
-    Narration: each crop's speech, then each spot's speech; a spot is a box on the crop that is framed while it is read."""
+    Narration: each crop's speech, then each spot's speech (a spot is a box on the crop that is framed while it is read),
+    then the crop's annotation, if any: a small mind map set beside the crop where the board is hard to read right."""
     crops = need_list(b, 'crops', where)
     label = inline(b.get('label'), where)
     out = (f'<h3 class="blk-label">{label.html}</h3>' if label else '') + '<div class="bd">'
@@ -790,8 +817,14 @@ def r_board(b, bid, where):
                      f'height="{media["h"]}" alt="{alt}" data-tone="{esc(media["tone"])}" decoding="async">{spot_html}</div>')
         else:
             frame = '<div class="bd-frame bd-unprepared"></div>'
-        out += (f'<figure class="bd-crop" data-node="{nid}">' + (f'<figcaption class="bd-where">{locator.html}</figcaption>' if locator else '')
-                + f'<div class="bd-scroll" title="点图切换：整幅／放大">{frame}</div></figure>')
+        figure = (f'<figure class="bd-crop" data-node="{nid}">' + (f'<figcaption class="bd-where">{locator.html}</figcaption>' if locator else '')
+                  + f'<div class="bd-scroll" title="点图切换：整幅／放大">{frame}</div></figure>')
+        if crop.get('annotate') is not None:
+            note_html, note_parts = r_annotation(crop['annotate'], nid, f'{w}.annotate')
+            parts.extend(note_parts)
+            out += f'<div class="bd-pair">{figure}{note_html}</div>'
+        else:
+            out += figure
     if label and parts:
         parts[0].text = joined(label.speech, parts[0].text)
     return out + '</div>', parts

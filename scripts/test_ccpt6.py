@@ -1100,6 +1100,13 @@ def test_board_card_builds_masks_and_delivers_crop_only_sources(tmp_path):
     (lambda d: d['cards'][0]['blocks'][0]['crops'][1].update(box=[60, 580, 1720, 700]), SystemExit, 'outside the image'),
     (lambda d: d['cards'][0]['blocks'][0]['crops'][0]['spots'][0].update(box=[70, 900, 720, 950]), SystemExit, 'outside its crop'),
     (lambda d: d['cards'][0]['blocks'][0].update(src='missing.png'), SystemExit, 'not found'),
+    # A board point that may be misread (issue, or low legibility) needs an annotation on the crop that shows it.
+    (lambda d: d['board'][1].update(issue='slip', issue_note='参数写成了统计量'), deck_rules.DeckError, 'add "annotate"'),
+    (lambda d: d['board'][1].update(issue='typo', issue_note='x'), deck_rules.DeckError, 'board\\[1\\].issue'),
+    (lambda d: d['board'][1].update(issue='slip'), deck_rules.DeckError, 'issue_note'),
+    (lambda d: d['cards'][0]['blocks'][0]['crops'][1].update(annotate=dict(NOTE, need='why')), blocks.BlockError, '"need"'),
+    (lambda d: d['cards'][0]['blocks'][0]['crops'][1].update(annotate=dict(NOTE, exam='')), blocks.BlockError, 'exam'),
+    (lambda d: d['cards'][0]['blocks'][0]['crops'][1].update(annotate=dict(NOTE, root={'text': '只有根'})), blocks.BlockError, 'small mind map'),
 ])
 def test_board_rules(tmp_path, mutate, error, message, capsys):
     d = board_deck(tmp_path)
@@ -1118,12 +1125,50 @@ def test_board_rules(tmp_path, mutate, error, message, capsys):
             deck_rules.check(d)
 
 
+NOTE = {'need': 'ambiguous', 'exam': '9708 MS：statistic 只用样本数据',
+        'root': {'text': '红笔：参数不是统计量', 'children': [
+            {'rel': '因为', 'text': '参数描述总体，通常未知'},
+            {'rel': '所以', 'kind': 'definition', 'text': '含未知参数的式子不是 statistic'}]}}
+
+
+def test_board_annotation_sits_beside_its_crop_and_is_read_after_it(tmp_path):
+    d = board_deck(tmp_path)
+    d['board'][1].update(issue='ambiguous', issue_note='“参数”与“统计量”容易混')
+    d['cards'][0]['blocks'][0]['crops'][1]['annotate'] = NOTE
+    deck_rules.check(d)
+    src = tmp_path / 'deck.json'
+    src.write_text(json.dumps(d, ensure_ascii=False), encoding='utf-8')
+    out = tmp_path / 'out'
+    build_cards.main([str(src), str(out), '--audio-pending'])
+    page = json.loads((out / 'pages.json').read_text(encoding='utf-8'))['BD1']
+    pair = page[page.index('class="bd-pair"'):]
+    assert pair.index('class="bd-crop"') < pair.index('class="bd-note"') and '批注 · 易混' in pair and '考试要求：' in pair
+    assert pair.count('class="mm-node"') == 3
+    manifest = json.loads((out / 'speech-manifest.json').read_text(encoding='utf-8'))[0]
+    targets = [s['target'] for s in manifest['segments']]
+    assert targets[-4:] == ['b0-c1', 'b0-c1-a-n0', 'b0-c1-a-n1', 'b0-c1-a-n2']
+    assert manifest['segments'][-3]['text'].startswith('批注，易混')
+    report = json.loads((out / 'report.json').read_text(encoding='utf-8'))
+    assert not any('批注' in w for c in report['cards'] for w in c['warnings'])
+
+
+def test_board_annotation_stays_small_and_relational():
+    many = {'need': 'skipped', 'exam': 'MS', 'root': {'text': '根', 'children': [{'text': f'节点{i}'} for i in range(8)]}}
+    card = {'id': 'BD1', 'genre': 'board', 'title': 't', 'blocks': [
+        {'type': 'board', 'src': 'b.png', 'crops': [{'box': [0, 0, 10, 10], 'speech': '这一块。', 'annotate': many}]}]}
+    warnings = build_cards.lint_card(card)
+    assert any('9 个节点' in w and '补充卡' in w for w in warnings) and any('没有关系词' in w for w in warnings)
+
+
 def test_board_lint_keeps_the_board_central():
     card = {'id': 'BD1', 'genre': 'board', 'title': 't', 'blocks': [
         {'type': 'note', 'text': '这是一段很长的打字讲解，' * 14},
         {'type': 'board', 'src': 'b.png', 'crops': [{'box': [0, 0, 10, 10], 'speech': '讲解这一块板书的每一行内容，' * 8}]}]}
     warnings = build_cards.lint_card(card)
     assert any('以板书为主' in w for w in warnings) and any('spots' in w for w in warnings)
+    # A crop only a couple of board lines tall is itself the line being explained: no spots needed.
+    short = [dict(card['blocks'][1], crops=[dict(card['blocks'][1]['crops'][0], _media={'lines': 2})])]
+    assert not any('spots' in w for w in build_cards.lint_card(card, prepared=[card['blocks'][0]] + short))
 
 
 def test_board_regions_follow_blank_rows(tmp_path):

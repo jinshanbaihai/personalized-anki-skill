@@ -220,7 +220,7 @@ class Sources:
     """Each source image is opened once, turned upright and flattened; masks apply to every crop of it."""
 
     def __init__(self, base):
-        self.base, self.images, self.masks, self.crops = Path(base), {}, {}, {}
+        self.base, self.images, self.masks, self.crops, self.pitches = Path(base), {}, {}, {}, {}
 
     def path(self, src, where):
         if not isinstance(src, str) or not src.strip():
@@ -236,6 +236,14 @@ class Sources:
         if path not in self.images:
             self.images[path] = upright_rgb(Image.open(path))
         return self.images[path]
+
+    def pitch(self, path):
+        """Typical text-line height of the board in its own pixels: the median ink row run (8–80 px tall)."""
+        if path not in self.pitches:
+            image = self.image(path)
+            heights = sorted(b - a for a, b in runs(profile(ink_mask(image, background(image)), 0), 0.0015, 1) if 8 <= b - a <= 80)
+            self.pitches[path] = heights[len(heights) // 2] if heights else max(16, round(image.width / 50))
+        return self.pitches[path]
 
 
 def board_blocks(data):
@@ -320,8 +328,9 @@ def prepare(data, base, media, deliver=None):
                 cw, ch = box[2] - box[0], box[3] - box[1]
                 spots.append({'left': round(100 * (x0 - box[0]) / cw, 3), 'top': round(100 * (y0 - box[1]) / ch, 3),
                               'width': round(100 * (x1 - x0) / cw, 3), 'height': round(100 * (y1 - y0) / ch, 3)})
+            lines = max(1, round((box[3] - box[1]) / sources.pitch(path)))
             block['crops'].append(dict(crop, _media={'file': name, 'w': piece.width, 'h': piece.height, 'tone': tone, 'spots': spots,
-                                                     'src': b['src'], 'box': box}))
+                                                     'src': b['src'], 'box': box, 'lines': lines}))
         blocks = prepared.setdefault(card['id'], list(card['blocks']))
         blocks[i] = block
     delivered = {}

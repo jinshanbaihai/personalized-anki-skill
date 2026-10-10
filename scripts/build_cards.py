@@ -305,7 +305,7 @@ def causal_lint(nodes, out, where):
 PROSE_THEMES = {'editorial', 'manuscript'}  # humanities themes: paragraphs become arrows on every card type
 SKIP_KEYS = {'source', 'sources', 'marks_basis', 'ref', 'speech', 'type', 'id', 'kind', 'rel', 'arrow', 'ao', 'mark', 'marks', 'lost',
              'cards', 'covers', 'src', 'alt', 'svg', 'html', 'source_type', 'layout', 'edge', 'direction', 'theme', 'cond_speech',
-             'box', 'masks', 'tone', 'where'}
+             'box', 'masks', 'tone', 'where', 'need'}
 PLAIN_MATH = re.compile(r'[Σ∑√∫∏]|[⁰¹²³⁴⁵⁶⁷⁸⁹⁻]|(?<![A-Za-z])(?:P|E|Var|Cov)\s*\(|\d\s*×\s*\d|(?<![\d./A-Za-z])(\d{1,3})\s*/\s*(\d{1,3})(?![\d/])')
 MARK_AFTER = re.compile(r'^\s*(?:分|marks?\b|个?得分点)', re.I)
 # a tally or page reference, not maths: "Level 2（10/14）", "ECR 低档 4/14", "AO3 至少 4/6", "p. 12/13", "只得 7/14"
@@ -346,8 +346,9 @@ def derived_speech(block):
         return ''
 
 
-def lint_card(card, academic=True, theme='editorial'):
-    """Advisory checks that keep cards explained, readable and in the user's preferred shape."""
+def lint_card(card, academic=True, theme='editorial', prepared=None):
+    """Advisory checks that keep cards explained, readable and in the user's preferred shape.
+    prepared: the card's blocks with board crops prepared (board_images.prepare), when there are any."""
     out = []
     worked = card.get('genre') in ('derivation', 'method', 'formula')
     if worked and academic and not card.get('formula_booklet'):
@@ -407,7 +408,7 @@ def lint_card(card, academic=True, theme='editorial'):
                 if count(br) > 12:
                     out.append(f'导图第 {i + 1} 个分支有 {count(br)} 个命题，超过 12 个时考虑把这一支拆成子图卡')
     if card.get('genre') == 'board':
-        board_lint(card, out)
+        board_lint(card, out, prepared)
     hits = plain_math(card)
     if hits:
         out.append(f'{len(hits)} 处数学写成了纯文本（不排版、不按读法朗读），改成 $…$〔读法〕：' + '｜'.join(hits[:3]))
@@ -416,20 +417,36 @@ def lint_card(card, academic=True, theme='editorial'):
 
 BOARD_TEXT_LIMIT = 120   # reading units of typed text a board card may carry beside the board
 SPOT_HINT = 90           # a crop explained at this length without spots leaves the eye searching
+SHORT_CROP_LINES = 3     # ...unless the crop is itself only a few lines: then it is the line being explained
+NOTE_NODES = 7           # an annotation helps read one crop; more than this is new content for a supplementary card
 
 
-def board_lint(card, out):
+def board_lint(card, out, prepared=None):
     """The board is the card: typed text beside it repeats what the learner already read (redundancy), and a long
-    explanation with nothing framed on the board leaves the eye searching for the line being explained (signaling)."""
+    explanation with nothing framed on the board leaves the eye searching for the line being explained (signaling).
+    prepared: the card's blocks after board_images.prepare, whose crops know their height in board lines."""
     typed = sum(reading_units(derived_speech(b)) for b in card['blocks'] if isinstance(b, dict) and b.get('type') != 'board')
     if typed > BOARD_TEXT_LIMIT:
         out.append(f'板书卡的文字块约 {typed} 字：卡面以板书为主，讲解放进语音；板书没有、考试要的内容另做补充卡放在这张后面')
-    for b in card['blocks']:
+    for b in prepared or card['blocks']:
         if not isinstance(b, dict) or b.get('type') != 'board':
             continue
         for j, crop in enumerate(b.get('crops', [])):
-            if isinstance(crop, dict) and not crop.get('spots') and reading_units(crop.get('speech', '')) > SPOT_HINT:
+            if not isinstance(crop, dict) or crop.get('_media', {}).get('lines', SHORT_CROP_LINES + 1) <= SHORT_CROP_LINES:
+                continue
+            if not crop.get('spots') and reading_units(crop.get('speech', '')) > SPOT_HINT:
                 out.append(f'第 {j + 1} 块板书讲解约 {reading_units(crop.get("speech", ""))} 字却没有 spots：用 spots 框出正在讲的那几行，语音读到哪里就框到哪里')
+        for j, crop in enumerate(b.get('crops', [])):
+            note = crop.get('annotate') if isinstance(crop, dict) else None
+            if not isinstance(note, dict) or not isinstance(note.get('root'), dict):
+                continue
+            nodes = list(map_nodes(note['root']))
+            if len(nodes) > NOTE_NODES:
+                out.append(f'第 {j + 1} 块板书的批注有 {len(nodes)} 个节点（超过 {NOTE_NODES} 个）：批注只帮读懂这块板书，'
+                           '板书没讲、考试又要的内容另做补充卡（board_gap）')
+            causal_lint(nodes[1:], out, f'第 {j + 1} 块板书的批注')
+            if not any(n.get('rel') for n, _ in nodes[1:]):
+                out.append(f'第 {j + 1} 块板书的批注没有关系词：子节点写 rel（因为、所以、不是、而是、仅当…），否则只是并列的笔记')
 
 
 def known_terms(data):
@@ -472,7 +489,7 @@ def term_ledger(data, pages):
     for cid, body in pages.items():
         # chrome, citations and the definition sentence itself are not teaching vocabulary
         body = re.sub(r'<header[\s\S]*?</header>|<footer[\s\S]*?</footer>|<div hidden[\s\S]*?</div>', ' ', body)
-        body = re.sub(r'<(p|span|div) class="(?:def-text|def-label|def-src|pf-src|tbl-cap|marks-basis)[^"]*"[^>]*>[\s\S]*?</\1>', ' ', body)
+        body = re.sub(r'<(p|span|div) class="(?:def-text|def-label|def-src|pf-src|tbl-cap|marks-basis|bd-note-exam)[^"]*"[^>]*>[\s\S]*?</\1>', ' ', body)
         body = re.sub(r'<math[\s\S]*?</math>', ' ', body)
         defined_here = {m.lower() for m in re.findall(r'<abbr[^>]*>(.*?)</abbr>', body)}
         # a quoted sentence (8+ English words) with its Chinese rendering beside it is explained as a whole
@@ -510,7 +527,7 @@ def walk_text(*values):
 def text_segments(body):
     """Visible text of a page split at block-level tags (paragraphs, list items, cells, nodes)."""
     body = re.sub(r'<header[\s\S]*?</header>|<footer[\s\S]*?</footer>|<div hidden[\s\S]*?</div>|<math[\s\S]*?</math>', ' ', body)
-    body = re.sub(r'<(p|span|div) class="(?:def-src|pf-src|tbl-cap|marks-basis)[^"]*"[^>]*>[\s\S]*?</\1>', ' ', body)
+    body = re.sub(r'<(p|span|div) class="(?:def-src|pf-src|tbl-cap|marks-basis|bd-note-exam)[^"]*"[^>]*>[\s\S]*?</\1>', ' ', body)
     segments = [strip_tags(re.sub(r'<[^>]+>', ' ', x)).strip() for x in re.split(r'</?(?:p|li|div|td|th|dd|dt|h1|h2|h3|section|tr)\b[^>]*>', body)]
     return [x for x in segments if x]
 
@@ -723,7 +740,7 @@ def main(argv=None):
         if nodes > 60:
             warn.append(f'导图 {nodes} 个节点，超过 60 个：拆成全景图加分支子图')
         warn += board_warnings.get(card['id'], [])
-        warn += lint_card(card, data.get('academic', True), r['theme'])
+        warn += lint_card(card, data.get('academic', True), r['theme'], boards.get(card['id']))
         odd = narration.speech_lint(p['text'], lexicon)
         if odd:
             warn.append('朗读文本含难读符号 ' + ' '.join(odd) + '：改写成文字读法')

@@ -277,6 +277,9 @@ def check_coverage(data, card_ids, card_covers, planning=False, preview=False):
             need(planning or linked or text(point.get('not_carded')), f'board[{i}] records a lost mark: name the card that fixes it (M0 → method/derivation card, A0 → pitfall and finish item, B0 → term card) or explain not_carded')
         if point.get('legibility') == 'low':
             need(text(point.get('confirmed_by')), f'board[{i}] is hard to read: say which source confirmed the content (confirmed_by); never fill in guessed words')
+        if 'issue' in point:  # where the board itself gets in the way of understanding what the exam needs
+            need(point['issue'] in BOARD_ISSUES, f'board[{i}].issue says what is wrong with the board here: one of {sorted(BOARD_ISSUES)}')
+            need(text(point.get('issue_note')), f'board[{i}].issue_note says in one line what the problem is (e.g. "the shifted supply is labelled MPC + subsidy")')
     check_board_shown(data, board, planning)
     need(board or text(data.get('board_waived')), 'board: list the board points (B01…), or say in board_waived why this deck has no board (e.g. made from a syllabus section only)')
     undemanded = check_demands(data, by_id, set(genres), planning)
@@ -318,6 +321,10 @@ def check_trail(cov, status, card_ids, preview=False):
             {'records': len(coldread), 'missing': sum(len(c.get('missing', [])) for c in coldread)})
 
 
+# Kept in step with blocks.BOARD_NEEDS (the annotation's "need"); deck_rules does not import the renderer.
+BOARD_ISSUES = ('slip', 'illegible', 'skipped', 'ambiguous', 'overstated', 'shorthand')
+
+
 def board_crops(data):
     for c in data.get('cards', []):
         for b in c.get('blocks', []) if isinstance(c, dict) else []:
@@ -331,6 +338,10 @@ def check_board_shown(data, board, planning=False):
     if planning:
         return
     ids = {p.get('id') for p in board if isinstance(p, dict)}
+    # A board point that is wrong, illegible, skips a step, reads two ways, overstates or uses unlabelled shorthand is
+    # exactly where the learner may misread the board: the crop that shows it carries an annotation beside it.
+    troubled = {p['id']: p.get('issue', 'illegible') for p in board if isinstance(p, dict) and p.get('id')
+                and ('issue' in p or p.get('legibility') == 'low')}
     shown = set()
     any_board = False
     for card, block, crops in board_crops(data):
@@ -340,6 +351,11 @@ def check_board_shown(data, board, planning=False):
             need(isinstance(points, list) and all(x in ids for x in points),
                  f'card {card["id"]}: crops[{j}].points must list board point ids (B01…) shown in that crop')
             shown |= set(points)
+            hard = [x for x in points if x in troubled]
+            if hard and not isinstance(crop.get('annotate'), dict):
+                need(False, f'card {card["id"]}: crops[{j}] shows board point {", ".join(f"{x} ({troubled[x]})" for x in hard)}, '
+                            'where the board itself may be misread: add "annotate", a small mind map beside the crop that says what the board '
+                            'means here, limited to what the exam needs (references/card-genres.md, 板书卡)')
     if not any_board:
         return
     for i, point in enumerate(board):

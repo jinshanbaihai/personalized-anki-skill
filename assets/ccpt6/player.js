@@ -86,7 +86,7 @@
    const rg=document.createRange();rg.selectNodeContents(node);const b=rg.getBoundingClientRect();if(!b.width||!b.height)continue;
    let k=1;const sc=el.closest('[data-scale]');if(sc)k=parseFloat(sc.dataset.scale)||1;
    if(el instanceof SVGElement){const m=el.getScreenCTM();if(m)k=Math.hypot(m.c,m.d);}
-   const chrome=!!el.closest('.cc-meta,.cc-foot,.mark-badge,.tagline,.def-label,.def-src,.pf-src,.tbl-cap,.cc-player,.mm-rel,.blk-label,.mm-label,.ao-badge,.def-lists h4,.subgoal-mark,.step-n,.step-mark,.ch-rel-cond,.pf-src-type,.cc-fb,.heur-ex,.bd-where,.cc-gap');
+   const chrome=!!el.closest('.cc-meta,.cc-foot,.mark-badge,.tagline,.def-label,.def-src,.pf-src,.tbl-cap,.cc-player,.mm-rel,.blk-label,.mm-label,.ao-badge,.def-lists h4,.subgoal-mark,.step-n,.step-mark,.ch-rel-cond,.pf-src-type,.cc-fb,.heur-ex,.bd-where,.cc-gap,.bd-note-head,.bd-note-exam');
    const math=!!el.closest('math');
    runs.push({text:node.textContent.trim().slice(0,60),font:+(parseFloat(st.fontSize)*k).toFixed(1),kind:math?'math':chrome?'chrome':'content'});
   }
