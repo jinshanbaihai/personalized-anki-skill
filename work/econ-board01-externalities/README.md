@@ -26,7 +26,7 @@ python3 scripts/build_cards.py work/econ-board01-externalities/deck.json out/boa
 
 - **24 张旧卡的内容在板书上**，换成 23 张板书卡（旧卡 S01、S02 合成 BD-S01）。
 - **另加 2 张板书卡**：BD-ESSAY（air travel 题的三大板块）、BD-POS-ESSAY（正外部性题），旧卡组里没有对应卡。
-- **29 张旧卡板书没有覆盖**，原样保留在 Anki 里，不需要动。
+- **29 张旧卡板书没有覆盖**，原样保留在 Anki 里（其中 T03 的画法与评分方案写法不同，见文末）。
 
 | 旧卡 | 换成 | 旧卡 | 换成 |
 |---|---|---|---|
@@ -47,21 +47,23 @@ python3 scripts/build_cards.py work/econ-board01-externalities/deck.json out/boa
 
 板书卡是新的 notetype（ccpt-6），旧卡是更早的导图格式，GUID 也不同，所以**不能原位更新**：导入板书卡后，在 Anki 里把上表左列的 24 张旧卡暂停（Suspend）或删除，避免同一知识点复习两遍。旧卡的复习历史不会转到板书卡上。
 
-## 板书旁的批注（10 处）
+## 内容以谁为准
 
-卡面内容大多直接来自板书，板书本身有几处容易读错。这些地方在板书旁加了一张小导图批注，标题写明需要的原因，底部写它服务的考试要求；只讲到考试所需为止。问题点取自旧卡组研究记录《板书与考试证据.md》（2026-10-03），并对照板书原图逐处核对了原话。
+考纲与评分方案（及其对应的官方教材）最高，板书其次，制作者自己的判断与第三方笔记最低。卡面、语音、批注都按上一级的说法讲，不“更正”上一级。旧卡组研究记录《板书与考试证据.md》里对板书和评分方案的“更正”（MS 的 decrease demand、MPC+subsidy、“实际产量”、“先免费提供”、“不是私人的”等）属于第三方判断，这一版全部没有采用：BD-T01 按评分方案原句讲 demand 下降；其余几处按板书原句讲。
 
-| 卡 | 板书原话或位置 | 类型 | 批注讲什么 | 考试依据 |
+## 板书旁的批注（6 处）
+
+批注只在板书**模糊**或**未竟**（没讲完考纲、评分方案要的内容）时出现，材料取自第一级官方材料，必要时连上板书别处。产生过程：读这一块板书 → 对上评分方案、考官报告、考纲 → 看答题者要写出什么 → 补全模糊或未竟的地方。下面用到的官方原文都在 2026-10-10 下载核对过（考纲与样题评分方案的官网返回 403，分别用技能自带的考纲记录和板书上贴入的样题评分方案原样截图）。
+
+| 卡 | 板书这里 | 类型 | 批注补了什么 | 取材 |
 |---|---|---|---|---|
-| BD-ESSAY | air travel 原题 | 跳步 | 本题要画 negative consumption 图，不是 production 图 | 9708 F/M 2023 ER p9 |
-| BD-ESSAY | 老师：每个政策写两个 limitations | 说得过满 | 这是课堂组织办法，不是评分规则；题目给了政策数量按题目写 | specimen rubric pp5–6；M/J 2023 Q2 |
-| BD-T01 | MS：tax … decrease demand | 易混 | 税是供给上移到 MPC + t、需求量沿原 D 下降；让 D 左移的是信息政策 | F/M 2023 MS pp9–10；F/M 2024 MS（图不准确最高 L2） |
-| BD-B07 | 红色草图向上那条线的标签 | 字迹不清 | 按模型应是 MPC = MSC；考试时四条线都写清标签 | specimen MS pp9–10；F/M 2024 MS |
-| BD-S01 | 下移的供给线标成 MPC + subsidy | 笔误 | 应是 MPC − s；原来的 MSC 不变，补贴是转移 | specimen MS pp9–10；F/M 2024 MS |
-| BD-S04 | 补贴后的产量就到不了“实际产量” | 笔误 | 应是“最优产量”；补少了生产不足，补多了超过 Q* | specimen MS pp9–10 AO3 |
-| BD-I03 | merit good 对消费者也有好处但被低估 | 易混 | 信息补的是私人 benefit 的低估，补不了给别人的 external benefit | specimen MS pp9–10；M/J 2023 ER pp21–22 |
-| BD-R02 | 政府需要先免费提供，才能要求人们增加消费 | 说得过满 | 免费不是唯一办法，需要的是可负担、可获得 | 9708 syllabus 8.1.1；specimen rubric |
-| BD-POS-ESSAY | MS：补贴使产量增加，达到 allocative efficiency | 跳步 | 中间一步：Q 升到 MSB = MSC 的 Q*，welfare loss 消失 | M/J 2023 ER pp21–22 |
-| BD-P02 | 没有产权……因为这块地不是私人的 | 易混 | 关键不在私有还是公有，而在有没有可执行的权利与损害责任 | 9708/33 O/N 2017 Q16 |
+| BD-ESSAY | air travel 原题，只说“借助图” | 未竟 | 本题是消费的负外部性：画消费负外部性的图；关键的 market failure 是 overproduction 造成的 allocative inefficiency | F/M 2023 考官报告 p9（“Air travel relates to consumption not production”） |
+| BD-T01 | 评分方案：tax 提高成本，demand 下降 | 未竟 | demand 下降即曲线左移 → 均衡航班数减少到 allocatively efficient 的数量；同页要求图上比较两者、标出 welfare loss | 9708/42 F/M 2023 评分方案 pp9–10 |
+| BD-B07 | 红色草图向上那条线的手写标签 | 模糊 | 写的是 MPC（供给线）；后面 subsidy 图把同一条线标作 MPC = MSC | 板书 BP18；考纲 7.4.4；F/M 2023 评分方案 p9（clearly labelled, accurate diagram） |
+| BD-S01 | 图中标 MPC+subsidy 的线 | 模糊 | 即有补贴之后的供给线，在 MPC = MSC 下方；补贴降低生产成本、MPC 下降；产量从 Qactual 增加到 Qoptimal | 样题评分方案 Q2（A subsidy will lower the cost of production…）；板书 |
+| BD-I03 | merit good 对消费者有好处但被低估 | 未竟 | providing information → demand、consumption 增加 → output 上升，allocative efficiency 可能实现 | 样题评分方案 Q2（advertising to increase demand）；M/J 2023 考官报告 p22 |
+| BD-POS-ESSAY | 评分方案：equilibrium output 上升，达到 allocative efficiency | 未竟 | 即 output 增加到 MSB = MSC 处的 Qoptimal；板书 MSB = MSC 的点才实现 allocative efficiency | 样题评分方案 Q2；M/J 2023 考官报告 p22；板书 BP07 |
 
-原来这些更正写在卡底的“更正”文字块里，现在移到了板书旁边；只有 BD-D02 的“学校、医院关闭是课堂举例，未核实”仍是一条短提醒，因为它不是读板书的问题。
+## 保留旧卡中与评分方案写法不同的地方
+
+保留的旧卡 T03（Negative consumption：tax 怎样把 Q 拉回 Q*）按“供给上移到 MPC + t”的画法讲，与 9708/42 F/M 2023 评分方案“tax … will decrease demand”的写法不同。它不在这次的板书卡里，旧卡组的制作源要另行按评分方案的写法改造。

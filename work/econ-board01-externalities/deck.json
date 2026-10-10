@@ -67,40 +67,34 @@
    "type": "board",
    "ref": "board.png（1280×9866，SHA-256 a17f64f8…c9）",
    "read": "2026-10-10 逐页读完 7 张编号总览页（0–9866 px）",
-   "used_for": "全部 25 张板书卡的卡面、裁切框与更正"
+   "used_for": "全部 25 张板书卡的卡面与裁切框"
   },
   {
    "type": "spec",
-   "ref": "Cambridge 9708 syllabus 2026–2028 Version 2（2025-12）https://www.cambridgeinternational.org/Images/697423-2026-2028-syllabus.pdf",
-   "read": "pp24、27–28、43（2026-10-03 制作记录；本次未重读）",
-   "used_for": "范围 7.3.5、7.4.1–7.4.5、8.1.1、8.1.2"
+   "ref": "Cambridge 9708 syllabus 2026–2028 Version 2（2025-12）",
+   "url": "https://www.cambridgeinternational.org/Images/697423-2026-2028-syllabus.pdf",
+   "read": "pp24、27–28：技能自带的考纲条目记录 references/exams/cie-9708/syllabus-a-level.md（官网 2026-10-10 返回 403，未重新下载）",
+   "used_for": "范围 7.3.5、7.4.1–7.4.5、8.1.1、8.1.2；BD-B07 批注"
   },
   {
    "type": "ms",
    "ref": "9708/42 F/M 2023 Q2 mark scheme",
-   "read": "pp9–10（板书原样贴入，本次随板书读过）",
-   "used_for": "BD-ESSAY、BD-B01、BD-B03、BD-T01（“decrease demand”改述）、BD-T05、BD-T04、BD-J02",
+   "read": "pp9–10 全文（2026-10-10 下载 9708_m23_ms_42.pdf 逐字读；板书也贴有原样截图）",
+   "used_for": "BD-ESSAY、BD-B01、BD-B03、BD-T01（讲解与批注按原句）、BD-T05、BD-T04、BD-J02、BD-B07 批注",
    "paper": "9708/4"
   },
   {
    "type": "er",
    "ref": "9708 F/M 2023 examiner report",
-   "read": "pp6–7、9–11（2026-10-03 制作记录）",
-   "used_for": "air travel 要用 negative consumption 图（BD-ESSAY 的批注）",
-   "paper": "9708/4"
-  },
-  {
-   "type": "ms",
-   "ref": "9708/42 F/M 2024 Q2 mark scheme",
-   "read": "pp10–11（2026-10-03 研究记录《板书与考试证据》）",
-   "used_for": "批注里的“图不准确最高 L2”（BD-T01、BD-B07、BD-S01）",
+   "read": "Paper 42 Question 2 一段全文（p9；2026-10-10 下载 9708_m23_er.pdf 逐字读）",
+   "used_for": "BD-ESSAY 批注：air travel relates to consumption not production；overproduction 是关键的 market failure",
    "paper": "9708/4"
   },
   {
    "type": "ms",
    "ref": "9708 Paper 4 specimen 2023 mark scheme Q2",
-   "read": "pp3–6、9–10（板书原样贴入，本次随板书读过）",
-   "used_for": "BD-POS-ESSAY、BD-S07、BD-D01、BD-D03、BD-B01",
+   "read": "pp9–10 的板书截图（老师原样贴入；官网 2026-10-10 返回 403，未另下载）",
+   "used_for": "BD-POS-ESSAY、BD-S07、BD-D01、BD-D03、BD-B01；BD-S01、BD-I03、BD-POS-ESSAY 批注",
    "paper": "9708/4"
   },
   {
@@ -127,8 +121,8 @@
   {
    "type": "er",
    "ref": "9708 M/J 2023 examiner report",
-   "read": "pp18、21–22、24（2026-10-03 制作记录）",
-   "used_for": "“做出价格效果还不是解释福利改善”（BD-POS-ESSAY、BD-I03 的批注）",
+   "read": "Paper 41 Section B Question 2 一段全文（p22；2026-10-10 下载 9708_s23_er.pdf 逐字读）",
+   "used_for": "BD-I03、BD-POS-ESSAY 批注：merit good、positive externalities 与 allocative efficiency 的联系",
    "paper": [
     "9708/3",
     "9708/4"
@@ -138,13 +132,13 @@
    "type": "textbook",
    "ref": "Varian, Intermediate Microeconomics 8e Ch16、33、34、36",
    "read": "2026-10-03 制作记录所列页",
-   "used_for": "BD-P02 的谈判数例、BD-S05 transfer 与机会成本之分"
+   "used_for": "只作旧卡考点的证据；本包卡面、讲解与批注未用"
   },
   {
    "type": "other",
    "ref": "旧卡组研究记录《板书与考试证据.md》（2026-10-03）",
-   "read": "2026-10-10 全文重读",
-   "used_for": "10 处批注的问题点：MPC + subsidy 方向、实际产量笔误、红色草图标签、免费提供说得过满、信息补私人低估、MS 的 decrease demand、air travel 用哪张图、两个 limitations 的地位、价格效果与福利之分、不是私人的≠没有产权"
+   "read": "2026-10-10 全文",
+   "used_for": "只用来定位真题与评分方案的出处；其中对板书和评分方案的“更正”属于第三方判断，没有采用"
   },
   {
    "type": "other",
@@ -153,7 +147,7 @@
    "used_for": "板书卡旁白沿用已复评的讲解；29 张板书未覆盖的卡保留原卡（existing）"
   }
  ],
- "research_gaps": "2024、2025 年的 examiner report 下载多站返回 HTML/403，未取得逐题讲解。本次改造只重读了板书原图与旧卡制作源；考纲、MS、ER、范文的实读范围引用 2026-10-03 的制作记录。",
+ "research_gaps": "cambridgeinternational.org 在本环境返回 403：考纲与 specimen 评分方案没有重新下载，考纲条目用技能自带记录，specimen 评分方案用板书上老师贴入的原样截图。F/M 2023 评分方案与考官报告、M/J 2023 考官报告已在 2026-10-10 下载原文逐字核对。",
  "board": [
   {
    "id": "BP01",
@@ -202,8 +196,8 @@
    "items": [
     "ESSAY-NEG"
    ],
-   "issue": "skipped",
-   "issue_note": "原题只说借助图，没说是哪张图；考官报告要求 negative consumption 图"
+   "aid": "unfinished",
+   "aid_note": "原题要求借助图，板书没说画哪张：考官报告说明本题是消费的负外部性"
   },
   {
    "id": "BP06T",
@@ -244,8 +238,8 @@
    "items": [
     "T01"
    ],
-   "issue": "ambiguous",
-   "issue_note": "“decrease demand”易读成 D 左移；税是供给上移、需求量沿 D 减少"
+   "aid": "unfinished",
+   "aid_note": "评分方案的 tax 一条没讲到图：同页要求比较市场均衡与 allocatively efficient 的航班数"
   },
   {
    "id": "BP11",
@@ -293,9 +287,7 @@
    "point": "老师：板块三 EV，每个政策两个 limitations",
    "items": [
     "ESSAY-NEG"
-   ],
-   "issue": "overstated",
-   "issue_note": "“每个政策两个 limitations”是课堂组织办法，不是评分规则"
+   ]
   },
   {
    "id": "BP17",
@@ -305,7 +297,7 @@
     "B07"
    ],
    "legibility": "low",
-   "confirmed_by": "标准正消费外部性模型；2026-10-03 研究记录已标注该标签不清"
+   "confirmed_by": "同一板书后文的 subsidy 图（BP18）把同一条供给线标作 MPC=MSC；考纲 7.4.4"
   },
   {
    "id": "BP18",
@@ -315,8 +307,8 @@
     "S01",
     "S02"
    ],
-   "issue": "slip",
-   "issue_note": "下移的供给线标成 MPC + subsidy，应为 MPC − subsidy；“成本下降”不是真实 MSC 下降"
+   "aid": "vague",
+   "aid_note": "下方那条线标作 MPC+subsidy，没写明是补贴后的供给线"
   },
   {
    "id": "BP19",
@@ -324,9 +316,7 @@
    "point": "subsidy 局限 1：外部收益难测",
    "items": [
     "S04"
-   ],
-   "issue": "slip",
-   "issue_note": "“到不了实际产量”应为“到不了最优产量”"
+   ]
   },
   {
    "id": "BP20",
@@ -351,18 +341,16 @@
    "items": [
     "I03"
    ],
-   "issue": "ambiguous",
-   "issue_note": "信息补的是私人 benefit 的低估，不是第三方的 external benefit"
+   "aid": "unfinished",
+   "aid_note": "板书写了原因（merit good 被低估），没讲完评分方案要的结果：demand、output、allocative efficiency"
   },
   {
    "id": "BP23",
    "where": "约 58%–62% 处",
-   "point": "政策 3 regulation 与局限 1（穷人负担）",
+   "point": "政策 3 regulation 与局限 1（穷人负担，配合 direct provision）",
    "items": [
     "R02"
-   ],
-   "issue": "overstated",
-   "issue_note": "“政府需要先免费提供才能要求增加消费”：可负担、可获得即可，免费不是唯一办法"
+   ]
   },
   {
    "id": "BP24",
@@ -420,8 +408,8 @@
    "items": [
     "ESSAY-POS"
    ],
-   "issue": "skipped",
-   "issue_note": "从“产量增加”直接跳到 allocative efficiency，缺“Q 升到 MSB = MSC 的 Q*”"
+   "aid": "unfinished",
+   "aid_note": "评分方案从 output 上升直接到 allocative efficiency：考官报告要求讲清与 positive externalities 的联系"
   },
   {
    "id": "BP29A",
@@ -463,9 +451,7 @@
    "point": "土地、河流的例子：没有产权，污染没有代价",
    "items": [
     "P02"
-   ],
-   "issue": "ambiguous",
-   "issue_note": "“因为这块地不是私人的”：问题在没有可执行的产权与责任，不在是否私有"
+   ]
   },
   {
    "id": "BP33",
@@ -928,7 +914,7 @@
     "point": "负面信息宣传的作用路径",
     "class": "core",
     "kind": "chain",
-    "level": "信息改变 D 本身；条件：可信、改变选择",
+    "level": "MS：negative advertising 减少 demand，航班减少，allocative efficiency might be achieved",
     "evidence": [
      "9708/42 F/M 2023 Q2 MS pp9–10",
      "9708 F/M 2023 ER p9"
@@ -940,7 +926,7 @@
     "point": "正面信息与 merit good",
     "class": "core",
     "kind": "chain",
-    "level": "私人 benefit 被低估；不保证到 Q*",
+    "level": "merit good 的 benefit 被低估；MS：advertising 增加 demand",
     "evidence": [
      "9708 Paper 4 specimen 2023 MS pp9–10",
      "9708 M/J 2023 ER pp21–22"
@@ -974,10 +960,10 @@
    {
     "id": "T01",
     "spec": "8.1.1",
-    "point": "indirect tax 的机制（沿 demand 减量）",
+    "point": "indirect tax 的机制：成本上升，demand 下降",
     "class": "core",
     "kind": "chain",
-    "level": "effective supply 上移，quantity demanded 沿 D 下降；MS 写法需改述",
+    "level": "MS：tax 提高 air travel 的成本，demand 下降，均衡航班数减少，达到 allocative efficiency",
     "evidence": [
      "9708/42 F/M 2023 Q2 MS pp9–10",
      "9708 F/M 2023 ER p9"
@@ -1062,10 +1048,10 @@
    {
     "id": "S01",
     "spec": "8.1.1",
-    "point": "subsidy 降低有效成本",
+    "point": "subsidy 降低生产成本",
     "class": "core",
     "kind": "chain",
-    "level": "有效供给 MPC−s；真实 MSC 不变",
+    "level": "MS：降低生产成本、增加供给、降低价格、提高均衡产量；板书：MPC 下降",
     "evidence": [
      "9708 Paper 4 specimen 2023 MS pp9–10",
      "9708 M/J 2023 ER pp21–22",
@@ -1078,7 +1064,7 @@
     "point": "正消费外部性的补贴图",
     "class": "core",
     "kind": "diagram",
-    "level": "s＝Q* 处 MSB−MPB；标签 MPC−s",
+    "level": "每单位补贴等于每单位 external benefit 时，产量到 Qoptimal",
     "evidence": [
      "9708 Paper 4 specimen 2023 MS pp9–10",
      "9708 M/J 2023 ER pp21–22"
@@ -1128,7 +1114,7 @@
     "point": "补贴局限：依赖与低效",
     "class": "core",
     "kind": "chain",
-    "level": "条件性风险",
+    "level": "板书：producers may become dependent on subsidy",
     "evidence": [
      "9708 Paper 4 specimen 2023 MS pp9–10",
      "9708 M/J 2023 ER pp21–22"
@@ -1166,7 +1152,7 @@
     "point": "positive regulation 与配套",
     "class": "core",
     "kind": "chain",
-    "level": "可负担、可获得；自由与政治可行性",
+    "level": "板书：配合 direct provision；穷人负担、执行、自由与 political pressure",
     "evidence": [
      "9708 Paper 4 specimen 2023 MS pp9–10",
      "9708 M/J 2023 ER pp21–22"
@@ -1204,7 +1190,7 @@
     "point": "direct provision 的机制",
     "class": "core",
     "kind": "chain",
-    "level": "增加供给与可获得性；免费不等于最优",
+    "level": "MS：增加生产与供给，达到 allocatively efficient 的结果",
     "evidence": [
      "9708 Paper 4 specimen 2023 MS pp9–10",
      "9708 M/J 2023 ER pp21–22",
@@ -1242,7 +1228,7 @@
     "point": "公共提供的效率风险",
     "class": "core",
     "kind": "chain",
-    "level": "X-inefficiency 是条件性风险",
+    "level": "MS：costly，sometimes less efficient than market forces",
     "evidence": [
      "9708 Paper 4 specimen 2023 MS pp9–10",
      "9708 M/J 2023 ER pp21–22"
@@ -1510,7 +1496,7 @@
           935,
           870
          ],
-         "speech": "执行手段：广告牌、电视、广告平台和网络。注意，信息起作用要靠改变选择：行为改变时 demand 左移，quantity 下降；宣传本身不会降低每单位的 MSC，知道有污染也不等于一定愿意少买。"
+         "speech": "执行手段：广告牌、电视、广告平台和网络。信息让人们少用这些商品，demand 下降。"
         }
        ]
       },
@@ -1525,7 +1511,7 @@
        "points": [
         "BP11"
        ],
-       "speech": "评分方案也把 negative advertising 列为一种干预：需求下降，航班减少，可能达到 allocative efficiency。考试里要说清是信息改变了 demand 本身，这和税不同。"
+       "speech": "评分方案也把 negative advertising 列为一种干预：它使 demand 下降，航班减少，air travel 的数量下降，allocative efficiency 可能实现。"
       }
      ],
      "masks": []
@@ -1685,20 +1671,29 @@
        ],
        "speech": "这是 2023 年 2 至 3 月考季 9708 第 42 卷第 2 题：air travel 带来负外部性导致的 market failure，要求借助图评估政府干预能在多大程度上纠正。",
        "annotate": {
-        "need": "skipped",
-        "exam": "9708 F/M 2023 ER p9：本题按 negative consumption externality 分析，误用生产图影响分析档次",
+        "aid": "unfinished",
+        "from": [
+         "BP06",
+         "9708 F/M 2023 examiner report"
+        ],
+        "exam": "9708 F/M 2023 ER p9（Paper 42 Q2）",
         "root": {
-         "text": "原题只说借助图，没说哪张图",
+         "text": "原题：air travel 的负外部性造成 market failure",
          "children": [
           {
-           "rel": "要画",
-           "text": "negative consumption（负的消费外部性）图：MPB（边际私人收益）> MSB（边际社会收益）",
+           "rel": "考官报告",
+           "text": "air travel 属于消费：negative externality of consumption（消费的负外部性）",
            "kind": "definition"
           },
           {
-           "rel": "不是",
-           "text": "production（生产外部性）图：MSC（边际社会成本）> MPC（边际私人成本）",
-           "kind": "contrast"
+           "rel": "图要画",
+           "text": "消费负外部性的图，不画生产负外部性的图",
+           "kind": "note"
+          },
+          {
+           "rel": "关键是",
+           "text": "overproduction（过度生产）造成的 allocative inefficiency（配置无效率）",
+           "kind": "definition"
           }
          ]
         }
@@ -1765,31 +1760,7 @@
        "points": [
         "BP16"
        ],
-       "speech": "板块三是评价：老师的组织办法是每个政策写两个 limitations。",
-       "annotate": {
-        "need": "overstated",
-        "exam": "9708 Paper 4 specimen rubric pp5–6：AO1 加 AO2 14 分、AO3 6 分；9708/42 M/J 2023 Q2 题目要求 two policies",
-        "root": {
-         "text": "老师：每个政策写两个 limitations（局限）",
-         "children": [
-          {
-           "rel": "这是",
-           "text": "课堂的组织办法，不是评分规则",
-           "kind": "note"
-          },
-          {
-           "rel": "AO3 看的是",
-           "text": "评价有发展、有依据、有判断",
-           "kind": "definition"
-          },
-          {
-           "rel": "如果",
-           "text": "题目给了政策数量，按题目写",
-           "kind": "condition"
-          }
-         ]
-        }
-       }
+       "speech": "板块三是评价：每个政策写两个 limitations。"
       },
       {
        "box": [
@@ -1914,7 +1885,7 @@
   {
    "id": "BD-T01",
    "genre": "board",
-   "title": "Indirect tax：评分方案说 demand 下降，图上应是沿 demand 减少",
+   "title": "Indirect tax：成本上升，demand 下降，航班数减少",
    "covers": [
     "T01"
    ],
@@ -1950,34 +1921,33 @@
        "points": [
         "BP10"
        ],
-       "speech": "评分方案的说法是：税提高航空出行的成本，demand 下降，均衡航班数减少，达到 allocative efficiency。以卖方缴纳的 specific tax 为例，同一 quantity 需要更高的买方价格。这里的 demand 下降容易读错，看旁边的批注。",
+       "speech": "评分方案原句：税提高 air travel 的成本，demand 下降；demand 下降使均衡航班数减少，达到 allocative efficiency。",
        "annotate": {
-        "need": "ambiguous",
-        "exam": "9708/42 F/M 2023 Q2 MS pp9–10；图不准确最高 L2（9708/42 F/M 2024 Q2 MS pp10–11）",
+        "aid": "unfinished",
+        "from": [
+         "BP10",
+         "9708/42 F/M 2023 Q2 mark scheme"
+        ],
+        "exam": "9708/42 F/M 2023 Q2 MS pp9–10",
         "root": {
-         "text": "评分方案：tax 使 demand（需求）下降",
+         "text": "评分方案：tax 提高 air travel 的成本",
          "children": [
           {
-           "rel": "不是",
-           "text": "demand 曲线左移",
-           "kind": "contrast"
-          },
-          {
-           "rel": "而是",
-           "text": "供给上移到 MPC（边际私人成本）+ t，价格上升",
+           "rel": "所以",
+           "text": "demand（需求）下降，即 demand 曲线向左移动",
            "kind": "effect",
            "children": [
             {
              "rel": "所以",
-             "text": "quantity demanded（需求量）沿原 D 下降到 Q*",
+             "text": "均衡航班数减少到 allocatively efficient（配置有效）的数量",
              "kind": "effect"
             }
            ]
           },
           {
-           "rel": "对比",
-           "text": "让 D 本身左移的是 information（信息政策）",
-           "kind": "contrast"
+           "rel": "评分方案的图",
+           "text": "比较市场均衡与 allocatively efficient 的航班数，标出 welfare loss（福利损失）",
+           "kind": "note"
           }
          ]
         }
@@ -2022,7 +1992,7 @@
   {
    "id": "BD-T04",
    "genre": "board",
-   "title": "税的效果：价格上升，quantity 不一定马上大降",
+   "title": "税的效果：对价格和 demand 的影响有时要很久才见效",
    "covers": [
     "T04"
    ],
@@ -2045,7 +2015,7 @@
        "points": [
         "BP13"
        ],
-       "speech": "评价第二条：税对价格和需求的影响有时要很长时间才见效。缺少替代品、成瘾或习惯会让 demand 较 inelastic，同样的涨价，quantity 减得少；替代交通更方便、消费者有时间调整后，响应才变强。税收收入多不等于外部性纠正得好，要看实际数量和社会损害的变化。"
+       "speech": "评价第二条：在某些情况下，税对价格和 demand 的影响要很长时间才见效。比如缺少替代的交通方式，或者出行习惯一时改不了，demand 下降得慢；有了替代、人们有时间调整后，demand 才明显下降。"
       }
      ]
     }
@@ -2098,7 +2068,7 @@
           1280,
           3362
          ],
-         "speech": "举一个条件明确的判断：若危害急迫、可监测，而短期对价格反应很弱，单靠 tax 难以迅速减量，可执行的上限更及时；若不必立即完成、单位排放可测且企业减排成本差异大，税让低成本者多减排，可能更省资源。条件改变，结论也会改变。"
+         "speech": "老师要求说明什么情况下 tax 更有效、什么情况下信息更有效。比如消费者多消费是因为低估了危害时，信息更有效；危害能测准、税额容易定时，tax 更有效。最后按商品或服务的性质下结论，这就是评分方案 AO3 最后一条。"
         }
        ]
       }
@@ -2154,19 +2124,25 @@
         }
        ],
        "annotate": {
-        "need": "illegible",
-        "exam": "9708 Paper 4 specimen MS pp9–10 的正消费外部性图；图不准确最高 L2（9708/42 F/M 2024 Q2 MS pp10–11）",
+        "aid": "vague",
+        "from": [
+         "BP17",
+         "BP18",
+         "9708/42 F/M 2023 Q2 mark scheme",
+         "Cambridge 9708 syllabus 2026–2028 Version 2（2025-12）"
+        ],
+        "exam": "9708/42 F/M 2023 Q2 MS p9：clearly labelled, accurate diagram；syllabus 7.4.4",
         "root": {
-         "text": "向上那条线的标签看不清",
+         "text": "红色草图：向上那条线的手写标签",
          "children": [
           {
-           "rel": "按模型应是",
-           "text": "MPC（边际私人成本）= MSC（边际社会成本）：生产没有外部性",
+           "rel": "写的是",
+           "text": "MPC（边际私人成本）：供给线",
            "kind": "definition"
           },
           {
-           "rel": "考试时",
-           "text": "四条线都写清标签，不照抄草图",
+           "rel": "与后面的图对照",
+           "text": "subsidy 图把同一条线标作 MPC = MSC（边际社会成本）",
            "kind": "note"
           }
          ]
@@ -2180,7 +2156,7 @@
   {
    "id": "BD-S01",
    "genre": "board",
-   "title": "Subsidy（补贴）：降低生产者面对的成本，把 Q 推向 Q*",
+   "title": "Subsidy（补贴）：降低生产成本，MPC 下降，产量增加到理想产量",
    "covers": [
     "S01",
     "S02"
@@ -2213,7 +2189,7 @@
           1225,
           3695
          ],
-         "speech": "效果：政府在生产者每生产一单位时给一笔钱，企业需要靠售价覆盖的成本变低。准确说是有效供给变成 MPC 减 s，向下移动；原料和人力并没有因此变少。"
+         "speech": "效果：政府在生产者每生产一个商品时给它一笔钱，生产成本降低，利润上升，MPC 就会下降。"
         },
         {
          "box": [
@@ -2222,7 +2198,7 @@
           580,
           3850
          ],
-         "speech": "只要每单位补贴等于 Q 星处的 external benefit，产量就增加到理想产量。",
+         "speech": "只要每单位补贴的大小等于每单位 external benefit，实际产量就会增加到理想产量。",
          "step": true
         },
         {
@@ -2242,7 +2218,7 @@
           1215,
           4190
          ],
-         "speech": "看图：MPC 等于 MSC 是原来的供给，补贴后的供给线下移；MSB 高于 MPB，两者在同一 quantity 的垂直差是每单位外部收益。补贴额设成 Q 星处的这段差，私人交易就从 Q actual 移到 Q optimal。",
+         "speech": "看图：MPC 等于 MSC 是原来的供给线，标着 MPC+subsidy 的是补贴之后的供给线，在原来的下方；MSB 与 MPB 之间的竖直距离是每单位 external benefit，每单位补贴与它相等时，产量从 Q actual 增加到 Q optimal。",
          "step": true
         },
         {
@@ -2252,24 +2228,34 @@
           580,
           4160
          ],
-         "speech": "老师最后强调外部性被内部化：补贴把原本没进入私人决定的第三方收益，通过更低的有效成本反映到选择里。"
+         "speech": "最后老师强调 externality is internalised：消费者和生产者在决定时考虑了补贴带来的额外的成本下降。"
         }
        ],
        "annotate": {
-        "need": "slip",
-        "exam": "9708 Paper 4 specimen MS pp9–10：subsidy 降低生产成本、增加供给；图不准确最高 L2（9708/42 F/M 2024 Q2 MS pp10–11）",
+        "aid": "vague",
+        "from": [
+         "BP18",
+         "BP29M",
+         "9708 Paper 4 specimen 2023 mark scheme Q2"
+        ],
+        "exam": "9708 Paper 4 specimen MS Q2：A subsidy will lower the cost of production which will increase supply",
         "root": {
-         "text": "下移的供给线标成 MPC + subsidy",
+         "text": "图中标 MPC+subsidy 的线",
          "children": [
           {
-           "rel": "笔误，应是",
-           "text": "MPC（边际私人成本）− s：生产者面对的成本下降",
+           "rel": "即",
+           "text": "有补贴之后的供给线，在 MPC（边际私人成本）= MSC（边际社会成本）下方",
            "kind": "definition"
           },
           {
-           "rel": "但是",
-           "text": "原来的 MSC（边际社会成本）不变：补贴是转移，不省资源",
-           "kind": "limit"
+           "rel": "因为",
+           "text": "补贴降低生产成本，MPC 下降",
+           "kind": "cause"
+          },
+          {
+           "rel": "所以",
+           "text": "产量从 Qactual（市场产量）增加到 Qoptimal（理想产量）",
+           "kind": "effect"
           }
          ]
         }
@@ -2331,34 +2317,10 @@
           1268,
           4803
          ],
-         "speech": "所以补贴额若不等于每单位外部收益，产量就到不了最优产量，无法实现 allocative efficiency。不能把产量上升直接当成补贴已经最优。",
+         "speech": "所以如果政府给的 subsidy per unit 不等于 external benefit per unit，补贴后的产量就到不了实际产量，无法实现 allocative efficiency。",
          "step": true
         }
-       ],
-       "annotate": {
-        "need": "slip",
-        "exam": "9708 Paper 4 specimen MS pp9–10 AO3：difficult to measure the precise value of the external benefit",
-        "root": {
-         "text": "板书：补贴后的产量到不了“实际产量”",
-         "children": [
-          {
-           "rel": "笔误，应是",
-           "text": "到不了最优产量 Q*",
-           "kind": "definition"
-          },
-          {
-           "rel": "若补少了",
-           "text": "Q 仍低于 Q*：生产不足",
-           "kind": "effect"
-          },
-          {
-           "rel": "若补多了",
-           "text": "Q 超过 Q*：多出的单位 MSC（边际社会成本）大于 MSB（边际社会收益）",
-           "kind": "effect"
-          }
-         ]
-        }
-       }
+       ]
       }
      ]
     }
@@ -2416,7 +2378,7 @@
           760,
           5072
          ],
-         "speech": "所以政府要判断钱花在哪里最能减少 welfare loss。注意，补贴付款本身是 transfer，支出大不自动等于 DWL 大；要比较纠正生产不足的净收益和放弃的替代用途。"
+         "speech": "所以政府要判断钱花在哪里最能减少 welfare loss。"
         }
        ]
       }
@@ -2450,7 +2412,7 @@
        "points": [
         "BP21"
        ],
-       "speech": "第三，producers may become dependent on subsidy：成本高的生产者缺乏动力降低成本、提高效率，补贴将来也很难取消。这是条件性的风险：绩效条件、竞争分配和可预期的退出安排可以保留改进的动力，有补贴不等于必然低效。"
+       "speech": "第三，producers may become dependent on subsidy：成本高的生产者缺乏动力降低成本、提高效率，补贴将来也很难取消。"
       }
      ]
     }
@@ -2459,7 +2421,7 @@
   {
    "id": "BD-S07",
    "genre": "board",
-   "title": "Subsidy 已发，quantity 为什么未必马上增加",
+   "title": "Subsidy：对价格和产出的影响有时要很久才见效",
    "covers": [
     "S07"
    ],
@@ -2482,7 +2444,7 @@
        "points": [
         "BP30"
        ],
-       "speech": "评分方案的评价写到：对价格和产出的影响有时要很长时间才见效。原因先看供给能否扩大：新学校、研发团队都需要设施、人才和建设时间。短期容量固定，补贴改善了激励，quantity 增幅仍可能很小。要比较短期与长期的真实 quantity 和社会 benefit，不能把发放预算当成效果已经实现。"
+       "speech": "评分方案的评价写到：在某些情况下，补贴对价格和产出的影响要很长时间才见效。比如新学校、研发团队都需要设施、人才和建设时间，短期内产出增加得慢。"
       }
      ]
     }
@@ -2531,36 +2493,37 @@
           515,
           5690
          ],
-         "speech": "缺点：一是花钱；二是可能没有说服力，用 nudge theory 解释，和负外部性那里的信息政策一样。"
+         "speech": "缺点：一是 cost；二是不 persuasive，用 nudge theory 来解释。"
         }
        ],
        "annotate": {
-        "need": "ambiguous",
-        "exam": "9708 Paper 4 specimen MS pp9–10：advertising to increase demand；9708 M/J 2023 ER pp21–22：要连上 merit good、externality 与效率",
+        "aid": "unfinished",
+        "from": [
+         "BP22",
+         "BP29M",
+         "9708 Paper 4 specimen 2023 mark scheme Q2",
+         "9708 M/J 2023 examiner report"
+        ],
+        "exam": "9708 Paper 4 specimen MS Q2：advertising to increase demand；9708 M/J 2023 ER p22：merit good、positive externalities 与 allocative efficiency 的联系",
         "root": {
-         "text": "板书：merit good（优值品）的好处被低估",
+         "text": "板书：merit good（优值品）对消费者有好处但被低估",
          "children": [
           {
-           "rel": "信息补的是",
-           "text": "消费者对自己 benefit（收益）的低估",
-           "kind": "definition",
+           "rel": "政府",
+           "text": "providing information（提供信息）：让消费者看到这些好处",
+           "kind": "policy",
            "children": [
             {
              "rel": "所以",
-             "text": "demand（需求）右移，Q 上升",
-             "kind": "effect"
-            }
-           ]
-          },
-          {
-           "rel": "补不了",
-           "text": "给别人的 external benefit（外部收益）仍不进私人决定",
-           "kind": "limit",
-           "children": [
-            {
-             "rel": "所以",
-             "text": "Q 未必升到 Q*",
-             "kind": "effect"
+             "text": "demand（需求）增加，consumption（消费）增加",
+             "kind": "effect",
+             "children": [
+              {
+               "rel": "所以",
+               "text": "output（产量）上升，allocative efficiency（配置效率）可能实现",
+               "kind": "effect"
+              }
+             ]
             }
            ]
           }
@@ -2575,7 +2538,7 @@
   {
    "id": "BD-R02",
    "genre": "board",
-   "title": "Positive regulation（强制性规定）：要求消费，也要让人做得到",
+   "title": "Regulation：要求增加消费；穷人负担不起时配合 direct provision",
    "covers": [
     "R02"
    ],
@@ -2615,33 +2578,9 @@
           1175,
           6162
          ],
-         "speech": "第一个局限：单靠规定无法增加穷人的消费，因为它没有让商品更 affordable，所以需要和 direct provision 等配套一起用。"
+         "speech": "第一个局限：只靠 regulation 无法增加穷人对这个商品的消费，因为它没有让商品变得更 affordable，所以要和 government direct provision 一起使用：政府先免费提供这个商品，才能要求人们增加对它的消费。"
         }
-       ],
-       "annotate": {
-        "need": "overstated",
-        "exam": "9708 syllabus 8.1.1（regulation）；20 分题的评价要写清条件（9708 Paper 4 specimen rubric pp5–6）",
-        "root": {
-         "text": "板书：政府要先免费提供，才能要求增加消费",
-         "children": [
-          {
-           "rel": "说得过满",
-           "text": "免费不是唯一办法",
-           "kind": "limit"
-          },
-          {
-           "rel": "需要的是",
-           "text": "可负担、可获得：补贴、低价公办",
-           "kind": "condition"
-          },
-          {
-           "rel": "否则",
-           "text": "穷人做不到，规定难以执行",
-           "kind": "effect"
-          }
-         ]
-        }
-       }
+       ]
       },
       {
        "box": [
@@ -2703,7 +2642,7 @@
           578,
           6286
          ],
-         "speech": "比如有的农村地区仍有家庭不让适龄孩子上学。有法律不代表有遵守：监测薄弱、处罚轻，违规的预期代价低于合规成本，就会出现规避。加强执行本身也有成本，评价要把减少的外部损害和新增的实施成本放在一起比。"
+         "speech": "比如有的农村地区仍有家庭不让适龄孩子上学。有法律不代表有人遵守：监测和处罚不足时，就会出现规避。"
         }
        ]
       }
@@ -2754,7 +2693,7 @@
           1068,
           6612
          ],
-         "speech": "效果是直接增加 market supply 和 output，也通过让商品便宜或免费来增加消费。但价格与容量要一起看：只降价而容量不增，可能形成排队；扩张超过 Q 星则造成浪费，公办本身不是最优供给的证明。"
+         "speech": "效果是直接增加 market supply 和 output，也可以通过让商品便宜或免费来增加消费。"
         }
        ]
       },
@@ -2778,7 +2717,7 @@
   {
    "id": "BD-D02",
    "genre": "board",
-   "title": "Direct provision（政府直接提供）的局限：花费大，也可能建错数量",
+   "title": "Direct provision（政府直接提供）的局限：花费大，也可能过量提供",
    "covers": [
     "D02"
    ],
@@ -2831,17 +2770,11 @@
           1190,
           7075
          ],
-         "speech": "老师举的例子是在人口下降的地区修了过多学校和医院，后来被迫关门。比较的是额外的社会 benefit 和机会成本，不能只凭新建数量认定成功。"
+         "speech": "老师举的例子是在人口下降的地区修了过多学校和医院，后来被迫关门。"
         }
        ]
       }
      ]
-    },
-    {
-     "type": "note",
-     "tone": "warn",
-     "label": "未核实",
-     "text": "学校、医院关闭是课堂举例，2026-10-03 研究记录未核实，当作理解用的例子，不当作确定事实来写。"
     }
    ]
   },
@@ -2903,7 +2836,7 @@
        "points": [
         "BP30"
        ],
-       "speech": "评分方案的评价同样写到：direct provision 花费大，有时不如市场力量提供的有效率。要说成条件性风险：透明绩效、监督与恰当目标可以改善激励。"
+       "speech": "评分方案的评价同样写到：direct provision 花费大，有时不如市场力量提供的有效率。"
       }
      ]
     }
@@ -2963,20 +2896,26 @@
        ],
        "speech": "评分方案列的路径：补贴降低生产成本、增加供给、降低价格、提高均衡产量；广告提高需求、增加消费。",
        "annotate": {
-        "need": "skipped",
-        "exam": "9708 M/J 2023 ER pp21–22：只写价格、产量变化而不解释福利为何改善，分析不完整；9708 Paper 4 specimen MS pp9–10",
+        "aid": "unfinished",
+        "from": [
+         "BP29M",
+         "BP07",
+         "9708 Paper 4 specimen 2023 mark scheme Q2",
+         "9708 M/J 2023 examiner report"
+        ],
+        "exam": "9708 Paper 4 specimen MS Q2；9708 M/J 2023 ER p22",
         "root": {
-         "text": "评分方案：产量增加，就达到 allocative efficiency（配置效率）",
+         "text": "评分方案：equilibrium output（均衡产量）上升，达到 allocative efficiency（配置效率）",
          "children": [
           {
-           "rel": "中间一步",
-           "text": "Q 升到 MSB（边际社会收益）= MSC（边际社会成本）的 Q*",
-           "kind": "effect"
+           "rel": "即",
+           "text": "output 增加到 MSB（边际社会收益）= MSC（边际社会成本）处的 Qoptimal（理想产量）",
+           "kind": "definition"
           },
           {
-           "rel": "所以",
-           "text": "Q 与 Q* 之间的 welfare loss（福利损失）消失",
-           "kind": "effect"
+           "rel": "依据",
+           "text": "板书：MSB = MSC 的点才实现 allocative efficiency",
+           "kind": "note"
           }
          ]
         }
@@ -3055,7 +2994,7 @@
           850,
           9580
          ],
-         "speech": "A2 考 property right，主要是看它怎样解决污染这类 negative externality。有产权还要能实施：边界、损害归因和执行都必须可行。"
+         "speech": "A2 考 property right，主要考它怎样解决污染这类 negative externality。"
         }
        ]
       }
@@ -3110,7 +3049,7 @@
           1100,
           9640
          ],
-         "speech": "一块土地或河流如果没有产权，生产者污染它没有代价。板书说因为这块地不是私人的，这句要看旁边的批注。"
+         "speech": "一块土地或河流如果没有产权，生产者污染它是没有代价的，因为这块地不是私人的。"
         },
         {
          "box": [
@@ -3119,35 +3058,9 @@
           1200,
           9763
          ],
-         "speech": "如果有产权，污染就有代价，会影响企业的行为，让它们少污染。设工厂减排一单位花 6 美元、居民因此得到 10 美元的 benefit：若工厂有排放权，居民付 8 美元买减排，双方各净得 2 美元。权利归谁影响谁付款，不能把效率与分配混为一谈。"
+         "speech": "如果有产权，污染就会产生代价，从而影响企业的行为，让它们进行更少的污染。"
         }
-       ],
-       "annotate": {
-        "need": "ambiguous",
-        "exam": "9708/33 O/N 2017 Q16（key D）：产权让所有者保护资产、损害方承担责任；9708 syllabus 8.1.1",
-        "root": {
-         "text": "板书：没有产权，因为这块地不是私人的",
-         "children": [
-          {
-           "rel": "关键不在",
-           "text": "私有还是公有",
-           "kind": "contrast"
-          },
-          {
-           "rel": "而在",
-           "text": "有没有可执行的权利与损害责任",
-           "kind": "definition",
-           "children": [
-            {
-             "rel": "所以",
-             "text": "污染要付代价，排放减少",
-             "kind": "effect"
-            }
-           ]
-          }
-         ]
-        }
-       }
+       ]
       }
      ]
     }
