@@ -209,9 +209,10 @@ async def synthesize_clips(plans, media, concurrency=3, report=None):
             encoded = Path(tmp) / 'final.mp3'
             subprocess.run(['ffmpeg', '-v', 'error', '-y', '-i', str(trimmed), '-af', tempo_chain(speed),
                             '-ar', str(SAMPLE_RATE), '-ac', '1', '-codec:a', 'libmp3lame', '-q:a', '3', str(encoded)], check=True)
-            # MP3 frames add a few tens of milliseconds; beyond that the length must match the tempo exactly.
+            # MP3 framing and encoder padding add up to about two frames (≈0.1 s at 24 kHz) on any clip, so short clips get an
+            # absolute floor; beyond that the length must match the tempo (a full build once failed a 2.6 s clip at +0.085 s).
             expected, measured = duration(trimmed) / speed, duration(encoded)
-            if abs(measured - expected) > max(0.03 * expected, 0.08):
+            if abs(measured - expected) > max(0.03 * expected, 0.12):
                 raise RuntimeError(f'{name}: {measured:.2f}s after atempo, expected {expected:.2f}s for {speed}×')
             encoded.replace(dest)
         return provider

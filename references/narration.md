@@ -80,7 +80,7 @@ Edge 只接受纯文本（不能用 SSML 的 `<lang>`、`<phoneme>`、`<say-as>`
   2. 能联网的机器：把 `needed.json` 和 `scripts/synth_originals.py` 放进同一个文件夹，建虚拟环境、`pip install edge-tts`，运行 `python synth_originals.py needed.json originals/`。它只依赖 edge-tts（不要 ffmpeg、不要卡组），按原 key 写 `originals/<key>.mp3`，同一声音、`rate=+0%`，不换声音；中断后重跑只补缺的；
   3. 制卡机：把 `originals/` 取回，`python scripts/narration_handoff.py import needed.json originals/`——每段先核对 key 与声音、文本一致，再用 ffmpeg 解码，通过的才进缓存；缺的、坏的逐条报出，不进缓存；
   4. 制卡机：去掉 `--export-narration` 重跑同一条构建命令，此时所有原音都在缓存里，不再联网。
-  在 Claude 的云端沙盒里、对话又连着用户电脑时，就走这条路：在用户电脑上的一个工作文件夹里做第 2 步，原音逐个文件取回（压缩包可能因为文件属性被拒），用户不必自己操作。`narration_handoff.py status needed.json` 查看缓存里已经有几段。
+  在 Claude 的云端沙盒里、对话又连着用户电脑时，就走这条路：在用户电脑上的一个工作文件夹里做第 2 步，把 originals/ 打成一个 zip 一次取回最快（一千多段约 65 MB）；刚写出的文件立刻取回可能报 hardlinked，等十几秒再取即可，不必逐个文件取。用户不必自己操作。`narration_handoff.py status needed.json` 查看缓存里已经有几段。
 - 连语音接力也做不了时：`--audio-pending` 先交付图文包（页面明示“语音待补”、播放器禁用），交付文件夹里同时写出 `deck.json`、`补语音.txt` 和补语音要用的 `skill/` 程序副本，所以学习者不需要另找 skill 包。`补语音.txt` 是在这个文件夹里照着做就能补完的编号步骤：安装 Python 3.10+ 与 ffmpeg（Windows `winget install Gyan.FFmpeg`，macOS `brew install ffmpeg`，Linux `sudo apt install ffmpeg`）→ 建虚拟环境（新版 macOS 与 Ubuntu 的系统 Python 不允许直接 pip 安装）并 `pip install -r skill/scripts/requirements.txt` → `speech_backend.py --check` → `build_cards.py deck.json . --term-sampler` → 导入新 .apkg（同 GUID 原位更新，复习历史保留）→ 听一遍 term-sampler.mp3。Windows 与 macOS／Linux 的命令分别写好。也可以在自己电脑上的 Claude Code 里让 Claude 照着执行。
 - 已授权的 Azure Speech（`AZURE_SPEECH_KEY`、`AZURE_SPEECH_REGION`）只作为**同一声音**的备选；凭据不进 skill、日志或仓库。换成别的声音只在用户明确同意后改 `style.voice` 并全牌组重合成。
 
