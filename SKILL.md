@@ -24,7 +24,7 @@ description: 把老师板书、课堂截图、讲评 PDF、讲义做成为考试
 2. **老师的板书**：其次，出错的可能小到可以忽略。
 3. **制作者自己的知识**、第三方资料（教材以外的讲解、旧卡组的研究记录、AI 复核意见）以及本技能里的经验规则：最低。
 
-板书理应覆盖考纲与评分方案，或把它们讲透；某处板书**模糊**或**未竟**（没讲完考纲、评分方案要的内容）时，从第一级取材补全，这就是板书卡上的批注（见下文第 4 步）。下一级只能用来解释、展开上一级，不能改写它：卡面、语音和批注都按上一级的说法讲，不写“更准确的说法是”“这里是笔误”“说得过满”，也不把上一级的说法当成需要更正的对象。评分方案写 “a tax … will decrease demand”，卡上就讲 demand 下降、向左移动，再讲它怎样把数量带到 Q*；评分方案没写的画法不上卡，只有评分方案的 accept／oe 列表点名接受的写法才能并列给出（见 [mark-scheme-calibration.md](references/mark-scheme-calibration.md)）。只有更高一级明确拒收的写法（MS 的 B0、reject 列表、ER 点名扣分）才算错，写进易错卡。生成器发现板书卡的讲解或批注出现纠错说法、或任何卡说评分方案和考纲有问题时会提醒。
+板书理应覆盖考纲与评分方案，或把它们讲透；某处板书**模糊**或**未竟**（没讲完考纲、评分方案要的内容）时，从第一级取材补全，这就是板书卡上的批注（见下文第 4 步）。下一级只能用来解释、展开上一级，不能改写它：卡面、语音和批注都按上一级的说法讲，不写“更准确的说法是”“这里是笔误”“说得过满”，也不把上一级的说法当成需要更正的对象。评分方案写 “a tax … will decrease demand”，卡上就讲 demand 下降、向左移动，再讲它怎样把数量带到 Q*；评分方案没写的画法不上卡，只有评分方案的 accept／oe 列表点名接受的写法才能并列给出（见 [mark-scheme-calibration.md](references/mark-scheme-calibration.md)）。只有更高一级明确拒收的写法（MS 的 B0、reject 列表、ER 点名扣分）才算错，写进易错卡。板书自己前后两处数字不一致、上一级又对这个数没有说法时，不在两处之间判定：讲解与批注只给不依赖那个数的理由，交付时列出位置请用户向老师确认（见 [coverage-ledger.md](references/coverage-ledger.md) §1）。生成器发现板书卡的讲解或批注出现纠错说法、或任何卡说评分方案和考纲有问题时会提醒。
 
 ## 板书优先：有板书原文的地方直接贴板书原图
 
@@ -37,7 +37,7 @@ description: 把老师板书、课堂截图、讲评 PDF、讲义做成为考试
 1. 照第 1 步读全板书、建板书点清单；读完第 3 步的考纲与评分方案后，逐点对照，标出**板书模糊或未竟的点**：`aid` 写 `vague`（模糊：一句话写得太简、图线标签或手写难认、符号没解释）或 `unfinished`（未竟：考纲或评分方案要的一步、一个联系或图没讲完），`aid_note` 用一句话写对照第一级缺在哪；看不清的点照旧标 `legibility: low`。板书已经覆盖、讲透的点不标。再跑 `python scripts/board_images.py 板书.png out/regions/`：它按空白行把板书切成编号区块（`R01…`），写出 `regions.json`（原图像素坐标与可直接粘贴的 crop 模板）和画好编号框的总览页 `*-regions-pNN.png`。看总览页，按知识点分组（“定义 = R03＋R04，例题 = R06＋R08”）；相邻区块可用 `--union regions.json R03 R04` 合成一个框。
 2. 每个知识点写一张 `genre: "board"` 的卡，卡里一个 `board` 块：`src` 指向原图，`crops` 按阅读顺序列出区块，每块写 `points`（展示了哪些板书点）、`speech`（这一块讲什么），需要逐行讲时加 `spots`（行框与这一行的讲解；推导的每一步写 `step: true`）。姓名、日期、学号等用 `masks` 涂掉。字段见 [deck-json.md](references/deck-json.md)。
 3. 语音讲的是知识点，不是把板书念一遍：先说看哪里，公式按含义读，推导每一步讲为什么、值什么分（MS 记号与措辞取自第 3 步的取证），老师红笔批注讲清它防的是什么错。规则见 [narration.md](references/narration.md)“板书卡”。
-4. 卡面以板书为主，打字的块合计不超过约 120 字（生成器会提醒）。**板书模糊或未竟的地方加批注**：在那一块的 `annotate` 里写一张小导图——根节点写板书这里写的是什么，子节点用关系词（即、因为、所以、例如、仅当）把它补全；`aid` 写 `vague` 或 `unfinished`，`exam` 写它服务的考试要求（考纲或评分方案条目），`from` 列出取材出处。批注**这样产生**：先读这一块板书，写下它说了什么；再把它和考纲条目、真题评分方案的得分点、考官报告与教科书逐条对上；读懂答题者要写出什么——评分方案要哪几步、用哪些词；板书已经覆盖、讲透的就不加，模糊或未竟的才从第一级取材写成批注。`from` 至少一条是 `research` 里读过的官方材料（考纲、真题、评分方案、考官报告、样题、教科书），可再加板书点（`B01…`）；**不用制作者自己的知识或第三方笔记**，生成器检查。批注**帮读者理解，不纠正**：内容与评分方案、考纲和板书一致，只解释、展开、连接（见上文“内容以谁为准”）。批注宽屏排在板书右侧、手机排在板书下方，标题印“批注 · 模糊处”或“批注 · 未竟处”，底部印考试要求，语音在这块板书讲完后接着读批注。批注**只在需要时加、只到考试所需为止**，一般不超过 7 个节点：它帮学习者读懂板书上已有的内容，不引入新考点。**板书没有覆盖到的**内容（MS 要求的定义原句、老师跳过的步骤、考法与终点要求）才另做文字卡，紧排在对应板书卡之后，并在卡上写 `board_gap` 说明板书缺的是什么；页眉会印出“补充 · 板书未写”，学习者一眼分得清哪些来自板书、哪些是补写。
+4. 卡面以板书为主，打字的块合计不超过约 120 字（生成器会提醒）。**板书模糊或未竟的地方加批注**：在那一块的 `annotate` 里写一张小导图——根节点写板书这里写的是什么，子节点用关系词（即、因为、所以、例如、仅当）把它补全；`aid` 写 `vague` 或 `unfinished`，`exam` 写它服务的考试要求（考纲或评分方案条目），`from` 列出取材出处。批注**这样产生**：先读这一块板书，写下它说了什么；再把它和考纲条目、真题评分方案的得分点、考官报告与教科书逐条对上；读懂答题者要写出什么——评分方案要哪几步、用哪些词；板书已经覆盖、讲透的就不加，模糊或未竟的才从第一级取材写成批注。`from` 至少一条是 `research` 里读过的官方材料（考纲、真题、评分方案、考官报告、样题、教科书），可再加板书点（`B01…`）；**不用制作者自己的知识或第三方笔记**，生成器检查。批注**帮读者理解，不纠正**：内容与评分方案、考纲和板书一致，只解释、展开、连接（见上文“内容以谁为准”）。批注排在板书旁：区块按原像素显示后宽屏还放得下批注就排在右侧，放不下或在手机上就排在板书下方，批注从不让板书缩小；标题印“批注 · 模糊处”或“批注 · 未竟处”，底部印考试要求，语音在这块板书讲完后接着读批注。批注**只在需要时加、只到考试所需为止**，一般不超过 7 个节点：它帮学习者读懂板书上已有的内容，不引入新考点。**板书没有覆盖到的**内容（MS 要求的定义原句、老师跳过的步骤、考法与终点要求）才另做文字卡，紧排在对应板书卡之后，并在卡上写 `board_gap` 说明板书缺的是什么；页眉会印出“补充 · 板书未写”，学习者一眼分得清哪些来自板书、哪些是补写。
 5. 生成器强制四件事：板书上有的考点必须由板书卡来教（只有文字卡教它会报错）；同一卡组里的每张文字卡都要写 `board_gap`；每个讲知识点的板书点都要出现在某个 crop 的 `points` 里，否则写 `not_shown` 说明理由（题外话、章节标题、导出标记）；标了 `aid` 或 `legibility: low` 的板书点，展示它的那一块必须有批注，批注的 `from` 至少写一条官方材料（批注超过 7 个节点、子节点没有关系词、讲解或批注出现纠错说法时另有提醒）。构建时板书按原像素裁切、按内容哈希命名随包打包；白底板书在亮色模式融进主题纸色、夜间模式反相，不出现刺眼的白块；交付文件夹里的板书副本只保留卡片用到的区块（遮挡已涂上）。
 6. **改造旧卡组**：先读旧卡组的制作源（`deck.json`、`cards.json` 或导出的 .apkg）与板书原图，逐张判断：内容全在板书上 → 改成板书卡；部分在板书上 → 拆成板书卡加补充卡；板书没有 → 保留为文字卡并补写 `board_gap`。旧卡是 ccpt-6 的，沿用原 `namespace` 与卡 `id`，导入后原位更新、复习历史保留；旧卡来自更早的格式时，按 [review-and-delivery.md](references/review-and-delivery.md) §六 先换 notetype 再更新。交付说明列出：多少张换成了板书卡、哪些保留为补充卡及各自缺的是什么。
 
@@ -101,7 +101,8 @@ description: 把老师板书、课堂截图、讲评 PDF、讲义做成为考试
 python scripts/build_cards.py deck.json out/ --preview      # 预览页
 node scripts/render_check.mjs out/ --phone --dark           # 真实浏览器截图与版式体检
 python scripts/build_cards.py deck.json out/                # 合成语音并打包 .apkg
-python scripts/build_cards.py deck.json out/ --audio-pending # 语音服务不可达时：先打包图文，写出 deck.json 与 补语音.txt
+python scripts/build_cards.py deck.json out/ --term-sampler --export-narration needed.json  # 本机连不上语音服务：列出缺的原音，交给能联网的电脑（语音接力）
+python scripts/build_cards.py deck.json out/ --audio-pending # 连语音接力也做不了时：先打包图文，写出 deck.json 与 补语音.txt
 pip install -r scripts/requirements-validate.txt            # 一次性：导入验证要用的 anki 后端
 python scripts/validate_package.py out/<牌组>.apkg --output out/validate.json   # 语音待补的包也能验证；成品包加 --require-audio
 ```
@@ -118,7 +119,7 @@ python scripts/validate_package.py out/<牌组>.apkg --output out/validate.json 
 
 ## 语音
 
-每页一个播放器，讲解覆盖卡面全部内容，朗读到哪里就高亮哪里。一副牌组一个声音（单独学习的子牌组可以各自指定）：默认晓晓（`xiaoxiao`），男声选云扬（`yunyang`，Edge 中唯一的新闻播音定位男声）。得分点（M1、A1*、丢的分）、评分注意与表注都读出来，出处引用不读。默认 **2×**；生成器按可计算的规则只把真正复杂的卡降到 **1.5×** 并写出理由：要同时有**要跟住的推导结构**（4 步以上有依赖的推导，或证明）和**耳朵的重负荷**（公式读法占朗读三成半以上、每步约 6 处以上公式读法、要同时记住多个数值，或新术语多且 English 密），只有一类、篇幅长或导图深都不算；一副卡组超过三成判为 1.5× 时，打包前要在 `style.speed_review` 写明理由；播放时点速度按钮可临时在 2× 与 1.5× 之间切换。原速合成并全局缓存、修剪首尾静音、ffmpeg 一次加速、设计停顿、离线随卡；读音不对的术语用 `speech_lexicon` 修正，`--term-sampler` 出一分钟术语试听。语音服务不可达时预检立即说明原因，先交付图文包并明示“语音待补”，不静默换声音。见 [narration.md](references/narration.md)。
+每页一个播放器，讲解覆盖卡面全部内容，朗读到哪里就高亮哪里。一副牌组一个声音（单独学习的子牌组可以各自指定）：默认晓晓（`xiaoxiao`），男声选云扬（`yunyang`，Edge 中唯一的新闻播音定位男声）。得分点（M1、A1*、丢的分）、评分注意与表注都读出来，出处引用不读。默认 **2×**；生成器按可计算的规则只把真正复杂的卡降到 **1.5×** 并写出理由：要同时有**要跟住的推导结构**（4 步以上有依赖的推导，或证明）和**耳朵的重负荷**（公式读法占朗读三成半以上、每步约 6 处以上公式读法、要同时记住多个数值，或新术语多且 English 密），只有一类、篇幅长或导图深都不算；一副卡组超过三成判为 1.5× 时，打包前要在 `style.speed_review` 写明理由；播放时点速度按钮可临时在 2× 与 1.5× 之间切换。原速合成并全局缓存、修剪首尾静音、ffmpeg 一次加速、设计停顿、离线随卡；读音不对的术语用 `speech_lexicon` 修正，`--term-sampler` 出一分钟术语试听。语音服务不可达时预检立即说明原因；另一台电脑（例如对话连着的用户电脑）能连上时走**语音接力**，在那里只合成原速原音、取回校验后照常构建，语音照样完整；都不行才先交付图文包并明示“语音待补”。不静默换声音。卡面与语音不指向别的卡（“下一张卡”“上一张”）：Anki 按间隔单张出现。见 [narration.md](references/narration.md)。
 
 ## 操作方式
 
@@ -134,7 +135,7 @@ python scripts/validate_package.py out/<牌组>.apkg --output out/validate.json 
 
 | 条件 | 缺少时 |
 |---|---|
-| 能访问 `speech.platform.bing.com`（Edge 语音） | 预检以 `network_blocked` 停止（没装 edge-tts 是另一类：`edge_tts_missing`，退出码 5）；用 `--audio-pending` 交付图文包，同时写出 `deck.json`、编号步骤的 `补语音.txt` 和补语音要用的 `skill/` 程序副本，整个输出文件夹一起交付；学习者在这个文件夹里照着补（虚拟环境、三平台命令都写好了），同一张卡原位更新 |
+| 能访问 `speech.platform.bing.com`（Edge 语音） | 预检以 `network_blocked` 停止（没装 edge-tts 是另一类：`edge_tts_missing`，退出码 5）；**先走语音接力**：`--export-narration needed.json` 列出缺的原音，在能联网的电脑上用只依赖 edge-tts 的 `scripts/synth_originals.py` 合成，取回后 `scripts/narration_handoff.py import` 校验入缓存，再照常构建（见 [narration.md](references/narration.md)“服务可用性与断网”）；没有能联网的电脑时，用 `--audio-pending` 交付图文包，同时写出 `deck.json`、编号步骤的 `补语音.txt` 和补语音要用的 `skill/` 程序副本，整个输出文件夹一起交付；学习者在这个文件夹里照着补（虚拟环境、三平台命令都写好了），同一张卡原位更新 |
 | ffmpeg／ffprobe | 构建以 `ffmpeg_missing`（退出码 4）停止并给出安装命令：Windows `winget install Gyan.FFmpeg`，macOS `brew install ffmpeg`，Linux `sudo apt install ffmpeg`；装不了就同上交付“语音待补” |
 | poppler（`pdftoppm`／`pdftotext`／`pdfimages`） | `slice_board.py` 会改用 PyMuPDF（`pip install pymupdf`）；两者都没有时直接看图逐页读 PDF，长图仍记录行范围，并在交付说明写明 |
 | tesseract（含 `chi_sim`） | `exam_fingerprint.py` 读不了图片：直接看切片，把转写的文字用 `-` 管道传给它；OCR 几乎为空时它也会提示这样做 |
@@ -142,7 +143,7 @@ python scripts/validate_package.py out/<牌组>.apkg --output out/validate.json 
 | Node、Playwright 与 Chromium | 先 `which chromium chromium-browser google-chrome`，找到就设 `CHROMIUM_PATH`；仍没有时按 [review-and-delivery.md](references/review-and-delivery.md) §二 冷读可见文本、跑 `contrast_check.py`、请用户先打开一两张预览页，并写明未做截图检查 |
 | 官方网站或用户的云盘 | 先用 `references/exams/` 的登记（原件链接见那里的“原件怎么取”）；仍缺的写进 `research_gaps`，不把搜索摘要当作已读原文 |
 
-在 Claude 网页版或桌面版里使用时，把 `python scripts/package_skill.py` 生成的 `anki-ccpt-skill.zip` 上传为技能；沙盒通常不能联网合成语音，按上表交付“语音待补”包。每次对话都从用户给的材料重新开始：不假设这位用户与以前的对话是同一个人，接着做时请用户提供上次的 `deck.json` 或 `.apkg`。
+在 Claude 网页版或桌面版里使用时，把 `python scripts/package_skill.py` 生成的 `anki-ccpt-skill.zip` 上传为技能；沙盒通常不能联网合成语音：对话连着用户电脑时，在用户电脑上做语音接力（上表第一行），交付完整语音的包；没有连着时按上表交付“语音待补”包。每次对话都从用户给的材料重新开始：不假设这位用户与以前的对话是同一个人，接着做时请用户提供上次的 `deck.json` 或 `.apkg`。
 
 ## 维护本技能
 

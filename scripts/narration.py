@@ -95,8 +95,14 @@ def apply_lexicon(text, lexicon):
     return re.sub(r'[，,]\s*(?:[，,]\s*)+', '，', text)
 
 
+ORIGINAL_RATE = '+0%'
+ORIGINAL_FORMAT = 'audio-24khz-48kbitrate-mono-mp3'
+HANDOFF_SCHEMA = 'ccpt6-narration-handoff-v1'  # build_cards --export-narration → synth_originals.py → narration_handoff.py import
+
+
 def original_key(voice, text):
-    return hashlib.sha256(f'{voice}\0{text}\0rate=+0%\0audio-24khz-48kbitrate-mono-mp3'.encode()).hexdigest()
+    # synth_originals.py repeats this formula so it can run alone; test_narration_handoff keeps the two equal.
+    return hashlib.sha256(f'{voice}\0{text}\0rate={ORIGINAL_RATE}\0{ORIGINAL_FORMAT}'.encode()).hexdigest()
 
 
 def original_path(voice, text):

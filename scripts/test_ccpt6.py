@@ -261,6 +261,70 @@ def test_full_audio_pipeline_offline(tmp_path, monkeypatch):
     assert calls == [] and json.loads((tmp_path / 'out2' / 'speech-manifest.json').read_text(encoding='utf-8'))[0]['speed'] == 2.0
 
 
+@pytest.mark.skipif(not shutil.which('ffmpeg'), reason='ffmpeg needed')
+def test_narration_handoff_roundtrip(tmp_path, monkeypatch):
+    """No voice service here: export the list, synthesize it 'elsewhere', import it, and the build needs no network."""
+    import asyncio
+    import narration_handoff
+    import synth_originals
+
+    def tone(text, output):
+        subprocess.run(['ffmpeg', '-v', 'error', '-y', '-f', 'lavfi', '-i', f'sine=frequency=330:duration={max(0.6, len(text) / 8)}',
+                        '-ar', '24000', '-ac', '1', '-codec:a', 'libmp3lame', str(output)], check=True)
+
+    class FakeCommunicate:  # stands in for edge_tts.Communicate on the computer that can reach the service
+        def __init__(self, text, voice, rate):
+            assert rate == '+0%' and voice == 'zh-CN-XiaoxiaoNeural'
+            self.text = text
+
+        async def save(self, path):
+            tone(self.text, path)
+
+    async def no_network(*args, **kwargs):
+        raise AssertionError('the build reached for the voice service')
+    monkeypatch.setattr(narration, 'synthesize_original', no_network)
+    monkeypatch.setattr(build_cards, 'preflight', lambda voice: (_ for _ in ()).throw(AssertionError('preflight ran')))
+    monkeypatch.setenv('CCPT_TTS_CACHE', str(tmp_path / 'tts-cache'))
+    src = tmp_path / 'deck.json'
+    src.write_text(json.dumps(deck(), ensure_ascii=False), encoding='utf-8')
+    needed = tmp_path / 'needed.json'
+
+    build_cards.main([str(src), str(tmp_path / 'out'), '--term-sampler', '--export-narration', str(needed)])
+    assert not (tmp_path / 'out' / 'speech-manifest.json').exists()  # the export stops before any audio or package
+    items = synth_originals.load(needed)
+    assert items and all(i['key'] == narration.original_key(i['voice'], i['text']) for i in items)
+    assert any(i['text'].startswith('下面这个词是') for i in items)  # the term sampler travels too
+
+    folder = tmp_path / 'originals'
+    assert asyncio.run(synth_originals.synthesize(items, folder, communicate=FakeCommunicate)) == []
+    (folder / f'{items[0]["key"]}.mp3').write_bytes(b'not audio' * 40)
+    installed, already, problems = narration_handoff.install(items, folder)
+    assert installed == len(items) - 1 and len(problems) == 1 and 'does not decode' in problems[0]  # a broken clip never enters the cache
+    asyncio.run(synth_originals.synthesize(items[:1], tmp_path / 'again', communicate=FakeCommunicate))
+    assert narration_handoff.install(items, tmp_path / 'again') == (1, len(items) - 1, [])
+
+    build_cards.main([str(src), str(tmp_path / 'out'), '--term-sampler'])
+    manifest = json.loads((tmp_path / 'out' / 'speech-manifest.json').read_text(encoding='utf-8'))[0]
+    assert manifest['available'] and (tmp_path / 'out' / 'term-sampler.mp3').is_file()
+    assert 'synth_originals.py' in build_cards.RUNTIME and 'narration_handoff.py' in build_cards.RUNTIME
+    build_cards.main([str(src), str(tmp_path / 'out'), '--term-sampler', '--export-narration', str(needed)])
+    assert json.loads(needed.read_text(encoding='utf-8'))['items'] == []
+    edited = json.loads(needed.read_text(encoding='utf-8'))
+    edited['items'] = [dict(items[0], text=items[0]['text'] + '改')]
+    needed.write_text(json.dumps(edited, ensure_ascii=False), encoding='utf-8')
+    with pytest.raises(SystemExit, match='edited'):
+        synth_originals.load(needed)
+
+
+def test_cards_do_not_point_at_other_cards():
+    card = deck()['cards'][0]
+    assert not any('指向别的卡' in w for w in build_cards.lint_card(card))
+    card['blocks'][0]['text'] = '下一张卡再讲 parameter，这里先看样本'
+    assert any('指向别的卡' in w for w in build_cards.lint_card(card))
+    card['blocks'][0]['text'] = '先看样本，下一步再代入'  # the next step of this card is not another card
+    assert not any('指向别的卡' in w for w in build_cards.lint_card(card))
+
+
 def test_speed_rule_ignores_visible_structure():
     chain = {'genre': 'chain', 'title': 'x', 'blocks': [{'type': 'chain', 'items': [{'text': 'a'}] + [{'rel': r, 'text': 'b'} for r in ('所以', '因此', '从而', '仅当', '但是')]}]}
     assert narration.decide_speed(narration.speed_metrics(chain, '因果' * 80, set()))[0] == 2.0

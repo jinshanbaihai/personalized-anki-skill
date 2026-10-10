@@ -7,7 +7,9 @@ pip install -r scripts/requirements.txt          # genanki、edge-tts、latex2ma
 python scripts/build_cards.py deck.json out/ --preview         # 只出页面，检查内容与版式
 node scripts/render_check.mjs out/ --phone --dark              # 真实 Chromium 截图 + ccptAudit 体检
 python scripts/build_cards.py deck.json out/ --term-sampler    # 合成语音（晓晓/云扬，2× 或 1.5×）并打包 .apkg；另出术语试听
-python scripts/build_cards.py deck.json out/ --audio-pending   # 语音服务不可达时先交付图文包，页面明示“语音待补”
+python scripts/build_cards.py deck.json out/ --term-sampler --export-narration needed.json  # 本机连不上语音服务：写出缺的原音清单（语音接力，见 narration.md）
+python scripts/narration_handoff.py import needed.json originals/  # 取回另一台电脑上 synth_originals.py 合成的原音，校验后入缓存
+python scripts/build_cards.py deck.json out/ --audio-pending   # 连语音接力也做不了时先交付图文包，页面明示“语音待补”
 python scripts/build_cards.py deck.json --check-research       # 卡还没写时：先查考试锁定、research、考点与真题需求计划
 python scripts/validate_package.py out/<牌组>.apkg --output out/validate.json   # 隔离 collection 导入、解码、重复导入保历史（需 requirements-validate.txt）
 ```

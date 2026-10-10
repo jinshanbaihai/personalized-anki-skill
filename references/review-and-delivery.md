@@ -15,7 +15,7 @@
 
 | 类别 | 警告 | 处理 |
 |---|---|---|
-| must-fix | 空泛箭头（没写哪个变量往哪边变）、含代数的 trivial 步、推导步缺“为什么”、卡面上 `$…$` 之外的纯文本数学、`speech_lint` 报出的难读符号与拼接错读 | 交付前改掉；改不了的逐条写理由 |
+| must-fix | 空泛箭头（没写哪个变量往哪边变）、含代数的 trivial 步、推导步缺“为什么”、卡面上 `$…$` 之外的纯文本数学、`speech_lint` 报出的难读符号与拼接错读、卡面或旁白指向别的卡（“下一张卡”“上一张”） | 交付前改掉；改不了的逐条写理由 |
 | explain-in-delivery | 同节相邻的 `adjacent` 考点、超过三成判为 1.5×（附 `style.speed_review` 与逐卡原因）、术语台账（给出真实总数与前几项的处理）、豁免字段（`*_waived`） | 交付说明里如实列出 |
 | 参考 | 关系词不在规则表、导图分支偏宽、长节点 | 看截图后决定 |
 
@@ -38,7 +38,7 @@ python scripts/speech_backend.py --probe /tmp/probe.mp3       # 实际合成一�
 python scripts/build_cards.py deck.json out/                  # 合成全部语音并打包
 ```
 
-缺 ffmpeg 时构建以 `ffmpeg_missing` 停止并给出安装命令（不是语音服务的问题）。检查：音频可解码；成品时长与“修剪后原速 ÷ 速度”一致（生成器自动校验）；段间没有超过设计停顿的空白；听一遍 `term-sampler.mp3` 确认 English 术语与缩写读音，读错就改 `speech_lexicon`；公式读法表达含义；讲图时先说看哪里；Space 暂停续播、结束重播、切卡停止；点速度按钮可在 2×／1.5× 之间切换且音高不变；1.5× 卡都有理由。`node scripts/render_check.mjs out/ --play` 在 Chromium 中实际按 Space 播放、检查高亮与切速。规则见 [narration.md](narration.md)。语音服务不可达时用 `--audio-pending` 先交付图文包（页面明示“语音待补”，播放器禁用）；交付文件夹里会写出 `deck.json` 和按步骤编号的 `补语音.txt`（安装 Python、依赖与 ffmpeg，检查语音服务，带 `--term-sampler` 重建，导入后原位补上语音），**整个文件夹一起交付**。不静默换声音。
+缺 ffmpeg 时构建以 `ffmpeg_missing` 停止并给出安装命令（不是语音服务的问题）。检查：音频可解码；成品时长与“修剪后原速 ÷ 速度”一致（生成器自动校验）；段间没有超过设计停顿的空白；听一遍 `term-sampler.mp3` 确认 English 术语与缩写读音，读错就改 `speech_lexicon`；公式读法表达含义；讲图时先说看哪里；Space 暂停续播、结束重播、切卡停止；点速度按钮可在 2×／1.5× 之间切换且音高不变；1.5× 卡都有理由。`node scripts/render_check.mjs out/ --play` 在 Chromium 中实际按 Space 播放、检查高亮与切速。规则见 [narration.md](narration.md)。语音服务不可达、但另一台电脑（例如对话连着的用户电脑）能连上时，先做**语音接力**：`--export-narration needed.json` → 在那台电脑上 `synth_originals.py` → `narration_handoff.py import` → 照常构建（步骤见 [narration.md](narration.md)“服务可用性与断网”），交付的仍是完整语音包，交付说明写明原音在哪台电脑合成。连这条路也没有时，用 `--audio-pending` 先交付图文包（页面明示“语音待补”，播放器禁用）；交付文件夹里会写出 `deck.json` 和按步骤编号的 `补语音.txt`（安装 Python、依赖与 ffmpeg，检查语音服务，带 `--term-sampler` 重建，导入后原位补上语音），**整个文件夹一起交付**。不静默换声音。
 
 ## 四、打包与导入验证
 
@@ -77,7 +77,8 @@ python scripts/validate_package.py out/<牌组>.apkg --require-audio            
 - 考点总数、卡数与覆盖状态；同节相邻、留给下一批的考点（`adjacent`）逐条列出，用户说一句即可续做。
 - 板书中看不清（`legibility: low`）的位置：请用户补发原始导出（例如 ClassIn 原图），补来后原位更新。板书卡的原图宽度不足 800 px 时（报告逐卡警告）同样请用户补发原图。
 - 有板书卡时：哪些知识点做成了板书卡、哪些补了文字卡及各自的 `board_gap`（改造旧卡组时还要写多少张旧卡换成了板书卡）；`not_shown` 的板书点逐条列出；加了批注的位置及各自的 `aid`；`board/` 里的板书副本只含卡片用到的区块、遮挡已涂上；请用户在真实客户端的夜间模式看一张板书卡（Anki 桌面、AnkiDroid、AnkiMobile 都应显示为深底浅字）。
-- 语音状态：已合成，或待补（照 `补语音.txt` 的步骤补；补完后可选听一遍 `term-sampler.mp3`，读错的词告诉 Claude）。
+- 板书内部数字前后不一的位置（见 [coverage-ledger.md](coverage-ledger.md) §1）：卡上用的是哪种不依赖那个数的讲法，请用户向老师确认，确认后按答复重建。
+- 语音状态：已合成（直连或语音接力），或待补（照 `补语音.txt` 的步骤补；补完后可选听一遍 `term-sampler.mp3`，读错的词告诉 Claude）。
 - 交付物是**整个输出文件夹**：`.apkg`、`ccpt_single_face.ankiaddon`、`deck.json`、`report.json`，语音待补时还有 `补语音.txt`。`deck.json` 是续做与补语音的依据：在新的对话里接着做时，把它（或上次的 .apkg）和交付说明一起交给 Claude，新对话不会记得上一次的内容。
 - 实测范围：导入验证做了没有、截图检查做了没有、桌面按键（Space／Enter／1）是在真实 Anki 里试过还是只在测试里模拟过，如实写。
 - 隐私：交付文件（含 deck.json、交付说明）不写学习者姓名、考生号、日期与总分；批改卷只记题号和分点。学习者想知道总分时在对话里说，不写进文件。

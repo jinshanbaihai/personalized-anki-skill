@@ -171,9 +171,8 @@ def subdeck_id(base, name):
     return base + int(hashlib.sha256(name.encode()).hexdigest()[:6], 16)
 
 
-def write_term_sampler(data, out, media, lexicon, plans=()):
-    """Edge cannot take phoneme hints, so the listener hears every term and abbreviation once and fixes speech_lexicon if needed.
-    Terms come from definition blocks, the lexicon and every all-caps abbreviation heard in the narration (MSC, PED, CLT…)."""
+def term_sampler_plans(data, lexicon, plans=()):
+    """[(file suffix, plan, terms)] for the one-minute pronunciation check, one per voice (see write_term_sampler)."""
     style = data['style']
     by_voice = {}
     for p in plans:
@@ -186,12 +185,20 @@ def write_term_sampler(data, out, media, lexicon, plans=()):
     deck_voice = resolve_voice(style.get('voice') or DEFAULT_VOICE)
     by_voice.setdefault(deck_voice, []).extend(k for k in lexicon if re_latin(k))
     speed = 2.0 if style.get('speed', 'auto') == 'auto' else float(style['speed'])
+    out = []
     for voice, terms in by_voice.items():
         terms = list(dict.fromkeys(t for t in terms if t))
         if not terms:
             continue
         suffix = '' if voice == deck_voice else '-' + voice.split('-')[-1].replace('Neural', '').lower()
-        p = narration.plan('term-sampler', [(f't{i}', f'下面这个词是：{t}。') for i, t in enumerate(terms)], voice, speed, lexicon)
+        out.append((suffix, narration.plan('term-sampler', [(f't{i}', f'下面这个词是：{t}。') for i, t in enumerate(terms)], voice, speed, lexicon), terms))
+    return out
+
+
+def write_term_sampler(data, out, media, lexicon, plans=()):
+    """Edge cannot take phoneme hints, so the listener hears every term and abbreviation once and fixes speech_lexicon if needed.
+    Terms come from definition blocks, the lexicon and every all-caps abbreviation heard in the narration (MSC, PED, CLT…)."""
+    for suffix, p, terms in term_sampler_plans(data, lexicon, plans):
         asyncio.run(narration.synthesize_clips([p], media))
         narration.assemble(p, media)
         (out / f'term-sampler{suffix}.mp3').write_bytes((media / p['file']).read_bytes())
@@ -413,6 +420,10 @@ def lint_card(card, academic=True, theme='editorial', prepared=None):
     if doubted:
         out.append('卡上说评分方案或考纲有问题（' + '｜'.join(doubted[:3]) + '）：考纲与评分方案是最高依据，卡面按它们的说法讲，'
                    '不写成“更准确的说法”（SKILL.md“内容以谁为准”）')
+    pointing = sorted({m.group(0) for t in walk_text(card.get('title', ''), card.get('blocks', [])) for m in CROSS_CARD.finditer(plain(t))})
+    if pointing:
+        out.append('卡面或旁白指向别的卡（' + '｜'.join(pointing[:3]) + '）：Anki 按间隔单张出现，下一张未必是哪张；'
+                   '本卡要用的前提直接写进本卡，或说出考点名称（narration.md“每张卡自成一体”）')
     hits = plain_math(card)
     if hits:
         out.append(f'{len(hits)} 处数学写成了纯文本（不排版、不按读法朗读），改成 $…$〔读法〕：' + '｜'.join(hits[:3]))
@@ -426,6 +437,8 @@ NOTE_NODES = 7           # an annotation helps read one crop; more than this is 
 # The syllabus and mark scheme are never wrong and the board almost never is (SKILL.md, 内容以谁为准): narration and
 # annotations on a board card explain them and never correct them.
 CORRECTING = re.compile(r'笔误|写错|应为|应改|应是|更正|有误|不准确|说得过|过强|不严谨|准确说|更准确|改述|不暗示|其实是')
+# Anki shows one card at a time in spaced order, so "the next card" is whichever card is due, not the one the maker meant.
+CROSS_CARD = re.compile(r'[上下前后]一张卡?|下张卡|[前后](?:面|边)?(?:那|这)?几?张卡|前几张|后几张|刚才那张卡?|这一?组卡')
 DOUBTING_SOURCE = re.compile(r'(?:评分方案|考纲|mark scheme|syllabus|\bMS\b)[^。；;]{0,14}(?:写错|有误|不准确|不严谨|错了|不对|宽泛|粗糙)', re.I)
 
 
@@ -608,7 +621,8 @@ macOS 或 Linux（终端）：
 也可以在自己电脑上的 Claude Code 里说“按 补语音.txt 给这副卡补语音”，让 Claude 代为执行。
 """
 RUNTIME = ('build_cards.py', 'blocks.py', 'deck_rules.py', 'narration.py', 'speech_backend.py', 'package_addon.py',
-           'single_face_addon.py', 'html_integrity.py', 'board_images.py', 'slice_board.py', 'common_en.txt', 'requirements.txt')
+           'single_face_addon.py', 'html_integrity.py', 'board_images.py', 'slice_board.py', 'synth_originals.py',
+           'narration_handoff.py', 'common_en.txt', 'requirements.txt')
 
 
 def bundle_runtime(out):
@@ -620,6 +634,31 @@ def bundle_runtime(out):
     for name in RUNTIME:
         shutil.copy2(ROOT / 'scripts' / name, dest / 'scripts' / name)
     shutil.copytree(ROOT / 'assets', dest / 'assets', dirs_exist_ok=True, ignore=shutil.ignore_patterns('.DS_Store', '__pycache__'))
+
+
+def export_narration(path, plans, deck_path, out, flags=''):
+    """List the original-speed clips the cache still lacks, for a computer that can reach the voice service.
+    Only originals travel: trimming, tempo and joining stay here, so the clips are the ones a direct build makes."""
+    narration.require_tools()
+    try:
+        missing = narration.missing_originals(plans)
+    except narration.ToolMissing as error:
+        print(f'✗ {error}', file=sys.stderr)
+        sys.exit(4)
+    items = [{'voice': voice, 'text': text, 'key': narration.original_key(voice, text)} for voice, text in missing]
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps({'schema': narration.HANDOFF_SCHEMA, 'rate': narration.ORIGINAL_RATE, 'format': narration.ORIGINAL_FORMAT,
+                                'items': items}, ensure_ascii=False, indent=1) + '\n', encoding='utf-8')
+    if not items:
+        print(f'✓ every clip is already in the cache ({narration.cache_root()}); build without --export-narration')
+        return
+    voices = sorted({i['voice'] for i in items})
+    print(f'✓ {len(items)} original clip(s) to synthesize ({", ".join(voices)}) → {path}\n'
+          '  Where speech.platform.bing.com is reachable (only Python and edge-tts are needed there):\n'
+          f'    python synth_originals.py {path.name} originals/\n'
+          '  Back here, with the originals/ folder:\n'
+          f'    python scripts/narration_handoff.py import {path} originals/\n'
+          f'    python scripts/build_cards.py {deck_path} {out}{flags}')
 
 
 def preflight(voice):
@@ -651,6 +690,10 @@ def main(argv=None):
     ap.add_argument('--preview', action='store_true', help='write preview pages only; no audio, no package')
     ap.add_argument('--audio-pending', action='store_true', help='package without narration; pages say so and the player is disabled')
     ap.add_argument('--term-sampler', action='store_true', help='also write term-sampler.mp3: every English term in a carrier sentence, for a one-minute pronunciation check')
+    ap.add_argument('--export-narration', type=Path, metavar='NEEDED_JSON',
+                    help='write the original-speed clips still missing from the cache (with --term-sampler, the sampler too) to this file and stop; '
+                         'synthesize them where the voice service is reachable (scripts/synth_originals.py), bring them back with '
+                         'scripts/narration_handoff.py import, then run the same build without this flag')
     a = ap.parse_args(argv)
     if hasattr(sys.stdout, 'reconfigure'):
         sys.stdout.reconfigure(encoding='utf-8', errors='replace')
@@ -700,6 +743,11 @@ def main(argv=None):
     if not a.preview and len(plans) >= 5 and len(slowed) > 0.3 * len(plans) and not data['style'].get('speed_review'):
         sys.exit(f'✗ {len(slowed)}/{len(plans)} cards are 1.5× (over 30%): run --preview, review them (report.json lists each reason) and, if this '
                  'deck really is that dense, say why in style.speed_review; otherwise set speed 2.0 with speed_reason on the cards that are not')
+    if a.export_narration:
+        export_narration(a.export_narration, list(plans.values()) +
+                         ([p for _, p, _ in term_sampler_plans(data, lexicon, plans.values())] if a.term_sampler else []), a.input, out,
+                         ' --term-sampler' if a.term_sampler else '')
+        return
     cues, audio_report = {}, {}
     pending = a.preview or a.audio_pending
     if not pending:
