@@ -143,6 +143,7 @@ def page(data, card, r, audio_name, cues, pending_message=None):
     out = (f'<main {attrs}><header class="cc-head"><div class="cc-meta"><span class="cc-genre">{GENRES[genre]}</span>'
            f'<span class="cc-tag">{esc(card_tag(data, card))}</span>'
            + (f'<span class="cc-fb" data-fb="{card["formula_booklet"]}">{FORMULA_BOOKLET[card["formula_booklet"]]}</span>' if card.get('formula_booklet') else '')
+           + (f'<span class="cc-gap" title="{esc(card["board_gap"])}">补充 · 板书未写</span>' if card.get('board_gap') else '')
            + '</div>'
            f'<div class="cc-titlebar"><h1 data-node="title">{r["title_html"]}</h1><div class="cc-player">{player}</div></div></header>'
            f'<article class="cc-body">{"".join(r["sections"])}</article>'
@@ -160,6 +161,8 @@ def source_record(data, card, speed=None, speed_reason=''):
               'covers': card.get('covers', []), 'sources': card.get('sources', []), 'speed': speed}
     if speed_reason:
         record['speed_reason'] = speed_reason
+    if card.get('board_gap'):
+        record['board_gap'] = card['board_gap']
     # Anki stores fields as HTML; JSON escapes keep json.loads exact without HTML-escaping.
     return json.dumps(record, ensure_ascii=False).replace('<', r'\u003c').replace('>', r'\u003e').replace('&', r'\u0026')
 

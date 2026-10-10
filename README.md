@@ -8,7 +8,7 @@
 4. 术语卡逐词讲透定义，理科推导每一步写清做什么、为什么、依据和得分点，文科用箭头因果链和不限层级的导图；
 5. 按学科选择有美感的版式主题（editorial／paper／lab／blueprint／manuscript），亮色与夜间模式都适配；
 6. 晓晓或云扬配音，默认 2×、复杂卡 1.5×，可随时切换；Space 播音、Enter 继续、1 明天再看。
-7. 学习者给的是已经读过的完整 ClassIn 板书时，卡面直接用板书原图：按知识点裁切拼接（`scripts/board_images.py` 先给出编号区块），语音讲解并逐行框出正在讲的位置；
+7. 板书优先：有老师板书原图时，板书上写了的直接用原图做卡面，按知识点裁切拼接（`scripts/board_images.py` 先给出编号区块），语音讲解并逐行框出正在讲的位置；只有板书没覆盖的才写补充卡并标明“补充 · 板书未写”；改造旧卡组同样适用；
 8. 亮色模式干眼友好：页面与面板都不亮于 `#f6f1e7` 纸色，白底板书融进纸色、夜间反相。
 
 从 [SKILL.md](SKILL.md) 开始。生成器入口 `scripts/build_cards.py`，数据格式见 [references/deck-json.md](references/deck-json.md)。
@@ -17,7 +17,7 @@
 
 ```bash
 pip install -r scripts/requirements.txt
-python scripts/board_images.py board.png out/regions/   # 板书原图模式：编号区块与总览页
+python scripts/board_images.py board.png out/regions/   # 板书优先：编号区块与总览页
 python scripts/build_cards.py deck.json out/ --preview
 node scripts/render_check.mjs out/ --phone --dark
 python scripts/build_cards.py deck.json out/

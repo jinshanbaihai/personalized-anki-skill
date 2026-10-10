@@ -246,6 +246,18 @@ def check_coverage(data, card_ids, card_covers, planning=False, preview=False):
     if status == 'complete' and not planning:
         need(not missing, f'coverage is complete but these points have no card: {missing}')
     board = data.get('board', [])
+    if not planning and any(True for _ in board_crops(data)):
+        # Board first: where the board shows a point, the card shows the board; typed cards only add what it lacks.
+        on_board = {}
+        for point in board if isinstance(board, list) else []:
+            if isinstance(point, dict) and 'lost' not in point and not text(point.get('not_shown')):
+                for item in point.get('items', []) if isinstance(point.get('items'), list) else []:
+                    on_board.setdefault(item, []).append(point.get('id'))
+        for item, points in on_board.items():
+            if item in taught:
+                need(any(genres[c] == 'board' for c in taught[item]),
+                     f'coverage item {item} is on the board ({", ".join(points)}) but only typed cards teach it: show it with a board card '
+                     '(crop the board points that carry it); a typed card may follow only for what the board lacks (board_gap)')
     need(isinstance(board, list), 'board must be a list of board points')
     for i, point in enumerate(board):
         need(isinstance(point, dict) and text(point.get('id')) and text(point.get('where')) and text(point.get('point')),
@@ -386,6 +398,12 @@ def check_cards(data):
              f'card {c["id"]}: formula_booklet is given (printed in the exam formula booklet), memorise or derive')
         need(c.get('theme', 'editorial') in THEMES, f'card {c["id"]}: theme must be one of {sorted(THEMES)}')
         check_genre(c, data.get('academic', True))
+    if any(True for _ in board_crops(data)):
+        for c in cards:
+            if c.get('genre') != 'board':
+                need(text(c.get('board_gap')),
+                     f'card {c["id"]}: this deck shows the board, so a typed card exists only for what the board does not cover: '
+                     'say in board_gap what is missing from the board (e.g. "板书没有 MS 认可的定义原句"); content the board shows goes on a board card')
     genres = {c['id']: c['genre'] for c in cards}
     known = data.get('terms_known', [])
     need(isinstance(known, list), 'terms_known must be a list')

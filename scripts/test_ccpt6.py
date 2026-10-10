@@ -1141,3 +1141,28 @@ def test_board_regions_follow_blank_rows(tmp_path):
     assert info['crop_template'][0]['box'] == info['regions'][0]['box']
     assert board_images.union([r['box'] for r in regions[:2]]) == [regions[0]['box'][0], regions[0]['box'][1], regions[1]['box'][2], regions[1]['box'][3]]
     assert board_images.tone_of((25, 60, 40)) == 'dark' and board_images.tone_of((128, 128, 128)) == 'keep'
+
+
+def test_board_first_typed_cards_only_fill_gaps(tmp_path):
+    """Where the board shows a point, a board card teaches it; a typed card says what the board lacks and is marked on the page."""
+    d = board_deck(tmp_path)
+    term = copy.deepcopy(deck()['cards'][0])
+    d['cards'].append(term)                                     # typed term card beside the board card
+    with pytest.raises(deck_rules.DeckError, match='board_gap'):
+        deck_rules.check(d)
+    term['board_gap'] = '板书没有 MS 认可的定义原句与拒收说法'
+    assert deck_rules.check(d)['coverage']['missing'] == []
+    # The typed card alone may not stand in for the board.
+    d['cards'][0]['covers'] = ['S-1']
+    only_typed = copy.deepcopy(d)
+    only_typed['cards'][0]['genre'] = 'term'
+    only_typed['cards'][0]['board_gap'] = 'x'
+    only_typed['cards'][0]['blocks'] = copy.deepcopy(term['blocks']) + [only_typed['cards'][0]['blocks'][0]]
+    with pytest.raises(deck_rules.DeckError, match='on the board'):
+        deck_rules.check(only_typed)
+    src = tmp_path / 'deck.json'
+    src.write_text(json.dumps(d, ensure_ascii=False), encoding='utf-8')
+    build_cards.main([str(src), str(tmp_path / 'out'), '--preview'])
+    page = (tmp_path / 'out' / 'T01.html').read_text(encoding='utf-8')
+    assert 'class="cc-gap"' in page and '补充 · 板书未写' in page
+    assert json.loads(build_cards.source_record(d, term, 2.0))['board_gap'].startswith('板书没有')

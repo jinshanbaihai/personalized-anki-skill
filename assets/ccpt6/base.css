@@ -244,6 +244,8 @@
 .pf-src[data-type="er"] .pf-src-type,.pf-src[data-type="ms"] .pf-src-type{background:var(--ink)}
 .cc-fb{font-weight:700;color:var(--ink);border:1px solid var(--rule-strong);border-radius:4px;padding:2px 7px}
 .cc-fb[data-fb="memorise"]{border-color:var(--bad);color:var(--bad)}
+/* a typed card in a board deck: it adds what the board does not show, and says so */
+.cc-gap{font-weight:700;color:var(--ink-2);border:1px dashed var(--rule-strong);border-radius:4px;padding:2px 7px}
 
 /* board card: the learner's own board (板书), cut by knowledge point; build_cards.py writes the crops (board_images.py).
    A white board is multiplied into the theme paper so no white rectangle glares (dry-eye rule); at night it is inverted
